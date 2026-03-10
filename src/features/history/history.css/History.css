@@ -1,0 +1,209 @@
+.hi-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.hi-nav-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.hi-nav-buttons button {
+    padding: 8px 12px;
+    font-size: 16px;
+    font-weight: 500;
+    background: #3d3d3d;
+    color: #0ed45a;
+    border: 1px solid #5a5a5a;
+    border-radius: 7px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.history-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    background: #3d3d3d;
+    padding: 15px 20px;
+    gap: 20px;
+    position: relative;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.history-item:hover {
+    background: #464646; 
+    transform: translateX(5px);
+    border-left-color: #0ed45a; 
+}
+
+.hi-user-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.hi-user {
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.hi-badge {
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.hi-badge.admin {
+    background: rgba(255, 165, 0, 0.15);
+    color: #ffa500;
+    border: 1px solid rgba(255, 165, 0, 0.3);
+}
+
+.hi-badge.member {
+    background: rgba(14, 212, 90, 0.15);
+    color: #0ed45a;
+    border: 1px solid rgba(14, 212, 90, 0.3);
+}
+
+.hi-badge.moderator {
+    background: rgba(0, 191, 255, 0.15);
+    color: #00bfff;
+    border: 1px solid rgba(0, 191, 255, 0.3);
+}
+
+.hi-badge.system {
+    background: rgba(162, 18, 224, 0.15); 
+    color: #A212E0;
+    border: 1px solid rgba(162, 18, 224, 0.3);
+}
+
+.hi-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    z-index: 2;
+}
+
+.log-system {
+    background: rgba(162, 18, 224, 0.1);
+    color: #A212E0;
+}
+
+.log-join {
+    background: rgba(0, 200, 255, 0.1);
+    color: #00c8ff;
+}
+
+.log-expense {
+    background: rgba(14, 212, 90, 0.2);
+    color: #0ed45a;
+}
+
+.log-trip {
+    background: rgba(162, 18, 224, 0.2);
+    color: #A212E0;
+}
+
+.log-delete {
+    background: rgba(255, 68, 68, 0.2);
+    color: #ff4444;
+}
+
+.hi-content {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hi-info {
+    display: flex;
+    gap: 8px;
+    font-size: 0.95rem;
+}
+
+.hi-user {
+    color: #fff;
+    font-weight: 600;
+}
+
+.hi-action {
+    color: #a7a6a6;
+}
+
+.hi-target {
+    color: #8cbed1;
+    font-style: normal; 
+    background: rgba(140, 190, 209, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.hi-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.hi-time {
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.hi-amount {
+    color: #ff4444;
+    font-weight: 600;
+}
+
+.hi-status-red {
+    color: #ff4444;
+    font-size: 0.8rem;
+}
+
+.hi-tag {
+    font-size: 0.75rem;
+    color: #0ed45a;
+    background: rgba(14, 212, 90, 0.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+.hi-tag-alt {
+    font-size: 0.75rem;
+    color: #A212E0;
+    background: rgba(162, 18, 224, 0.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+.hi-tag-join {
+    font-size: 0.75rem;
+    color: #00c8ff;
+    background: rgba(0, 200, 255, 0.1);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+.history-item[data-role="admin"]:hover { border-left-color: #ffa500; }
+.history-item[data-role="member"]:hover { border-left-color: #0ed45a; }
+.history-item[data-role="moderator"]:hover { border-left-color: #00bfff; }
+.history-item[data-role="system"]:hover { border-left-color: #A212E0; }

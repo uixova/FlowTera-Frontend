@@ -1,0 +1,236 @@
+/* Panel Genel Yapısı */
+.ex-side-panel-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ex-side-panel-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.ex-side-panel-box {
+    position: fixed;
+    right: -480px; 
+    top: 0;
+    bottom: 0;
+    width: 450px;
+    background: #181818;
+    border-left: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -15px 0 40px rgba(0, 0, 0, 0.5);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ex-side-panel-overlay.open .ex-side-panel-box {
+    right: 0;
+}
+
+/* Üst Görsel ve Header */
+.ex-panel-header-image {
+    width: 100%;
+    height: 240px;
+    position: relative;
+    background: #000;
+}
+
+.ex-panel-header-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+}
+
+.ex-panel-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #181818;
+    border: 1px solid #333;
+    color: #fff;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.ex-panel-close-btn:hover {
+    background: #ff4757;
+    border-color: #ff4757;
+}
+
+/* İçerik Düzeni */
+.ex-panel-content {
+    padding: 25px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.ex-panel-title-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.ex-type-icon {
+    width: 45px;
+    height: 45px;
+    background: rgba(14, 212, 90, 0.1);
+    color: #0ed45a;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.ex-panel-title-section h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.3rem;
+}
+
+.ex-panel-category {
+    color: #777;
+    font-size: 0.85rem;
+}
+
+/* İstatistik Alanı (Tutar ve Statü) */
+.ex-panel-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.ex-stat-item label {
+    display: block;
+    color: #555;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.ex-amount-section strong {
+    font-size: 1.8rem;
+    color: #0ed45a;
+    display: block;
+}
+
+.ex-currency-freeze {
+    display: block;
+    color: #666;
+    font-size: 0.75rem;
+    margin-top: 5px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Detay Listesi */
+.ex-divider {
+    border: 0;
+    border-top: 1px solid #2a2a2a;
+    margin: 20px 0;
+}
+
+.ex-detail-row {
+    margin-bottom: 20px;
+}
+
+.ex-detail-row span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #555;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.ex-detail-row p {
+    color: #eee;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.ex-desc-text {
+    line-height: 1.5;
+    background: #202020;
+    padding: 10px;
+    border-radius: 8px;
+    color: #bbb !important;
+}
+
+/* Status Rozetleri */
+.ex-status-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.ex-status-badge.approved { background: rgba(14, 212, 90, 0.1); color: #0ed45a; }
+.ex-status-badge.pending { background: rgba(241, 196, 15, 0.1); color: #f1c40f; }
+.ex-status-badge.submitted { background: rgba(52, 152, 219, 0.1); color: #3498db; }
+.ex-status-badge.rejected { background: rgba(255, 71, 87, 0.1); color: #ff4757; }
+
+/* Footer */
+.ex-panel-footer {
+    padding: 20px 25px;
+    background: #1e1e1e;
+    border-top: 1px solid #333;
+}
+
+.ex-download-all-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #0ed45a 0%, #0ab84e 100%);
+    color: #000;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: 0.2s;
+}
+
+.ex-download-all-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(14, 212, 90, 0.3);
+}
+
+.ex-rejection-area {
+    margin-top: 10px;
+    padding: 15px;
+    background: rgba(255, 71, 87, 0.05);
+    border: 1px dashed rgba(255, 71, 87, 0.3);
+    border-radius: 10px;
+}
+
+.ex-rejection-area span {
+    color: #ff4757 !important; 
+}
+
+.ex-rejection-text {
+    color: #ffcccb !important;
+    font-style: italic;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "u1",
+    "teamId": "team-1",
+    "name": "Ahmet Yılmaz",
+    "email": "ahmet@flowtera.com",
+    "role": "Admin",
+    "avatar": "/src/assets/images/user-profile.png",
+    "lastAction": "22:15:42 - 09/02"
+  },
+  {
+    "id": "u2",
+    "teamId": "team-1",
+    "name": "Caner Demir",
+    "email": "caner@flowtera.com",
+    "role": "Moderator",
+    "avatar": "/src/assets/images/user-profile.png",
+    "lastAction": "10:00:00 - Today"
+  },
+  {
+    "id": "u3",
+    "teamId": "team-2",
+    "name": "Ayşe Güngör",
+    "email": "ayse@flowtera.com",
+    "role": "Admin",
+    "avatar": "/src/assets/images/user-profile.png",
+    "lastAction": "08:30:12 - 10/02"
+  },
+  {
+    "id": "u4",
+    "teamId": "team-2",
+    "name": "Melek Aydoğdu",
+    "email": "melek@flowtera.com",
+    "role": "Member",
+    "avatar": "/src/assets/images/user-profile.png",
+    "lastAction": "08:30:12 - 10/02"
+  }
+]

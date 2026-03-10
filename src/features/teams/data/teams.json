@@ -1,0 +1,18 @@
+[
+  { 
+    "id": "team-1", 
+    "name": "Main Development Team", 
+    "members": 2, 
+    "active": true,
+    "createdAt": "Jan 2026",
+    "image": "https://ui-avatars.com/api/?name=Main+Dev&background=0D8ABC&color=fff&size=128"
+  },
+  { 
+    "id": "team-2", 
+    "name": "Marketing Group", 
+    "members": 2, 
+    "active": false,
+    "createdAt": "Feb 2026",
+    "image": "https://ui-avatars.com/api/?name=Marketing+Group&background=8e44ad&color=fff&size=128"
+  }
+]

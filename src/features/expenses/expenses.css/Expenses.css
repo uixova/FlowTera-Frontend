@@ -1,0 +1,122 @@
+.ex-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.ex-nav-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+}
+
+.ex-nav-buttons button {
+    padding: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    background: #3d3d3d;
+    color: #0ed45a;
+    border: 1px solid #5a5a5a;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+#exCreateExpense {
+    background: #8cbed1;
+    background: linear-gradient(140deg, rgba(140, 190, 209, 1) 0%, rgb(14, 212, 90) 66%);
+    color: #000;
+    border: none;
+}
+
+.expense-title-nav, .expense-block {
+    display: grid;
+    grid-template-columns: 40px 2.2fr 1.5fr 1.5fr 1.5fr 1fr 1.5fr 1.2fr;
+    gap: 15px;
+    align-items: center;
+    padding: 12px 20px;
+}
+
+.expense-title-nav {
+    margin-bottom: 5px;
+}
+
+.expense-block {
+    background: #3d3d3d;
+    margin-bottom: 1px;
+    transition: background 0.2s ease;
+}
+
+.expense-block:hover {
+    background: #363636; 
+}
+
+.expense-block-details {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.expense-details-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.expense-date {
+    font-size: 0.7rem;
+    color: #888;
+    font-weight: 400;
+}
+
+.expense-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #fff;
+}
+
+.ex-title-span {
+    color: #a7a6a6;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.expense-status {
+    padding: 6px 10px;
+    border-radius: 28px;
+    width: 125px;
+    text-align: center;
+    font-size: 0.85rem;
+    display: inline-block;
+    font-weight: 600;
+    color: #fff; 
+}
+
+.expense-status.approved {
+    background: #0ed45a; 
+    box-shadow: 0 0 10px rgba(14, 212, 90, 0.2);
+}
+
+.expense-status.pending {
+    background: #f1c40f;
+    color: #000; 
+}
+
+.expense-status.rejected {
+    background: #ff4757;
+    box-shadow: 0 0 10px rgba(255, 71, 87, 0.2);
+}
+
+.expense-icon i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #c5a2e2;
+    color: #9d4edd;
+    font-size: 22px;
+    border-radius: 50%;
+}

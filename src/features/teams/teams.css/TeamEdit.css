@@ -1,0 +1,196 @@
+.role-modal {
+    max-width: 500px !important;
+    width: 90%; 
+    background: #1a1a1a; 
+    border-radius: 16px;
+    overflow: hidden; 
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
+    animation: modalAppear 0.3s ease-out; 
+}
+
+.tm-modal-header {
+    padding: 20px 25px;
+    background: #252525;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+}
+
+.tm-modal-user {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tm-modal-overlay {
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0, 0, 0, 0.75); 
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    z-index: 9999;
+    padding: 20px;
+    animation: modalFadeIn 0.3s ease;
+}
+
+.tm-modal-container {
+    background: #1e1e1e;
+    width: 100%;
+    max-width: 550px;
+    border-radius: 20px;
+    border: 1px solid #333;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh; 
+    position: relative; 
+}
+
+.role-icon-box {
+    width: 40px;
+    height: 40px;
+    background: rgba(14, 212, 90, 0.1);
+    color: #0ed45a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 1.2rem;
+}
+
+.tm-modal-close {
+    background: #333;
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tm-modal-close:hover {
+    background: #e74c3c;
+    transform: rotate(90deg);
+}
+
+.role-selection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 10px;
+}
+
+.role-option input[type="radio"] {
+    display: none;
+}
+
+.role-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #252525;
+    border: 1px solid #333;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.role-card-content:hover {
+    border-color: #444;
+    background: #2a2a2a;
+}
+
+.role-option input[type="radio"]:checked+.role-card-content {
+    border-color: #0ed45a;
+    background: rgba(14, 212, 90, 0.03);
+}
+
+.role-option input[type="radio"]:checked+.role-card-content i {
+    display: block;
+    color: #0ed45a;
+}
+
+.role-card-content i {
+    display: none;
+    font-size: 1.2rem;
+}
+
+.role-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.role-name {
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.role-name.admin {
+    color: #e74c3c;
+}
+
+.role-name.moderator {
+    color: #f1c40f;
+}
+
+.role-name.member {
+    color: #3498db;
+}
+
+.role-desc {
+    color: #666;
+    font-size: 0.8rem;
+    line-height: 1.3;
+}
+
+.tm-modal-footer {
+    padding: 20px 25px;
+    background: #252525;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid #333;
+}
+
+.tm-cancel-btn {
+    background: transparent;
+    border: 1px solid #5a5a5a;
+    color: #aaa;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.tm-save-role-btn {
+    background: linear-gradient(140deg, rgba(140, 190, 209, 1) 0%, rgb(14, 212, 90) 66%);
+    color: #000;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.tm-modal-body {
+    padding: 10px 25px 25px;
+    overflow-y: auto; 
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-15px); 
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

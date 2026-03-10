@@ -1,0 +1,120 @@
+.tr-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.tr-nav-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+}
+
+.tr-nav-buttons button {
+    padding: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    background: #3d3d3d;
+    color: #0ed45a;
+    border: 1px solid #5a5a5a;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+#trCreateTrip {
+    background: #8cbed1;
+    background: linear-gradient(140deg, rgba(140, 190, 209, 1) 0%, rgba(14, 212, 90, 1) 66%);
+    color: #000;
+    border: none;
+}
+
+.trip-title-nav, .trip-block {
+    display: grid;
+    grid-template-columns: 40px 2.2fr 1.5fr 1.5fr 1.5fr 1fr 1.5fr 1.2fr;
+    gap: 15px;
+    align-items: center;
+    padding: 12px 20px;
+}
+
+.trip-title-nav {
+    margin-bottom: 5px;
+}
+
+.trip-block {
+    background: #3d3d3d;
+    margin-bottom: 1px;
+    transition: background 0.2s ease;
+}
+
+.trip-block:hover {
+    background: #363636; 
+}
+
+.trip-block-details {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.trip-details-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.trip-date {
+    font-size: 0.7rem;
+  color: #888;
+  font-weight: 400;
+}
+
+.trip-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #fff;
+}
+
+.tr-title-span {
+    color: #a7a6a6;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.trip-status {
+    padding: 6px 10px;
+    background: #A212E0;
+    border-radius: 28px;
+    width: 125px;
+    text-align: center;
+    font-size: 0.85rem;
+    display: inline-block;
+    color: #fff;
+}
+
+.trip-icon i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #c5a2e2;
+    color: #9d4edd;
+    font-size: 22px;
+    border-radius: 50%;
+}
+
+.status-confirmed {
+    background: #0ed45a;
+    color: #000;
+}
+
+.status-onroad {
+    background: #e67e22;
+}
+
+.status-planned {
+    background: #5a5a5a;
+}

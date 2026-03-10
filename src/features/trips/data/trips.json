@@ -1,0 +1,62 @@
+[
+  {
+    "id": "tr-001",
+    "title": "Business Meeting",
+    "category": "Corporate",
+    "destination": "Berlin, DE",
+    "vehicle": "Flight",
+    "amount": "1200",
+    "currency": "USD",
+    "exchangeRate": {
+      "pair": "USD/TRY",
+      "rate": "34.50",
+      "date": "15/03/2026"
+    },
+    "duration": "3 Days",
+    "date": "15/03/2026",
+    "status": "Confirmed",
+    "statusClass": "status-confirmed",
+    "icon": "ti-plane-departure",
+    "desc": "Annual strategy meeting with the European branch partners regarding the 2026 roadmap."
+  },
+  {
+    "id": "tr-002",
+    "title": "Family Visit",
+    "category": "Personal",
+    "destination": "Izmir, TR",
+    "vehicle": "Car",
+    "amount": "300",
+    "currency": "USD",
+    "exchangeRate": {
+      "pair": "USD/TRY",
+      "rate": "34.50",
+      "date": "20/03/2026"
+    },
+    "duration": "5 Days",
+    "date": "20/03/2026",
+    "status": "On Road",
+    "statusClass": "status-onroad",
+    "icon": "ti-car",
+    "desc": "Long overdue visit to see the family and enjoy the Aegean coast."
+  },
+  {
+    "id": "tr-003",
+    "title": "Tech Conf 2026",
+    "category": "Education",
+    "destination": "San Francisco, US",
+    "vehicle": "Flight",
+    "amount": "2500",
+    "currency": "USD",
+    "exchangeRate": {
+      "pair": "USD/TRY",
+      "rate": "34.50",
+      "date": "10/04/2026"
+    },
+    "duration": "7 Days",
+    "date": "10/04/2026",
+    "status": "Pending",
+    "statusClass": "status-pending",
+    "icon": "ti-devices-pc",
+    "desc": "Attending the annual full-stack development conference to learn about the latest AI integrations."
+  }
+]

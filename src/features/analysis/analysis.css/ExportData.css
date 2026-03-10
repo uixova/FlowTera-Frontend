@@ -1,0 +1,176 @@
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 10002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.export-modal {
+    width: 420px;
+    background: #2d2d2d;
+    border-radius: 20px;
+    border: 1px solid #444;
+    box-shadow: 0 0 30px rgba(14, 212, 90, 0.15);
+    overflow: hidden;
+    animation: modalSpring 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes modalSpring {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.ex-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #3d3d3d;
+}
+
+.ex-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.ex-title i {
+    color: #0ed45a;
+    font-size: 1.4rem;
+}
+
+.ex-close {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.ex-body {
+    padding: 25px;
+}
+
+.ex-document-preview {
+    background: #363636;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 25px;
+    border: 1px dashed #555;
+}
+
+.ex-doc-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 15px;
+    font-family: monospace;
+}
+
+.doc-line {
+    height: 6px;
+    background: #444;
+    border-radius: 3px;
+    margin-bottom: 8px;
+}
+
+.doc-line.short {
+    width: 60%;
+}
+
+.ex-options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.ex-option input {
+    display: none;
+}
+
+.ex-option-card {
+    background: #363636;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.ex-option-card i {
+    font-size: 1.5rem;
+    color: #888;
+}
+
+.ex-option-card span {
+    font-size: 11px;
+    color: #aaa;
+    font-weight: 600;
+}
+
+.ex-option input:checked+.ex-option-card {
+    border-color: #0ed45a;
+    background: rgba(14, 212, 90, 0.05);
+}
+
+.ex-option input:checked+.ex-option-card i {
+    color: #0ed45a;
+}
+
+.ex-option input:checked+.ex-option-card span {
+    color: #fff;
+}
+
+.ex-footer {
+    padding: 20px;
+    display: flex;
+    gap: 12px;
+    background: #333;
+}
+
+.ex-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+}
+
+.ex-btn.cancel {
+    background: #444;
+    color: #fff;
+}
+
+.ex-btn.download {
+    background: #0ed45a;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.ex-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}

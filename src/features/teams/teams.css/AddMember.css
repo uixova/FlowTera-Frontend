@@ -1,0 +1,253 @@
+.adm-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.adm-modal-box {
+    background: #1e1e1e;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 18px;
+    border: 1px solid #333;
+    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    animation: admSlideUp 0.3s ease-out;
+}
+
+@keyframes admSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.adm-modal-header {
+    padding: 20px 25px;
+    background: #252525;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.adm-header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.adm-icon-circle {
+    width: 42px;
+    height: 42px;
+    background: rgba(14, 212, 90, 0.1);
+    color: #0ed45a;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.adm-header-text h3 {
+    color: #fff;
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.adm-header-text p {
+    color: #777;
+    margin: 3px 0 0 0;
+    font-size: 0.85rem;
+}
+
+.adm-close-btn {
+    background: #333;
+    border: none;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.adm-close-btn:hover {
+    background: #444;
+    color: #ff4757;
+}
+
+.adm-modal-body {
+    padding: 25px;
+}
+
+.adm-input-group label {
+    display: block;
+    color: #aaa;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+
+.adm-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.adm-input-wrapper i {
+    position: absolute;
+    left: 15px;
+    color: #555;
+    font-size: 1.1rem;
+}
+
+.adm-input-wrapper input {
+    width: 100%;
+    background: #141414;
+    border: 1px solid #3d3d3d;
+    border-radius: 10px;
+    padding: 12px 15px 12px 45px;
+    color: #fff;
+    outline: none;
+    transition: 0.2s;
+}
+
+.adm-input-wrapper input:focus {
+    border-color: #0ed45a;
+    background: #1a1a1a;
+    box-shadow: 0 0 0 4px rgba(14, 212, 90, 0.05);
+}
+
+.adm-role-section {
+    margin-top: 25px;
+}
+
+.adm-role-section label {
+    display: block;
+    color: #aaa;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+.adm-role-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.adm-role-card input[type="radio"] {
+    display: none;
+}
+
+.adm-role-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #252525;
+    border: 1px solid #333;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.adm-role-card:hover .adm-role-content {
+    border-color: #444;
+}
+
+.adm-role-card input[type="radio"]:checked+.adm-role-content {
+    border-color: #0ed45a;
+    background: rgba(14, 212, 90, 0.03);
+}
+
+.adm-role-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.adm-role-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.adm-role-name.admin {
+    color: #ff4757;
+}
+
+.adm-role-name.moderator {
+    color: #f1c40f;
+}
+
+.adm-role-name.member {
+    color: #3498db;
+}
+
+.adm-role-desc {
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.adm-check-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #333;
+    color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: 0.2s;
+}
+
+.adm-role-card input[type="radio"]:checked+.adm-role-content .adm-check-icon {
+    background: #0ed45a;
+    color: #000;
+}
+
+.adm-modal-footer {
+    padding: 20px 25px;
+    background: #252525;
+    border-top: 1px solid #333;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.adm-btn-secondary {
+    background: transparent;
+    border: 1px solid #444;
+    color: #888;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.adm-btn-primary {
+    background: linear-gradient(140deg, #8cbed1 0%, #0ed45a 66%);
+    color: #000;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.adm-btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
