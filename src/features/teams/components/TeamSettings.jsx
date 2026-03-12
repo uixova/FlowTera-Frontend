@@ -1,70 +1,59 @@
-import React, { useState, useRef } from 'react';
-import '../teams.css/MemberList.css'
+import React, { useState, useRef } from 'react'; 
+import '../teams.css/Settings.css';
 
-const TeamSettings = ({ onBack }) => {
+const TeamSettings = ({ teamId, onBack }) => {
+  console.log("Current Team ID:", teamId);
+
   const [formData, setFormData] = useState({
     teamName: 'Main Development Team',
     workspaceType: 'Corporate',
-    status: 'active'
+    status: 'active',
+    privacy: 'private'
   });
-
-  // Logo önizleme ve dosya seçimi
+  
   const [preview, setPreview] = useState('https://via.placeholder.com/160?text=LOGO');
   const fileInputRef = useRef(null);
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    // id'leri state anahtarlarına eşliyoruz
-    const keyMap = {
-      tmEditTeamName: 'teamName',
-      tmWorkspaceType: 'workspaceType',
-      tmEditStatus: 'status'
-    };
-    setFormData(prev => ({ ...prev, [keyMap[id]]: value }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setPreview(URL.createObjectURL(e.target.files[0]));
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Ayarlar Güncelleniyor:", formData);
-    // Burada update servisi çağrılacak
-  };
-
   return (
-    <div id="tmSettingsPage" className="tm-page-layout">
+    <div className="tm-page-layout">
       <div className="tm-container">
         <div className="tm-page-header">
           <div className="tm-header-left">
             <h1>Team Settings</h1>
           </div>
           <button className="tm-back-btn" onClick={onBack}>
-            <i className="ti ti-arrow-back-up"></i> Back to Team
+            Back to Team
           </button>
         </div>
 
-        <form id="editTeamForm" onSubmit={handleSubmit}>
+        <form id="editTeamForm" onSubmit={(e) => e.preventDefault()}>
           <div className="tm-setup-grid">
+            
             <aside className="tm-setup-sidebar">
               <div className="tm-sticky-card">
                 <div className="tm-preview-wrapper">
-                  <img id="tmSettingsImagePreview" src={preview} alt="Team Logo" />
+                  <img src={preview} alt="Team Logo" />
                   <div className="tm-upload-overlay" onClick={() => fileInputRef.current.click()}>
-                    <i className="ti ti-camera"></i>
+                    <span style={{fontSize: '24px'}}>+</span>
                   </div>
                 </div>
                 <input 
                   type="file" 
-                  id="tmSettingsLogoInput" 
                   ref={fileInputRef}
                   accept="image/*" 
                   style={{ display: 'none' }} 
-                  onChange={handleLogoChange}
+                  onChange={handleFileChange}
                 />
                 <button type="button" className="tm-upload-btn" onClick={() => fileInputRef.current.click()}>
                   Change Logo
@@ -77,48 +66,80 @@ const TeamSettings = ({ onBack }) => {
               <section className="tm-form-section">
                 <h3 className="section-title">General Configuration</h3>
                 <div className="tm-input-group">
-                  <label htmlFor="tmEditTeamName">Organization Name</label>
+                  <label htmlFor="teamName">Organization Name</label>
                   <input 
                     type="text" 
-                    id="tmEditTeamName" 
+                    name="teamName"
                     value={formData.teamName} 
                     onChange={handleChange}
                   />
                 </div>
+
                 <div className="tm-grid-row">
                   <div className="tm-input-group">
-                    <label htmlFor="tmWorkspaceType">Workspace Type</label>
-                    <select id="tmWorkspaceType" value={formData.workspaceType} onChange={handleChange}>
-                      <option value="Corporate">Corporate</option>
-                      <option value="Personal">Personal</option>
-                      <option value="Education">Education</option>
-                    </select>
+                    <label htmlFor="workspaceType">Workspace Type</label>
+                    <div className="tm-select-wrapper">
+                      <select name="workspaceType" value={formData.workspaceType} onChange={handleChange}>
+                        <option value="Corporate">Corporate</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Education">Education</option>
+                      </select>
+                    </div>
                   </div>
                   <div className="tm-input-group">
-                    <label htmlFor="tmEditStatus">System Status</label>
-                    <select id="tmEditStatus" value={formData.status} onChange={handleChange}>
-                      <option value="active">Active</option>
-                      <option value="maintenance">Maintenance</option>
-                      <option value="archived">Archived</option>
-                    </select>
+                    <label htmlFor="status">System Status</label>
+                    <div className="tm-select-wrapper">
+                      <select name="status" value={formData.status} onChange={handleChange}>
+                        <option value="active">Active</option>
+                        <option value="maintenance">Maintenance</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </section>
 
+              <section className="tm-form-section">
+                <h3 className="section-title">Privacy Settings</h3>
+                <div className="tm-radio-vertical">
+                  <label className={`tm-radio-option ${formData.privacy === 'private' ? 'selected' : ''}`}>
+                    <input 
+                      type="radio" 
+                      name="privacy" 
+                      value="private" 
+                      checked={formData.privacy === 'private'} 
+                      onChange={handleChange} 
+                    />
+                    <div className="option-text">
+                      <strong>Private Organization</strong>
+                      <span>Only invited members can access and view team data.</span>
+                    </div>
+                  </label>
+
+                  <label className={`tm-radio-option ${formData.privacy === 'internal' ? 'selected' : ''}`}>
+                    <input 
+                      type="radio" 
+                      name="privacy" 
+                      value="internal" 
+                      checked={formData.privacy === 'internal'} 
+                      onChange={handleChange} 
+                    />
+                    <div className="option-text">
+                      <strong>Internal (Domain Only)</strong>
+                      <span>Anyone within your verified email domain can join.</span>
+                    </div>
+                  </label>
+                </div>
+              </section>
+
               <div className="tm-setup-footer">
-                <button 
-                  type="button" 
-                  className="tm-btn-delete" 
-                  onClick={() => window.confirm('Are you sure you want to delete this team?') && console.log('Silindi')}
-                >
-                  Delete Team
-                </button>
+                <button type="button" className="tm-btn-delete">Delete Team</button>
                 <div className="tm-footer-right">
                   <button type="button" className="tm-btn-ghost" onClick={onBack}>Cancel</button>
-                  <button type="submit" className="tm-btn-primary" id="tmSaveTeamBtn">Update Settings</button>
+                  <button type="submit" className="tm-btn-primary">Update Settings</button>
                 </div>
               </div>
             </main>
+
           </div>
         </form>
       </div>

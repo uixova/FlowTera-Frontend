@@ -1,13 +1,36 @@
-.adm-modal-overlay {
+.adm-side-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 9998;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.adm-side-overlay.is-active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.adm-side-panel {
+    position: fixed;
+    top: 0;
+    right: -450px; 
+    width: 420px;
+    height: 100vh;
+    background: #1e1e1e;
+    border-left: 1px solid #333;
+    z-index: 9999;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    padding: 20px;
+    flex-direction: column;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.adm-side-panel.is-open {
+    right: 0; 
 }
 
 .adm-modal-box {
@@ -60,6 +83,14 @@
     font-size: 1.3rem;
 }
 
+.adm-panel-header {
+    padding: 30px 25px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .adm-header-text h3 {
     color: #fff;
     margin: 0;
@@ -72,24 +103,33 @@
     font-size: 0.85rem;
 }
 
-.adm-close-btn {
-    background: #333;
+.adm-panel-close {
+    background: #2a2a2a;
     border: none;
-    color: #fff;
-    width: 30px;
-    height: 30px;
+    color: #888;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
     cursor: pointer;
     transition: 0.2s;
 }
 
-.adm-close-btn:hover {
-    background: #444;
+.adm-panel-close:hover {
+    background: #333;
     color: #ff4757;
 }
 
-.adm-modal-body {
-    padding: 25px;
+.adm-panel-body {
+    flex: 1;
+    padding: 30px 25px;
+    overflow-y: auto;
+}
+
+.adm-helper-text {
+    display: block;
+    margin-top: 8px;
+    color: #555;
+    font-size: 0.75rem;
 }
 
 .adm-input-group label {
@@ -146,29 +186,30 @@
     gap: 10px;
 }
 
-.adm-role-card input[type="radio"] {
-    display: none;
+.adm-role-card {
+    display: block;
+    margin-bottom: 12px;
 }
 
 .adm-role-content {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    padding: 16px;
+    border-radius: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;
-    background: #252525;
-    border: 1px solid #333;
-    border-radius: 12px;
     cursor: pointer;
     transition: 0.2s;
 }
 
-.adm-role-card:hover .adm-role-content {
-    border-color: #444;
+.adm-role-card input[type="radio"]:checked + .adm-role-content {
+    border-color: #0ed45a;
+    background: rgba(14, 212, 90, 0.05);
 }
 
-.adm-role-card input[type="radio"]:checked+.adm-role-content {
-    border-color: #0ed45a;
-    background: rgba(14, 212, 90, 0.03);
+.adm-role-card:hover .adm-role-content {
+    border-color: #444;
 }
 
 .adm-role-info {
@@ -250,4 +291,39 @@
 .adm-btn-primary:hover {
     opacity: 0.9;
     transform: translateY(-1px);
+}
+
+.adm-panel-footer {
+    padding: 25px;
+    border-top: 1px solid #333;
+    display: flex;
+    gap: 15px;
+}
+
+.adm-btn-invite {
+    flex: 1;
+    background: #0ed45a;
+    color: #000;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.adm-btn-invite:hover {
+    background: #0dbd50;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(14, 212, 90, 0.2);
+}
+
+.adm-btn-cancel {
+    flex: 1;
+    background: transparent;
+    border: 1px solid #333;
+    color: #777;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
 }

@@ -1,110 +1,104 @@
 import React, { useState, useEffect } from 'react';
-import '../teams.css/Modals.css';
-import '../teams.css/Activity.css'
-import allLogs from '../data/userLog.json'; 
+import '../teams.css/Activity.css';
+import { teamsService } from '../services/teamsService'; 
 
 const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [userLogs, setUserLogs] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-    const fetchLogs = async () => {
-        if (!isOpen || !user || !teamId) return;
+        if (!isOpen || !user || !teamId) {
+            setUserLogs([]);
+            return;
+        }
 
-        // API Simülasyonu (Async bekleme hatayı engeller)
-        await new Promise(res => setTimeout(res, 50)); 
-        
-        const filtered = allLogs.filter(log => 
-          String(log.userId) === String(user.id) && 
-          String(log.teamId) === String(teamId)
-        );
-        setUserLogs(filtered);
-    };
+        const fetchUserLogs = async () => {
+            try {
+                setLoading(true);
+                const data = await teamsService.getUserLogs(user.id, teamId);
+                setUserLogs(data);
+            } catch (error) {
+                console.error("Loglar çekilirken hata:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    fetchLogs();
+        fetchUserLogs();
     }, [isOpen, user, teamId]);
 
-    if (!isOpen) return null;
-
-    // Arama filtresi
-    const filteredDisplayLogs = userLogs.filter(log => 
-        log.action.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredDisplayLogs = userLogs.filter(log =>
+        log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log.details?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
-        <div className="tm-modal-overlay">
-            <div className="tm-modal-container">
-                <div className="tm-modal-header">
-                    <div className="tm-modal-user">
-                        <img src={user?.avatar} alt="User" />
+        <>
+            <div className={`tm-log-overlay ${isOpen ? 'is-active' : ''}`} onClick={onClose} />
+            <div className={`tm-log-panel ${isOpen ? 'is-open' : ''}`}>
+                <div className="tm-log-header">
+                    <div className="tm-log-user-info">
+                        <div className="tm-avatar-wrapper">
+                            <img src={user?.avatar || 'https://via.placeholder.com/40'} alt="User" />
+                        </div>
                         <div className="user-meta">
                             <h3>{user?.name}</h3>
                             <span>{user?.email}</span>
                         </div>
                     </div>
-                    <button className="tm-modal-close" onClick={onClose}>
-                        <i className="ti ti-x"></i>
-                    </button>
+                    <button className="tm-log-close" onClick={onClose}><i className="ti ti-x"></i></button>
                 </div>
 
-                <div className="tm-modal-search-bar">
-                    <div className="tm-sel-search-wrapper modal-search">
+                <div className="tm-log-search">
+                    <div className="modal-search-input">
                         <i className="ti ti-search"></i>
                         <input 
                             type="text" 
-                            placeholder="Search activities..."
+                            placeholder="Filter activities..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                 </div>
 
-                <div className="tm-modal-body">
-                    <div className="tm-log-list">
-                        {filteredDisplayLogs.length > 0 ? (
-                            filteredDisplayLogs.map(log => (
-                                <div className="log-entry" key={log.id}>
-                                    <div className={`entry-icon ${getColorClass(log.type)}`}>
+                <div className="tm-log-body">
+                    {loading ? (
+                        <div className="hi-loading">Loglar Getiriliyor...</div>
+                    ) : filteredDisplayLogs.length > 0 ? (
+                        <div className="timeline-container">
+                            {filteredDisplayLogs.map((log) => (
+                                <div className="timeline-item" key={log.id}>
+                                    <div className={`timeline-icon ${getColorClass(log.type)}`}>
                                         <i className={`ti ${getIcon(log.type)}`}></i>
                                     </div>
-                                    <div className="entry-details">
-                                        <div className="entry-header">
-                                            <span className="entry-title">{log.action}</span>
-                                            <span className="entry-time">{log.time} - {log.date}</span>
+                                    <div className="timeline-content">
+                                        <div className="timeline-header">
+                                            <span className="timeline-title">{log.action}</span>
+                                            <span className="timeline-date">{log.time}</span>
                                         </div>
-                                        <p>{log.details || 'Activity recorded successfully.'}</p>
+                                        <p className="timeline-desc">{log.details}</p>
                                     </div>
                                 </div>
-                            ))
-                        ) : (
-                            <div className="no-logs" style={{textAlign: 'center', padding: '20px', color: '#666'}}>
-                                No activities found for this team.
-                            </div>
-                        )}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="no-activity">No records found.</div>
+                    )}
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
 const getColorClass = (type) => {
-    switch(type) {
-        case 'add': return 'add';     
-        case 'update': return 'update';  
-        case 'settings': return 'settings';   
-        default: return 'settings';
-    }
+    const map = { add: 'green', update: 'orange', settings: 'blue', delete: 'red', login: 'purple' };
+    return map[type] || 'blue';
 };
 
 const getIcon = (type) => {
-    switch(type) {
-        case 'add': return 'ti-plus';
-        case 'update': return 'ti-edit';
-        case 'settings': return 'ti-settings';
-        case 'login': return 'ti-login';
-        default: return 'ti-info-circle';
-    }
+    const map = { add: 'ti-plus', update: 'ti-pencil', settings: 'ti-settings', delete: 'ti-trash', login: 'ti-login' };
+    return map[type] || 'ti-circle';
 };
 
 export default TeamLogModal;

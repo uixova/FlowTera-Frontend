@@ -1,18 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import './expenses.css/Expenses.css';
 import CreateExpense from './modals/CreateExpense';
 import ExpenseDetail from './modals/ExpenseDetail';
-import allExpenses from './data/expenses.json'; 
+
+import { expenseService } from './services/expenseService';
 
 const Expenses = () => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedExpense, setSelectedExpense] = useState(null);
+    
+    const [expenses, setExpenses] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Servis üzerinden veriyi çekme
+    useEffect(() => {
+        const loadData = async () => {
+            setLoading(true);
+            try {
+                const data = await expenseService.getAllExpenses();
+                setExpenses(data);
+            } catch (error) {
+                console.error(error)
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
+    }, []);
 
     const handleOpenDetail = (expenseData) => {
         setSelectedExpense(expenseData); 
         setIsDetailOpen(true);
     };
+
+    // Yüklenme ekranı 
+    if (loading) return <div className="ex-loading">Harcamalar yükleniyor...</div>;
 
     return (
         <div className="expense" id="expense">
@@ -55,8 +79,8 @@ const Expenses = () => {
 
             {/* Dinamik Harcama Listesi */}
             <div className="expense-list-container">
-                {allExpenses.length > 0 ? (
-                    allExpenses.map((expense) => (
+                {expenses.length > 0 ? (
+                    expenses.map((expense) => (
                         <div 
                             key={expense.id}
                             className="expense-block" 
@@ -84,8 +108,7 @@ const Expenses = () => {
                             <span className="ex-expense-amount">{expense.amount}</span>
                             <span className="expense-report">{expense.report}</span>
                             
-                            {/* Status için dinamik class ataması */}
-                            <span className={`expense-status ${expense.status.toLowerCase()}`}>
+                            <span className={`expense-status ${expense.status?.toLowerCase()}`}>
                                 {expense.status}
                             </span>
                         </div>
@@ -95,13 +118,12 @@ const Expenses = () => {
                 )}
             </div>
 
-            {/* Modallar / Paneller */}
+            {/* Modallar */}
             <CreateExpense 
                 isOpen={isCreateOpen} 
                 onClose={() => setIsCreateOpen(false)} 
             />
 
-            {/* Detail */}
             <ExpenseDetail 
                 isOpen={isDetailOpen} 
                 onClose={() => setIsDetailOpen(false)} 

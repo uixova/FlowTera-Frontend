@@ -2,7 +2,7 @@ import React from 'react';
 import '../expenses.css/ExpenseDetail.css'; 
 
 const ExpenseDetail = ({ isOpen, onClose, data }) => {
-  // Panel kapalıysa veya veri yoksa null dön, ama animasyon için CSS sınıfını kontrol edeceğiz
+  // Panel kapalıysa veya veri yoksa null dön, 
   if (!data) return null;
 
   return (

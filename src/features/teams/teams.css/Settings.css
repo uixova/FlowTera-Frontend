@@ -1,0 +1,296 @@
+.tm-page-layout {
+    width: 100%;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #f1f1f1;
+}
+
+.tm-container {
+    width: 100%;
+    padding: 20px 80px;
+}
+
+.tm-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 30px;
+    margin-bottom: 60px;
+}
+
+.tm-page-header h1 {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #fff;
+}
+
+.tm-back-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #aaa;
+    padding: 12px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tm-back-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(-5px);
+}
+
+.tm-setup-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 100px;
+}
+
+.tm-setup-sidebar {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 32px;
+    padding: 40px;
+    height: fit-content;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.tm-preview-wrapper {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 24px;
+    background: #111;
+    border: 2px solid #1a1a1a;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 25px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+.tm-preview-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tm-upload-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: 0.3s;
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+}
+
+.tm-preview-wrapper:hover .tm-upload-overlay { opacity: 1; }
+
+.tm-upload-btn {
+    background: #222;
+    border: 1px solid #333;
+    color: #eee;
+    padding: 14px;
+    border-radius: 14px;
+    width: 100%;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+.tm-upload-btn:hover {
+    background: #333;
+    border-color: #444;
+}
+
+.tm-preview-label {
+    display: block;
+    font-size: 0.65rem;
+    color: #555;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.tm-form-section .section-title {
+    color: #0ed45a;
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 45px;
+    text-shadow: 0 0 30px rgba(14, 212, 90, 0.2);
+}
+
+.tm-input-group label {
+    display: block;
+    color: #888;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.tm-input-group input, .tm-input-group select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 18px;
+    border-radius: 16px;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.tm-input-group input:focus, .tm-input-group select:focus {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: #0ed45a;
+    box-shadow: 0 0 20px rgba(14, 212, 90, 0.1);
+}
+
+.tm-radio-vertical {
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.tm-radio-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.tm-radio-option input[type="radio"] {
+    position: absolute;
+    opacity: 0; 
+}
+
+.tm-radio-option .option-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #666;
+    transition: 0.3s;
+}
+
+.tm-radio-option .option-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tm-radio-option .option-text strong {
+    font-size: 1rem;
+    color: #fff;
+    display: block;
+}
+
+.tm-radio-option .option-text span {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.tm-radio-option.selected {
+    background: rgba(14, 212, 90, 0.03);
+    border-color: rgba(14, 212, 90, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.tm-radio-option.selected .option-text strong {
+    color: #0ed45a;
+}
+
+.tm-radio-option:hover:not(.selected) {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.tm-setup-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tm-btn-primary {
+    background: #0ed45a;
+    color: #000;
+    border: none;
+    padding: 18px 55px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(14, 212, 90, 0.3);
+    transition: all 0.3s ease;
+}
+
+.tm-btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(14, 212, 90, 0.4);
+}
+
+.tm-btn-delete {
+    background: transparent;
+    border: 1px solid rgba(255, 71, 87, 0.3);
+    color: #ff4757;
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.tm-btn-delete:hover {
+    background: rgba(255, 71, 87, 0.1);
+    border-color: #ff4757;
+}
+
+.tm-btn-ghost {
+    padding: 20px 24px;
+    background: rgba(0, 0, 0, 0.2);
+    border: none;
+    border-radius: 14px;
+    color: #555;
+    font-size: 16px;
+    font-weight: 600;
+    margin-right: 30px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tm-btn-ghost:hover { 
+    color: #fff; 
+    background: rgba(10, 10, 10, 0.2);
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #444; }

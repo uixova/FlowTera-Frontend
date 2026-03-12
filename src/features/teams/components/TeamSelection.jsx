@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TeamCard from './TeamCard';
-// JSON verisini import ediyoruz
-import teamsData from '../data/teams.json'; 
+import { teamsService } from '../services/teamsService'; 
 
 const TeamSelection = ({ onNavigate }) => {
   const [teams, setTeams] = useState([]);
@@ -9,27 +8,20 @@ const TeamSelection = ({ onNavigate }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  const fetchTeams = async () => {
-    try {
-      setLoading(true);
-      
-      // API simülasyonu: 500ms bekleme ekliyoruz
-      // Gerçek API'ye geçtiğinde sadece alttaki satırı 
-      // const response = await fetch('/api/teams'); ile değiştireceksin.
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      setTeams(teamsData);
-    } catch (error) {
-      console.error("Veri çekme hatası:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchTeams = async () => {
+      try {
+        setLoading(true);
+        const data = await teamsService.getTeams(); 
+        setTeams(data);
+      } catch (error) {
+        console.error("Takımlar yüklenemedi:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTeams();
+  }, []);
 
-  fetchTeams();
-}, []);
-
-  // Arama filtresi (JSON'dan gelen teams dizisi üzerinden çalışır)
   const filteredTeams = teams.filter(team => 
     team.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -52,7 +44,7 @@ const TeamSelection = ({ onNavigate }) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <button className="tm-btn-gradient" onClick={() => onNavigate('create')} >
+            <button className="tm-btn-gradient" onClick={() => onNavigate('CreateTeamPanel')} >
               <i className="ti ti-category-plus"></i> Create Team
             </button>
           </div>

@@ -1,0 +1,40 @@
+{
+  "notifications": [
+    {
+      "id": "nt_001",
+      "type": "request",
+      "category": "expense",
+      "user": "Ahmet Yılmaz",
+      "title": "Harcama Onayı",
+      "detail": "Ofis Malzemeleri - 400$",
+      "date": "12.03.2026",
+      "targetId": "exp_445",
+      "path": "/expense"
+    },
+    {
+      "id": "nt_002",
+      "type": "info",
+      "category": "success",
+      "text": "Yeni üye Caner Demir gruba katıldı.",
+      "time": "2 saat önce"
+    },
+    {
+      "id": "nt_003",
+      "type": "request",
+      "category": "team",
+      "user": "Selin Ak",
+      "title": "Takımdan Çıkarma",
+      "detail": "Moderatör talebi: Kullanıcı pasif.",
+      "date": "11.03.2026",
+      "targetId": "usr_992",
+      "path": "/team"
+    },
+    {
+      "id": "nt_004",
+      "type": "info",
+      "category": "warning",
+      "text": "Aylık bütçe limitinin %90'ına ulaşıldı!",
+      "time": "5 saat önce"
+    }
+  ]
+}

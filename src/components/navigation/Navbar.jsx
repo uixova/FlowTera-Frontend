@@ -3,9 +3,13 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import '../components.css/Navbar.css';
 import UserImage from '../../assets/images/user-profile.png'
 import ThemeModal from '../modals/ThemeModal';
+import Notification from '../modals/Notification';
+import UserDropdown from '../modals/UserDropdown';
 
 const Navbar = () => {
     const [isThemeOpen, setIsThemeOpen] = useState(false);
+    const [isUserOpen, setIsUserOpen] = useState(false);
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
     const navigate = useNavigate();
 
@@ -19,12 +23,27 @@ const Navbar = () => {
           <div className="head-lnk-btn">
             <button className="github-source"><i className="ti ti-brand-github"></i> Source code</button>
             <button className="donate-lnk"><i className="ti ti-heart"></i> Donate</button>
-            <button className="light-dark-head"><i className="ti ti-sun"></i></button>
+            
+            <button 
+              className={`notification-btn github-source ${isNotificationOpen ? 'active' : ''}`}
+              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+            >
+              <i className="ti ti-bell"></i>
+
+              <span className="nt-dot"></span>
+            </button>
+
+            <button className="light-dark-head github-source"><i className="ti ti-sun"></i></button>
           </div>
-          <div className="head-user-profile">
-            <div className="head-profile-img">
-              <img src={UserImage} alt="Profile" />
-            </div>
+          <div className="head-user-profile" onClick={() => setIsUserOpen(!isUserOpen)}>
+              <div className="head-profile-img">
+                  <img src={UserImage} alt="Profile" />
+              </div>
+
+              <UserDropdown 
+                  isOpen={isUserOpen} 
+                  onClose={() => setIsUserOpen(false)} 
+              />
           </div>
         </div>
       </div>
@@ -52,6 +71,12 @@ const Navbar = () => {
       <ThemeModal 
         isOpen={isThemeOpen} 
         onClose={() => setIsThemeOpen(false)} 
+      />
+
+      <Notification 
+        isOpen={isNotificationOpen} 
+        onClose={() => setIsNotificationOpen(false)} 
+        userRole="admin" 
       />
     </header>
   );

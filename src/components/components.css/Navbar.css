@@ -50,6 +50,13 @@ header a.active {
     transition: .2s ease-out;
 }
 
+.light-dark-head i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 21px;
+}
+
 .github-source:hover, .donate-lnk:hover {
     transform: translateY(-3px) translateX(-2px);
     box-shadow: 2px 4px 2px #d1d1d1;
@@ -63,16 +70,6 @@ header a.active {
 
 .donate-lnk i {
     color: rgb(207, 48, 48);
-}
-
-.light-dark-head {
-    background: none;
-    border: none;
-    font-size: 25px;
-    width: 35px;
-    height: 35px;
-    cursor: pointer;
-    color: var(--white);
 }
 
 .head-profile-img {

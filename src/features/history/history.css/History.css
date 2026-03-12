@@ -38,6 +38,73 @@
     position: relative;
     transition: all 0.2s ease;
     border-left: 3px solid transparent;
+    cursor: pointer;
+} 
+
+.history-wrapper {
+    background: #3d3d3d;
+    border-bottom: 1px solid #4a4a4a;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.hi-chevron {
+    color: #777;
+    font-size: 14px;
+    margin-left: 15px;
+    transition: transform 0.3s ease;
+}
+
+.hi-chevron.rotate {
+    transform: rotate(180deg);
+    color: #0ed45a;
+}
+
+.history-accordion-content {
+    max-height: 0;
+    opacity: 0;
+    background: #333333; 
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.history-wrapper.is-expanded .history-accordion-content {
+    max-height: 200px; 
+    opacity: 1;
+    border-top: 1px solid #4a4a4a;
+}
+
+.hi-det-inner {
+    padding: 20px 60px; 
+}
+
+.hi-det-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.hi-det-box {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.hi-det-label {
+    font-size: 10px;
+    color: #777;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.hi-det-value {
+    font-size: 0.9rem;
+    color: #eee;
+    font-weight: 500;
+}
+
+.history-wrapper.is-expanded .history-item {
+    background: #464646;
+    border-left-color: #0ed45a;
 }
 
 .history-item:hover {

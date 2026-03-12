@@ -1,7 +1,6 @@
-// src/features/teams/Teams.jsx
 import React, { useState } from 'react';
 import TeamSelection from './components/TeamSelection';
-import CreateTeam from './components/CreateTeam';
+import CreateTeamPanel from './components/CreateTeamPanel';
 import TeamMemberList from './components/TeamMemberList';
 import TeamSettings from './components/TeamSettings';
 import './teams.css/Team.css'
@@ -9,22 +8,27 @@ import './teams.css/Team.css'
 const Teams = () => {
   const [viewMode, setViewMode] = useState('selection'); 
   const [selectedTeamId, setSelectedTeamId] = useState(null);
+  
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const handleNavigate = (page, teamId = null) => {
+    if (page === 'CreateTeamPanel') {
+      setIsCreateOpen(true);
+      return;
+    }
+
     if (teamId) setSelectedTeamId(teamId);
     setViewMode(page);
   };
 
   return (
     <div className="tm-feature-wrapper">
+      {/* SEÇİM SAYFASI */}
       {viewMode === 'selection' && (
         <TeamSelection onNavigate={handleNavigate} />
       )}
       
-      {viewMode === 'create' && (
-        <CreateTeam onBack={() => setViewMode('selection')} />
-      )}
-
+      {/* LİSTE SAYFASI */}
       {viewMode === 'main' && (
         <TeamMemberList 
           teamId={selectedTeamId}
@@ -33,9 +37,16 @@ const Teams = () => {
         />
       )}
 
+      {/* AYARLAR SAYFASI */}
       {viewMode === 'settings' && (
         <TeamSettings teamId={selectedTeamId} onBack={() => setViewMode('main')} />
       )}
+
+      {/* GLOBAL PANEL */}
+      <CreateTeamPanel 
+        isOpen={isCreateOpen} 
+        onClose={() => setIsCreateOpen(false)} 
+      />
     </div>
   );
 };
