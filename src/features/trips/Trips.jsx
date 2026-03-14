@@ -1,70 +1,69 @@
 import React, { useState, useEffect } from 'react'; 
 import './trips.css/Trips.css';
+import SubNavbar from '../../components/navigation/SubNavbar'; // Merkezi Navbar
 import CreateTrip from './modals/CreateTrip';
 import TripDetail from './modals/TripDetail';
 import tripsDataJSON from './data/trips.json'; 
 
 const Trips = () => {
+    // Modal ve veri yönetimi için gerekli state'ler
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedTrip, setSelectedTrip] = useState(null);
-    
     const [trips, setTrips] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Gerçek bir API çağrısı yerine, JSON dosyasından veri çekiyoruz
         const fetchTrips = async () => {
             try {
                 setLoading(true);
-                
-                // --- API SİMÜLASYONU ---
-                // Backend hazır olduğunda bura fetch('/api/trips') ile değişicek
                 const simulateApi = new Promise((resolve) => {
                     setTimeout(() => resolve(tripsDataJSON), 500); 
                 });
-
+                // Veriyi aldıktan sonra state'e atıyoruz
                 const data = await simulateApi;
                 setTrips(data);
-
             } catch (error) {
                 console.error("Seyahat verileri yüklenemedi:", error);
             } finally {
                 setLoading(false);
             }
         };
-
         fetchTrips();
     }, []);
 
+    // Trip detay modalini açarken seçilen trip bilgisini state'e atıyoruz
     const handleOpenDetail = (trip) => {
         setSelectedTrip(trip);
         setIsDetailOpen(true);
     };
 
+    // Yükleniyor durumunu göstermek için basit bir mesaj veya spinner ekleyebiliriz
     if (loading) return <div className="tr-loading">Seyahatler yükleniyor...</div>;
 
     return (
         <div className="trips" id="trips">
             <div className="trip-page" id="tripsPage">
-                <div className="tr-nav">
-                    <div className="tr-nav-title">
-                        <h1>Trips & Travels</h1>
-                    </div>
-                    <div className="tr-nav-buttons">
-                        <div className="search-wrapper">
-                            <i className="ti ti-search"></i>
-                            <input type="text" placeholder="Search trips..." />
-                        </div>
-                        <button id="trCreateTrip" onClick={() => setIsCreateOpen(true)}>
-                            New Trip
-                        </button>
-                        <button className="tr-filter-btn"><i className="ti ti-filter"></i></button>
-                    </div>
-                </div>
+                {/* YENİ MERKEZİ NAVBAR */}
+                <SubNavbar 
+                    title="Trips & Travels"
+                    searchPlaceholder="Search trips..."
+                    createLabel="New Trip"
+                    onCreate={() => setIsCreateOpen(true)}
+                    onSearch={(val) => console.log("Trip araması:", val)}
+                    buttons={[
+                        { 
+                            icon: 'ti ti-filter', 
+                            tooltip: 'Filter', 
+                            onClick: () => console.log("Trip filter open") 
+                        }
+                    ]}
+                />
                 
-                <hr />
+                <hr className="sub-nav-divider" />
 
-                {/* Header Row */}
+                {/* Header Row - Grid yapısı Trips.css'den geliyor */}
                 <div className="trip-title-nav">
                     <input type="checkbox" id="selectAllTrips" />
                     <span className="tr-title-span">Trip Details</span>
@@ -75,20 +74,13 @@ const Trips = () => {
                     <span className="tr-title-span">Duration</span>
                     <span className="tr-title-span">Status</span>
                 </div>
-
+                
+                {/* Seyahat Listesi */}
                 <div className="trip-list-container">
                     {trips.length > 0 ? (
                         trips.map((trip) => (
-                            <div 
-                                key={trip.id} 
-                                className="trip-block" 
-                                onClick={() => handleOpenDetail(trip)}
-                            >
-                                <input 
-                                    type="checkbox" 
-                                    className="select-trip" 
-                                    onClick={(e) => e.stopPropagation()} 
-                                />
+                            <div key={trip.id} className="trip-block" onClick={() => handleOpenDetail(trip)}>
+                                <input type="checkbox" onClick={(e) => e.stopPropagation()} />
                                 <div className="trip-block-details">
                                     <span className="trip-icon">
                                         <i className={`ti ${trip.icon}`}></i>
@@ -114,16 +106,9 @@ const Trips = () => {
                 </div>
             </div>
             
-            <CreateTrip 
-                isOpen={isCreateOpen} 
-                onClose={() => setIsCreateOpen(false)} 
-            />
-
-            <TripDetail 
-                isOpen={isDetailOpen} 
-                onClose={() => setIsDetailOpen(false)} 
-                data={selectedTrip} 
-            />
+            {/* Modallar */}
+            <CreateTrip isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+            <TripDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedTrip} />
         </div>
     );
 };

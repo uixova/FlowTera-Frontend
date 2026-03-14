@@ -3,9 +3,11 @@ import '../teams.css/Modals.css'
 import '../teams.css/AddMember.css';
 
 const AddMemberModal = ({ isOpen, onClose }) => {
+  // Form State'leri
   const [identifier, setIdentifier] = useState('');
   const [selectedRole, setSelectedRole] = useState('member');
 
+  // Conditional Render
   const handleAddMember = () => {
     if(!identifier) return alert("Lütfen bir ID veya E-posta gir!");
     
@@ -24,6 +26,7 @@ const AddMemberModal = ({ isOpen, onClose }) => {
       />
 
       <div className={`adm-side-panel ${isOpen ? 'is-open' : ''}`}>
+        {/* Header */}
         <div className="adm-panel-header">
           <div className="adm-header-left">
             <div className="adm-icon-circle">
@@ -87,6 +90,7 @@ const AddMemberModal = ({ isOpen, onClose }) => {
           </div>
         </div>
 
+        {/* Footer - Eylem Butonları */}
         <div className="adm-panel-footer">
           <button className="adm-btn-cancel" onClick={onClose}>Discard</button>
           <button className="adm-btn-invite" onClick={handleAddMember}>

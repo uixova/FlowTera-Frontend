@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../teams.css/MemberList.css'
+import SubNavbar from '../../../components/navigation/SubNavbar';
 import EditRoleModal from '../modals/TeamEditMember';
 import AddMemberModal from '../modals/TeamAddMember';
 import TeamLogModal from '../modals/TeamActivityLog'; 
@@ -8,6 +9,7 @@ import allMembersData from '../data/teamMembers.json';
 // teamId'yi dışarıdan (Selection sayfasından) prop olarak alıyoruz
 
 const TeamMemberList = ({ onBack, onNavigate, teamId = "team-1", teamName = "Main Development Team" }) => {
+  // Modal State'leri
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
@@ -16,6 +18,7 @@ const TeamMemberList = ({ onBack, onNavigate, teamId = "team-1", teamName = "Mai
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Takım üyelerini yüklemek için useEffect kullanıyoruz
   useEffect(() => {
     const getMembers = async () => {
       setLoading(true);
@@ -24,6 +27,7 @@ const TeamMemberList = ({ onBack, onNavigate, teamId = "team-1", teamName = "Mai
       // Veri sanki internetten geliyormuş gibi 100ms gecikme ekledik
       await new Promise(resolve => setTimeout(resolve, 100));
       
+      // teamId'ye göre üyeleri filtreliyoruz
       const filtered = allMembersData.filter(m => m.teamId === teamId);
       setMembers(filtered);
       
@@ -33,44 +37,49 @@ const TeamMemberList = ({ onBack, onNavigate, teamId = "team-1", teamName = "Mai
     getMembers();
   }, [teamId]); // teamId her değiştiğinde bu blok çalışır
 
+  // Üye düzenleme butonuna tıklandığında açılan fonksiyon
   const handleEditClick = (user) => {
     setSelectedUser(user);
     setIsEditModalOpen(true);
   };
 
+  // Aktivite loglarını göstermek için kullanıcı seçildiğinde açılan fonksiyon
   const handleLogClick = (user) => {
     setSelectedUser(user);
     setIsLogModalOpen(true);
   };
 
+  // Yükleniyor durumunu göstermek için basit bir loader
   if (loading) return <div className="loader">Loading members...</div>;
 
   return (
     <div className="tm-member-list-page">
-      <div className="tm-nav">
-        <div className="tm-nav-title">
-          {/* Takım ismi de dinamik oldu */}
-          <h1>{teamName}</h1>
-        </div>
-        <div className="tm-nav-buttons">
-          <div className="tm-search-wrapper">
-            <i className="ti ti-search"></i>
-            <input type="text" placeholder="Search member or role..." />
-          </div>
-          <button className="tm-create-team-btn" onClick={onBack}>
-            <i className="ti ti-list"></i> My Teams
-          </button>
-          <button className="tm-add-member-btn" onClick={() => setIsAddModalOpen(true)}>
-            <i className="ti ti-user-plus"></i> Quick Add
-          </button>
-          <button className="tm-settings-btn" onClick={() => onNavigate('settings')}>
-            <i className="ti ti-settings"></i> Settings
-          </button>
-        </div>
-      </div>
+      <SubNavbar 
+        title={teamName} // Dinamik takım ismi
+        searchPlaceholder="Search member..."
+        createLabel="Quick Add"
+        showSearch={true}
+        showCreate={true}
+        onCreate={() => setIsAddModalOpen(true)}
+        onSearch={(val) => console.log("Üye arama:", val)}
+        buttons={[
+          { 
+            icon: 'ti ti-list', 
+            tooltip: 'My Teams', 
+            onClick: onBack 
+          },
+          { 
+            icon: 'ti ti-settings', 
+            tooltip: 'Settings', 
+            onClick: () => onNavigate('settings') 
+          }
+        ]}
+      />
+
+      <hr />
 
       <div className="team-grid-container">
-        {/* ARTIK ÜYELER JSON'DAN GELİYOR */}
+        {/* ÜYELER JSON'DAN GELİYOR */}
         {members.map(member => (
           <div className="team-card" key={member.id}>
             <div className="tm-card-header">
@@ -82,6 +91,7 @@ const TeamMemberList = ({ onBack, onNavigate, teamId = "team-1", teamName = "Mai
                 <button className="tm-action-btn delete-btn"><i className="ti ti-user-minus"></i></button>
               </div>
             </div>
+            {/* Üye bilgileri ve son aktivite bilgisi de JSON'dan geliyor */}
             <div className="tm-user-body">
               <img src={member.avatar} alt="User" />
               <h3>{member.name}</h3>
@@ -99,13 +109,14 @@ const TeamMemberList = ({ onBack, onNavigate, teamId = "team-1", teamName = "Mai
           </div>
         ))}
 
+          {/* Yeni Üye Ekleme Kartı */}
         <div className="team-card add-member-card" onClick={() => setIsAddModalOpen(true)}>
           <div className="add-icon-wrapper"><i className="ti ti-plus"></i></div>
           <span>New Member</span>
         </div>
       </div>
 
-      {/* MODALLAR */}
+      {/* Modallar */}
       <EditRoleModal 
         key={selectedUser ? `edit-${selectedUser.id}` : 'edit-none'} 
         isOpen={isEditModalOpen} 

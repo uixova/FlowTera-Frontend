@@ -3,9 +3,11 @@ import '../teams.css/TeamEdit.css';
 import { teamsService } from '../services/teamsService'; 
 
 const EditRoleModal = ({ isOpen, onClose, user }) => {
+    // Local State
     const [selectedRole, setSelectedRole] = useState('member');
     const [isUpdating, setIsUpdating] = useState(false);
 
+    // User prop'u güncellendiğinde veya modal açıldığında seçili rolü güncelle
     useEffect(() => {
         if (isOpen && user?.role) {
             setSelectedRole(user.role.toLowerCase());
@@ -15,6 +17,7 @@ const EditRoleModal = ({ isOpen, onClose, user }) => {
     // Conditional Render
     if (!isOpen) return null;
 
+    // Rol güncelleme işlemi
     const handleUpdate = async () => {
         if (!user?.id) return;
 
@@ -55,6 +58,7 @@ const EditRoleModal = ({ isOpen, onClose, user }) => {
     ];
 
     return (
+        // Modal Overlay
         <div className="tm-modal-overlay" id="tmEditRoleModal" style={{ display: 'flex' }} onClick={onClose}>
             <div className="tm-modal-container role-modal" onClick={(e) => e.stopPropagation()}>
                 
@@ -75,8 +79,10 @@ const EditRoleModal = ({ isOpen, onClose, user }) => {
                     </button>
                 </div>
 
+                {/* Rol Seçimi Listesi */}
                 <div className="tm-modal-body">
                     <div className="role-selection-list">
+                        {/* Roller arasında seçim yapılacak kartlar */}
                         {roles.map((role) => (
                             <label 
                                 key={role.id} 
@@ -102,6 +108,7 @@ const EditRoleModal = ({ isOpen, onClose, user }) => {
                     </div>
                 </div>
 
+                {/* Modal Footer - İşlem Butonları */}
                 <div className="tm-modal-footer">
                     <button 
                         className="tm-cancel-btn" 

@@ -2,7 +2,7 @@ import React from 'react';
 import '../trips.css/TripDetail.css';
 
 const TripDetail = ({ isOpen, onClose, data }) => {
-    // Stage 6: Veri yoksa veya kapalıysa sessizce null dön
+    // Veri yoksa veya kapalıysa sessizce null dön
     if (!data) return null;
 
     return (
@@ -20,6 +20,7 @@ const TripDetail = ({ isOpen, onClose, data }) => {
                     </button>
                 </div>
 
+                {/* İçerik Alanı */}
                 <div className="tr-panel-content">
                     {/* Başlık Bölümü */}
                     <div className="tr-panel-title-section">

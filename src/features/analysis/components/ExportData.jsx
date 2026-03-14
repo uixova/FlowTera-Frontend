@@ -6,6 +6,7 @@ const ExportModal = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  {/* İndirme işlemi için örnek bir fonksiyon */}
   const handleDownload = () => {
     console.log(`${format} formatında indiriliyor...`);
     // İndirme mantığı buraya gelecek
@@ -26,6 +27,7 @@ const ExportModal = ({ isOpen, onClose }) => {
         </div>
 
         <div className="ex-body">
+          {/* İhracat edilecek verinin önizlemesi */}
           <div className="ex-document-preview">
             <div className="ex-doc-header">
               <p>Flowtera Financial Report</p>
@@ -37,7 +39,7 @@ const ExportModal = ({ isOpen, onClose }) => {
               <div className="doc-line"></div>
             </div>
           </div>
-
+          {/* İhracat formatı seçenekleri */}
           <div className="ex-options-grid">
             <label className="ex-option">
               <input 
@@ -81,6 +83,7 @@ const ExportModal = ({ isOpen, onClose }) => {
           </div>
         </div>
 
+        {/* İndirme ve iptal butonları */}
         <div className="ex-footer">
           <button className="ex-btn cancel" onClick={onClose}>Cancel</button>
           <button className="ex-btn download" onClick={handleDownload}>

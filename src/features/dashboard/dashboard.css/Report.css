@@ -1,0 +1,63 @@
+.monthly-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px; 
+    width: 100%;
+    grid-column: 1 / -1; 
+    margin-top: 10px;
+}
+
+.report-card {
+    background: #161616;
+    border: 1px solid #282828;
+    border-radius: 20px;
+    padding: 24px;
+    transition: 0.3s ease;
+}
+
+.report-card:hover {
+    border-color: #333;
+    background: #181818;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.report-header h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.3px;
+}
+
+.report-period {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #0ed45a;
+    background: rgba(14, 212, 90, 0.1);
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.chart-wrapper {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Recharts Tooltip Özelleştirme */
+.recharts-default-tooltip {
+    border: 1px solid #333 !important;
+    background-color: #1a1a1a !important;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4) !important;
+}
+
+.recharts-tooltip-label {
+    color: #888 !important;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}

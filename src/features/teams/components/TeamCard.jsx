@@ -7,6 +7,7 @@ const TeamCard = ({ team, onSelect }) => {
       className={`tm-sel-card ${team.active ? 'active' : ''}`} 
       onClick={onSelect}
     >
+      {/* Takım görseli ve temel bilgileri */}
       <div className="tm-sel-card-top">
         <img 
           src={team.image} 
@@ -23,7 +24,7 @@ const TeamCard = ({ team, onSelect }) => {
       </div>
 
       <div className="tm-sel-divider"></div> 
-
+      {/* Son işlem bilgisi - Örnek olarak sabit bir metin */}
       <div className="tm-sel-card-bottom">
         <div className="tm-sel-stats">
           <i className="ti ti-users"></i>

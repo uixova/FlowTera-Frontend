@@ -7,6 +7,7 @@ const ThemeModal = ({ isOpen, onClose }) => {
   const [accentColor, setAccentColor] = useState('#50e091');
   const [radius, setRadius] = useState('Soft');
 
+  {/* Örnek renk seçenekleri ve köşe yarıçapı seçenekleri */}
   const colors = [
     '#50e091', '#0ed45a', '#8cbed1', '#f1c40f', 
     '#e74c3c', '#f10ff1', '#943ce7', '#0f97f1'
@@ -82,6 +83,7 @@ const ThemeModal = ({ isOpen, onClose }) => {
           </div>
         </div>
 
+        {/* Footer with actions */}
         <div className="panel-footer">
           <button className="btn-reset" onClick={() => {
             setActiveMode('dark');

@@ -1,0 +1,95 @@
+.sub-navbar-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.sub-nav-left h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.sub-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px; 
+}
+
+.sub-nav-divider {
+    border: none;
+    border-top: 1px solid #282828;
+    margin-bottom: 20px;
+}
+
+.sub-nav-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Ortak Buton Stili */
+.sub-nav-buttons button {
+    padding: 8px 12px;
+    font-size: 15px;
+    font-weight: 500;
+    background: #1a1a1a;
+    color: #0ed45a;
+    border: 1px solid #282828;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sub-nav-buttons button:hover {
+    background: #252525;
+    border-color: #0ed45a;
+}
+
+/* Gradient'li Create Butonu */
+.sub-create-btn {
+    background: linear-gradient(140deg, #8cbed1 0%, #0ed45a 66%) !important;
+    color: #000 !important;
+    border: none !important;
+    padding: 8px 18px !important;
+    font-weight: 700 !important;
+}
+
+.sub-create-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* Search Wrapper */
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-wrapper i {
+    position: absolute;
+    left: 12px;
+    color: #555;
+}
+
+.search-wrapper input {
+    background: #161616;
+    border: 1px solid #282828;
+    padding: 8px 12px 8px 35px;
+    border-radius: 8px;
+    color: #fff;
+    width: 250px;
+    outline: none;
+}
+
+.search-wrapper input:focus {
+    border-color: #0ed45a;
+}

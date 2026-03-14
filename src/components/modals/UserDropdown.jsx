@@ -7,11 +7,13 @@ const UserDropdown = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  {/* Ayarlar sayfasına yönlendirme işlemi (örnek) */}
   const handleSettings = () => {
     navigate('/settings');
     onClose();
   };
 
+  {/* Çıkış yapma işlemi (örnek) */}
   const handleLogout = () => {
     alert('Çıkış yapıldı!');
     onClose();

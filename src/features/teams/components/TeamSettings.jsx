@@ -2,8 +2,10 @@ import React, { useState, useRef } from 'react';
 import '../teams.css/Settings.css';
 
 const TeamSettings = ({ teamId, onBack }) => {
+  // Debugging: Team ID'sini konsola yazdır
   console.log("Current Team ID:", teamId);
 
+  // Form verileri için state
   const [formData, setFormData] = useState({
     teamName: 'Main Development Team',
     workspaceType: 'Corporate',
@@ -11,14 +13,17 @@ const TeamSettings = ({ teamId, onBack }) => {
     privacy: 'private'
   });
   
+  // Logo önizlemesi için state ve ref
   const [preview, setPreview] = useState('https://via.placeholder.com/160?text=LOGO');
   const fileInputRef = useRef(null);
 
+  // Form input değişikliklerini yönetmek için genel bir handler
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Logo dosyası seçildiğinde önizleme güncelleme
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setPreview(URL.createObjectURL(e.target.files[0]));
@@ -39,7 +44,7 @@ const TeamSettings = ({ teamId, onBack }) => {
 
         <form id="editTeamForm" onSubmit={(e) => e.preventDefault()}>
           <div className="tm-setup-grid">
-            
+            {/* Sol taraf - Logo ve temel bilgiler */}
             <aside className="tm-setup-sidebar">
               <div className="tm-sticky-card">
                 <div className="tm-preview-wrapper">
@@ -62,6 +67,7 @@ const TeamSettings = ({ teamId, onBack }) => {
               </div>
             </aside>
 
+            {/* Sağ taraf - Ayar formları */}
             <main className="tm-setup-main">
               <section className="tm-form-section">
                 <h3 className="section-title">General Configuration</h3>
@@ -74,7 +80,7 @@ const TeamSettings = ({ teamId, onBack }) => {
                     onChange={handleChange}
                   />
                 </div>
-
+                {/* İki kolonlu grid yapısı */}
                 <div className="tm-grid-row">
                   <div className="tm-input-group">
                     <label htmlFor="workspaceType">Workspace Type</label>
@@ -98,6 +104,7 @@ const TeamSettings = ({ teamId, onBack }) => {
                 </div>
               </section>
 
+              {/* İkinci bölüm - Gizlilik Ayarları */}
               <section className="tm-form-section">
                 <h3 className="section-title">Privacy Settings</h3>
                 <div className="tm-radio-vertical">
@@ -131,6 +138,7 @@ const TeamSettings = ({ teamId, onBack }) => {
                 </div>
               </section>
 
+              {/* Alt kısım - Eylem butonları */}
               <div className="tm-setup-footer">
                 <button type="button" className="tm-btn-delete">Delete Team</button>
                 <div className="tm-footer-right">

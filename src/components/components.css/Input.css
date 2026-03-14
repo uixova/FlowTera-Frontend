@@ -1,0 +1,56 @@
+/* Arama Kutusu ve Navbar Buton Stilleri */
+.common-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.common-input-wrapper i {
+    position: absolute;
+    left: 12px;
+    color: #555;
+}
+
+.common-input-wrapper input {
+    background: #161616;
+    border: 1px solid #282828;
+    padding: 8px 12px 8px 35px;
+    border-radius: 8px;
+    color: #fff;
+    width: 250px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.common-input-wrapper input:focus {
+    border-color: #0ed45a;
+}
+
+/* Navbar Butonları da buradan yönetiliyor */
+.nav-action-btn {
+    padding: 8px 12px;
+    font-size: 15px;
+    font-weight: 500;
+    background: #1a1a1a;
+    color: #0ed45a;
+    border: 1px solid #282828;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-action-btn:hover {
+    background: #252525;
+    border-color: #0ed45a;
+}
+
+.nav-create-btn {
+    background: linear-gradient(140deg, #8cbed1 0%, #0ed45a 66%) !important;
+    color: #000 !important;
+    border: none !important;
+    padding: 8px 18px !important;
+    font-weight: 700 !important;
+}

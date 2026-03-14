@@ -6,17 +6,18 @@ import TeamSettings from './components/TeamSettings';
 import './teams.css/Team.css'
 
 const Teams = () => {
+  // viewMode: 'selection' | 'main' | 'settings'
   const [viewMode, setViewMode] = useState('selection'); 
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-
+  // onNavigate fonksiyonu, alt sayfalardan ana sayfaya geçişi sağlar
   const handleNavigate = (page, teamId = null) => {
     if (page === 'CreateTeamPanel') {
       setIsCreateOpen(true);
       return;
     }
-
+    // Eğer teamId sağlanırsa, onu state'e kaydet ve ardından viewMode'u değiştir
     if (teamId) setSelectedTeamId(teamId);
     setViewMode(page);
   };

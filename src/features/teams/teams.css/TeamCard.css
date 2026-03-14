@@ -3,66 +3,6 @@
     animation: tmFadeIn 0.3s ease;
 }
 
-.tm-sel-header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #333;
-}
-
-.tm-sel-actions {
-    display: flex;
-    flex-direction: row;
-    gap: 12px;
-    align-items: center;
-    width: 100%;justify-content: space-between;
-}
-
-.tm-search-input {
-    height: 38px;
-}
-
-.tm-sel-nav-buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 12px;
-    align-items: center;
-}
-
-.tm-sel-nav-buttons button {
-    padding: 10px;
-    font-size: 16px;
-    font-weight: 500;
-    background: #3d3d3d; 
-    color: #0ed45a;      
-    border: 1px solid #5a5a5a;
-    border-radius: 7px;
-    cursor: pointer;
-    transition: 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.tm-btn-gradient {
-    background: #8cbed1 !important;
-    background: linear-gradient(140deg, rgba(140, 190, 209, 1) 0%, rgb(14, 212, 90) 66%) !important;
-    color: #000 !important;
-    border: none !important;
-}
-
-.tm-sel-create-btn {
-    background: #0ed45a;
-    color: #000;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
 .tm-sel-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

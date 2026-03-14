@@ -2,9 +2,11 @@ import React from 'react';
 import '../trips.css/CreateTrip.css'; 
 
 const CreateTrip = ({ isOpen, onClose }) => {
+  // Trip Plan Verilerini Kaydetmek İçin Form Submit Handler'ı
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Form Verilerini Alıyoruz
     const formData = new FormData(e.target);
     
     // Veri Paketini Hazırlıyoruz
@@ -57,7 +59,7 @@ const CreateTrip = ({ isOpen, onClose }) => {
             
             <div className="tr-form-section">
               <label className="tr-section-label">General Information</label>
-              
+              {/* Trip Amacı, Kategori, Araç Türü, Varış Noktası */}
               <div className="tr-input-group">
                 <label htmlFor="trInpTitle">Trip Purpose</label>
                 <div className="tr-input-wrapper">
@@ -66,6 +68,7 @@ const CreateTrip = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
+              {/* Kategori, Araç Türü, Varış Noktası - İki Sütunlu Düzen */ }
               <div className="tr-form-row">
                 <div className="tr-input-group">
                   <label htmlFor="trInpCategory">Category</label>
@@ -86,6 +89,7 @@ const CreateTrip = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
+              {/* Varış Noktası */}
               <div className="tr-input-group">
                 <label htmlFor="trInpDestination">Destination</label>
                 <div className="tr-input-wrapper">
@@ -98,6 +102,7 @@ const CreateTrip = ({ isOpen, onClose }) => {
             <div className="tr-form-section">
               <label className="tr-section-label">Timeline & Budget</label>
               
+              {/* Başlangıç ve Bitiş Tarihi - İki Sütunlu Düzen */ }
               <div className="tr-form-row">
                 <div className="tr-input-group">
                   <label htmlFor="trInpStartDate">Start Date</label>
@@ -109,6 +114,7 @@ const CreateTrip = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
+              {/* Tutar ve Kur Bilgisi */}
               <div className="tr-input-group">
                 <label htmlFor="trInpCost">Estimated Cost</label>
                 <div className="tr-amount-container">
@@ -121,7 +127,8 @@ const CreateTrip = ({ isOpen, onClose }) => {
                 </div>
               </div>
             </div>
-
+            
+            {/* Trip Açıklaması */}
             <div className="tr-input-group full">
               <label htmlFor="trInpDescription">Trip Description</label>
               <textarea id="trInpDescription" placeholder="Provide detailed info about the trip goals, stay, etc..." required></textarea>

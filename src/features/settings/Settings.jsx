@@ -77,7 +77,7 @@ const Settings = () => {
                   </div>
                 </div>
               </div>
-
+              {/* Kullanıcı Bilgileri Formu */}
               <div className="st-grid">
                 <div className="st-input-group readonly">
                   <label>User ID</label>

@@ -3,19 +3,24 @@ import '../teams.css/Activity.css';
 import { teamsService } from '../services/teamsService'; 
 
 const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
+    // Logları filtrelemek için state
     const [searchTerm, setSearchTerm] = useState('');
     const [userLogs, setUserLogs] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    // Logları çekmek için useEffect
     useEffect(() => {
+        // Modal açıldığında ve user/teamId değiştiğinde logları çek
         if (!isOpen || !user || !teamId) {
             setUserLogs([]);
             return;
         }
 
+        // Logları çekme fonksiyonu
         const fetchUserLogs = async () => {
             try {
                 setLoading(true);
+                // API isteği ile logları çek (teamsService üzerinden)
                 const data = await teamsService.getUserLogs(user.id, teamId);
                 setUserLogs(data);
             } catch (error) {
@@ -25,9 +30,11 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
             }
         };
 
+        // Logları çek
         fetchUserLogs();
     }, [isOpen, user, teamId]);
 
+    // Logları arama terimine göre filtrele
     const filteredDisplayLogs = userLogs.filter(log =>
         log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
         log.details?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -35,6 +42,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
 
     return (
         <>
+            {/* Arka plan karartma */}
             <div className={`tm-log-overlay ${isOpen ? 'is-active' : ''}`} onClick={onClose} />
             <div className={`tm-log-panel ${isOpen ? 'is-open' : ''}`}>
                 <div className="tm-log-header">
@@ -50,6 +58,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                     <button className="tm-log-close" onClick={onClose}><i className="ti ti-x"></i></button>
                 </div>
 
+                {/* Arama Çubuğu */}
                 <div className="tm-log-search">
                     <div className="modal-search-input">
                         <i className="ti ti-search"></i>
@@ -62,6 +71,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                     </div>
                 </div>
 
+                {/* Logların Gösterildiği Kısım */}
                 <div className="tm-log-body">
                     {loading ? (
                         <div className="hi-loading">Loglar Getiriliyor...</div>
@@ -83,6 +93,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                             ))}
                         </div>
                     ) : (
+                        // Log bulunamazsa gösterilecek mesaj
                         <div className="no-activity">No records found.</div>
                     )}
                 </div>
@@ -91,11 +102,13 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
     );
 };
 
+// Log türüne göre renk sınıfı döndüren yardımcı fonksiyon
 const getColorClass = (type) => {
     const map = { add: 'green', update: 'orange', settings: 'blue', delete: 'red', login: 'purple' };
     return map[type] || 'blue';
 };
 
+// Log türüne göre ikon sınıfı döndüren yardımcı fonksiyon
 const getIcon = (type) => {
     const map = { add: 'ti-plus', update: 'ti-pencil', settings: 'ti-settings', delete: 'ti-trash', login: 'ti-login' };
     return map[type] || 'ti-circle';

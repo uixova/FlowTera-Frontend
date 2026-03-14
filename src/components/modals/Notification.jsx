@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import notificationData from '../../assets/data/notification.json';
 import '../../components/components.css/Notification.css';
 
+// Veriyi simüle eden basit bir servis
 const mockNotificationService = {
     getAll: async () => {
         return new Promise((resolve) => {
@@ -29,26 +30,31 @@ const Notification = ({ isOpen, onClose, userRole = 'admin' }) => {
         }
     };
 
+    {/* Modal açıldığında verileri çek */}
     useEffect(() => {
         if (isOpen) {
             fetchNotifications();
         }
     }, [isOpen]);
 
+    {/* Verileri türlerine göre ayır */}
     const requests = useMemo(() => {
         return Array.isArray(allData) ? allData.filter(item => item.type === 'request') : [];
     }, [allData]);
 
+    {/* Sadece 'info' türündeki bildirimleri al */}
     const infos = useMemo(() => {
         return Array.isArray(allData) ? allData.filter(item => item.type === 'info') : [];
     }, [allData]);
 
     if (!isOpen) return null;
 
+    {/* Bildirim silme fonksiyonu (sadece frontend'de) */}
     const removeNotification = (id) => {
         setAllData(prev => prev.filter(item => item.id !== id));
     };
 
+    {/* Bildirim kartına tıklandığında ilgili sayfaya yönlendirme */}
     const handleNavigate = (path, targetId) => {
         navigate(`${path}?id=${targetId}`);
         onClose();

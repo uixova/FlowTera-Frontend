@@ -5,12 +5,16 @@ import UserImage from '../../assets/images/user-profile.png'
 import ThemeModal from '../modals/ThemeModal';
 import Notification from '../modals/Notification';
 import UserDropdown from '../modals/UserDropdown';
+import Language from '../modals/Language';
 
 const Navbar = () => {
+    // Modal Açma/Kapama State'leri
     const [isThemeOpen, setIsThemeOpen] = useState(false);
     const [isUserOpen, setIsUserOpen] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const [isLangOpen, setIsLangOpen] = useState(false);
 
+    // React Router'un useNavigate hook'u ile programatik navigasyon
     const navigate = useNavigate();
 
   return (
@@ -20,9 +24,14 @@ const Navbar = () => {
           <h1>Flowtera</h1>
         </div>
         <div className="head-project-manager">
+          {/* Proje Yöneticisi Bilgisi - Örnek olarak sabit bir isim */}
           <div className="head-lnk-btn">
             <button className="github-source"><i className="ti ti-brand-github"></i> Source code</button>
             <button className="donate-lnk"><i className="ti ti-heart"></i> Donate</button>
+            <button className={`light-dark-head github-source ${isLangOpen ? 'active' : ''}`} 
+            onClick={() => setIsLangOpen(!isLangOpen)}>
+              <i className="ti ti-world"></i>
+            </button>
             
             <button 
               className={`notification-btn github-source ${isNotificationOpen ? 'active' : ''}`}
@@ -40,6 +49,7 @@ const Navbar = () => {
                   <img src={UserImage} alt="Profile" />
               </div>
 
+              {/* Kullanıcı Dropdown Menüsü */}
               <UserDropdown 
                   isOpen={isUserOpen} 
                   onClose={() => setIsUserOpen(false)} 
@@ -48,8 +58,10 @@ const Navbar = () => {
         </div>
       </div>
       <hr />
+      {/* Navbar altı - Ana menü */}
       <div className="bottom-head">
         <div className="left-head">
+          {/* NavLink'ler ile sayfa geçişleri */}
           <ul>
             <li><NavLink to="/home"><i className="ti ti-home"></i> Home</NavLink></li>
             <li><NavLink to="/expense"><i className="ti ti-calendar-dollar"></i> Expense</NavLink></li>
@@ -68,15 +80,23 @@ const Navbar = () => {
         </div>
       </div>
 
+      {/* Tema Modal */}
       <ThemeModal 
         isOpen={isThemeOpen} 
         onClose={() => setIsThemeOpen(false)} 
       />
 
+      {/* Bildirim Modal */}
       <Notification 
         isOpen={isNotificationOpen} 
         onClose={() => setIsNotificationOpen(false)} 
         userRole="admin" 
+      />
+
+      {/* Dil Seçimi Modal */}
+      <Language 
+        isOpen={isLangOpen} 
+        onClose={() => setIsLangOpen(false)} 
       />
     </header>
   );

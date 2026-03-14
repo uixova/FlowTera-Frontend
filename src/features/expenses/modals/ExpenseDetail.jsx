@@ -2,15 +2,15 @@ import React from 'react';
 import '../expenses.css/ExpenseDetail.css'; 
 
 const ExpenseDetail = ({ isOpen, onClose, data }) => {
-  // Panel kapalıysa veya veri yoksa null dön, 
+  // Panel kapalıysa veya veri yoksa null dön
   if (!data) return null;
 
   return (
     <div className={`ex-side-panel-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
       <div 
         className={`ex-side-panel-box ${isOpen ? 'open' : ''}`} 
-        onClick={(e) => e.stopPropagation()}
-      >
+        onClick={(e) => e.stopPropagation()}>
+
         {/* Üst Kısım: Görsel ve Kapatma */}
         <div className="ex-panel-header-image">
            <img src={data.image || '/src/assets/images/receipt-placeholder.png'} alt="Receipt" />
@@ -48,7 +48,7 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
                 </span>
             </div>
           </div>
-
+          {/* Reddedilme Nedeni Alanı - Sadece Reddedilmiş harcamalar için gösterilir */}
           {data.status?.toLowerCase() === 'rejected' && data.rejectionReason && (
             <div className="ex-rejection-area">
                 <span><i className="ti ti-alert-circle"></i> Rejection Reason</span>
@@ -57,7 +57,8 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
           )}
 
           <hr className="ex-divider" />
-
+          
+          {/* Detay Bilgiler Listesi */}
           <div className="ex-details-list">
             <div className="ex-detail-row">
                 <span><i className="ti ti-user"></i> Submitted By</span>
@@ -77,7 +78,7 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
             </div>
           </div>
         </div>
-
+          {/* Alt Kısım: Belgeleri İndirme Butonu */}
         <div className="ex-panel-footer">
           <button className="ex-download-all-btn">
              <i className="ti ti-download"></i> Download Documents

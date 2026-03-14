@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import '../teams.css/CreateTeam.css';
 
 const CreateTeamPanel = ({ isOpen, onClose }) => {
-  // 1. State'i en sade haliyle başlatıyoruz
+  // Form verileri ve önizleme state'leri
   const [formData, setFormData] = useState({
     teamName: '',
     currency: 'USD',
@@ -27,11 +27,13 @@ const CreateTeamPanel = ({ isOpen, onClose }) => {
     /// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
+  // Form input değişikliklerini yönet
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Logo değişimini yönet
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -42,6 +44,7 @@ const CreateTeamPanel = ({ isOpen, onClose }) => {
     }
   };
 
+  // Form gönderildiğinde yapılacak işlemler
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Submit Data:", formData);
@@ -61,7 +64,7 @@ const CreateTeamPanel = ({ isOpen, onClose }) => {
             <i className="ti ti-x"></i>
           </button>
         </div>
-
+        {/* Form İçeriği */}
         <form onSubmit={handleSubmit} className="tm-panel-form">
           <div className="tm-panel-body">
             <div className="tm-branding-section">
@@ -80,6 +83,7 @@ const CreateTeamPanel = ({ isOpen, onClose }) => {
               />
             </div>
 
+            {/* Organization Name */}
             <div className="tm-input-group">
               <label>Organization Name</label>
               <input 
@@ -92,6 +96,7 @@ const CreateTeamPanel = ({ isOpen, onClose }) => {
               />
             </div>
 
+            {/* Currency & Type */}
             <div className="tm-grid-row">
               <div className="tm-input-group">
                 <label>Currency</label>
@@ -110,6 +115,7 @@ const CreateTeamPanel = ({ isOpen, onClose }) => {
               </div>
             </div>
 
+            {/* Privacy Settings */}
             <div className="tm-panel-section">
               <label className="section-label">Privacy Settings</label>
               <div className="tm-radio-vertical">
@@ -132,6 +138,8 @@ const CreateTeamPanel = ({ isOpen, onClose }) => {
               </div>
             </div>
           </div>
+
+          {/* Form Footer */}
           <div className="tm-panel-footer">
             <button type="button" className="tm-btn-cancel" onClick={onClose}>Cancel</button>
             <button type="submit" className="tm-btn-submit">Create Team</button>

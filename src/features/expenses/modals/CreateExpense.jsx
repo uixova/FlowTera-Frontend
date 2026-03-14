@@ -2,42 +2,36 @@ import React from 'react';
 import '../expenses.css/CreateExpense.css';
 
 const CreateExpense = ({ isOpen, onClose }) => {
-    // Üst barda görünen tarih
     const displayDate = new Date().toLocaleDateString('tr-TR');
-
-    // FORM GÖNDERME FONKSİYONU
+    // Form submit handler
     const handleSubmit = (e) => {
         e.preventDefault();
-
+        // Form verilerini al
         const formData = new FormData(e.target);
-        
-        // 2. ADIM: "Onayla" butonuna basıldığı TAM ANIN verisi (Edge Case Savar)
+        // Şu an için sadece console.log ile gösteriyoruz, ileride API entegrasyonu yapılacak
         const now = new Date(); 
 
+        // API'ye gönderilecek nihai veri yapısı
         const finalExpenseData = {
-            id: `exp-${Math.floor(Math.random() * 10000)}`, // Daha geniş ID aralığı
+            id: `exp-${Math.floor(Math.random() * 10000)}`, 
             title: formData.get('exInpTitle'),
             category: formData.get('exInpCategory'),
             merchant: formData.get('exInpMerchant'),
             paymentMethod: formData.get('exInpMethod'),
-            // API'ler genelde sayı ve para birimini ayrı ister ama senin yapıya göre birleştirdim:
             amount: formData.get('exInpAmount'), 
             currency: formData.get('exInpCurrency'),
             status: "Pending",
             
-            // KRİTİK: API/Veritabanı için standart zaman damgası (ISO 8601)
             timestamp: now.toISOString(), 
-            // Kullanıcı arayüzünde hemen göstermek için formatlı tarih
             date: now.toLocaleDateString('tr-TR'),
             
             isReported: e.target.exInpReport.checked,
             desc: "New expense entry via Flowtera UI",
             icon: "ti-receipt"
         };
-
+        // API'ye gönderilecek veriyi konsola yazdır
         console.log("Flowtera API'ye giden veri:", finalExpenseData);
-        
-        // Eğer dışarıdan onSave fonksiyonu yolladıysan onu tetikle
+        // OnSave callback'i varsa çağır
         {/ if (onSave) onSave(finalExpenseData); /}
         
         onClose();
@@ -47,8 +41,7 @@ const CreateExpense = ({ isOpen, onClose }) => {
         <div className={`ex-side-panel-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
             <div 
                 className={`ex-side-panel-box ${isOpen ? 'open' : ''}`} 
-                onClick={(e) => e.stopPropagation()}
-            >
+                onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className="ex-panel-header">
                     <div className="ex-panel-title">
@@ -78,7 +71,7 @@ const CreateExpense = ({ isOpen, onClose }) => {
                             <label htmlFor="exInpTitle">Detail / Title</label>
                             <input name="exInpTitle" type="text" id="exInpTitle" placeholder="e.g. Server Maintenance" required />
                         </div>
-
+                        {/* Category ve Merchant */}
                         <div className="ex-input-row">
                             <div className="ex-input-group">
                                 <label htmlFor="exInpCategory">Category</label>
@@ -95,7 +88,7 @@ const CreateExpense = ({ isOpen, onClose }) => {
                                 <input name="exInpMerchant" type="text" id="exInpMerchant" placeholder="Amazon, Starbucks" />
                             </div>
                         </div>
-
+                        {/* Payment Method */}
                         <div className="ex-input-group full">
                             <label htmlFor="exInpMethod">Payment Method</label>
                             <select name="exInpMethod" id="exInpMethod">
@@ -104,7 +97,7 @@ const CreateExpense = ({ isOpen, onClose }) => {
                                 <option value="Bank Transfer">Bank Transfer</option>
                             </select>
                         </div>
-
+                        {/* Dosya Yükleme Alanı */}
                         <div className="ex-input-group full">
                             <label>Receipt / Document</label>
                             <div 
@@ -118,7 +111,7 @@ const CreateExpense = ({ isOpen, onClose }) => {
                                 <input type="file" id="exInpReceipt" hidden accept=".pdf, .jpg, .jpeg, .png, .webp" />
                             </div>
                         </div>
-
+                        {/* Amount ve Currency */}
                         <div className="ex-input-group full">
                             <label htmlFor="exInpAmount">Amount & Currency</label>
                             <div className="ex-amount-wrapper">
@@ -130,7 +123,7 @@ const CreateExpense = ({ isOpen, onClose }) => {
                                 </select>
                             </div>
                         </div>
-
+                        {/* Raporlama Toggle'ı */}
                         <div className="report-toggle-wrapper">
                             <span>Add to Monthly Report?</span>
                             <label className="switch">

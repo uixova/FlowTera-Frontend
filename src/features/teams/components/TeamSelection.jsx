@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import TeamCard from './TeamCard';
+import SubNavbar from '../../../components/navigation/SubNavbar';
 import { teamsService } from '../services/teamsService'; 
 
 const TeamSelection = ({ onNavigate }) => {
+  // Takım verilerini ve arama durumunu yönetmek için state'ler
   const [teams, setTeams] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Bileşen yüklendiğinde takımları API'den çekmek için useEffect kullanımı
   useEffect(() => {
     const fetchTeams = async () => {
       try {
+        // API'den takımları çekme simülasyonu
         setLoading(true);
         const data = await teamsService.getTeams(); 
         setTeams(data);
@@ -19,40 +23,33 @@ const TeamSelection = ({ onNavigate }) => {
         setLoading(false);
       }
     };
+    // Takımları çek
     fetchTeams();
   }, []);
 
+  // Arama terimine göre takımları filtreleme
   const filteredTeams = teams.filter(team => 
     team.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Yükleniyor durumunu göstermek için basit bir loader
   if (loading) return <div className="loader">Loading Organizations...</div>;
 
   return (
     <div className="tm-selection-page">
-      <div className="tm-sel-header">
-        <div className="tm-sel-actions">
-          <h1>Select Organization</h1>
-          <div className="tm-sel-nav-buttons">
-            <div className="search-wrapper">
-              <i className="ti ti-search"></i>
-              <input 
-                type="text" 
-                className="tm-search-input"
-                placeholder="Search teams..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <button className="tm-btn-gradient" onClick={() => onNavigate('CreateTeamPanel')} >
-              <i className="ti ti-category-plus"></i> Create Team
-            </button>
-          </div>
-        </div>
-      </div>
+      <SubNavbar 
+        title="Select Organization"
+        searchPlaceholder="Search teams..."
+        createLabel="Create Team"
+        showSearch={true}
+        showCreate={true}
+        onSearch={(val) => setSearchTerm(val)}
+        onCreate={() => onNavigate('CreateTeamPanel')}
+      />
       
       <hr />
-
+      
+      {/* Takım kartlarını göstermek için grid yapısı */}
       <div className="tm-sel-grid">
         {filteredTeams.length > 0 ? (
           filteredTeams.map(team => (
