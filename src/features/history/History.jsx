@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Loader from '../../components/common/Loader';
 import './history.css/History.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import jsonData from './data/log.json'
@@ -48,12 +49,13 @@ const History = () => {
     item.target.toLowerCase().includes(searchTerm.toLowerCase())
   );
   // Yükleniyor durumunu göster
-  if (loading) return <div className="hi-loading">Sistem yükleniyor...</div>;
+  if (loading) return <Loader type="butterfly" />;
 
   return (
     <div className="history-page">
       <SubNavbar 
-        title="Activity History"
+        teamName="Software Team" 
+        pageName="Activity History"
         searchPlaceholder="Search logs..."
         showSearch={true}      
         showCreate={false}      

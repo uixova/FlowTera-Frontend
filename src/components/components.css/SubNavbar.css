@@ -32,6 +32,29 @@
     align-items: center;
 }
 
+.sub-nav-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.breadcrumb-team {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #666; 
+}
+
+.breadcrumb-separator {
+    font-size: 1rem;
+    color: #444;
+}
+
+.breadcrumb-page {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff; 
+}
+
 /* Ortak Buton Stili */
 .sub-nav-buttons button {
     padding: 8px 12px;

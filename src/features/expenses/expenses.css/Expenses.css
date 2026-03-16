@@ -1,90 +1,136 @@
+/* Ana Grid Yapısı */
 .expense-title-nav, .expense-block {
     display: grid;
     grid-template-columns: 40px 2.2fr 1.5fr 1.5fr 1.5fr 1fr 1.5fr 1.2fr;
     gap: 15px;
     align-items: center;
-    padding: 12px 20px;
+    padding: 14px 22px;
 }
 
 .expense-title-nav {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
-.expense-block {
-    background: #3d3d3d;
-    margin-bottom: 2px;
-    border-radius: 4px;
-}
-
-.expense-block:hover {
-    background: #363636; 
-}
-
-.expense-block-details {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
+.ex-title-span {
+    color: #666;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
 }
 
 .expense-details-text {
     display: flex;
     flex-direction: column;
-    gap: 2px;
 }
 
-.expense-date {
-    font-size: 0.7rem;
-    color: #888;
-    font-weight: 400;
+/* Satır Blokları */
+.expense-block {
+    background: #1a1a1a;
+    margin-bottom: 4px;
+    border-radius: 8px;
+    border: 1px solid #222;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
 }
 
-.expense-title {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #fff;
+.expense-block:hover {
+    background: #222;
+    border-color: #333;
+    transform: translateX(5px);
+    box-shadow: -5px 0 20px rgba(0,0,0,0.3);
 }
 
-.ex-title-span {
-    color: #a7a6a6;
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.expense-status {
-    padding: 6px 10px;
-    border-radius: 28px;
-    width: 125px;
-    text-align: center;
-    font-size: 0.85rem;
-    display: inline-block;
-    font-weight: 600;
-    color: #fff; 
-}
-
-.expense-status.approved {
-    background: #0ed45a; 
-    box-shadow: 0 0 10px rgba(14, 212, 90, 0.2);
-}
-
-.expense-status.pending {
-    background: #f1c40f;
-    color: #000; 
-}
-
-.expense-status.rejected {
-    background: #ff4757;
-    box-shadow: 0 0 10px rgba(255, 71, 87, 0.2);
+/* İkon ve Başlık */
+.expense-block-details {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
 .expense-icon i {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: #c5a2e2;
-    color: #9d4edd;
-    font-size: 22px;
-    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    background: rgba(14, 212, 90, 0.08);
+    color: #0ed45a;
+    font-size: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(14, 212, 90, 0.15);
+}
+
+.expense-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.2px;
+}
+
+.expense-date {
+    font-size: 0.75rem;
+    color: #555;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.ex-category-tag, .ex-merchant-text,
+.ex-method-text {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+/* Tutar Alanı */
+.ex-list-amount-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.ex-list-symbol {
+    color: #0ed45a;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.ex-list-amount-val {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.ex-list-currency {
+    color: #444;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+/* Durum Rozetleri */
+.expense-status {
+    padding: 6px 12px;
+    border-radius: 8px;
+    width: 110px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.expense-status.approved { 
+    background: rgba(14, 212, 90, 0.12); 
+    color: #0ed45a; 
+    border: 1px solid rgba(14, 212, 90, 0.2); 
+}
+
+.expense-status.pending { 
+    background: rgba(241, 196, 15, 0.12); 
+    color: #f1c40f; 
+    border: 1px solid rgba(241, 196, 15, 0.2); 
+}
+
+.expense-status.rejected { 
+    background: rgba(255, 71, 87, 0.12); 
+    color: #ff4757; 
+    border: 1px solid rgba(255, 71, 87, 0.2); 
 }

@@ -1,27 +1,42 @@
 import teamsData from '../data/teams.json';
 import teamMembersData from '../data/teamMembers.json';
-// import teamSettingsData from '../data/teamSettings.json';
 import allLogsJSON from '../data/userLog.json';
 
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+// Simulate API delay with a random timeout between min and max milliseconds (200-800ms arasında)
+const randomDelay = (min = 200, max = 800) => {
+    const ms = Math.floor(Math.random() * (max - min + 1) + min);
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
 
 export const teamsService = {
-    // 1. Tüm Takımları Getir (Selection ekranı için)
+    // 1. Tüm Takımları Getir
     getTeams: async () => {
-        await delay(500);
+        await randomDelay(400, 1200); 
         return teamsData;
     },
 
     // 2. Takım Üyelerini Getir
     getTeamMembers: async (teamId) => {
-        if (teamId) { console.log("Team ID: ", teamId) }
-        await delay(500);
-        return teamMembersData; 
-    },
+    console.log("Servise gelen ID:", teamId); // Debug 1
+    console.log("Tüm Üyeler Datası:", teamMembersData); // Debug 2
 
-    // 3. Kullanıcı Loglarını Getir (Log Modal için)
+    if (!teamId) {
+        console.warn("Hata: teamId gelmedi!");
+        return [];
+    }
+
+    await randomDelay(300, 800);
+
+    // Her iki tarafı da String'e çevirip öyle karşılaştırıyoruz
+    const filtered = teamMembersData.filter(m => String(m.teamId) === String(teamId));
+    
+    console.log("Filtrelenmiş Sonuç:", filtered); // Debug 3
+    return filtered;
+},
+
+    // 3. Kullanıcı Loglarını Getir
     getUserLogs: async (userId, teamId) => {
-        await delay(400);
+        await randomDelay(500, 1500); 
         return allLogsJSON.filter(log => 
             String(log.userId) === String(userId) && 
             String(log.teamId) === String(teamId)
@@ -30,8 +45,8 @@ export const teamsService = {
 
     // 4. Rol Güncelleme 
     updateUserRole: async (userId, newRole) => {
-        await delay(300);
+        await randomDelay(200, 500);
         console.log(`API SUCCESS: User ${userId} is now ${newRole}`);
         return { success: true };
     }
-};
+}; 

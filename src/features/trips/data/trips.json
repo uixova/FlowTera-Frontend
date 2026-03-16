@@ -5,8 +5,12 @@
     "category": "Corporate",
     "destination": "Berlin, DE",
     "vehicle": "Flight",
-    "amount": "1200",
+    "amount": 1200.00,
     "currency": "USD",
+    "currencySymbol": "$",
+    "localSymbol": "₺",
+    "localCurrency": "TRY",
+    "localAmount": 41400.00,
     "exchangeRate": {
       "pair": "USD/TRY",
       "rate": "34.50",
@@ -14,9 +18,10 @@
     },
     "duration": "3 Days",
     "date": "15/03/2026",
-    "status": "Confirmed",
-    "statusClass": "status-confirmed",
+    "status": "approved",
+    "statusClass": "approved",
     "icon": "ti-plane-departure",
+    "report": "Q1_Strategy_Berlin",
     "desc": "Annual strategy meeting with the European branch partners regarding the 2026 roadmap."
   },
   {
@@ -25,8 +30,12 @@
     "category": "Personal",
     "destination": "Izmir, TR",
     "vehicle": "Car",
-    "amount": "300",
+    "amount": 300.00,
     "currency": "USD",
+    "currencySymbol": "$",
+    "localSymbol": "₺",
+    "localCurrency": "TRY",
+    "localAmount": 10350.00,
     "exchangeRate": {
       "pair": "USD/TRY",
       "rate": "34.50",
@@ -35,8 +44,9 @@
     "duration": "5 Days",
     "date": "20/03/2026",
     "status": "On Road",
-    "statusClass": "status-onroad",
+    "statusClass": "onroad",
     "icon": "ti-car",
+    "report": "Personal_Travel",
     "desc": "Long overdue visit to see the family and enjoy the Aegean coast."
   },
   {
@@ -45,8 +55,12 @@
     "category": "Education",
     "destination": "San Francisco, US",
     "vehicle": "Flight",
-    "amount": "2500",
+    "amount": 2500.00,
     "currency": "USD",
+    "currencySymbol": "$",
+    "localSymbol": "₺",
+    "localCurrency": "TRY",
+    "localAmount": 86250.00,
     "exchangeRate": {
       "pair": "USD/TRY",
       "rate": "34.50",
@@ -55,8 +69,9 @@
     "duration": "7 Days",
     "date": "10/04/2026",
     "status": "Pending",
-    "statusClass": "status-pending",
+    "statusClass": "pending",
     "icon": "ti-devices-pc",
+    "report": "Dev_Trainings_2026",
     "desc": "Attending the annual full-stack development conference to learn about the latest AI integrations."
   }
 ]

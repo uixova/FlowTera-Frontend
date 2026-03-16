@@ -1,26 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
+import Loader from '../../../components/common/Loader';
 import '../teams.css/Activity.css';
 import { teamsService } from '../services/teamsService'; 
 
 const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
-    // Logları filtrelemek için state
-    const [searchTerm, setSearchTerm] = useState('');
     const [userLogs, setUserLogs] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    // Animasyon kontrolü için yeni state
+    const [isAnimate, setIsAnimate] = useState(false);
 
-    // Logları çekmek için useEffect
+    // Animasyon Tetikleyici
     useEffect(() => {
-        // Modal açıldığında ve user/teamId değiştiğinde logları çek
+        let timer;
+        if (isOpen) {
+            // Render sırasına girmek için minik bir gecikme
+            timer = setTimeout(() => setIsAnimate(true), 10);
+        } else {
+            setIsAnimate(false);
+        }
+        return () => clearTimeout(timer);
+    }, [isOpen]);
+
+    // Veri Çekme Logic'i
+    useEffect(() => {
         if (!isOpen || !user || !teamId) {
             setUserLogs([]);
             return;
         }
 
-        // Logları çekme fonksiyonu
         const fetchUserLogs = async () => {
             try {
                 setLoading(true);
-                // API isteği ile logları çek (teamsService üzerinden)
                 const data = await teamsService.getUserLogs(user.id, teamId);
                 setUserLogs(data);
             } catch (error) {
@@ -30,21 +41,25 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
             }
         };
 
-        // Logları çek
         fetchUserLogs();
     }, [isOpen, user, teamId]);
 
-    // Logları arama terimine göre filtrele
     const filteredDisplayLogs = userLogs.filter(log =>
         log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
         log.details?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    if (!user && !isOpen) return null;
+
     return (
         <>
-            {/* Arka plan karartma */}
-            <div className={`tm-log-overlay ${isOpen ? 'is-active' : ''}`} onClick={onClose} />
-            <div className={`tm-log-panel ${isOpen ? 'is-open' : ''}`}>
+            {/* Class'ları isAnimate üzerinden yönetiyoruz */}
+            <div 
+                className={`tm-log-overlay ${isAnimate ? 'is-active' : ''}`} 
+                onClick={onClose} 
+            />
+            
+            <div className={`tm-log-panel ${isAnimate ? 'is-open' : ''}`}>
                 <div className="tm-log-header">
                     <div className="tm-log-user-info">
                         <div className="tm-avatar-wrapper">
@@ -55,10 +70,11 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                             <span>{user?.email}</span>
                         </div>
                     </div>
-                    <button className="tm-log-close" onClick={onClose}><i className="ti ti-x"></i></button>
+                    <button className="tm-log-close" onClick={onClose}>
+                        <i className="ti ti-x"></i>
+                    </button>
                 </div>
 
-                {/* Arama Çubuğu */}
                 <div className="tm-log-search">
                     <div className="modal-search-input">
                         <i className="ti ti-search"></i>
@@ -71,10 +87,9 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                     </div>
                 </div>
 
-                {/* Logların Gösterildiği Kısım */}
                 <div className="tm-log-body">
                     {loading ? (
-                        <div className="hi-loading">Loglar Getiriliyor...</div>
+                        <Loader type="dots" text="Loglar Getiriliyor..." />
                     ) : filteredDisplayLogs.length > 0 ? (
                         <div className="timeline-container">
                             {filteredDisplayLogs.map((log) => (
@@ -93,7 +108,6 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                             ))}
                         </div>
                     ) : (
-                        // Log bulunamazsa gösterilecek mesaj
                         <div className="no-activity">No records found.</div>
                     )}
                 </div>
@@ -114,4 +128,4 @@ const getIcon = (type) => {
     return map[type] || 'ti-circle';
 };
 
-export default TeamLogModal;
+export default memo(TeamLogModal);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Loader from '../../components/common/Loader';
 import './dashboard.css/Dashboard.css';
 import MonthlyReport from './components/MontlyReport';
 
@@ -38,7 +39,7 @@ const Dashboard = () => {
 
 
     // Yükleniyor durumunu kontrol ediyoruz
-    if (loading) {return (<div className="loader-container"><div className="loader"></div><p>Loading activities...</p></div>);}
+    if (loading) return <Loader type="butterfly" />;
 
     return (
         <div className="home">

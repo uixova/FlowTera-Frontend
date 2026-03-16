@@ -11,16 +11,17 @@ const Analysis = () => {
     <div className="analysis-page">
       {/* YENİ MERKEZİ NAVBAR */}
       <SubNavbar 
-        title="Financial Analysis"
+        teamName="Software Team" 
+        pageName="Financial Analysis"
         createLabel="Export Data"
         showSearch={false} 
         onCreate={() => setIsExportOpen(true)}
         buttons={[
-          { 
-            icon: 'ti ti-refresh', 
-            tooltip: 'Refresh Data', 
-            onClick: () => console.log("Refreshing...") 
-          }
+            { 
+                icon: 'ti ti-refresh', 
+                tooltip: 'Refresh Data', 
+                onClick: () => console.log("Refreshing...") 
+            }
         ]}
       />
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Loader from '../common/Loader';
 import notificationData from '../../assets/data/notification.json';
 import '../../components/components.css/Notification.css';
 
@@ -77,7 +78,7 @@ const Notification = ({ isOpen, onClose, userRole = 'admin' }) => {
 
                 <div className="nt-content">
                     {loading ? (
-                        <div className="nt-loading-state">Yükleniyor...</div>
+                        <Loader type="dots" text="Bildirimler Yükleniyor..." />
                     ) : (
                         <>
                             {/* Pending Requests */}

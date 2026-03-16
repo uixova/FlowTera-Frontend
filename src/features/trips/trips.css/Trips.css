@@ -1,88 +1,157 @@
+/* ==========================================
+   TRIPS MAIN PAGE - FULL SYNC WITH EXPENSE
+   ========================================== */
+
+/* Ana Grid Yapısı */
 .trip-title-nav, .trip-block {
     display: grid;
     grid-template-columns: 40px 2.2fr 1.5fr 1.5fr 1.5fr 1fr 1.5fr 1.2fr;
     gap: 15px;
     align-items: center;
-    padding: 12px 20px;
+    padding: 14px 22px;
 }
 
 .trip-title-nav {
-    margin-bottom: 5px;
+    margin-bottom: 12px;
 }
 
-.trip-block {
-    background: #3d3d3d;
-    margin-bottom: 1px;
-    transition: background 0.2s ease;
-}
-
-.trip-block:hover {
-    background: #363636; 
-}
-
-.trip-block-details {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
+.tr-title-span {
+    color: #666;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
 }
 
 .trip-details-text {
     display: flex;
     flex-direction: column;
-    gap: 2px;
 }
 
-.trip-date {
-    font-size: 0.7rem;
-  color: #888;
-  font-weight: 400;
+/* Satır Blokları */
+.trip-block {
+    background: #1a1a1a;
+    margin-bottom: 4px;
+    border-radius: 8px;
+    border: 1px solid #222;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
 }
 
-.trip-title {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #fff;
+.trip-block:hover {
+    background: #222;
+    border-color: #333;
+    transform: translateX(5px);
+    box-shadow: -5px 0 20px rgba(0,0,0,0.3);
 }
 
-.tr-title-span {
-    color: #a7a6a6;
-    font-size: 16px;
-    font-weight: 500;
-}
-
-.trip-status {
-    padding: 6px 10px;
-    background: #A212E0;
-    border-radius: 28px;
-    width: 125px;
-    text-align: center;
-    font-size: 0.85rem;
-    display: inline-block;
-    color: #fff;
+/* İkon ve Başlık */
+.trip-block-details {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
 .trip-icon i {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    background: #c5a2e2;
-    color: #9d4edd;
-    font-size: 22px;
-    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    background: rgba(14, 212, 90, 0.08);
+    color: #0ed45a;
+    font-size: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(14, 212, 90, 0.15);
 }
 
-.status-confirmed {
-    background: #0ed45a;
-    color: #000;
+.trip-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.2px;
 }
 
-.status-onroad {
-    background: #e67e22;
+.trip-date {
+    font-size: 0.75rem;
+    color: #555;
+    font-family: 'JetBrains Mono', monospace;
 }
 
-.status-planned {
-    background: #5a5a5a;
+.tr-list-amount-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.tr-list-symbol {
+    color: #0ed45a;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.tr-list-amount-val {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.tr-list-currency {
+    color: #444;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.trip-status {
+    padding: 6px 12px;
+    border-radius: 8px;
+    width: 110px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.trip-status.status-confirmed, .trip-status.status-approved { 
+    background: rgba(14, 212, 90, 0.12); 
+    color: #0ed45a; 
+    border: 1px solid rgba(14, 212, 90, 0.2); 
+}
+
+.trip-status.status-pending { 
+    background: rgba(241, 196, 15, 0.12); 
+    color: #f1c40f; 
+    border: 1px solid rgba(241, 196, 15, 0.2); 
+}
+
+.trip-status.status-onroad { 
+    background: rgba(15, 151, 241, 0.12); 
+    color: #3498db; 
+    border: 1px solid rgba(15, 151, 241, 0.2); 
+}
+
+.trip-status.status-rejected { 
+    background: rgba(255, 71, 87, 0.12); 
+    color: #ff4757; 
+    border: 1px solid rgba(255, 71, 87, 0.2); 
+}
+
+.trip-category, .trip-destination, .trip-vehicle, .trip-duration {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.sub-nav-divider {
+    border: 0;
+    border-top: 1px solid #2a2a2a;
+    margin: 10px 0 20px 0;
+}
+
+.tr-loading {
+    display: flex;
+    justify-content: center;
+    padding: 50px;
+    color: #0ed45a;
+    font-family: 'JetBrains Mono', monospace;
 }

@@ -5,22 +5,31 @@ import '../components.css/SubNavbar.css';
 
 const SubNavbar = ({ 
     title, 
+    teamName, 
+    pageName, 
     onCreate, 
     createLabel, 
     onSearch, 
     searchPlaceholder, 
     buttons = [],
-    showSearch = true, // Arama çubuğu kontrolü
-    showCreate = true  // Ana aksiyon butonu kontrolü
+    showSearch = true,
+    showCreate = true 
 }) => {
     return (
         <div className="sub-navbar-container">
             <div className="sub-nav-left">
-                <h1>{title}</h1>
+                {teamName && pageName ? (
+                    <div className="sub-nav-breadcrumb">
+                        <span className="breadcrumb-team">{teamName}</span>
+                        <i className="ti ti-chevron-right breadcrumb-separator"></i>
+                        <span className="breadcrumb-page">{pageName}</span>
+                    </div>
+                ) : (
+                    <h1>{title}</h1>
+                )}
             </div>
             
             <div className="sub-nav-right">
-                {/* Arama Çubuğu Kontrolü */}
                 {showSearch && (
                     <Input 
                         placeholder={searchPlaceholder}
@@ -29,14 +38,12 @@ const SubNavbar = ({
                     />
                 )}
                 
-                {/* Ana Aksiyon Butonu Kontrolü (New Expense, Export vb.) */}
                 {showCreate && createLabel && (
                     <button className="nav-action-btn nav-create-btn" onClick={onCreate}>
                         {createLabel}
                     </button>
                 )}
 
-                {/* Diğer Opsiyonel Butonlar (Filter, Refresh vb.) */}
                 {buttons.map((btn, index) => (
                     <button 
                         key={index} 

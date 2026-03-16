@@ -1,80 +1,100 @@
-/* Panel Genel Yapısı */
+/*  Overlay & Box */
 .ex-side-panel-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(8px); 
     z-index: 10000;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ex-side-panel-overlay.open .ex-side-panel-box {
+    right: 0 !important;
 }
 
 .ex-side-panel-overlay.open {
     opacity: 1;
     visibility: visible;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
 }
 
 .ex-side-panel-box {
     position: fixed;
-    right: -480px; 
+    right: -500px; 
     top: 0;
     bottom: 0;
     width: 450px;
-    background: #181818;
-    border-left: 1px solid #333;
+    background: #121212; 
+    border-left: 1px solid #2a2a2a;
     display: flex;
     flex-direction: column;
-    box-shadow: -15px 0 40px rgba(0, 0, 0, 0.5);
+    box-shadow: -20px 0 50px rgba(0, 0, 0, 0.6);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.ex-side-panel-overlay.open .ex-side-panel-box {
-    right: 0;
-}
-
-/* Üst Görsel ve Header */
+/*  Header Image Section */
 .ex-panel-header-image {
     width: 100%;
-    height: 240px;
+    height: 220px;
     position: relative;
     background: #000;
+    overflow: hidden;
 }
 
 .ex-panel-header-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.6;
+    opacity: 0.5;
+    transition: transform 0.5s ease;
 }
 
+.ex-panel-header-image:hover img {
+    transform: scale(1.05); 
+}
+
+.ex-header-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(18,18,18,0.2) 0%, rgba(18,18,18,1) 100%);
+}
+
+/*  Close Button */
 .ex-panel-close-btn {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: #181818;
+    background: rgba(24, 24, 24, 0.8);
+    backdrop-filter: blur(8px);
     border: 1px solid #333;
     color: #fff;
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: 0.2s;
+    z-index: 10;
 }
 
 .ex-panel-close-btn:hover {
     background: #ff4757;
     border-color: #ff4757;
+    transform: rotate(90deg);
 }
 
-/* İçerik Düzeni */
+/*  Content Layout */
 .ex-panel-content {
     padding: 25px;
     flex: 1;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
 }
 
 .ex-panel-title-section {
@@ -85,152 +105,235 @@
 }
 
 .ex-type-icon {
-    width: 45px;
-    height: 45px;
+    width: 48px;
+    height: 48px;
     background: rgba(14, 212, 90, 0.1);
     color: #0ed45a;
-    border-radius: 12px;
+    border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
+    border: 1px solid rgba(14, 212, 90, 0.2);
 }
 
 .ex-panel-title-section h3 {
     margin: 0;
     color: #fff;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+    font-weight: 700;
 }
 
 .ex-panel-category {
-    color: #777;
+    color: #666;
     font-size: 0.85rem;
+    font-weight: 500;
 }
 
-/* İstatistik Alanı (Tutar ve Statü) */
-.ex-panel-stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 30px;
+/*  Financial Card - Tutar ve Döviz Bilgisi */
+.ex-financial-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
 }
 
-.ex-stat-item label {
+.ex-financial-card label {
     display: block;
     color: #555;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
 }
 
-.ex-amount-section strong {
-    font-size: 1.8rem;
+.ex-main-price {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.ex-price-symbol {
+    font-size: 1.2rem;
+    font-weight: 600;
     color: #0ed45a;
-    display: block;
+    margin-right: 2px;
 }
 
-.ex-currency-freeze {
-    display: block;
+.ex-price-val {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #0ed45a;
+    letter-spacing: -1px;
+}
+
+.ex-price-cur {
+    font-size: 1rem;
+    color: #888;
+    font-weight: 600;
+}
+
+.ex-local-conv {
+    font-size: 0.85rem;
     color: #666;
-    font-size: 0.75rem;
-    margin-top: 5px;
+    margin-top: 4px;
     font-family: 'JetBrains Mono', monospace;
 }
 
-/* Detay Listesi */
-.ex-divider {
-    border: 0;
-    border-top: 1px solid #2a2a2a;
-    margin: 20px 0;
+/*  Info List & Items */
+.ex-rate-banner {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: #777;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.ex-detail-row {
-    margin-bottom: 20px;
+.ex-rate-banner i {
+    color: #0ed45a;
 }
 
-.ex-detail-row span {
+.ex-info-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.ex-info-item.full-width {
+    grid-column: span 2;
+}
+
+.ex-label {
+    font-size: 0.75rem;
+    color: #555;
+    text-transform: uppercase;
+    font-weight: 700;
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #555;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
-.ex-detail-row p {
+.ex-label i {
+    color: #444;
+}
+
+.ex-value {
     color: #eee;
-    margin: 0;
-    font-size: 0.95rem;
+    font-weight: 500;
+    font-size: 1rem;
 }
 
-.ex-desc-text {
-    line-height: 1.5;
-    background: #202020;
-    padding: 10px;
-    border-radius: 8px;
-    color: #bbb !important;
+/*  Status Badges */
+.ex-status-group {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
-/* Status Rozetleri */
 .ex-status-badge {
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
-.ex-status-badge.approved { background: rgba(14, 212, 90, 0.1); color: #0ed45a; }
-.ex-status-badge.pending { background: rgba(241, 196, 15, 0.1); color: #f1c40f; }
-.ex-status-badge.submitted { background: rgba(52, 152, 219, 0.1); color: #3498db; }
-.ex-status-badge.rejected { background: rgba(255, 71, 87, 0.1); color: #ff4757; }
+.ex-status-badge.approved { background: rgba(14, 212, 90, 0.15); color: #0ed45a; border: 1px solid rgba(14, 212, 90, 0.2); }
+.ex-status-badge.pending { background: rgba(255, 171, 0, 0.15); color: #ffab00; border: 1px solid rgba(255, 171, 0, 0.2); }
+.ex-status-badge.rejected { background: rgba(255, 86, 48, 0.15); color: #ff5630; border: 1px solid rgba(255, 86, 48, 0.2); }
 
-/* Footer */
+/*  Description & Rejection Boxes */
+.ex-desc-box {
+    line-height: 1.6;
+    background: #1a1a1a;
+    padding: 15px;
+    border-radius: 12px;
+    color: #aaa;
+    font-size: 0.9rem;
+    border: 1px solid #222;
+    margin: 0;
+}
+
+.ex-rejection-box {
+    background: rgba(255, 86, 48, 0.05);
+    border: 1px solid rgba(255, 86, 48, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 25px;
+}
+
+.ex-rej-header {
+    color: #ff5630;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.ex-rejection-box p {
+    color: #ffcccb;
+    font-style: italic;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/*  Utils */
+.ex-divider {
+    border: 0;
+    border-top: 1px solid #2a2a2a;
+    margin: 25px 0;
+}
+
+.report-tag, .ex-report-name {
+    color: #3498db !important; 
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem !important;
+}
+
+/*  Footer & Primary Action */
 .ex-panel-footer {
     padding: 20px 25px;
-    background: #1e1e1e;
-    border-top: 1px solid #333;
+    background: #181818;
+    border-top: 1px solid #2a2a2a;
 }
 
-.ex-download-all-btn {
+.ex-primary-btn {
     width: 100%;
     background: linear-gradient(135deg, #0ed45a 0%, #0ab84e 100%);
     color: #000;
     border: none;
-    padding: 14px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 0.95rem;
+    padding: 16px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    transition: 0.2s;
+    gap: 12px;
+    transition: all 0.3s ease;
 }
 
-.ex-download-all-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(14, 212, 90, 0.3);
+.ex-primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(14, 212, 90, 0.3);
 }
 
-.ex-rejection-area {
-    margin-top: 10px;
-    padding: 15px;
-    background: rgba(255, 71, 87, 0.05);
-    border: 1px dashed rgba(255, 71, 87, 0.3);
-    border-radius: 10px;
-}
-
-.ex-rejection-area span {
-    color: #ff4757 !important; 
-}
-
-.ex-rejection-text {
-    color: #ffcccb !important;
-    font-style: italic;
-    font-size: 0.9rem;
-    margin-top: 5px;
+.ex-primary-btn:active {
+    transform: translateY(-1px);
 }

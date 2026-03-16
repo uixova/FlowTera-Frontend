@@ -1,69 +1,64 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect, useCallback } from 'react'; 
+import Loader from '../../components/common/Loader';
 import './trips.css/Trips.css';
-import SubNavbar from '../../components/navigation/SubNavbar'; // Merkezi Navbar
+import SubNavbar from '../../components/navigation/SubNavbar'; 
 import CreateTrip from './modals/CreateTrip';
 import TripDetail from './modals/TripDetail';
-import tripsDataJSON from './data/trips.json'; 
+// Servis importu
+import { tripsService } from './services/tripsService'; 
 
 const Trips = () => {
-    // Modal ve veri yönetimi için gerekli state'ler
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedTrip, setSelectedTrip] = useState(null);
     const [trips, setTrips] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Gerçek bir API çağrısı yerine, JSON dosyasından veri çekiyoruz
-        const fetchTrips = async () => {
-            try {
-                setLoading(true);
-                const simulateApi = new Promise((resolve) => {
-                    setTimeout(() => resolve(tripsDataJSON), 500); 
-                });
-                // Veriyi aldıktan sonra state'e atıyoruz
-                const data = await simulateApi;
-                setTrips(data);
-            } catch (error) {
-                console.error("Seyahat verileri yüklenemedi:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchTrips();
+    // Veri çekme işlemini ayrı bir fonksiyon olarak tanımlıyoruz
+    const fetchTrips = useCallback(async () => {
+        try {
+            setLoading(true);
+            const data = await tripsService.getTrips();
+            setTrips(data);
+        } catch (error) {
+            console.error("Seyahat verileri yüklenemedi:", error);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    // Trip detay modalini açarken seçilen trip bilgisini state'e atıyoruz
+    useEffect(() => {
+        fetchTrips();
+    }, [fetchTrips]);
+
     const handleOpenDetail = (trip) => {
         setSelectedTrip(trip);
         setIsDetailOpen(true);
     };
 
-    // Yükleniyor durumunu göstermek için basit bir mesaj veya spinner ekleyebiliriz
-    if (loading) return <div className="tr-loading">Seyahatler yükleniyor...</div>;
+    if (loading) return <Loader type="butterfly" />;
 
     return (
         <div className="trips" id="trips">
             <div className="trip-page" id="tripsPage">
-                {/* YENİ MERKEZİ NAVBAR */}
                 <SubNavbar 
-                    title="Trips & Travels"
+                    teamName="Software Team" 
+                    pageName="Trips & Travels"
                     searchPlaceholder="Search trips..."
                     createLabel="New Trip"
                     onCreate={() => setIsCreateOpen(true)}
-                    onSearch={(val) => console.log("Trip araması:", val)}
+                    onSearch={(val) => console.log("Arama:", val)}
                     buttons={[
                         { 
                             icon: 'ti ti-filter', 
                             tooltip: 'Filter', 
-                            onClick: () => console.log("Trip filter open") 
+                            onClick: () => console.log("Filter open") 
                         }
                     ]}
                 />
                 
                 <hr className="sub-nav-divider" />
 
-                {/* Header Row - Grid yapısı Trips.css'den geliyor */}
                 <div className="trip-title-nav">
                     <input type="checkbox" id="selectAllTrips" />
                     <span className="tr-title-span">Trip Details</span>
@@ -75,12 +70,12 @@ const Trips = () => {
                     <span className="tr-title-span">Status</span>
                 </div>
                 
-                {/* Seyahat Listesi */}
                 <div className="trip-list-container">
                     {trips.length > 0 ? (
                         trips.map((trip) => (
                             <div key={trip.id} className="trip-block" onClick={() => handleOpenDetail(trip)}>
                                 <input type="checkbox" onClick={(e) => e.stopPropagation()} />
+                
                                 <div className="trip-block-details">
                                     <span className="trip-icon">
                                         <i className={`ti ${trip.icon}`}></i>
@@ -90,23 +85,30 @@ const Trips = () => {
                                         <span className="trip-title">{trip.title}</span>
                                     </div>
                                 </div>
+
                                 <span className="trip-category">{trip.category}</span>
                                 <span className="trip-destination">{trip.destination}</span>
                                 <span className="trip-vehicle">{trip.vehicle}</span>
-                                <span className="tr-amount">{trip.amount}</span>
+
+                                <div className="tr-list-amount-wrapper">
+                                    <span className="tr-list-symbol">{trip.currencySymbol}</span>
+                                    <span className="tr-list-amount-val">{Number(trip.amount).toFixed(2)}</span>
+                                    <span className="tr-list-currency">{trip.currency}</span>
+                                </div>
+
                                 <span className="trip-duration">{trip.duration}</span>
-                                <span className={`trip-status ${trip.statusClass}`}>
+                
+                                <span className={`trip-status status-${trip.statusClass}`}>
                                     {trip.status}
                                 </span>
                             </div>
                         ))
                     ) : (
-                        <div className="no-data-msg">Kayıtlı seyahat bulunamadı.</div>
+                        <div className="no-data-info">Henüz seyahat kaydı bulunmuyor.</div>
                     )}
                 </div>
             </div>
             
-            {/* Modallar */}
             <CreateTrip isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
             <TripDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedTrip} />
         </div>

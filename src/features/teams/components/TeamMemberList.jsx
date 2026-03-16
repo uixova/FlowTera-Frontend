@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import Loader from '../../../components/common/Loader';
 import '../teams.css/MemberList.css'
 import SubNavbar from '../../../components/navigation/SubNavbar';
 import EditRoleModal from '../modals/TeamEditMember';
 import AddMemberModal from '../modals/TeamAddMember';
 import TeamLogModal from '../modals/TeamActivityLog'; 
-import allMembersData from '../data/teamMembers.json';
+import { teamsService } from '../services/teamsService'; 
 
 // teamId'yi dışarıdan (Selection sayfasından) prop olarak alıyoruz
 
-const TeamMemberList = ({ onBack, onNavigate, teamId = "team-1", teamName = "Main Development Team" }) => {
+const TeamMemberList = ({ team, onBack, onNavigate }) => {
+  const teamId = team?.id;
+  const teamName = team?.name || "Team Details";
   // Modal State'leri
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -20,22 +23,27 @@ const TeamMemberList = ({ onBack, onNavigate, teamId = "team-1", teamName = "Mai
 
   // Takım üyelerini yüklemek için useEffect kullanıyoruz
   useEffect(() => {
-    const getMembers = async () => {
-      setLoading(true);
-      
-      // API Simülasyonu: await kullanarak senkron hatasını engelliyoruz
-      // Veri sanki internetten geliyormuş gibi 100ms gecikme ekledik
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // teamId'ye göre üyeleri filtreliyoruz
-      const filtered = allMembersData.filter(m => m.teamId === teamId);
-      setMembers(filtered);
-      
-      setLoading(false);
+    const fetchMembers = async () => {
+        // Eğer teamId yoksa servise hiç gitme
+        if (!teamId) {
+            console.error("TeamMemberList: teamId tanımsız!");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const data = await teamsService.getTeamMembers(teamId);
+            setMembers(data);
+        } catch (error) {
+            console.error("Üyeler yüklenirken hata:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    getMembers();
-  }, [teamId]); // teamId her değiştiğinde bu blok çalışır
+    fetchMembers();
+}, [teamId]); // teamId değiştiğinde tekrar çalışır
 
   // Üye düzenleme butonuna tıklandığında açılan fonksiyon
   const handleEditClick = (user) => {
@@ -50,7 +58,7 @@ const TeamMemberList = ({ onBack, onNavigate, teamId = "team-1", teamName = "Mai
   };
 
   // Yükleniyor durumunu göstermek için basit bir loader
-  if (loading) return <div className="loader">Loading members...</div>;
+  if (loading) return <Loader type="dots" />;
 
   return (
     <div className="tm-member-list-page">
