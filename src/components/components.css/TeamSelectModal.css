@@ -1,0 +1,148 @@
+.team-dropdown-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9997;
+    background: transparent;
+}
+
+.team-dropdown-modal {
+    position: absolute;
+    top: 75px; 
+    right: 200px; 
+    width: 220px;
+    background: #181818;
+    border: 1px solid #252525;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    z-index: 9998;
+    animation: fadeInDropdown 0.2s ease-out;
+}
+
+.team-modal-header {
+    padding: 6px 12px;
+    border-bottom: 1px solid #252525;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+}
+
+.team-modal-header span {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.team-dropdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.team-dropdown-option {
+    background: transparent;
+    border: none;
+    color: #888;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: 0.2s;
+    width: 100%;
+    text-align: left;
+}
+
+.team-dropdown-option:hover {
+    background: #222;
+    color: #fff;
+}
+
+.team-dropdown-option.active {
+    color: #0ed45a !important; 
+    background: rgba(14, 212, 90, 0.08) !important; 
+}
+
+.team-dropdown-icon {
+    width: 24px;
+    height: 24px;
+    background: #222;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: #666; 
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: 0.2s;
+}
+
+.team-dropdown-option.active .team-dropdown-icon {
+    border: 1px solid #0ed45a;
+    color: #0ed45a;
+}
+
+.team-dropdown-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.team-name-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.check-active-icon {
+    margin-left: auto;
+    font-size: 1.1rem;
+    color: #0ed45a;
+    animation: scaleIn 0.2s ease; 
+}
+
+.team-dropdown-footer {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid #252525;
+}
+
+.add-team-small-btn {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #555;
+    font-size: 0.75rem;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.2s;
+    border-radius: 6px;
+}
+
+.add-team-small-btn:hover {
+    color: #0ed45a;
+    background: rgba(14, 212, 90, 0.04);
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+}
+
+@keyframes fadeInDropdown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

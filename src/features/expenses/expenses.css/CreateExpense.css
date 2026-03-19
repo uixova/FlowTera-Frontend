@@ -41,7 +41,6 @@
     display: none; /* Tab yapılamaz */
 }
 
-
 /* Header Bölümü */
 .ex-panel-header {
     padding: 30px 25px;
@@ -71,7 +70,7 @@
 }
 
 .ex-panel-title span {
-    color: #ffffff;
+    color: #fff;
     font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: -0.5px;
@@ -131,7 +130,12 @@
 /* Input Grupları */
 .ex-panel-form { display: flex; flex-direction: column; gap: 24px; }
 
-.ex-input-group { display: flex; flex-direction: column; gap: 10px; }
+.ex-input-group { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    margin-bottom: 20px;
+}
 
 .ex-input-group label {
     font-size: 0.75rem;

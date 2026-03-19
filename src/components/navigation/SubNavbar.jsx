@@ -1,15 +1,16 @@
-// src/components/navigation/SubNavbar.jsx
 import React from 'react';
 import Input from '../common/Input';
 import '../components.css/SubNavbar.css';
 
 const SubNavbar = ({ 
+    // props tanımları
     title, 
     teamName, 
     pageName, 
     onCreate, 
     createLabel, 
     onSearch, 
+    showCurrency = false, 
     searchPlaceholder, 
     buttons = [],
     showSearch = true,
@@ -30,6 +31,10 @@ const SubNavbar = ({
             </div>
             
             <div className="sub-nav-right">
+                {showCurrency && (
+                    <div className="nav-currency-indicator" title="Multi-currency enabled"></div>
+                )}
+
                 {showSearch && (
                     <Input 
                         placeholder={searchPlaceholder}
@@ -40,6 +45,7 @@ const SubNavbar = ({
                 
                 {showCreate && createLabel && (
                     <button className="nav-action-btn nav-create-btn" onClick={onCreate}>
+                        <i className="ti ti-plus"></i>
                         {createLabel}
                     </button>
                 )}
@@ -47,10 +53,11 @@ const SubNavbar = ({
                 {buttons.map((btn, index) => (
                     <button 
                         key={index} 
-                        className="nav-action-btn" 
+                        className={`nav-action-btn ${btn.className || ''}`} 
                         onClick={btn.onClick}
                         title={btn.tooltip}
                     >
+                        {btn.label && <span className="btn-label-text">{btn.label}</span>}
                         <i className={btn.icon}></i>
                     </button>
                 ))}

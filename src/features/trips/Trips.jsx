@@ -4,6 +4,7 @@ import './trips.css/Trips.css';
 import SubNavbar from '../../components/navigation/SubNavbar'; 
 import CreateTrip from './modals/CreateTrip';
 import TripDetail from './modals/TripDetail';
+import CurrencyModal from '../../components/modals/CurrencyModal';
 // Servis importu
 import { tripsService } from './services/tripsService'; 
 
@@ -11,6 +12,10 @@ const Trips = () => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedTrip, setSelectedTrip] = useState(null);
+    const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
+    const [selectedCurrency, setSelectedCurrency] = useState(() => {
+            return sessionStorage.getItem('selectedCurrency') || 'USD';
+        });
     const [trips, setTrips] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -27,13 +32,21 @@ const Trips = () => {
         }
     }, []);
 
+    // Bileşen yüklendiğinde seyahat verilerini çekiyoruz
     useEffect(() => {
         fetchTrips();
     }, [fetchTrips]);
 
+    // Seyahat detayını açan fonksiyon
     const handleOpenDetail = (trip) => {
         setSelectedTrip(trip);
         setIsDetailOpen(true);
+    };
+
+    // Para birimi seçildiğinde çağrılacak fonksiyon
+    const handleCurrencySelect = (currencyCode) => {
+        setSelectedCurrency(currencyCode);
+        sessionStorage.setItem('selectedCurrency', currencyCode);
     };
 
     if (loading) return <Loader type="butterfly" />;
@@ -45,15 +58,16 @@ const Trips = () => {
                     teamName="Software Team" 
                     pageName="Trips & Travels"
                     searchPlaceholder="Search trips..."
-                    createLabel="New Trip"
+                    showCurrency={true}
+                    createLabel="New Trips"
                     onCreate={() => setIsCreateOpen(true)}
-                    onSearch={(val) => console.log("Arama:", val)}
                     buttons={[
                         { 
-                            icon: 'ti ti-filter', 
-                            tooltip: 'Filter', 
-                            onClick: () => console.log("Filter open") 
-                        }
+                            icon: 'ti ti-coins', 
+                            label: selectedCurrency, 
+                            onClick: () => setIsCurrencyOpen(!isCurrencyOpen) 
+                        },
+                        { icon: 'ti ti-filter', tooltip: 'Filter' }
                     ]}
                 />
                 
@@ -111,6 +125,13 @@ const Trips = () => {
             
             <CreateTrip isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
             <TripDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedTrip} />
+                
+            <CurrencyModal 
+                isOpen={isCurrencyOpen} 
+                onClose={() => setIsCurrencyOpen(false)} 
+                currentCurrency={selectedCurrency}
+                onSelect={handleCurrencySelect}
+            />
         </div>
     );
 };

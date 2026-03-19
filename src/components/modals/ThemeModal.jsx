@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../components.css/ThemeModal.css';
 
 const ThemeModal = ({ isOpen, onClose }) => {
-  // Tema seçimlerini tutacak local stateler (İleride bunları Context veya Redux'a bağlayabilirsin)
+  // Tema seçimlerini tutacak local stateler 
   const [activeMode, setActiveMode] = useState('dark');
   const [accentColor, setAccentColor] = useState('#50e091');
   const [radius, setRadius] = useState('Soft');

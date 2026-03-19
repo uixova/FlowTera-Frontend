@@ -6,6 +6,7 @@ import ThemeModal from '../modals/ThemeModal';
 import Notification from '../modals/Notification';
 import UserDropdown from '../modals/UserDropdown';
 import Language from '../modals/Language';
+import TeamSelectModal from '../modals/TeamSelectModal';
 
 const Navbar = () => {
     // Modal Açma/Kapama State'leri
@@ -13,6 +14,8 @@ const Navbar = () => {
     const [isUserOpen, setIsUserOpen] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
+    const [isTeamOpen, setIsTeamOpen] = useState(false);
+    const [selectedTeam, setSelectedTeam] = useState("No Team Selected");
 
     // React Router'un useNavigate hook'u ile programatik navigasyon
     const navigate = useNavigate();
@@ -28,6 +31,12 @@ const Navbar = () => {
           <div className="head-lnk-btn">
             <button className="github-source"><i className="ti ti-brand-github"></i> Source code</button>
             <button className="donate-lnk"><i className="ti ti-heart"></i> Donate</button>
+            <button 
+                className={`team-select-head github-source ${isTeamOpen ? 'active' : ''}`} 
+                onClick={() => setIsTeamOpen(!isTeamOpen)}>
+                <i className="ti ti-users-group"></i>
+            </button>
+
             <button className={`light-dark-head github-source ${isLangOpen ? 'active' : ''}`} 
             onClick={() => setIsLangOpen(!isLangOpen)}>
               <i className="ti ti-world"></i>
@@ -98,6 +107,14 @@ const Navbar = () => {
         isOpen={isLangOpen} 
         onClose={() => setIsLangOpen(false)} 
       />
+
+      {/* Takım Seçimi Modal */}
+      <TeamSelectModal 
+        isOpen={isTeamOpen} 
+        onClose={() => setIsTeamOpen(false)} 
+        onSelectTeam={(teamId) => setSelectedTeam(teamId)}
+        currentTeam={selectedTeam}
+    />
     </header>
   );
 };

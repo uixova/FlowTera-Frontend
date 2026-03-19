@@ -1,0 +1,91 @@
+:root {
+    /* 1. Base */
+    --white: #fff;
+    --black: #000;
+    --transparent: transparent;
+
+    /* 2. Theme Accents (Yeşil/Mor vb. - Dinamik) */
+    --accent: #0ed45a;          
+    --accent-bright: #12ff6e;   
+    --accent-soft: #50e091;     
+    --accent-rgb-03: rgba(14, 212, 90, 0.03);
+    --accent-rgb-04: rgba(14, 212, 90, 0.04);
+    --accent-rgb-05: rgba(14, 212, 90, 0.05);
+    --accent-rgb-1: rgba(14, 212, 90, 0.1);
+    --accent-rgb-15: rgba(14, 212, 90, 0.15);
+    --accent-rgb-2: rgba(14, 212, 90, 0.2);
+
+    /* 3. Status */
+    --red-soft: #ff4444; --red-soft-alt: #ff4757; --red-sharp: #e74c3c;
+    --orange: #ffab00; --blue: #00b8d9; --blue-sharp: #007aff;
+    --blue-gray: #8cbed1; --purple: #A212E0;
+
+    /* 4. Surface (Zeminler - Koyu) */
+    --bg-app: #181818; --bg-navbar: #111111; --bg-sidebar: #0f0f0f;
+    --bg-header: #0e0e0e; --bg-modal: #0a0a0a;
+    --bg-surface-10: #101010; --bg-surface-12: #121212;
+    --bg-surface-14: #141414; --bg-surface-15: #151515;
+    --bg-surface-16: #161616; --bg-surface-1a: #1a1a1a;
+    --bg-surface-1c: #1c1c1c; --bg-surface-1e: #1e1e1e;
+    --bg-surface-1f: #1f1f1f; --bg-surface-20: #202020;
+    --bg-surface-25: #252525; --bg-surface-28: #282828;
+    --bg-surface-33: #333333; --bg-surface-36: #363636;
+    --bg-item: #3d3d3d; --bg-item-hover: #464646;
+
+    /* 5. Borders */
+    --border-222: #222222; --border-2a: #2a2a2a; --border-2d: #2d2d2d;
+    --border-444: #444444; --border-4a: #4a4a4a; --border-5a: #5a5a5a;
+
+    /* 6. Typography (Yazılar - Açık) */
+    --text-main: #ffffff; --text-f1: #f1f1f1; --text-eee: #eeeeee;
+    --text-ef: #efefef; --text-d1: #d1d1d1; --text-ccc: #cccccc;
+    --text-aaa: #aaaaaa; --text-a7: #a7a7a7; --text-888: #888888;
+    --text-777: #777777; --text-666: #666666; --text-555: #555555;
+
+    /* 7. Glass/Overlays */
+    --ov-dark-075: rgba(0, 0, 0, 0.75); --ov-dark-05: rgba(0, 0, 0, 0.5);
+    --glass-white-1: rgba(255, 255, 255, 0.1); --glass-white-05: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='light'] {
+    /* 1. Base */
+    --white: #000; 
+    --black: #fff;
+
+    /* 2. Theme Accents (Işıkta biraz daha doygun yeşil) */
+    --accent: #0ba345; 
+    --accent-bright: #098a3a;
+    --accent-soft: #27ae60;
+    --accent-rgb-03: rgba(11, 163, 69, 0.08); 
+    --accent-rgb-1: rgba(11, 163, 69, 0.15);
+
+    /* 4. Surface (Zeminler - Açık) */
+    --bg-app: #f8f9fa;      
+    --bg-navbar: #ffffff;   
+    --bg-sidebar: #f1f3f5;  
+    --bg-header: #e9ecef;   
+    --bg-modal: #ffffff;    
+    
+    --bg-surface-12: #fdfdfd; --bg-surface-1a: #f1f1f1;
+    --bg-surface-33: #e0e0e0; --bg-surface-36: #dadada;
+    
+    --bg-item: #ffffff;     
+    --bg-item-hover: #f0f0f0;
+
+    /* 5. Borders (Koyu griler yerine hafif gri çizgiler) */
+    --border-222: #dee2e6;
+    --border-2a: #ced4da;
+    --border-4a: #adb5bd;
+
+    /* 6. Typography (Yazılar - Koyu) */
+    --text-main: #1a1a1b;   
+    --text-f1: #212529;
+    --text-eee: #343a40;
+    --text-ccc: #495057;
+    --text-888: #6c757d;    
+    --text-555: #adb5bd;    
+
+    /* 7. Glass/Overlays */
+    --ov-dark-075: rgba(0, 0, 0, 0.2); 
+    --glass-white-1: rgba(0, 0, 0, 0.05); 
+}

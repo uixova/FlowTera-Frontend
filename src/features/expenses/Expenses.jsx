@@ -4,6 +4,7 @@ import './expenses.css/Expenses.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import CreateExpense from './modals/CreateExpense';
 import ExpenseDetail from './modals/ExpenseDetail';
+import CurrencyModal from '../../components/modals/CurrencyModal';
 // Harcama servis fonksiyonları
 import { expenseService } from './services/expenseService';
 
@@ -11,9 +12,14 @@ const Expenses = () => {
     // State tanımları
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
+    const [isCurrencyOpen, setIsCurrencyOpen] = useState(false); 
+    const [selectedCurrency, setSelectedCurrency] = useState(() => {
+        return sessionStorage.getItem('selectedCurrency') || 'USD';
+    });
     const [selectedExpense, setSelectedExpense] = useState(null);
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
+    
 
     // Veri yükleme fonksiyonu, useCallback ile sarmalanarak gereksiz yeniden oluşturulmaların önüne geçilir.
     const loadData = useCallback(async () => {
@@ -39,6 +45,12 @@ const Expenses = () => {
         setIsDetailOpen(true);
     };
 
+    // Para birimi seçildiğinde çağrılacak fonksiyon
+    const handleCurrencySelect = (currencyCode) => {
+        setSelectedCurrency(currencyCode);
+        sessionStorage.setItem('selectedCurrency', currencyCode);
+    };
+
     // Yükleniyor durumunda Loader bileşenini göster
     if (loading) return <Loader type="butterfly" />;
 
@@ -47,13 +59,19 @@ const Expenses = () => {
             <SubNavbar 
                 teamName="Software Team" 
                 pageName="Expenses"
+                showCurrency={true}
                 searchPlaceholder="Search expenses..."
                 createLabel="New Expense"
                 onCreate={() => setIsCreateOpen(true)}
-                onSearch={(val) => console.log("Arama:", val)}
                 buttons={[
-                    { icon: 'ti ti-filter', tooltip: 'Filter', onClick: () => console.log("Filter") },
-                    { icon: 'ti ti-list-details', tooltip: 'Details', onClick: () => console.log("Details") }
+                    // CURRENCY BUTONU BURADA
+                    { 
+                        icon: 'ti ti-coins', 
+                        label: selectedCurrency, 
+                        className: 'currency-btn-trigger',
+                        onClick: () => setIsCurrencyOpen(!isCurrencyOpen)
+                    },
+                    { icon: 'ti ti-filter', tooltip: 'Filter', onClick: () => console.log("Filter") }
                 ]}
             />
             
@@ -115,6 +133,14 @@ const Expenses = () => {
                     {/* Modallar */}
             <CreateExpense isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
             <ExpenseDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedExpense} />
+
+            <CurrencyModal 
+                isOpen={isCurrencyOpen} 
+                onClose={() => setIsCurrencyOpen(false)} 
+                currentCurrency={selectedCurrency}
+                onSelect={handleCurrencySelect}
+                
+            />
         </div>
     );
 }
