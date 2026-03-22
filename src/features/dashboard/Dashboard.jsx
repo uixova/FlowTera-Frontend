@@ -81,7 +81,6 @@ const Dashboard = () => {
                 <div className="hm-card hm-recent-expenses">
                     <div className="card-header">
                         <h2>Your Team Activities</h2>
-                        <i className="ti ti-arrows-sort" style={{color: '#555'}}></i>
                     </div>
                     <hr />
                     <div className="recent-grid-header">
