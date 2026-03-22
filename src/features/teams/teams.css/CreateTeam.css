@@ -37,11 +37,12 @@
 }
 
 .tm-panel-header {
-    padding: 30px;
+    padding: 20px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #222;
+    flex-shrink: 0; 
 }
 
 .tm-panel-header h2 {
@@ -51,22 +52,89 @@
     color: #fff;
 }
 
+.tm-panel-form {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 75px); 
+    overflow: hidden;
+}
+
 .tm-panel-body {
     flex: 1;
-    overflow-y: auto;
-    padding: 30px;
+    overflow-y: auto; 
+    padding: 20px 30px;
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+}
+
+.tm-panel-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tm-panel-body::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 10px;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.plan-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.plan-badge.pro { background: #0ed45a; color: #000; }
+.plan-badge.free { background: #333; color: #aaa; border: 1px solid #444; }
+
+.limit-warning {
+    font-size: 0.75rem;
+    color: #ffa502;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.tm-panel-section.highlight {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 18px;
+    border-radius: 15px;
+    border: 1px solid #222;
+    margin-bottom: 20px;
+    max-height: 220px;
+}
+
+.section-label {
+    display: block;
+    margin-bottom: 12px;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.tm-grid-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 20px; 
+    align-items: start;
+    margin-bottom: 0px;
 }
 
 .tm-branding-section {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .tm-preview-wrapper.large {
-    width: 120px;
-    height: 120px;
-    border-radius: 30px;
-    margin: 0 auto 15px;
+    width: 100px;
+    height: 100px;
+    border-radius: 25px;
+    margin: 0 auto 10px;
     position: relative;
     overflow: hidden;
     border: 2px dashed #333;
@@ -80,8 +148,7 @@
 .tm-preview-wrapper.large img {
     width: 100%;
     height: 100%;
-    object-fit: cover; 
-    object-position: center;
+    object-fit: cover;
 }
 
 .tm-upload-overlay {
@@ -101,32 +168,52 @@
 
 .tm-upload-overlay i {
     color: #fff;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
 }
 
 .tm-help-text {
-    font-size: 0.8rem;
-    color: #666;
+    font-size: 0.75rem;
+    color: #555;
+    margin-top: 5px;
+}
+
+.tm-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
 .tm-input-group label {
-    display: block;
-    margin-bottom: 8px;
     color: #888;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.tm-input-group input, .tm-input-group select {
+.tm-input-group input {
     width: 100%;
-    padding: 14px;
+    padding: 12px 14px;
     background: #181818;
     border: 1px solid #282828;
-    border-radius: 12px;
+    border-radius: 10px;
     color: #fff;
-    margin-bottom: 20px;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.tm-input-group select {
+    width: 100%;
+    padding: 12px;
+    background: #181818;
+    border: 1px solid #282828;
+    border-radius: 10px;
+    color: #fff;
+    margin-bottom: 15px;
     outline: none;
     transition: 0.2s;
+    font-size: 0.9rem;
 }
 
 .tm-input-group input:focus {
@@ -137,18 +224,17 @@
 .tm-radio-vertical {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 10px;
+    gap: 10px;
 }
 
 .tm-radio-option {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 15px;
+    gap: 12px;
+    padding: 12px;
     background: #181818;
     border: 1px solid #282828;
-    border-radius: 15px;
+    border-radius: 12px;
     cursor: pointer;
     transition: 0.2s;
 }
@@ -159,25 +245,27 @@
 }
 
 .tm-radio-option input { display: none; }
-.tm-radio-option i { font-size: 1.4rem; color: #0ed45a; }
+.tm-radio-option i { font-size: 1.2rem; color: #0ed45a; }
 
-.option-text strong { display: block; color: #fff; font-size: 0.9rem; }
-.option-text span { color: #666; font-size: 0.75rem; }
+.option-text strong { display: block; color: #fff; font-size: 0.85rem; }
+.option-text span { color: #666; font-size: 0.7rem; }
 
 .tm-panel-footer {
-    padding: 25px 30px;
+    padding: 20px 30px;
     border-top: 1px solid #222;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
+    background: #0f0f0f;
+    flex-shrink: 0; /* Footer'ın her zaman altta sabit kalmasını sağlar */
 }
 
 .tm-btn-submit {
     background: #0ed45a;
     color: #000;
     border: none;
-    padding: 15px;
-    border-radius: 12px;
+    padding: 14px;
+    border-radius: 10px;
     font-weight: 700;
     cursor: pointer;
 }
@@ -186,8 +274,8 @@
     background: #222;
     color: #fff;
     border: 1px solid #333;
-    padding: 15px;
-    border-radius: 12px;
+    padding: 14px;
+    border-radius: 10px;
     cursor: pointer;
 }
 
@@ -208,4 +296,10 @@
 .tm-panel-close:hover {
     background: rgba(255, 71, 87, 0.1);
     color: #ff4757;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
 }

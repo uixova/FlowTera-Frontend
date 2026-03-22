@@ -229,11 +229,44 @@
     border-color: rgba(255, 255, 255, 0.1);
 }
 
+.plan-tag {
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-top: 10px;
+    display: inline-block;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.plan-tag.pro { background: rgba(14, 212, 90, 0.1); color: #0ed45a; border: 1px solid rgba(14, 212, 90, 0.2); }
+.plan-tag.free { background: #222; color: #888; border: 1px solid #333; }
+
+.limit-section-box {
+    background: rgba(14, 212, 90, 0.01);
+    border: 1px dashed rgba(14, 212, 90, 0.15);
+    padding: 30px;
+    border-radius: 24px;
+    margin-bottom: 40px;
+}
+
+.input-tip {
+    font-size: 0.75rem;
+    color: #555;
+    margin-top: 8px;
+    display: block;
+}
+
+.input-tip.warning {
+    color: #ffa502;
+    font-weight: 600;
+}
+
 .tm-setup-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 80px;
+    margin-top: 40px;
     padding-top: 40px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -320,7 +353,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 25px;
-    margin-bottom: 30px;
+    margin-bottom: 16px;
 }
 
 .tm-radio-vertical {

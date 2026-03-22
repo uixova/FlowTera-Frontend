@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'; // Yönlendirme için ekledik
 import '../components.css/TeamSelectModal.css'; 
 import teamsData from '../../features/teams/data/teams.json'; 
 
-const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeam }) => {
+const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
   const navigate = useNavigate(); // Hook'u tanımladık
 
   if (!isOpen) return null;
@@ -22,13 +22,14 @@ const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeam }) => {
           <span>Active Teams</span>
         </div>
 
-        <div className="team-dropdown-list">
-          {teamsData.map((team) => (
+            <div className="team-dropdown-list">
+              {teamsData.map((team) => (
             <button 
               key={team.id} 
-              className={`team-dropdown-option ${team.name === currentTeam ? 'active' : ''}`}
+              // ID karşılaştırması yapıyoruz
+              className={`team-dropdown-option ${String(team.id) === String(currentTeamId) ? 'active' : ''}`}
               onClick={() => {
-                onSelectTeam(team.name);
+                onSelectTeam(team.id); 
                 onClose();
               }}
             >
@@ -36,7 +37,7 @@ const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeam }) => {
                 {team.logo ? <img src={team.logo} alt="" /> : team.name[0]}
               </div>
               <span className="team-name-text">{team.name}</span>
-              {team.name === currentTeam && <i className="ti ti-check check-active-icon"></i>}
+              {String(team.id) === String(currentTeamId) && <i className="ti ti-check check-active-icon"></i>}
             </button>
           ))}
         </div>

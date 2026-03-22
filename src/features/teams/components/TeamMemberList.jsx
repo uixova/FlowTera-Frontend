@@ -91,7 +91,10 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
         {members.map(member => (
           <div className="team-card" key={member.id}>
             <div className="tm-card-header">
-              <span className={`tm-role-badge ${member.roleClass}`}>{member.role}</span>
+              {/* member.role yerine member.roleName kullanıyoruz */}
+              <span className={`tm-role-badge ${member.roleName?.toLowerCase()}`}>
+                {member.roleName}
+              </span>
               <div className="tm-actions">
                 <button className="tm-action-btn" onClick={() => handleEditClick(member)}>
                   <i className="ti ti-edit"></i>
@@ -99,18 +102,25 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
                 <button className="tm-action-btn delete-btn"><i className="ti ti-user-minus"></i></button>
               </div>
             </div>
-            {/* Üye bilgileri ve son aktivite bilgisi de JSON'dan geliyor */}
+    
             <div className="tm-user-body">
-              <img src={member.avatar} alt="User" />
+              <img src={member.avatar} alt={member.name} />
               <h3>{member.name}</h3>
               <p>{member.email}</p>
             </div>
+    
             <div className="tm-user-footer">
               <div className="tm-stat">
-                <span className="stat-label">Last Action</span>
-                <span className="stat-value">{member.lastAction}</span>
+                <span className="stat-label">Last Login</span>
+                {/* user.json'daki lastLogin verisini daha okunaklı basıyoruz */}
+                <span className="stat-value">
+                    {member.lastLogin ? new Date(member.lastLogin).toLocaleDateString('tr-TR') : 'Never'}
+                </span>
               </div>
-              <button className="view-full-logs-btn" onClick={() => handleLogClick(member)}>
+              <button 
+                className="view-full-logs-btn" 
+                onClick={() => handleLogClick(member)}
+              >
                 Full Activity Log
               </button>
             </div>
@@ -130,6 +140,7 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
         isOpen={isEditModalOpen} 
         onClose={() => setIsEditModalOpen(false)} 
         user={selectedUser}
+        teamId={teamId}
       />
 
       <AddMemberModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />

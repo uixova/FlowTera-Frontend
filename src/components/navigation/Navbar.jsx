@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import '../components.css/Navbar.css';
 import UserImage from '../../assets/images/user-profile.png'
@@ -15,7 +15,25 @@ const Navbar = () => {
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
     const [isTeamOpen, setIsTeamOpen] = useState(false);
-    const [selectedTeam, setSelectedTeam] = useState("No Team Selected");
+    const [selectedTeamId, setSelectedTeamId] = useState(() => {
+        return localStorage.getItem('tm_selected_id') || null;
+    });
+
+    useEffect(() => {
+        const handleStorageUpdate = () => {
+            const id = localStorage.getItem('tm_selected_id');
+            setSelectedTeamId(id);
+        };
+        window.addEventListener('storage', handleStorageUpdate);
+        return () => window.removeEventListener('storage', handleStorageUpdate);
+    }, []);
+
+    const handleTeamChange = (teamId) => {
+        localStorage.setItem('tm_selected_id', teamId);
+        localStorage.setItem('tm_view_mode', 'main');
+        setSelectedTeamId(teamId);
+        window.dispatchEvent(new Event('storage')); 
+    };
 
     // React Router'un useNavigate hook'u ile programatik navigasyon
     const navigate = useNavigate();
@@ -32,11 +50,12 @@ const Navbar = () => {
             <button className="github-source"><i className="ti ti-brand-github"></i> Source code</button>
             <button className="donate-lnk"><i className="ti ti-heart"></i> Donate</button>
             <button 
-                className={`team-select-head github-source ${isTeamOpen ? 'active' : ''}`} 
-                onClick={() => setIsTeamOpen(!isTeamOpen)}>
+              className={`team-select-head github-source ${isTeamOpen ? 'active' : ''}`} 
+              onClick={() => setIsTeamOpen(!isTeamOpen)}>
                 <i className="ti ti-users-group"></i>
             </button>
 
+            {/* Bildirim, Dil ve Tema butonları */}
             <button className={`light-dark-head github-source ${isLangOpen ? 'active' : ''}`} 
             onClick={() => setIsLangOpen(!isLangOpen)}>
               <i className="ti ti-world"></i>
@@ -112,9 +131,9 @@ const Navbar = () => {
       <TeamSelectModal 
         isOpen={isTeamOpen} 
         onClose={() => setIsTeamOpen(false)} 
-        onSelectTeam={(teamId) => setSelectedTeam(teamId)}
-        currentTeam={selectedTeam}
-    />
+        onSelectTeam={handleTeamChange} 
+        currentTeamId={selectedTeamId} 
+      />
     </header>
   );
 };

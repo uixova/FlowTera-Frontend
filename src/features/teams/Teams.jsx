@@ -64,6 +64,20 @@ const Teams = () => {
     setViewMode(page);
   };
 
+  useEffect(() => {
+    const handleStorageChange = () => {
+        const updatedId = localStorage.getItem('tm_selected_id');
+        const updatedView = localStorage.getItem('tm_view_mode');
+        
+        if (updatedId) setSelectedTeamId(updatedId);
+        if (updatedView) setViewMode(updatedView);
+    };
+
+    // Hem tarayıcının kendi storage event'ini hem de bizim manuel event'i dinle
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
   // Yükleme ekranı
   if (loading) {
     return (

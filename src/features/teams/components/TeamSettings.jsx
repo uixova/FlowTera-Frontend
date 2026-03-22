@@ -1,16 +1,18 @@
 import React, { useState, useRef } from 'react'; 
 import '../teams.css/Settings.css';
 
-const TeamSettings = ({ teamId, onBack }) => {
+const TeamSettings = ({ onBack, currentUser }) => {
   // Debugging: Team ID'sini konsola yazdır
-  console.log("Current Team ID:", teamId);
+  const planMaxMembers = currentUser?.subscription?.maxMembersPerTeam || 5;
 
   // Form verileri için state
   const [formData, setFormData] = useState({
     teamName: 'Main Development Team',
     workspaceType: 'Corporate',
     status: 'active',
-    privacy: 'private'
+    privacy: 'private',
+    maxExpenseLimit: 5000, // Mevcut takımdan gelen veri (simüle)
+    memberLimit: 10        // Mevcut takımdan gelen veri (simüle)
   });
   
   // Logo önizlemesi için state ve ref
@@ -73,68 +75,59 @@ const TeamSettings = ({ teamId, onBack }) => {
                 <h3 className="section-title">General Configuration</h3>
                 <div className="tm-input-group">
                   <label htmlFor="teamName">Organization Name</label>
-                  <input 
-                    type="text" 
-                    name="teamName"
-                    value={formData.teamName} 
-                    onChange={handleChange}
-                  />
+                  <input type="text" name="teamName" value={formData.teamName} onChange={handleChange} />
                 </div>
-                {/* İki kolonlu grid yapısı */}
+                
                 <div className="tm-grid-row">
                   <div className="tm-input-group">
-                    <label htmlFor="workspaceType">Workspace Type</label>
-                    <div className="tm-select-wrapper">
-                      <select name="workspaceType" value={formData.workspaceType} onChange={handleChange}>
-                        <option value="Corporate">Corporate</option>
-                        <option value="Personal">Personal</option>
-                        <option value="Education">Education</option>
-                      </select>
-                    </div>
+                    <label>Workspace Type</label>
+                    <select name="workspaceType" value={formData.workspaceType} onChange={handleChange}>
+                      <option value="Corporate">Corporate</option>
+                      <option value="Personal">Personal</option>
+                    </select>
                   </div>
                   <div className="tm-input-group">
-                    <label htmlFor="status">System Status</label>
-                    <div className="tm-select-wrapper">
-                      <select name="status" value={formData.status} onChange={handleChange}>
-                        <option value="active">Active</option>
-                        <option value="maintenance">Maintenance</option>
-                      </select>
-                    </div>
+                    <label>System Status</label>
+                    <select name="status" value={formData.status} onChange={handleChange}>
+                      <option value="active">Active</option>
+                      <option value="maintenance">Maintenance</option>
+                    </select>
                   </div>
                 </div>
               </section>
 
               {/* İkinci bölüm - Gizlilik Ayarları */}
-              <section className="tm-form-section">
-                <h3 className="section-title">Privacy Settings</h3>
-                <div className="tm-radio-vertical">
-                  <label className={`tm-radio-option ${formData.privacy === 'private' ? 'selected' : ''}`}>
+              <section className="tm-form-section limit-section-box">
+                <h3 className="section-title">Limits & Quota</h3>
+                <div className="tm-grid-row">
+                  <div className="tm-input-group">
+                    <label>Monthly Spending Limit (USD)</label>
                     <input 
-                      type="radio" 
-                      name="privacy" 
-                      value="private" 
-                      checked={formData.privacy === 'private'} 
-                      onChange={handleChange} 
+                      type="number" 
+                      name="maxExpenseLimit" 
+                      value={formData.maxExpenseLimit} 
+                      onChange={handleChange}
+                      placeholder="e.g. 5000"
                     />
-                    <div className="option-text">
-                      <strong>Private Organization</strong>
-                      <span>Only invited members can access and view team data.</span>
-                    </div>
-                  </label>
+                    <small className="input-tip">Maximum allowed expenses for this team.</small>
+                  </div>
 
-                  <label className={`tm-radio-option ${formData.privacy === 'internal' ? 'selected' : ''}`}>
+                  <div className="tm-input-group">
+                    <label>Member Capacity (Max: {planMaxMembers})</label>
                     <input 
-                      type="radio" 
-                      name="privacy" 
-                      value="internal" 
-                      checked={formData.privacy === 'internal'} 
-                      onChange={handleChange} 
+                      type="number" 
+                      name="memberLimit" 
+                      value={formData.memberLimit} 
+                      onChange={handleChange}
+                      max={planMaxMembers}
+                      min="1"
                     />
-                    <div className="option-text">
-                      <strong>Internal (Domain Only)</strong>
-                      <span>Anyone within your verified email domain can join.</span>
-                    </div>
-                  </label>
+                    {formData.memberLimit >= planMaxMembers ? (
+                       <small className="input-tip warning">Your plan limit reached!</small>
+                    ) : (
+                       <small className="input-tip">Max seats available for this workspace.</small>
+                    )}
+                  </div>
                 </div>
               </section>
 

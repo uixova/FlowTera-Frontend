@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import '../teams.css/TeamEdit.css';
 import { teamsService } from '../services/teamsService'; 
 
-const EditRoleModal = ({ isOpen, onClose, user }) => {
+const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
     // Local State
     const [selectedRole, setSelectedRole] = useState('member');
     const [isUpdating, setIsUpdating] = useState(false);
 
     // User prop'u güncellendiğinde veya modal açıldığında seçili rolü güncelle
     useEffect(() => {
-        if (isOpen && user?.role) {
-            setSelectedRole(user.role.toLowerCase());
+        if (isOpen && user) {
+            const currentRole = user.roleName || 'member';
+            setSelectedRole(currentRole.toLowerCase());
         }
     }, [user, isOpen]);
 
@@ -19,14 +20,12 @@ const EditRoleModal = ({ isOpen, onClose, user }) => {
 
     // Rol güncelleme işlemi
     const handleUpdate = async () => {
-        if (!user?.id) return;
+        if (!user?.id || !teamId) return; // teamId kontrolü ekledik
 
         try {
             setIsUpdating(true);
-            
-            // Servis katmanı üzerinden güncelleme (API simülasyonu)
-            await teamsService.updateUserRole(user.id, selectedRole);
-            
+            // API üzerinden rol güncelleme işlemi
+            await teamsService.updateUserRole(user.id, teamId, selectedRole);
             onClose(); 
         } catch (error) {
             console.error("Rol güncellenirken hata oluştu:", error);
@@ -70,7 +69,7 @@ const EditRoleModal = ({ isOpen, onClose, user }) => {
                         <div className="user-meta">
                             <h3>Edit Member Role</h3>
                             <p id="editRoleTargetUser">
-                                {user?.name || 'Unknown User'} — {user?.team || 'No Team'}
+                                {user?.name || 'Unknown User'} — {user?.roleName || 'Member'}
                             </p>
                         </div>
                     </div>
