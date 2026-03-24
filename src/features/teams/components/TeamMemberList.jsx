@@ -63,7 +63,7 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
   return (
     <div className="tm-member-list-page">
       <SubNavbar 
-        title={teamName} // Dinamik takım ismi
+        title={teamName}
         searchPlaceholder="Search member..."
         createLabel="Quick Add"
         showSearch={true}

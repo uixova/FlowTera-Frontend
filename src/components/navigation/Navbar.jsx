@@ -19,6 +19,7 @@ const Navbar = () => {
         return localStorage.getItem('tm_selected_id') || null;
     });
 
+    // Takım değişikliklerini dinlemek için storage event'ini kullanıyoruz
     useEffect(() => {
         const handleStorageUpdate = () => {
             const id = localStorage.getItem('tm_selected_id');
@@ -28,6 +29,7 @@ const Navbar = () => {
         return () => window.removeEventListener('storage', handleStorageUpdate);
     }, []);
 
+    // Takım seçildiğinde çağrılacak fonksiyon
     const handleTeamChange = (teamId) => {
         localStorage.setItem('tm_selected_id', teamId);
         localStorage.setItem('tm_view_mode', 'main');

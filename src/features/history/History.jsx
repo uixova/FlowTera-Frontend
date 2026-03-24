@@ -1,60 +1,70 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Loader from '../../components/common/Loader';
 import './history.css/History.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
-import jsonData from './data/log.json'
+// 1. Servisimizi import ediyoruz
+import { historyService } from './services/historyService';
 
 const History = () => {
-  // State'ler
   const [searchTerm, setSearchTerm] = useState('');
   const [activeLog, setActiveLog] = useState(null);
   const [historyData, setHistoryData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Veriyi yükleme (simülasyon)
-  useEffect(() => {
-    const loadLogs = async () => {
-      try {
-        setLoading(true);
-        
-        //  API SİMÜLASYONU 
-        // internetten geliyormuş gibi 500ms gecikmeyle yüklüyoruz
-        const simulateApi = new Promise((resolve) => {
-          setTimeout(() => resolve(jsonData), 500);
-        });
-        // Veriyi al
-        const data = await simulateApi;
-        setHistoryData(data);
-        // Gerçek API çağrısı örneği (yorum satırı olarak bırakıldı)
-        // const response = await fetch('/api/logs');
-        // if (!response.ok) throw new Error('Veri alınamadı');
-        // const data = await response.json();
-        // setHistoryData(data);
-      } catch (err) {
-        console.error("Sistem hatası:", err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    // Veriyi yükle
-    loadLogs();
+  // 2. VERİ YÜKLEME (Expenses'taki gibi loadData mantığı)
+  const loadLogs = useCallback(async () => {
+    try {
+      setLoading(true); // Loader başlasın
+      
+      // LocalStorage'dan aktif takım ID'sini alıyoruz
+      const activeTeamId = localStorage.getItem('tm_selected_id');
+      
+      // Servis üzerinden teams.json -> history dizisini çekiyoruz
+      const data = await historyService.getHistoryByTeam(activeTeamId);
+      
+      setHistoryData(data);
+    } catch (err) {
+      console.error("History yüklenirken hata:", err);
+    } finally {
+      setLoading(false); // Loader kapansın
+    }
   }, []);
-  // Log detaylarını açma/kapatma fonksiyonu
+
+  // 3. EVENT LISTENER (F5 atmadan güncelleyen kısım)
+  useEffect(() => {
+    // Sayfa ilk açıldığında veriyi çek
+    loadLogs();
+
+    // Takım değiştiğinde çalışacak fonksiyon
+    const handleTeamRefresh = () => {
+      console.log("History: Takım değişti, loader tetikleniyor...");
+      loadLogs(); 
+    };
+
+    // Navbar/Sidebar'dan fırlatılan event'i yakala
+    window.addEventListener('teamChanged', handleTeamRefresh);
+    window.addEventListener('storage', handleTeamRefresh);
+
+    return () => {
+      window.removeEventListener('teamChanged', handleTeamRefresh);
+      window.removeEventListener('storage', handleTeamRefresh);
+    };
+  }, [loadLogs]);
+
   const handleToggle = (id) => {
     setActiveLog(activeLog === id ? null : id);
   };
-  // Arama ve filtreleme
+
   const filteredData = historyData.filter(item => 
     item.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.target.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  // Yükleniyor durumunu göster
+
   if (loading) return <Loader type="butterfly" />;
 
   return (
     <div className="history-page">
       <SubNavbar 
-        teamName="Software Team" 
         pageName="Activity History"
         searchPlaceholder="Search logs..."
         showSearch={true}      
@@ -70,54 +80,57 @@ const History = () => {
       />
       
       <hr className="hi-divider" />
-      {/* Log Listesi */}
-      <div className="history-list-container">
-        {filteredData.map((item) => (
-          <div 
-            key={item.id} 
-            className={`history-wrapper ${activeLog === item.id ? 'is-expanded' : ''}`}>
-              
-            <div className="history-item" data-role={item.role} onClick={() => handleToggle(item.id)}>
-              <div className="hi-status-line"></div>
-              <div className={`hi-icon ${item.iconClass}`}>
-                <i className={`ti ${item.icon}`}></i>
-              </div>
-              <div className="hi-content">
-                <div className="hi-info">
-                  <div className="hi-user-wrapper">
-                    <span className={`hi-badge ${item.role}`}>{item.badge}</span>
-                    <span className="hi-user">{item.user}</span>
-                  </div>
-                  <span className="hi-action">{item.action}</span>
-                  <span className="hi-target">{item.target}</span>
-                </div>
-                <div className="hi-meta">
-                  <span className="hi-time">{item.time}</span>
-                  {item.amount ? (
-                    <span className="hi-amount">{item.amount}</span>
-                  ) : (
-                    <span className={item.tagClass}>{item.tag}</span>
-                  )}
-                  <i className="ti ti-chevron-down hi-chevron"></i>
-                </div>
-              </div>
-            </div>
 
-            {/* Dinamik Detay Paneli */}
-            <div className="history-accordion-content">
-              <div className="hi-det-inner">
-                <div className="hi-det-grid">
-                  {item.details && Object.entries(item.details).map(([key, value]) => (
-                    <div className="hi-det-box" key={key}>
-                      <span className="hi-det-label">{key.replace(/_/g, ' ').toUpperCase()}</span>
-                      <span className="hi-det-value">{value}</span>
+      <div className="history-list-container">
+        {filteredData.length > 0 ? (
+          filteredData.map((item) => (
+            <div 
+              key={item.id} 
+              className={`history-wrapper ${activeLog === item.id ? 'is-expanded' : ''}`}>
+                
+              <div className="history-item" data-role={item.role} onClick={() => handleToggle(item.id)}>
+                <div className="hi-status-line"></div>
+                <div className={`hi-icon ${item.iconClass}`}>
+                  <i className={`ti ${item.icon}`}></i>
+                </div>
+                <div className="hi-content">
+                  <div className="hi-info">
+                    <div className="hi-user-wrapper">
+                      <span className={`hi-badge ${item.role}`}>{item.badge}</span>
+                      <span className="hi-user">{item.user}</span>
                     </div>
-                  ))}
+                    <span className="hi-action">{item.action}</span>
+                    <span className="hi-target">{item.target}</span>
+                  </div>
+                  <div className="hi-meta">
+                    <span className="hi-time">{item.time}</span>
+                    {item.amount ? (
+                      <span className="hi-amount">{item.amount}</span>
+                    ) : (
+                      <span className={item.tagClass}>{item.tag}</span>
+                    )}
+                    <i className="ti ti-chevron-down hi-chevron"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div className="history-accordion-content">
+                <div className="hi-det-inner">
+                  <div className="hi-det-grid">
+                    {item.details && Object.entries(item.details).map(([key, value]) => (
+                      <div className="hi-det-box" key={key}>
+                        <span className="hi-det-label">{key.replace(/_/g, ' ').toUpperCase()}</span>
+                        <span className="hi-det-value">{value}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <div className="no-data-info">Bu takıma ait bir aktivite kaydı bulunamadı.</div>
+        )}
       </div>
     </div>
   );

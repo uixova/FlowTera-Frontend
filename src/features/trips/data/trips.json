@@ -1,6 +1,7 @@
 [
   {
     "id": "tr-001",
+    "teamId": "team-1",
     "title": "Business Meeting",
     "category": "Corporate",
     "destination": "Berlin, DE",
@@ -26,6 +27,7 @@
   },
   {
     "id": "tr-002",
+    "teamId": "team-2",
     "title": "Family Visit",
     "category": "Personal",
     "destination": "Izmir, TR",
@@ -51,6 +53,7 @@
   },
   {
     "id": "tr-003",
+    "teamId": "team-2",
     "title": "Tech Conf 2026",
     "category": "Education",
     "destination": "San Francisco, US",

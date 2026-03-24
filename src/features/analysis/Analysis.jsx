@@ -1,17 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './analysis.css/Analysis.css';
 import SubNavbar from '../../components/navigation/SubNavbar'; // Merkezi Navbar
 import ExportModal from './components/ExportData';
 import AnalysisCharts from './components/Charts'; 
+import Loader from '../../components/common/Loader'; 
 
 const Analysis = () => {
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [loading, setLoading] = useState(true); // Yükleme durumu
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000); // 1 saniye sonra loader kapanır
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Yükleme ekranı
+  if (loading) {
+    return (
+      <div className="full-screen-loader">
+        <Loader type="butterfly" />
+      </div>
+    );
+  }
 
   return (
     <div className="analysis-page">
-      {/* YENİ MERKEZİ NAVBAR */}
+      {/* MERKEZİ NAVBAR */}
       <SubNavbar 
-        teamName="Software Team" 
         pageName="Financial Analysis"
         createLabel="Export Data"
         showSearch={false} 
@@ -20,7 +38,10 @@ const Analysis = () => {
             { 
                 icon: 'ti ti-refresh', 
                 tooltip: 'Refresh Data', 
-                onClick: () => console.log("Refreshing...") 
+                onClick: () => {
+                  setLoading(true); // Yenilerken loader'ı tekrar tetiklemek istersen
+                  setTimeout(() => setLoading(false), 800);
+                } 
             }
         ]}
       />
@@ -46,9 +67,10 @@ const Analysis = () => {
         </div>
       </div>
 
-      {/* Modallar */}
+      {/* Grafikler */}
       <AnalysisCharts />
 
+      {/* Modallar */}
       <ExportModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
     </div>
   );

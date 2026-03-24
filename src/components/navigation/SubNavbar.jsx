@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Input from '../common/Input';
 import '../components.css/SubNavbar.css';
+import allTeams from '../../features/teams/data/teams.json';
 
 const SubNavbar = ({ 
-    // props tanımları
     title, 
-    teamName, 
     pageName, 
     onCreate, 
     createLabel, 
@@ -16,12 +15,53 @@ const SubNavbar = ({
     showSearch = true,
     showCreate = true 
 }) => {
+    // İSMİ DAHA STATE OLUŞURKEN HESAPLA (Hata veren useEffect'teki ilk çağrıyı iptal eder)
+    const [displayTeamName, setDisplayTeamName] = useState(() => {
+        const selectedId = localStorage.getItem('tm_selected_id');
+        const currentTeam = allTeams.find(t => String(t.id) === String(selectedId));
+        if (currentTeam) {
+            return currentTeam.name.length > 18 
+                ? currentTeam.name.substring(0, 15) + "..." 
+                : currentTeam.name;
+        }
+        return "Team";
+    });
+
+    // Güncelleme fonksiyonunu useCallback ile koru
+    const updateTeamName = useCallback(() => {
+        const selectedId = localStorage.getItem('tm_selected_id');
+        const currentTeam = allTeams.find(t => String(t.id) === String(selectedId));
+        
+        // Takım ismini kısaltarak göster (18 karakterden uzun ise)
+        const newName = currentTeam 
+            ? (currentTeam.name.length > 18 ? currentTeam.name.substring(0, 15) + "..." : currentTeam.name)
+            : "Team";
+            
+        // Sadece isim gerçekten değiştiyse state güncelle (render maliyetini düşürür)
+        setDisplayTeamName(prev => (prev !== newName ? newName : prev));
+    }, []);
+
+    useEffect(() => {
+        // Takım değişikliklerini dinlemek için hem custom event hem de storage event'ini kullanıyoruz
+        const handleStorageChange = () => {
+            updateTeamName();
+        };
+
+        window.addEventListener('teamChanged', handleStorageChange);
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('teamChanged', handleStorageChange);
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, [updateTeamName]); // Sadece event dinleyicileri kurar
+
     return (
         <div className="sub-navbar-container">
             <div className="sub-nav-left">
-                {teamName && pageName ? (
+                {displayTeamName && pageName ? (
                     <div className="sub-nav-breadcrumb">
-                        <span className="breadcrumb-team">{teamName}</span>
+                        <span className="breadcrumb-team">{displayTeamName}</span>
                         <i className="ti ti-chevron-right breadcrumb-separator"></i>
                         <span className="breadcrumb-page">{pageName}</span>
                     </div>

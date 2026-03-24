@@ -6,22 +6,31 @@ const randomDelay = (min = 200, max = 800) => {
 };
 
 export const tripsService = {
-    // Tüm seyahatleri getir
-    getTrips: async () => {
-        await randomDelay(400, 1000); 
-        return tripsDataJSON;
+    // Takım ID'sine göre seyahatleri getir
+    getTripsByTeam: async (teamId) => {
+        try {
+            await randomDelay(400, 1000);
+            if (!teamId) return [];
+
+            // teamId'yi String yaparak garantiye alıyoruz
+            return tripsDataJSON.filter(trip => 
+                String(trip.teamId).trim() === String(teamId).trim()
+            );
+        } catch (error) {
+            console.error("Trips Service Error:", error);
+            throw error;
+        }
     },
 
-    // Detaylı seyahat bilgisini getir (İleride gerekirse ID ile tekil çekmek için)
+    // Seyahat ID'sine göre tek bir seyahati getir
     getTripById: async (tripId) => {
         await randomDelay(200, 500);
         return tripsDataJSON.find(t => t.id === tripId);
     },
 
-    // Yeni seyahat oluşturma simülasyonu
+    // Yeni bir seyahat oluştur (Simülasyon)
     createTrip: async (tripData) => {
         await randomDelay(600, 1200);
-        console.log("API: Seyahat oluşturuldu", tripData);
         return { success: true, data: tripData };
     }
 };

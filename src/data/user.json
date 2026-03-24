@@ -12,7 +12,7 @@
     "subscription": {
         "plan": "pro",
         "maxTeams": 10,
-        "maxMembersPerTeam": 50,
+        "maxMembersPerTeam": 20,
         "features": ["advanced_reports", "unlimited_logs", "custom_roles"]
     },
     "role": [
@@ -107,7 +107,7 @@
     "subscription": {
         "plan": "pro",
         "maxTeams": 10,
-        "maxMembersPerTeam": 50,
+        "maxMembersPerTeam": 20,
         "features": ["advanced_reports", "unlimited_logs", "custom_roles"]
     },
     "role": [

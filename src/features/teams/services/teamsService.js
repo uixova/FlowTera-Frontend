@@ -12,6 +12,7 @@ const ROLE_PRIORITY = {
 };
 
 export const teamsService = {
+    // Tüm takımları getirme fonksiyonu
     getTeams: async () => {
         await randomDelay(400, 1000);
         const teams = await api.teams.getAll() || [];
@@ -26,6 +27,7 @@ export const teamsService = {
         }));
     },
 
+    // Takım üyelerini getirme fonksiyonu
     getTeamMembers: async (teamId) => {
         if (!teamId) return [];
         await randomDelay(300, 600);
@@ -49,7 +51,7 @@ export const teamsService = {
         });
     },
 
-    // 3. Kullanıcı Loglarını Getir (userLog.json üzerinden)
+    // Takım bilgilerini getirme fonksiyonu (Simülasyon)
     getUserLogs: async (userId, teamId) => {
         await randomDelay(400, 800); 
         const allLogs = await api.logs.getAll() || [];
@@ -61,11 +63,34 @@ export const teamsService = {
         ).sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time)); // En yeni log en üstte
     },
 
-    // 4. Rol Güncelleme (Gerçekçi Simülasyon)
+    // Yeni üye ekleme fonksiyonu (Simülasyon)
     updateUserRole: async (userId, teamId, newRoleName) => {
         await randomDelay(500, 1000);
         // İleride burada bir PATCH isteği atılacak
         console.log(`[API UPDATE] User: ${userId}, Team: ${teamId}, New Role: ${newRoleName}`);
         return { success: true, message: "Role updated successfully" };
+    },
+
+    // Takım detaylarını getirme fonksiyonu (Simülasyon)
+    getTeamSettings: async (teamId) => {
+        if (!teamId) return null;
+        await randomDelay(300, 600); // Gerçekçi yükleme simülasyonu
+    
+        const teams = await api.teams.getAll() || [];
+        const allUsers = await api.users.getAll() || [];
+    
+        const team = teams.find(t => String(t.id) === String(teamId));
+        if (!team) return null;
+
+        // Admin'i bul ve plan limitini al
+        const adminUser = allUsers.find(u => 
+            u.role.some(r => String(r.teamId) === String(teamId) && r.roleName === 'Admin')
+        );
+
+        return {
+            ...team,
+            adminPlanLimit: adminUser?.subscription?.maxMembersPerTeam || 5
+        };
     }
+
 };

@@ -1,6 +1,7 @@
 [
   {
     "id": "exp-1",
+    "teamId": "team-1",
     "title": "Server Hosting",
     "category": "Infrastructure",
     "merchant": "DigitalOcean",
@@ -22,6 +23,7 @@
   },
   {
     "id": "exp-2",
+    "teamId": "team-1",
     "title": "Team Dinner",
     "category": "Food & Beverage",
     "merchant": "Burger King",
@@ -43,6 +45,7 @@
   },
   {
     "id": "exp-3",
+    "teamId": "team-2",
     "title": "Monitor Stand",
     "category": "Office Equipment",
     "merchant": "Amazon",

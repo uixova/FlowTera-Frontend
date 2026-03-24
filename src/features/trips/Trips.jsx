@@ -20,10 +20,14 @@ const Trips = () => {
     const [loading, setLoading] = useState(true);
 
     // Veri çekme işlemini ayrı bir fonksiyon olarak tanımlıyoruz
-    const fetchTrips = useCallback(async () => {
+    const loadData = useCallback(async () => {
         try {
             setLoading(true);
-            const data = await tripsService.getTrips();
+            // 1. LocalStorage'dan ID'yi çek
+            const activeTeamId = localStorage.getItem('tm_selected_id');
+            
+            // 2. Filtreli veriyi getir
+            const data = await tripsService.getTripsByTeam(activeTeamId);
             setTrips(data);
         } catch (error) {
             console.error("Seyahat verileri yüklenemedi:", error);
@@ -34,8 +38,20 @@ const Trips = () => {
 
     // Bileşen yüklendiğinde seyahat verilerini çekiyoruz
     useEffect(() => {
-        fetchTrips();
-    }, [fetchTrips]);
+        loadData();
+
+        const handleTeamRefresh = () => {
+            loadData();
+        };
+
+        window.addEventListener('teamChanged', handleTeamRefresh);
+        window.addEventListener('storage', handleTeamRefresh);
+
+        return () => {
+            window.removeEventListener('teamChanged', handleTeamRefresh);
+            window.removeEventListener('storage', handleTeamRefresh);
+        };
+    }, [loadData]);
 
     // Seyahat detayını açan fonksiyon
     const handleOpenDetail = (trip) => {
@@ -55,7 +71,6 @@ const Trips = () => {
         <div className="trips" id="trips">
             <div className="trip-page" id="tripsPage">
                 <SubNavbar 
-                    teamName="Software Team" 
                     pageName="Trips & Travels"
                     searchPlaceholder="Search trips..."
                     showCurrency={true}
@@ -73,6 +88,7 @@ const Trips = () => {
                 
                 <hr className="sub-nav-divider" />
 
+                    {/* Seyahat başlıkları ve listeleme bölümü */}
                 <div className="trip-title-nav">
                     <input type="checkbox" id="selectAllTrips" />
                     <span className="tr-title-span">Trip Details</span>
@@ -84,6 +100,7 @@ const Trips = () => {
                     <span className="tr-title-span">Status</span>
                 </div>
                 
+                {/* Seyahat listesi */}
                 <div className="trip-list-container">
                     {trips.length > 0 ? (
                         trips.map((trip) => (
@@ -123,9 +140,11 @@ const Trips = () => {
                 </div>
             </div>
             
+            {/* Modallar */}
             <CreateTrip isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
             <TripDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedTrip} />
                 
+                {/* Para Birimi Seçim Modalı */}
             <CurrencyModal 
                 isOpen={isCurrencyOpen} 
                 onClose={() => setIsCurrencyOpen(false)} 

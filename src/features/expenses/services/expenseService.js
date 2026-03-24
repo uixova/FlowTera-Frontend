@@ -1,4 +1,5 @@
 import allExpensesData from '../data/expenses.json';
+import allTeamsData from '../../teams/data/teams.json';
 
 // Gerçekçi yükleme hissi için rastgele gecikme
 const randomDelay = (min = 300, max = 1000) => {
@@ -7,7 +8,7 @@ const randomDelay = (min = 300, max = 1000) => {
 };
 
 export const expenseService = {
-    // 1. Tüm Harcamaları Getir
+    // Tüm Harcamaları Getir
     getAllExpenses: async () => {
         try {
             await randomDelay(400, 1200); // Harcamalar listesi genelde kalabalıktır
@@ -18,7 +19,26 @@ export const expenseService = {
         }
     },
 
-    // 2. Yeni Harcama Oluştur
+    // Sadece seçili takımın harcamalarını getir
+    getExpensesByTeam: async (teamId) => {
+    try {
+        await randomDelay(400, 800);
+        if (!teamId) return [];
+
+        // Hem gelen teamId'yi hem de verideki teamId'yi String'e çevirip öyle karşılaştır
+        const filtered = allExpensesData.filter(exp => 
+            String(exp.teamId).trim() === String(teamId).trim()
+        );
+
+        console.log("Filtrelenmiş Veri Sayısı:", filtered.length);
+        return filtered;
+    } catch (error) {
+        console.error("Service Error", error);
+        throw error;
+    }
+    },
+
+    // Yeni Harcama Oluştur
     createExpense: async (expenseData) => {
         try {
             await randomDelay(600, 1500); 
@@ -30,9 +50,14 @@ export const expenseService = {
         }
     },
 
-    // 3. Harcama Sil (Lazım olabilir!)
+    // Harcama Sil (Lazım olabilir!)
     deleteExpense: async (id) => {
         await randomDelay(300, 700);
         return { success: true, id };
+    },
+
+    getTeamInfo: async (teamId) => {
+        await randomDelay(100, 300); // Daha hızlı gelsin
+        return allTeamsData.find(t => String(t.id) === String(teamId));
     }
 };

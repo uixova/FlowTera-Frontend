@@ -25,7 +25,12 @@ const Expenses = () => {
     const loadData = useCallback(async () => {
         try {
             setLoading(true);
-            const data = await expenseService.getAllExpenses();
+            // 1. LocalStorage'dan aktif takım ID'sini al
+            const activeTeamId = localStorage.getItem('tm_selected_id');
+            
+            // 2. Servise bu ID'yi göndererek filtreli veriyi çek
+            const data = await expenseService.getExpensesByTeam(activeTeamId);
+            
             setExpenses(data);
         } catch (error) { 
             console.error("Veri yükleme hatası:", error); 
@@ -36,8 +41,23 @@ const Expenses = () => {
 
     // Bileşen yüklendiğinde veri çekme
     useEffect(() => {
-        loadData();
-    }, [loadData]);
+    // İlk açılışta veriyi çek
+    loadData();
+    // Takım değiştiğinde çalışacak fonksiyon
+    const handleTeamRefresh = () => {
+        loadData(); // Bu fonksiyonun içinde setLoading(true) olduğu için loader çıkar.
+    };
+
+    // Dinleyiciyi ekle
+    window.addEventListener('teamChanged', handleTeamRefresh);
+    window.addEventListener('storage', handleTeamRefresh); // Diğer sekmeler/pencereler için garantiye alalım
+
+    return () => {
+        // Bellek sızıntısı olmasın diye temizle
+        window.removeEventListener('teamChanged', handleTeamRefresh);
+        window.removeEventListener('storage', handleTeamRefresh);
+    };
+}, [loadData]);
 
     // Harcama detayını açan yardımcı fonksiyon
     const handleOpenDetail = (expense) => {
@@ -57,14 +77,12 @@ const Expenses = () => {
     return (
         <div className="expense-page-container">
             <SubNavbar 
-                teamName="Software Team" 
                 pageName="Expenses"
                 showCurrency={true}
                 searchPlaceholder="Search expenses..."
                 createLabel="New Expense"
                 onCreate={() => setIsCreateOpen(true)}
                 buttons={[
-                    // CURRENCY BUTONU BURADA
                     { 
                         icon: 'ti ti-coins', 
                         label: selectedCurrency, 
