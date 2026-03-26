@@ -1,76 +1,124 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './analysis.css/Analysis.css';
-import SubNavbar from '../../components/navigation/SubNavbar'; // Merkezi Navbar
+import SubNavbar from '../../components/navigation/SubNavbar';
 import ExportModal from './components/ExportData';
 import AnalysisCharts from './components/Charts'; 
 import Loader from '../../components/common/Loader'; 
+import { analysisService } from './services/analysisService';
 
 const Analysis = () => {
   const [isExportOpen, setIsExportOpen] = useState(false);
-  const [loading, setLoading] = useState(true); // Yükleme durumu
+  const [loading, setLoading] = useState(true);
+  const [analysisData, setAnalysisData] = useState(null);
+  const [viewMode, setViewMode] = useState('all');
 
+  // 1. fetchData'yı useCallback içine alıyoruz (ESLint hatasını önlemek ve her renderda değişmemesi için)
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    const selectedTeamId = localStorage.getItem('tm_selected_id');
+    
+    try {
+        // viewMode'u parametre olarak gönderiyoruz!
+        const data = await analysisService.getTeamAnalysis(selectedTeamId, viewMode);
+        if (data) {
+            setAnalysisData(data);
+        }
+    } catch (error) {
+        console.error("Veri çekme hatası:", error);
+    } finally {
+        setTimeout(() => setLoading(false), 500); 
+    }
+  }, [viewMode]);
+  // 2. Sayfa ilk açıldığında veriyi çek
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000); // 1 saniye sonra loader kapanır
+    fetchData();
+  }, [fetchData]); // useCallback sayesinde burada güvenle kullanabiliriz
 
-    return () => clearTimeout(timer);
-  }, []);
+  // 3. KRİTİK NOKTA: localStorage değişimini dinle
+  // Eğer Navbar'da takımı değiştirdiğinde sayfaya f5 atmadan değişsin istiyorsan:
+  useEffect(() => {
+    const handleStorageChange = () => {
+        fetchData(); // LocalStorage değişince veriyi tekrar çek
+    };
 
-  // Yükleme ekranı
-  if (loading) {
-    return (
-      <div className="full-screen-loader">
-        <Loader type="butterfly" />
-      </div>
-    );
-  }
+    // Aynı penceredeki değişiklikleri yakalamak için (Eğer navbar aynı sayfadaysa)
+    window.addEventListener('storage_change', handleStorageChange);
+    // Farklı sekmeler için
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+        window.removeEventListener('storage_change', handleStorageChange);
+        window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [fetchData]);
+
+  if (loading) return <div className="full-screen-loader"><Loader type="butterfly" /></div>;
 
   return (
     <div className="analysis-page">
-      {/* MERKEZİ NAVBAR */}
       <SubNavbar 
         pageName="Financial Analysis"
         createLabel="Export Data"
         showSearch={false} 
         onCreate={() => setIsExportOpen(true)}
         buttons={[
-            { 
-                icon: 'ti ti-refresh', 
-                tooltip: 'Refresh Data', 
-                onClick: () => {
-                  setLoading(true); // Yenilerken loader'ı tekrar tetiklemek istersen
-                  setTimeout(() => setLoading(false), 800);
-                } 
-            }
-        ]}
+        {
+          icon: viewMode === 'all' ? 'ti ti-layers-intersect' : viewMode === 'expenses' ? 'ti ti-receipt' : 'ti ti-plane-arrival',
+          tooltip: `Showing: ${viewMode}`,
+          onClick: () => {
+              const modes = ['all', 'expenses', 'trips'];
+              const nextMode = modes[(modes.indexOf(viewMode) + 1) % modes.length];
+              setViewMode(nextMode);
+          }
+        },
+        { 
+          icon: 'ti ti-refresh', tooltip: 'Refresh Data', onClick: fetchData 
+        }
+      ]}
       />
 
       <hr className="sub-nav-divider" />
 
-      {/* Özet Kartları  */}
+      {/* Veri gelmeden kartların hata vermemesi için optional chaining (?.) kullanıyoruz */}
       <div className="analysis-summary-cards">
+        {/* TOPLAM HARCAMA KARTI */}
         <div className="an-card">
-          <span className="an-card-title">Total Spending</span>
-          <span className="an-card-value">$12,450</span>
-          <span className="an-card-sub">+12% from last month</span>
+          <span className="an-card-title">
+            Total {viewMode.charAt(0).toUpperCase() + viewMode.slice(1)} Spending
+          </span>
+          <span className="an-card-value">{analysisData?.summary?.totalSpending || "$0.00"}</span>
+          <span className={`an-card-sub ${parseFloat(analysisData?.summary?.spendingGrowth) >= 0 ? 'trend-up' : 'trend-down'}`}>
+            {parseFloat(analysisData?.summary?.spendingGrowth) >= 0 ? '↑' : '↓'} 
+            {Math.abs(analysisData?.summary?.spendingGrowth)}% from last month
+          </span>
         </div>
+
+        {/* BU AYIN HARCAMASI */}
         <div className="an-card">
-          <span className="an-card-title">Active Trips</span>
-          <span className="an-card-value">4</span>
-          <span className="an-card-sub">2 international, 2 domestic</span>
+          <span className="an-card-title">Monthly {viewMode === 'all' ? 'Volume' : viewMode}</span>
+          <span className="an-card-value">{analysisData?.summary?.currentMonthSpending || "$0.00"}</span>
+          <span className="an-card-sub">Expenses in March 2026</span>
         </div>
+
+        {/* DURUM KARTI (DİNAMİK) */}
         <div className="an-card">
-          <span className="an-card-title">Pending Reports</span>
-          <span className="an-card-value">18</span>
-          <span className="an-card-sub">Waiting for approval</span>
+          <span className="an-card-title">
+            {viewMode === 'trips' ? 'Active Journeys' : 'Pending Reports'}
+          </span>
+          <span className="an-card-value">
+            {viewMode === 'trips' ? analysisData?.summary?.activeTrips : analysisData?.summary?.pendingReports}
+          </span>
+          <span className="an-card-sub">
+            {viewMode === 'trips' ? 'Currently on road' : 'Awaiting management approval'}
+          </span>
         </div>
       </div>
 
-      {/* Grafikler */}
-      <AnalysisCharts />
+      <AnalysisCharts 
+        categoryData={analysisData?.categoryData || []} 
+        cashFlowData={analysisData?.cashFlowData || []} 
+      />
 
-      {/* Modallar */}
       <ExportModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
     </div>
   );

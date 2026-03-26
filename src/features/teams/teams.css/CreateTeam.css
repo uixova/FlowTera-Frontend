@@ -189,7 +189,6 @@
     font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .tm-input-group input {
@@ -214,6 +213,46 @@
     outline: none;
     transition: 0.2s;
     font-size: 0.9rem;
+}
+
+.tm-input-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+.automation-box {
+    background: rgba(14, 212, 90, 0.03) !important;
+    border: 1px dashed #0ed45a44 !important;
+    padding: 15px !important;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.tm-checkbox-group {
+    margin-bottom: 10px;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #0ed45a;
+    cursor: pointer;
+}
+
+.checkbox-wrapper label {
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .tm-input-group input:focus {
@@ -257,7 +296,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 15px;
     background: #0f0f0f;
-    flex-shrink: 0; /* Footer'ın her zaman altta sabit kalmasını sağlar */
+    flex-shrink: 0; 
 }
 
 .tm-btn-submit {
@@ -303,3 +342,13 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none; 
   margin: 0; 
 }
+
+.animate-in {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+

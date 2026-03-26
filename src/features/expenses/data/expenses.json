@@ -1,6 +1,7 @@
 [
   {
     "id": "exp-1",
+    "userId": "u1",
     "teamId": "team-1",
     "title": "Server Hosting",
     "category": "Infrastructure",
@@ -23,6 +24,7 @@
   },
   {
     "id": "exp-2",
+    "userId": "u2",
     "teamId": "team-1",
     "title": "Team Dinner",
     "category": "Food & Beverage",
@@ -45,6 +47,7 @@
   },
   {
     "id": "exp-3",
+    "userId": "u2",
     "teamId": "team-2",
     "title": "Monitor Stand",
     "category": "Office Equipment",

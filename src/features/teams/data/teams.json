@@ -2,6 +2,7 @@
   {
     "id": "team-1",
     "name": "Main Development Team",
+    "category": "Software Development",
     "membersCount": 2,
     "active": true,
     "createdAt": "2026-01-15",
@@ -12,7 +13,9 @@
       "privacy": "private",
       "maxExpenseLimit": 5000,
       "memberLimit": 20,
-      "status": "active"
+      "status": "active",
+      "autoApproved": false,
+      "autoApprovedLimit": 500
     },
     "history": [
       {
@@ -84,17 +87,20 @@
   {
     "id": "team-2",
     "name": "Marketing Group",
+    "category": "Marketing & Ads",
     "membersCount": 2,
     "active": false,
     "createdAt": "2026-02-10",
     "image": "https://ui-avatars.com/api/?name=Marketing+Group&background=8e44ad&color=fff&size=128",
     "settings": {
-      "currency": "TRY",
+      "currency": "USD",
       "workspaceType": "Corporate",
       "privacy": "internal",
       "maxExpenseLimit": 25000,
       "memberLimit": 20,
-      "status": "active"
+      "status": "active",
+      "autoApproved": false,
+      "autoApprovedLimit": 500
     },
     "history": [
       {

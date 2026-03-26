@@ -46,10 +46,19 @@
     font-weight: 600;
 }
 
+.an-card-sub.trend-up {
+    color: #e63946; 
+}
+
+.an-card-sub.trend-down {
+    color: #0ed45a; 
+}
+
 .analysis-charts-container {
     display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 24px;
+    grid-template-columns: 1fr 1fr; 
+    gap: 20px;
+    margin-top: 30px;
 }
 
 .chart-box {

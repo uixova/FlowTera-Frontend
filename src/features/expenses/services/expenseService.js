@@ -1,63 +1,78 @@
-import allExpensesData from '../data/expenses.json';
-import allTeamsData from '../../teams/data/teams.json';
+import { api } from '../../../services/api';
 
-// Gerçekçi yükleme hissi için rastgele gecikme
 const randomDelay = (min = 300, max = 1000) => {
     const ms = Math.floor(Math.random() * (max - min + 1) + min);
     return new Promise(resolve => setTimeout(resolve, ms));
 };
 
 export const expenseService = {
-    // Tüm Harcamaları Getir
+    // Yardımcı fonksiyon: Giderleri kullanıcı verileriyle birleştirir
+    enrichExpensesWithUserData: async (expenses) => {
+        const users = await api.users.getAll();
+        if (!users || !expenses) return expenses;
+
+        return expenses.map(expense => {
+            // userId'ye göre kullanıcıyı bul
+            const userDetail = users.find(u => u.id === expense.userId);
+            
+            return {
+                ...expense,
+                // Eğer kullanıcı bulunduysa gerçek ismini ve avatarını bas, 
+                // yoksa json'daki eski değeri koru
+                user: userDetail ? userDetail.name : expense.user,
+                userAvatar: userDetail ? userDetail.avatar : null,
+                userRole: userDetail ? userDetail.subscription?.plan : 'free'
+            };
+        });
+    },
+
+    // Tüm giderleri getirme fonksiyonu
     getAllExpenses: async () => {
         try {
-            await randomDelay(400, 1200); // Harcamalar listesi genelde kalabalıktır
-            return allExpensesData;
+            await randomDelay(400, 1200);
+            const rawExpenses = await api.expenses.getAll();
+            if (!rawExpenses) return [];
+
+            // Veriyi kullanıcı bilgileriyle zenginleştirip döndür
+            return await expenseService.enrichExpensesWithUserData(rawExpenses);
         } catch (error) {
             console.error("Service Error: GetExpenses failed", error);
             throw error;
         }
     },
 
-    // Sadece seçili takımın harcamalarını getir
+    // Takım bazında giderleri getirme fonksiyonu
     getExpensesByTeam: async (teamId) => {
-    try {
-        await randomDelay(400, 800);
-        if (!teamId) return [];
-
-        // Hem gelen teamId'yi hem de verideki teamId'yi String'e çevirip öyle karşılaştır
-        const filtered = allExpensesData.filter(exp => 
-            String(exp.teamId).trim() === String(teamId).trim()
-        );
-
-        console.log("Filtrelenmiş Veri Sayısı:", filtered.length);
-        return filtered;
-    } catch (error) {
-        console.error("Service Error", error);
-        throw error;
-    }
-    },
-
-    // Yeni Harcama Oluştur
-    createExpense: async (expenseData) => {
         try {
-            await randomDelay(600, 1500); 
-            console.log("API Simulation: Data saved", expenseData);
-            return { success: true, data: expenseData };
+            await randomDelay(400, 800);
+            if (!teamId) return [];
+
+            const allExpenses = await api.expenses.getAll();
+            if (!allExpenses) return [];
+
+            // Önce filtrele
+            const filtered = allExpenses.filter(exp => 
+                String(exp.teamId).trim() === String(teamId).trim()
+            );
+
+            // Sonra kullanıcı bilgileriyle eşleştir
+            return await expenseService.enrichExpensesWithUserData(filtered);
         } catch (error) {
-            console.error("Service Error: CreateExpense failed", error);
+            console.error("Service Error", error);
             throw error;
         }
     },
 
-    // Harcama Sil (Lazım olabilir!)
-    deleteExpense: async (id) => {
-        await randomDelay(300, 700);
-        return { success: true, id };
+    // Yeni gider oluşturma fonksiyonu (Simülasyon)
+    createExpense: async (expenseData) => {
+        await randomDelay(600, 1500); 
+        return { success: true, data: expenseData };
     },
 
+    // Takım bazında giderleri getirme fonksiyonu (Simülasyon)
     getTeamInfo: async (teamId) => {
-        await randomDelay(100, 300); // Daha hızlı gelsin
-        return allTeamsData.find(t => String(t.id) === String(teamId));
+        await randomDelay(100, 300);
+        const allTeams = await api.teams.getAll();
+        return allTeams?.find(t => String(t.id) === String(teamId));
     }
 };

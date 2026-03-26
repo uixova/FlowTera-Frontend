@@ -1,6 +1,7 @@
 [
   {
     "id": "tr-001",
+    "userId": "u1",
     "teamId": "team-1",
     "title": "Business Meeting",
     "category": "Corporate",
@@ -27,6 +28,7 @@
   },
   {
     "id": "tr-002",
+    "userId": "u2",
     "teamId": "team-2",
     "title": "Family Visit",
     "category": "Personal",
@@ -53,6 +55,7 @@
   },
   {
     "id": "tr-003",
+    "userId": "u3",
     "teamId": "team-2",
     "title": "Tech Conf 2026",
     "category": "Education",

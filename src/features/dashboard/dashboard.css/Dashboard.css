@@ -83,10 +83,10 @@ hr {
 
 .recent-grid-header, .hm-recent-box {
     display: grid;
-    grid-template-columns: 2.5fr 1.2fr 1.2fr 1fr; 
+    grid-template-columns: 1.3fr 1.2fr 0.8fr 1.2fr 0.8fr; 
     padding: 12px 10px;
     align-items: center;
-    gap: 15px; 
+    gap: 10px;
 }
 
 .recent-grid-header {
@@ -119,8 +119,9 @@ hr {
 }
 
 .col-subject { color: #eee; font-weight: 600; font-size: 0.9rem; }
-.col-team { color: #0ed45a; font-size: 0.85rem; font-weight: 700; }
+.col-team-name { color: #888; font-size: 0.85rem; font-weight: 500; }
 .col-amount { text-align: right; font-weight: 800; color: #fff; }
+.col-type { color: #0ed45a; font-weight: 600; }
 
 .hm-mid-ct {
     grid-column: span 2;
@@ -180,10 +181,26 @@ hr {
 
 }
 
-.badge-operations { background: rgba(157, 78, 222, 0.1); color: #9d4edd; }
-.badge-marketing { background: rgba(67, 97, 238, 0.1); color: #4361ee; }
-.badge-sales { background: rgba(230, 57, 70, 0.1); color: #e63946; }
-.badge-finance { background: rgba(14, 212, 90, 0.1); color: #0ed45a; }
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-align: center;
+    justify-self: start; 
+    display: inline-block;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.05); 
+    color: #888;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: 0.3s;
+}
+
+.hm-recent-box:hover .badge {
+    background: rgba(14, 212, 90, 0.1); 
+    color: #0ed45a;
+    border-color: rgba(14, 212, 90, 0.2);
+}
 
 .custom-scroll::-webkit-scrollbar { width: 4px; }
 .custom-scroll::-webkit-scrollbar-track { background: transparent; }

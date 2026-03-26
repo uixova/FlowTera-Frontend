@@ -2,7 +2,9 @@ const DATA_PATHS = {
     TEAMS: '/src/features/teams/data/teams.json',
     USERS: '/src/data/user.json', 
     LOGS: '/src/features/teams/data/userLog.json',
-    NOTIFICATIONS: '/src/assets/data/notification.json'
+    NOTIFICATIONS: '/src/assets/data/notification.json',
+    EXPENSES: '/src/features/expenses/data/expenses.json',
+    TRIPS: '/src/features/trips/data/trips.json'
 };
 
 export const api = {
@@ -27,5 +29,17 @@ export const api = {
 
     logs: {
         getAll: () => api.get(DATA_PATHS.LOGS),
+    },
+
+    notifications: {
+        getAll: () => api.get(DATA_PATHS.NOTIFICATIONS),
+    },
+
+    expenses: {
+        getAll: () => api.get(DATA_PATHS.EXPENSES),
+    },
+
+    trips: {
+        getAll: () => api.get(DATA_PATHS.TRIPS),
     }
 };

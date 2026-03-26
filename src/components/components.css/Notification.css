@@ -108,6 +108,11 @@
     color: #0ed45a;
 }
 
+.req-type-tag.trip {
+    background: rgba(255, 71, 87, 0.1);
+    color: #ff4757;
+}
+
 .req-type-tag.team {
     background: rgba(0, 122, 255, 0.1);
     color: #007aff;

@@ -24,15 +24,11 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
   // Takım üyelerini yüklemek için useEffect kullanıyoruz
   useEffect(() => {
     const fetchMembers = async () => {
-        // Eğer teamId yoksa servise hiç gitme
-        if (!teamId) {
-            console.error("TeamMemberList: teamId tanımsız!");
-            setLoading(false);
-            return;
-        }
+        if (!teamId) return;
 
         try {
-            setLoading(true);
+            setLoading(true); // Loader'ı başlat
+            setMembers([]);   // Eski üyeleri temizle (ki yenileri gelene kadar eskiler görünmesin)
             const data = await teamsService.getTeamMembers(teamId);
             setMembers(data);
         } catch (error) {
@@ -43,7 +39,7 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
     };
 
     fetchMembers();
-}, [teamId]); // teamId değiştiğinde tekrar çalışır
+  }, [teamId]); // teamId değiştiğinde tekrar çalışır
 
   // Üye düzenleme butonuna tıklandığında açılan fonksiyon
   const handleEditClick = (user) => {

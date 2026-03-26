@@ -21,21 +21,28 @@ const Navbar = () => {
 
     // Takım değişikliklerini dinlemek için storage event'ini kullanıyoruz
     useEffect(() => {
-        const handleStorageUpdate = () => {
-            const id = localStorage.getItem('tm_selected_id');
-            setSelectedTeamId(id);
+      const handleStorageChange = () => {
+        const updatedId = localStorage.getItem('tm_selected_id');
+        // Sadece kendi state'imizi güncelliyoruz (aktiflik ikonu vs. için)
+          if (updatedId !== selectedTeamId) {
+            setSelectedTeamId(updatedId);
+          }
         };
-        window.addEventListener('storage', handleStorageUpdate);
-        return () => window.removeEventListener('storage', handleStorageUpdate);
-    }, []);
+
+      window.addEventListener('storage', handleStorageChange);
+      return () => window.removeEventListener('storage', handleStorageChange);
+    }, [selectedTeamId]);
 
     // Takım seçildiğinde çağrılacak fonksiyon
     const handleTeamChange = (teamId) => {
-        localStorage.setItem('tm_selected_id', teamId);
-        localStorage.setItem('tm_view_mode', 'main');
-        setSelectedTeamId(teamId);
-        window.dispatchEvent(new Event('storage')); 
-    };
+      const stringId = String(teamId); // ID'yi string'e çeviriyoruz (localStorage sadece string olarak saklar)
+      localStorage.setItem('tm_selected_id', stringId);
+      localStorage.setItem('tm_view_mode', 'main');
+      setSelectedTeamId(stringId);
+    
+    // Bu satır Teams.jsx'teki useEffect'i uyandırır
+    window.dispatchEvent(new Event('storage')); 
+  };
 
     // React Router'un useNavigate hook'u ile programatik navigasyon
     const navigate = useNavigate();
