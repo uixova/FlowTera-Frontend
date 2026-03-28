@@ -19,20 +19,12 @@
       {
         "teamId": "team-1",
         "roleName": "Admin",
-        "permissions": [{
-          "manage_team": true,
-          "edit_expenses": true,
-          "add_members": true
-        }]
+        "permissions": []
       },
       {
         "teamId": "team-2",
         "roleName": "Moderator",
-        "permissions": [{
-          "manage_team": false,
-          "edit_expenses": true,
-          "add_members": true
-        }]
+        "permissions": []
       }
     ],
     "status": "active",
@@ -71,11 +63,7 @@
       {
         "teamId": "team-1",
         "roleName": "Member",
-        "permissions": [{
-          "manage_team": false,
-          "edit_expenses": false,
-          "add_members": false
-        }]
+        "permissions": []
       }
     ],
     "status": "active",
@@ -114,11 +102,7 @@
       {
         "teamId": "team-2",
         "roleName": "Admin",
-        "permissions": [{
-          "manage_team": true,
-          "edit_expenses": true,
-          "add_members": true
-        }]
+        "permissions": []
       }
     ],
     "status": "active",
@@ -157,11 +141,7 @@
       {
         "teamId": "team-2",
         "roleName": "Member",
-        "permissions": [{
-          "manage_team": false,
-          "edit_expenses": false,
-          "add_members": false
-        }]
+        "permissions": []
       }
     ],
     "status": "inactive",

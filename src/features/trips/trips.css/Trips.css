@@ -1,4 +1,3 @@
-/* Ana Grid Yapısı */
 .trip-title-nav, .trip-block {
     display: grid;
     grid-template-columns: 40px 2.2fr 1.5fr 1.5fr 1.5fr 1fr 1.5fr 1.2fr;
@@ -24,7 +23,6 @@
     flex-direction: column;
 }
 
-/* Satır Blokları */
 .trip-block {
     background: #1a1a1a;
     margin-bottom: 4px;
@@ -41,7 +39,6 @@
     box-shadow: -5px 0 20px rgba(0,0,0,0.3);
 }
 
-/* İkon ve Başlık */
 .trip-block-details {
     display: flex;
     align-items: center;

@@ -1,41 +1,3 @@
-/*  Overlay & Box */
-.ex-side-panel-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0);
-    backdrop-filter: blur(8px); 
-    z-index: 10000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ex-side-panel-overlay.open .ex-side-panel-box {
-    right: 0 !important;
-}
-
-.ex-side-panel-overlay.open {
-    opacity: 1;
-    visibility: visible;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(8px);
-}
-
-.ex-side-panel-box {
-    position: fixed;
-    right: -500px; 
-    top: 0;
-    bottom: 0;
-    width: 450px;
-    background: #121212; 
-    border-left: 1px solid #2a2a2a;
-    display: flex;
-    flex-direction: column;
-    box-shadow: -20px 0 50px rgba(0, 0, 0, 0.6);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/*  Header Image Section */
 .ex-panel-header-image {
     width: 100%;
     height: 220px;
@@ -62,33 +24,6 @@
     background: linear-gradient(to bottom, rgba(18,18,18,0.2) 0%, rgba(18,18,18,1) 100%);
 }
 
-/*  Close Button */
-.ex-panel-close-btn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(24, 24, 24, 0.8);
-    backdrop-filter: blur(8px);
-    border: 1px solid #333;
-    color: #fff;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-    z-index: 10;
-}
-
-.ex-panel-close-btn:hover {
-    background: #ff4757;
-    border-color: #ff4757;
-    transform: rotate(90deg);
-}
-
-/*  Content Layout */
 .ex-panel-content {
     padding: 25px;
     flex: 1;
@@ -130,7 +65,6 @@
     font-weight: 500;
 }
 
-/*  Financial Card - Tutar ve Döviz Bilgisi */
 .ex-financial-card {
     background: #1a1a1a;
     border: 1px solid #2a2a2a;
@@ -185,7 +119,6 @@
     font-family: 'JetBrains Mono', monospace;
 }
 
-/*  Info List & Items */
 .ex-rate-banner {
     background: rgba(255, 255, 255, 0.03);
     padding: 10px 15px;
@@ -235,7 +168,6 @@
     font-size: 1rem;
 }
 
-/*  Status Badges */
 .ex-status-group {
     display: flex;
     align-items: center;
@@ -255,7 +187,6 @@
 .ex-status-badge.pending { background: rgba(255, 171, 0, 0.15); color: #ffab00; border: 1px solid rgba(255, 171, 0, 0.2); }
 .ex-status-badge.rejected { background: rgba(255, 86, 48, 0.15); color: #ff5630; border: 1px solid rgba(255, 86, 48, 0.2); }
 
-/*  Description & Rejection Boxes */
 .ex-desc-box {
     line-height: 1.6;
     background: #1a1a1a;
@@ -292,7 +223,6 @@
     margin: 0;
 }
 
-/*  Utils */
 .ex-divider {
     border: 0;
     border-top: 1px solid #2a2a2a;
@@ -305,7 +235,6 @@
     font-size: 0.85rem !important;
 }
 
-/*  Footer & Primary Action */
 .ex-panel-footer {
     padding: 20px 25px;
     background: #181818;

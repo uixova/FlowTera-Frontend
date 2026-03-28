@@ -1,70 +1,3 @@
-.adm-side-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(4px);
-    z-index: 9998;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.3s ease;
-}
-
-.adm-side-overlay.is-active {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.adm-side-panel {
-    position: fixed;
-    top: 0;
-    right: -450px; 
-    width: 420px;
-    height: 100vh;
-    background: #1e1e1e;
-    border-left: 1px solid #333;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-    transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.adm-side-panel.is-open {
-    right: 0; 
-}
-
-.adm-modal-box {
-    background: #1e1e1e;
-    width: 100%;
-    max-width: 480px;
-    border-radius: 18px;
-    border: 1px solid #333;
-    box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
-    overflow: hidden;
-    animation: admSlideUp 0.3s ease-out;
-}
-
-@keyframes admSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.adm-modal-header {
-    padding: 20px 25px;
-    background: #252525;
-    border-bottom: 1px solid #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .adm-header-left {
     display: flex;
     align-items: center;
@@ -83,12 +16,11 @@
     font-size: 1.3rem;
 }
 
-.adm-panel-header {
-    padding: 30px 25px;
-    border-bottom: 1px solid #333;
+.adm-role-header-part {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
 }
 
 .adm-header-text h3 {
@@ -101,28 +33,6 @@
     color: #777;
     margin: 3px 0 0 0;
     font-size: 0.85rem;
-}
-
-.adm-panel-close {
-    background: #2a2a2a;
-    border: none;
-    color: #888;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.adm-panel-close:hover {
-    background: #333;
-    color: #ff4757;
-}
-
-.adm-panel-body {
-    flex: 1;
-    padding: 30px 25px;
-    overflow-y: auto;
 }
 
 .adm-helper-text {
@@ -191,16 +101,50 @@
     margin-bottom: 12px;
 }
 
+.adm-role-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
 .adm-role-content {
     background: #141414;
     border: 1px solid #2a2a2a;
     padding: 16px;
     border-radius: 12px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column; 
+    gap: 0;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.adm-internal-perms {
+    width: 100%;
+    max-height: 0;
+    opacity: 0;
+    transition: all 0.3s ease;
+    border-top: 0px solid transparent;
+    margin-top: 0;
+}
+
+.adm-perm-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 0;
+    border-bottom: 1px solid #252525;
+    cursor: pointer; 
+}
+
+.adm-perm-row:hover .adm-perm-text span {
+    color: #fff;
+}
+
+.adm-perm-row:last-child {
+    border-bottom: none;
 }
 
 .adm-role-card input[type="radio"]:checked + .adm-role-content {
@@ -240,6 +184,47 @@
     font-size: 0.8rem;
 }
 
+.adm-perm-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: left; 
+}
+
+.adm-perm-text span {
+    font-size: 0.85rem;
+    color: #eee;
+    font-weight: 500;
+}
+
+.adm-perm-text small {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.adm-custom-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #333;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+    background: #111;
+}
+
+.adm-custom-check.checked {
+    background: #ff4757;
+    border-color: #ff4757;
+}
+
+.adm-custom-check i {
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
 .adm-check-icon {
     width: 22px;
     height: 22px;
@@ -258,39 +243,12 @@
     color: #000;
 }
 
-.adm-modal-footer {
-    padding: 20px 25px;
-    background: #252525;
-    border-top: 1px solid #333;
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-}
-
-.adm-btn-secondary {
-    background: transparent;
-    border: 1px solid #444;
-    color: #888;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.adm-btn-primary {
-    background: linear-gradient(140deg, #8cbed1 0%, #0ed45a 66%);
-    color: #000;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.adm-btn-primary:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
+.adm-role-card input[type="radio"]:checked + .adm-role-content .adm-internal-perms {
+    max-height: 300px;
+    opacity: 1;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #252525;
 }
 
 .adm-panel-footer {

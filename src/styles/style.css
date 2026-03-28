@@ -73,3 +73,52 @@ input[type=number] {
 .app-container {
     padding: 28px;
 }
+
+.pagination-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 0;
+    gap: 12px;
+}
+
+.load-more-btn {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    color: #0ed45a;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.load-more-btn:hover {
+    background: #252525;
+    border-color: #0ed45a;
+    transform: translateY(-2px);
+}
+
+.load-more-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    color: #555;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

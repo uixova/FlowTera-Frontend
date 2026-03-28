@@ -1,131 +1,142 @@
 import React, { useState, useEffect } from 'react';
+import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import '../teams.css/TeamEdit.css';
 import { teamsService } from '../services/teamsService'; 
 
 const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
-    // Local State
     const [selectedRole, setSelectedRole] = useState('member');
+    const [restrictedPerms, setRestrictedPerms] = useState([]); // Kısıtlanan yetkiler
     const [isUpdating, setIsUpdating] = useState(false);
 
-    // User prop'u güncellendiğinde veya modal açıldığında seçili rolü güncelle
+    // Yetki listesi (Sabit)
+    const permissionsList = [
+        { id: 'trip_create', name: 'Create Trip', desc: 'Allows starting new trips' },
+        { id: 'exp_delete', name: 'Delete Expense', desc: 'Allows removing log entries' },
+        { id: 'team_manage', name: 'Manage Team', desc: 'Allows inviting/removing users' }
+    ];
+
+    // Modal açıldığında mevcut rol ve kısıtlamaları yükle
     useEffect(() => {
         if (isOpen && user) {
-            const currentRole = user.roleName || 'member';
-            setSelectedRole(currentRole.toLowerCase());
+            setSelectedRole(user.roleName?.toLowerCase() || 'member');
+            setRestrictedPerms(user.restrictions || []); 
         }
     }, [user, isOpen]);
 
-    // Conditional Render
-    if (!isOpen) return null;
+    // Kısıtlama toggle fonksiyonu
+    const toggleRestriction = (id) => {
+        setRestrictedPerms(prev => 
+            prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+        );
+    };
 
-    // Rol güncelleme işlemi
+    // Güncelleme işlemi
     const handleUpdate = async () => {
-        if (!user?.id || !teamId) return; // teamId kontrolü ekledik
-
+        if (!user?.id || !teamId) return;
         try {
+            // API çağrısı yaparak rol ve kısıtlamaları güncelleyoruz
             setIsUpdating(true);
-            // API üzerinden rol güncelleme işlemi
-            await teamsService.updateUserRole(user.id, teamId, selectedRole);
+            await teamsService.updateUserRole(user.id, teamId, {
+                role: selectedRole,
+                restrictions: restrictedPerms
+            });
             onClose(); 
         } catch (error) {
-            console.error("Rol güncellenirken hata oluştu:", error);
+            console.error("Update error:", error);
         } finally {
             setIsUpdating(false);
         }
     };
 
-    // Rol konfigürasyonu 
+    // Rol seçenekleri
     const roles = [
-        {
-            id: 'admin',
-            title: 'Admin',
-            desc: 'Full access to all settings, members and financial logs.',
-            color: 'admin'
-        },
-        {
-            id: 'moderator',
-            title: 'Moderator',
-            desc: 'Can manage members and view reports, but cannot delete the team.',
-            color: 'moderator'
-        },
-        {
-            id: 'member',
-            title: 'Member',
-            desc: 'Standard access. Can add expenses and view their own data.',
-            color: 'member'
-        }
+        { id: 'admin', title: 'Admin', desc: 'Full access to all settings.', color: 'admin' },
+        { id: 'moderator', title: 'Moderator', desc: 'Can manage members and reports.', color: 'moderator' },
+        { id: 'member', title: 'Member', desc: 'Standard access. Personal logs only.', color: 'member' }
     ];
 
     return (
-        // Modal Overlay
-        <div className="tm-modal-overlay" id="tmEditRoleModal" style={{ display: 'flex' }} onClick={onClose}>
-            <div className="tm-modal-container role-modal" onClick={(e) => e.stopPropagation()}>
-                
-                <div className="tm-modal-header">
-                    <div className="tm-modal-user">
-                        <div className="role-icon-box">
-                            <i className="ti ti-shield-lock"></i>
-                        </div>
-                        <div className="user-meta">
-                            <h3>Edit Member Role</h3>
-                            <p id="editRoleTargetUser">
-                                {user?.name || 'Unknown User'} — {user?.roleName || 'Member'}
-                            </p>
-                        </div>
-                    </div>
-                    <button className="tm-modal-close" onClick={onClose} disabled={isUpdating}>
-                        <i className="ti ti-x"></i>
-                    </button>
-                </div>
-
-                {/* Rol Seçimi Listesi */}
-                <div className="tm-modal-body">
-                    <div className="role-selection-list">
-                        {/* Roller arasında seçim yapılacak kartlar */}
-                        {roles.map((role) => (
-                            <label 
-                                key={role.id} 
-                                className={`role-option ${selectedRole === role.id ? 'active' : ''} ${isUpdating ? 'disabled' : ''}`}
-                            >
-                                <input 
-                                    type="radio" 
-                                    name="userRole" 
-                                    value={role.id}
-                                    checked={selectedRole === role.id}
-                                    onChange={(e) => setSelectedRole(e.target.value)}
-                                    disabled={isUpdating}
-                                />
-                                <div className="role-card-content">
-                                    <div className="role-info">
-                                        <span className={`role-name ${role.color}`}>{role.title}</span>
-                                        <span className="role-desc">{role.desc}</span>
-                                    </div>
-                                    {selectedRole === role.id && <i className="ti ti-check"></i>}
-                                </div>
-                            </label>
-                        ))}
+        <ActionSidebar
+            isOpen={isOpen}
+            onClose={onClose}
+            title={
+                <div className="tm-modal-user">
+                    <div className="role-icon-box"><i className="ti ti-shield-lock"></i></div>
+                    <div className="user-meta">
+                        <h3>Edit Member Role</h3>
+                        <p>{user?.name || 'User'} — {user?.roleName || 'Member'}</p>
                     </div>
                 </div>
-
-                {/* Modal Footer - İşlem Butonları */}
-                <div className="tm-modal-footer">
-                    <button 
-                        className="tm-cancel-btn" 
-                        onClick={onClose} 
-                        disabled={isUpdating}
-                    >
-                        Cancel
-                    </button>
-                    <button 
-                        className="tm-save-role-btn" 
-                        onClick={handleUpdate} 
-                        disabled={isUpdating}
-                    >
+            }
+            footer={
+                <div className="tm-modal-footer-grid">
+                    <button className="tm-cancel-btn" onClick={onClose} disabled={isUpdating}>Cancel</button>
+                    <button className="tm-save-role-btn" onClick={handleUpdate} disabled={isUpdating}>
                         {isUpdating ? 'Updating...' : 'Update Role'}
                     </button>
                 </div>
+            }
+            width="460px"
+        >
+            {/* Rol seçim kartları */}
+            <div className="tm-modal-body-internal">
+                <div className="role-selection-list">
+                    {roles.map((role) => (
+                        <div key={role.id} className="role-option-wrapper">
+                            <label className={`role-option-label ${selectedRole === role.id ? 'active' : ''}`}>
+                                <input 
+                                    type="radio" name="userRole" value={role.id}
+                                    checked={selectedRole === role.id}
+                                    onChange={(e) => {
+                                        setSelectedRole(e.target.value);
+                                        if(e.target.value === 'admin') setRestrictedPerms([]);
+                                    }}
+                                    hidden
+                                />
+                                <div className="role-card-content">
+                                    <div className="role-header-part">
+                                        <div className="role-info">
+                                            <span className={`role-name ${role.color}`}>{role.title}</span>
+                                            <span className="role-desc">{role.desc}</span>
+                                        </div>
+                                        <div className="role-check-indicator">
+                                            <i className="ti ti-check"></i>
+                                        </div>
+                                    </div>
+
+                                    {/* Akordeon Kısmı */}
+                                    <div className="role-internal-perms">
+                                        {role.id !== 'admin' ? (
+                                            permissionsList.map(perm => (
+                                                <div 
+                                                    key={perm.id} className="tm-perm-row"
+                                                    onClick={(e) => {
+                                                        e.preventDefault(); e.stopPropagation();
+                                                        toggleRestriction(perm.id);
+                                                    }}
+                                                >
+                                                    <div className="tm-perm-text">
+                                                        <span>{perm.name}</span>
+                                                        <small>{perm.desc}</small>
+                                                    </div>
+                                                    <div className={`tm-custom-check ${restrictedPerms.includes(perm.id) ? 'checked' : ''}`}>
+                                                        {restrictedPerms.includes(perm.id) && <i className="ti ti-x"></i>}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="admin-notice">
+                                                <i className="ti ti-info-circle"></i> Admins cannot be restricted.
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
+        </ActionSidebar>
     );
 };
 

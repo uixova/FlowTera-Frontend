@@ -1,34 +1,23 @@
 import React, { useState, useEffect, memo } from 'react';
+import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import Loader from '../../../components/common/Loader';
 import '../teams.css/Activity.css';
-import { teamsService } from '../services/teamsService'; 
+// API servislerini içe aktar
+import { teamsService } from '../services/teamsService';
 
 const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
     const [userLogs, setUserLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    // Animasyon kontrolü için yeni state
-    const [isAnimate, setIsAnimate] = useState(false);
 
-    // Animasyon Tetikleyici
-    useEffect(() => {
-        let timer;
-        if (isOpen) {
-            // Render sırasına girmek için minik bir gecikme
-            timer = setTimeout(() => setIsAnimate(true), 10);
-        } else {
-            setIsAnimate(false);
-        }
-        return () => clearTimeout(timer);
-    }, [isOpen]);
-
-    // Veri Çekme Logic'i
+    // Veri Çekme Logic'i (Aynen korundu)
     useEffect(() => {
         if (!isOpen || !user || !teamId) {
             setUserLogs([]);
             return;
         }
 
+        // Logları çekmek için async fonksiyon
         const fetchUserLogs = async () => {
             try {
                 setLoading(true);
@@ -41,6 +30,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
             }
         };
 
+        // Modal açıldığında logları çekiyoruz
         fetchUserLogs();
     }, [isOpen, user, teamId]);
 
@@ -49,33 +39,31 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
         log.details?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (!user && !isOpen) return null;
+    // Sidebar başlığı için özel içerik (Avatar, isim, email)
+    const sidebarTitle = (
+        <div className="tm-log-header-alt">
+            <div className="tm-log-user-info">
+                <div className="tm-avatar-wrapper">
+                    <img src={user?.avatar || 'https://via.placeholder.com/40'} alt="User" />
+                </div>
+                <div className="user-meta">
+                    <h3>{user?.name || 'User Activity'}</h3>
+                    <span>{user?.email}</span>
+                </div>
+            </div>
+        </div>
+    );
 
     return (
-        <>
-            {/* Class'ları isAnimate üzerinden yönetiyoruz */}
-            <div 
-                className={`tm-log-overlay ${isAnimate ? 'is-active' : ''}`} 
-                onClick={onClose} 
-            />
-            
-            <div className={`tm-log-panel ${isAnimate ? 'is-open' : ''}`}>
-                <div className="tm-log-header">
-                    <div className="tm-log-user-info">
-                        <div className="tm-avatar-wrapper">
-                            <img src={user?.avatar || 'https://via.placeholder.com/40'} alt="User" />
-                        </div>
-                        <div className="user-meta">
-                            <h3>{user?.name}</h3>
-                            <span>{user?.email}</span>
-                        </div>
-                    </div>
-                    <button className="tm-log-close" onClick={onClose}>
-                        <i className="ti ti-x"></i>
-                    </button>
-                </div>
-
-                <div className="tm-log-search">
+        <ActionSidebar
+            isOpen={isOpen}
+            onClose={onClose}
+            title={sidebarTitle}
+            width="500px" 
+        >
+            <div className="tm-log-container-internal">
+                {/* Arama Alanı */}
+                <div className="tm-log-search-wrapper">
                     <div className="modal-search-input">
                         <i className="ti ti-search"></i>
                         <input 
@@ -87,9 +75,11 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                     </div>
                 </div>
 
-                <div className="tm-log-body">
+                <div className="tm-log-body-content">
                     {loading ? (
-                        <Loader type="dots" text="Loglar Getiriliyor..." />
+                        <div className="log-loader-container">
+                            <Loader type="dots" text="Fetching logs..." />
+                        </div>
                     ) : filteredDisplayLogs.length > 0 ? (
                         <div className="timeline-container">
                             {filteredDisplayLogs.map((log) => (
@@ -108,21 +98,23 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                             ))}
                         </div>
                     ) : (
-                        <div className="no-activity">No records found.</div>
+                        <div className="no-activity">
+                            <i className="ti ti-history"></i>
+                            <p>No records found for this user.</p>
+                        </div>
                     )}
                 </div>
             </div>
-        </>
+        </ActionSidebar>
     );
 };
 
-// Log türüne göre renk sınıfı döndüren yardımcı fonksiyon
+// Yardımcı fonksiyonlar 
 const getColorClass = (type) => {
     const map = { add: 'green', update: 'orange', settings: 'blue', delete: 'red', login: 'purple' };
     return map[type] || 'blue';
 };
 
-// Log türüne göre ikon sınıfı döndüren yardımcı fonksiyon
 const getIcon = (type) => {
     const map = { add: 'ti-plus', update: 'ti-pencil', settings: 'ti-settings', delete: 'ti-trash', login: 'ti-login' };
     return map[type] || 'ti-circle';

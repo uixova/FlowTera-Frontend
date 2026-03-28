@@ -1,59 +1,11 @@
-/* Overlay: Arka planı karartma ve bulanıklaştırma */
-.ex-side-panel-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(6px);
-    z-index: 10000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.ex-side-panel-overlay.open {
-    opacity: 1;
-    visibility: visible;
-}
-
-.ex-side-panel-box {
-    position: fixed;
-    right: -500px;
-    top: 0;
-    bottom: 0;
-    width: 480px;
-    background: #121212; 
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
-    display: flex;
-    flex-direction: column;
-    box-shadow: -20px 0 50px rgba(0, 0, 0, 0.6);
-    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1); 
-}
-
-.ex-side-panel-overlay.open .ex-side-panel-box {
-    right: 0;
-}
-
-.ex-side-panel-overlay:not(.open) {
-    pointer-events: none; /* Tıklamaları engeller */
-}
-
-.ex-side-panel-box:not(.open) * {
-    display: none; /* Tab yapılamaz */
-}
-
-/* Header Bölümü */
-.ex-panel-header {
-    padding: 30px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(to bottom, #1a1a1a, #121212);
-}
-
 .ex-panel-title {
     display: flex;
     align-items: center;
     gap: 15px;
+}
+
+input:focus {
+    outline: none;
 }
 
 .ex-panel-title i {
@@ -76,36 +28,12 @@
     letter-spacing: -0.5px;
 }
 
-/* Kapatma Butonu */
-.ex-panel-close-btn {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #888;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.3s;
-}
-
-.ex-panel-close-btn:hover {
-    background: #ff4757;
-    color: #fff;
-    border-color: #ff4757;
-    transform: rotate(90deg);
-}
-
-/* İçerik ve Form Elemanları */
 .ex-panel-content {
     padding: 10px 25px 30px 25px;
     flex: 1;
     overflow-y: auto;
 }
 
-/* Bilgi Barı */
 .ex-modal-info-bar {
     display: flex;
     gap: 20px;
@@ -127,14 +55,17 @@
 
 .info-item i { color: #0ed45a; font-size: 1.1rem; }
 
-/* Input Grupları */
 .ex-panel-form { display: flex; flex-direction: column; gap: 24px; }
 
 .ex-input-group { 
     display: flex; 
     flex-direction: column; 
     gap: 10px; 
-    margin-bottom: 20px;
+}
+
+.ex-input-row {
+    display: flex;
+    gap: 15px;
 }
 
 .ex-input-group label {
@@ -162,7 +93,6 @@
     box-shadow: 0 0 0 4px rgba(14, 212, 90, 0.05);
 }
 
-/* Upload Alanı */
 .ex-simple-upload {
     background: #181818;
     border: 2px dashed #333;
@@ -185,7 +115,6 @@
 .upload-placeholder i { font-size: 2rem; color: #444; transition: 0.3s; }
 .ex-simple-upload:hover i { color: #0ed45a; transform: translateY(-3px); }
 
-/* Tutar ve Para Birimi Grubu */
 .ex-amount-wrapper {
     display: flex;
     background: #1c1c1c;
@@ -210,15 +139,12 @@
     text-align: center;
 }
 
-/* Report Alanı */
-
 .report-toggle-wrapper {
     display: flex;
     flex-direction: row;
     gap: 20px;
 }
 
-/* Footer & Butonlar */
 .ex-panel-footer {
     padding: 25px;
     background: #1a1a1a;

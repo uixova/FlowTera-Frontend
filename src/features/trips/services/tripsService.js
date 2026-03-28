@@ -26,21 +26,35 @@ export const tripsService = {
     },
 
     // Takım ID'sine göre seyahatleri getir
-    getTripsByTeam: async (teamId) => {
+    getTripsByTeam: async (teamId, page = 1, limit = 20) => {
         try {
             await randomDelay(400, 1000);
-            if (!teamId) return [];
+            if (!teamId) return { data: [], hasMore: false };
 
             const allTrips = await api.trips.getAll(); 
-            if (!allTrips) return [];
+            if (!allTrips) return { data: [], hasMore: false };
 
-            // Takıma göre filtrele
-            const teamTrips = allTrips.filter(trip => 
+            // Önce takıma göre filtrele
+            const filtered = allTrips.filter(trip => 
                 String(trip.teamId).trim() === String(teamId).trim()
             );
 
-            // Kullanıcı bilgilerini içine bas ve döndür
-            return await tripsService.enrichTripsWithUserData(teamTrips);
+            // Sayfalama (Pagination)
+            const startIndex = (page - 1) * limit;
+            const endIndex = startIndex + limit;
+            const paginatedData = filtered.slice(startIndex, endIndex);
+
+            // Daha fazla veri var mı?
+            const hasMore = filtered.length > endIndex;
+
+            // Kullanıcı bilgilerini zenginleştir
+            const enrichedData = await tripsService.enrichTripsWithUserData(paginatedData);
+
+            return {
+                data: enrichedData,
+                hasMore: hasMore,
+                totalCount: filtered.length
+            };
         } catch (error) {
             console.error("Trips Service Error:", error);
             throw error;

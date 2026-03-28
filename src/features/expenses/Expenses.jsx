@@ -1,81 +1,53 @@
-import React, { useState, useEffect, useCallback } from 'react'; 
+import React, { useState } from 'react'; 
 import Loader from '../../components/common/Loader';
 import './expenses.css/Expenses.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import CreateExpense from './modals/CreateExpense';
 import ExpenseDetail from './modals/ExpenseDetail';
 import CurrencyModal from '../../components/modals/CurrencyModal';
-// Harcama servis fonksiyonları
+import PaginationFooter from '../../components/common/PaginationFooter';
+
+// Servis ve Hook importları
 import { expenseService } from './services/expenseService';
+import { usePagination } from '../../hooks/usePagination';
 
 const Expenses = () => {
-    // State tanımları
+    // MODAL VE UI STATELERİ 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [isCurrencyOpen, setIsCurrencyOpen] = useState(false); 
+    const [selectedExpense, setSelectedExpense] = useState(null);
     const [selectedCurrency, setSelectedCurrency] = useState(() => {
         return sessionStorage.getItem('selectedCurrency') || 'USD';
     });
-    const [selectedExpense, setSelectedExpense] = useState(null);
-    const [expenses, setExpenses] = useState([]);
-    const [loading, setLoading] = useState(true);
+
+    // VERİ YÖNETİMİ (HOOK)
+    const activeTeamId = localStorage.getItem('tm_selected_id');
     
+    const { 
+        data: expenses, 
+        loading, 
+        loadingMore, 
+        hasMore, 
+        loadMore 
+    } = usePagination(expenseService.getExpensesByTeam, activeTeamId, 20);
 
-    // Veri yükleme fonksiyonu, useCallback ile sarmalanarak gereksiz yeniden oluşturulmaların önüne geçilir.
-    const loadData = useCallback(async () => {
-        try {
-            setLoading(true);
-            // 1. LocalStorage'dan aktif takım ID'sini al
-            const activeTeamId = localStorage.getItem('tm_selected_id');
-            
-            // 2. Servise bu ID'yi göndererek filtreli veriyi çek
-            const data = await expenseService.getExpensesByTeam(activeTeamId);
-            
-            setExpenses(data);
-        } catch (error) { 
-            console.error("Veri yükleme hatası:", error); 
-        } finally { 
-            setLoading(false); 
-        }
-    }, []);
-
-    // Bileşen yüklendiğinde veri çekme
-    useEffect(() => {
-    // İlk açılışta veriyi çek
-    loadData();
-    // Takım değiştiğinde çalışacak fonksiyon
-    const handleTeamRefresh = () => {
-        loadData(); // Bu fonksiyonun içinde setLoading(true) olduğu için loader çıkar.
-    };
-
-    // Dinleyiciyi ekle
-    window.addEventListener('teamChanged', handleTeamRefresh);
-    window.addEventListener('storage', handleTeamRefresh); // Diğer sekmeler/pencereler için garantiye alalım
-
-    return () => {
-        // Bellek sızıntısı olmasın diye temizle
-        window.removeEventListener('teamChanged', handleTeamRefresh);
-        window.removeEventListener('storage', handleTeamRefresh);
-    };
-}, [loadData]);
-
-    // Harcama detayını açan yardımcı fonksiyon
     const handleOpenDetail = (expense) => {
         setSelectedExpense(expense);
         setIsDetailOpen(true);
     };
 
-    // Para birimi seçildiğinde çağrılacak fonksiyon
     const handleCurrencySelect = (currencyCode) => {
         setSelectedCurrency(currencyCode);
         sessionStorage.setItem('selectedCurrency', currencyCode);
     };
 
-    // Yükleniyor durumunda Loader bileşenini göster
+    // İlk yükleme ekranı
     if (loading) return <Loader type="butterfly" />;
 
     return (
         <div className="expense-page-container">
+            {/* Üst Navigasyon ve Aksiyon Butonları */}
             <SubNavbar 
                 pageName="Expenses"
                 showCurrency={true}
@@ -95,7 +67,7 @@ const Expenses = () => {
             
             <hr className="sub-nav-divider" />
 
-                {/* Harcamalar tablosu */}
+            {/* Harcamalar Tablo Görünümü */}
             <div className="expense-table-wrapper">
                 <div className="expense-title-nav">
                     <input type="checkbox" />
@@ -108,56 +80,76 @@ const Expenses = () => {
                     <span className="ex-title-span">Status</span>
                 </div>
 
-                {/* Harcamalar listesi, tıklanabilir bloklar halinde */}
                 <div className="expense-list-container">
                     {expenses.length > 0 ? (
-                        expenses.map((expense) => (
-                            <div key={expense.id} className="expense-block" onClick={() => handleOpenDetail(expense)}>
-                                <input type="checkbox" onClick={(e) => e.stopPropagation()} />
-                                
-                                <div className="expense-block-details">
-                                    <span className="expense-icon">
-                                        <i className={`ti ${expense.icon || 'ti-receipt'}`}></i>
-                                    </span>
-                                    <div className="expense-details-text">
-                                        <span className="expense-date">{expense.date}</span>
-                                        <span className="expense-title">{expense.title}</span>
+                        <>
+                            {expenses.map((expense) => (
+                                <div 
+                                    key={expense.id} 
+                                    className="expense-block" 
+                                    onClick={() => handleOpenDetail(expense)}
+                                >
+                                    <input type="checkbox" onClick={(e) => e.stopPropagation()} />
+                    
+                                    {/* İkon ve Başlık */}
+                                    <div className="expense-block-details">
+                                        <span className="expense-icon">
+                                            <i className={`ti ${expense.icon || 'ti-receipt'}`}></i>
+                                        </span>
+                                        <div className="expense-details-text">
+                                            <span className="expense-date">{expense.date}</span>
+                                            <span className="expense-title">{expense.title}</span>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <span className="ex-category-tag">{expense.category}</span>
-                                <span className="ex-merchant-text">{expense.merchant}</span>
-                                <span className="ex-method-text">{expense.paymentMethod}</span>
-                                
-                                <div className="ex-list-amount-wrapper">
-                                    <span className="ex-list-symbol">{expense.currencySymbol}</span>
-                                    <span className="ex-list-amount-val">{(Number(expense.amount) || 0).toFixed(2)}</span>
-                                    <span className="ex-list-currency">{expense.currency}</span>
-                                </div>
+                                    <span className="ex-category-tag">{expense.category}</span>
+                                    <span className="ex-merchant-text">{expense.merchant}</span>
+                                    <span className="ex-method-text">{expense.paymentMethod}</span>
 
-                                <span className="ex-report-name">{expense.report || 'General'}</span>
-                                
-                                <span className={`expense-status ${expense.status?.toLowerCase()}`}>
-                                    {expense.status}
-                                </span>
-                            </div>
-                        ))
+                                    {/* Tutar Alanı */}
+                                    <div className="ex-list-amount-wrapper">
+                                        <span className="ex-list-symbol">{expense.currencySymbol}</span>
+                                        <span className="ex-list-amount-val">{(Number(expense.amount) || 0).toFixed(2)}</span>
+                                        <span className="ex-list-currency">{expense.currency}</span>
+                                    </div>
+
+                                    <span className="ex-report-name">{expense.report || 'General'}</span>
+
+                                    <span className={`expense-status ${expense.status?.toLowerCase()}`}>
+                                        {expense.status}
+                                    </span>
+                                </div>
+                            ))}
+
+                            {/* Pagination Footer*/}
+                            <PaginationFooter 
+                                hasMore={hasMore}
+                                loadingMore={loadingMore}
+                                loadMore={loadMore}
+                                currentCount={expenses.length} 
+                                label="expenses"
+                            />
+                        </>
                     ) : (
                         <div className="no-data-info">Kayıtlı harcama bulunamadı.</div>
                     )}
                 </div>
             </div>
 
-                    {/* Modallar */}
+            {/* Modallar */}
             <CreateExpense isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
-            <ExpenseDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedExpense} />
+            
+            <ExpenseDetail 
+                isOpen={isDetailOpen} 
+                onClose={() => setIsDetailOpen(false)} 
+                data={selectedExpense} 
+            />
 
             <CurrencyModal 
                 isOpen={isCurrencyOpen} 
                 onClose={() => setIsCurrencyOpen(false)} 
                 currentCurrency={selectedCurrency}
                 onSelect={handleCurrencySelect}
-                
             />
         </div>
     );

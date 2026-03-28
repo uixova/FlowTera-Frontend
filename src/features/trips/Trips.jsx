@@ -1,65 +1,44 @@
-import React, { useState, useEffect, useCallback } from 'react'; 
+import React, { useState } from 'react'; 
 import Loader from '../../components/common/Loader';
 import './trips.css/Trips.css';
 import SubNavbar from '../../components/navigation/SubNavbar'; 
 import CreateTrip from './modals/CreateTrip';
 import TripDetail from './modals/TripDetail';
 import CurrencyModal from '../../components/modals/CurrencyModal';
-// Servis importu
+import PaginationFooter from '../../components/common/PaginationFooter';
+
+// Servis ve Hook importları
 import { tripsService } from './services/tripsService'; 
+import { usePagination } from '../../hooks/usePagination';
 
 const Trips = () => {
+    // UI STATELERİ
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedTrip, setSelectedTrip] = useState(null);
     const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState(() => {
-            return sessionStorage.getItem('selectedCurrency') || 'USD';
-        });
-    const [trips, setTrips] = useState([]);
-    const [loading, setLoading] = useState(true);
+        return sessionStorage.getItem('selectedCurrency') || 'USD';
+    });
 
-    // Veri çekme işlemini ayrı bir fonksiyon olarak tanımlıyoruz
-    const loadData = useCallback(async () => {
-        try {
-            setLoading(true);
-            // 1. LocalStorage'dan ID'yi çek
-            const activeTeamId = localStorage.getItem('tm_selected_id');
-            
-            // 2. Filtreli veriyi getir
-            const data = await tripsService.getTripsByTeam(activeTeamId);
-            setTrips(data);
-        } catch (error) {
-            console.error("Seyahat verileri yüklenemedi:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+    // VERİ YÖNETİMİ (HOOK)
+    const activeTeamId = localStorage.getItem('tm_selected_id');
+    
+    // tripsService.getTripsByTeam'i hook'a bağlıyoruz.
+    const { 
+        data: trips, 
+        loading, 
+        loadingMore, 
+        hasMore, 
+        loadMore 
+    } = usePagination(tripsService.getTripsByTeam, activeTeamId, 20);
 
-    // Bileşen yüklendiğinde seyahat verilerini çekiyoruz
-    useEffect(() => {
-        loadData();
-
-        const handleTeamRefresh = () => {
-            loadData();
-        };
-
-        window.addEventListener('teamChanged', handleTeamRefresh);
-        window.addEventListener('storage', handleTeamRefresh);
-
-        return () => {
-            window.removeEventListener('teamChanged', handleTeamRefresh);
-            window.removeEventListener('storage', handleTeamRefresh);
-        };
-    }, [loadData]);
-
-    // Seyahat detayını açan fonksiyon
+    // --- YARDIMCI FONKSİYONLAR ---
     const handleOpenDetail = (trip) => {
         setSelectedTrip(trip);
         setIsDetailOpen(true);
     };
 
-    // Para birimi seçildiğinde çağrılacak fonksiyon
     const handleCurrencySelect = (currencyCode) => {
         setSelectedCurrency(currencyCode);
         sessionStorage.setItem('selectedCurrency', currencyCode);
@@ -88,7 +67,6 @@ const Trips = () => {
                 
                 <hr className="sub-nav-divider" />
 
-                    {/* Seyahat başlıkları ve listeleme bölümü */}
                 <div className="trip-title-nav">
                     <input type="checkbox" id="selectAllTrips" />
                     <span className="tr-title-span">Trip Details</span>
@@ -100,51 +78,59 @@ const Trips = () => {
                     <span className="tr-title-span">Status</span>
                 </div>
                 
-                {/* Seyahat listesi */}
+                {/* Trip Listesi */}
                 <div className="trip-list-container">
                     {trips.length > 0 ? (
-                        trips.map((trip) => (
-                            <div key={trip.id} className="trip-block" onClick={() => handleOpenDetail(trip)}>
-                                <input type="checkbox" onClick={(e) => e.stopPropagation()} />
-                
-                                <div className="trip-block-details">
-                                    <span className="trip-icon">
-                                        <i className={`ti ${trip.icon}`}></i>
-                                    </span>
-                                    <div className="trip-details-text">
-                                        <span className="trip-date">{trip.date}</span>
-                                        <span className="trip-title">{trip.title}</span>
+                        <>
+                            {trips.map((trip) => (
+                                <div key={trip.id} className="trip-block" onClick={() => handleOpenDetail(trip)}>
+                                    <input type="checkbox" onClick={(e) => e.stopPropagation()} />
+                                    
+                                    <div className="trip-block-details">
+                                        <span className="trip-icon">
+                                            <i className={`ti ${trip.icon}`}></i>
+                                        </span>
+                                        <div className="trip-details-text">
+                                            <span className="trip-date">{trip.date}</span>
+                                            <span className="trip-title">{trip.title}</span>
+                                        </div>
                                     </div>
+
+                                    <span className="trip-category">{trip.category}</span>
+                                    <span className="trip-destination">{trip.destination}</span>
+                                    <span className="trip-vehicle">{trip.vehicle}</span>
+
+                                    <div className="tr-list-amount-wrapper">
+                                        <span className="tr-list-symbol">{trip.currencySymbol}</span>
+                                        <span className="tr-list-amount-val">{Number(trip.amount).toFixed(2)}</span>
+                                        <span className="tr-list-currency">{trip.currency}</span>
+                                    </div>
+
+                                    <span className="trip-duration">{trip.duration}</span>
+                    
+                                    <span className={`trip-status status-${trip.statusClass}`}>
+                                        {trip.status}
+                                    </span>
                                 </div>
+                            ))}
 
-                                <span className="trip-category">{trip.category}</span>
-                                <span className="trip-destination">{trip.destination}</span>
-                                <span className="trip-vehicle">{trip.vehicle}</span>
-
-                                <div className="tr-list-amount-wrapper">
-                                    <span className="tr-list-symbol">{trip.currencySymbol}</span>
-                                    <span className="tr-list-amount-val">{Number(trip.amount).toFixed(2)}</span>
-                                    <span className="tr-list-currency">{trip.currency}</span>
-                                </div>
-
-                                <span className="trip-duration">{trip.duration}</span>
-                
-                                <span className={`trip-status status-${trip.statusClass}`}>
-                                    {trip.status}
-                                </span>
-                            </div>
-                        ))
+                            {/* Pagination Footer*/}
+                            <PaginationFooter 
+                                hasMore={hasMore}
+                                loadingMore={loadingMore}
+                                loadMore={loadMore}
+                                currentCount={trips.length} 
+                                label="trips"
+                            />
+                        </>
                     ) : (
                         <div className="no-data-info">Henüz seyahat kaydı bulunmuyor.</div>
                     )}
                 </div>
             </div>
             
-            {/* Modallar */}
             <CreateTrip isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
             <TripDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedTrip} />
-                
-                {/* Para Birimi Seçim Modalı */}
             <CurrencyModal 
                 isOpen={isCurrencyOpen} 
                 onClose={() => setIsCurrencyOpen(false)} 

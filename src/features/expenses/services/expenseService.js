@@ -42,21 +42,36 @@ export const expenseService = {
     },
 
     // Takım bazında giderleri getirme fonksiyonu
-    getExpensesByTeam: async (teamId) => {
+    getExpensesByTeam: async (teamId, page = 1, limit = 20) => {
         try {
             await randomDelay(400, 800);
-            if (!teamId) return [];
+            if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
 
             const allExpenses = await api.expenses.getAll();
-            if (!allExpenses) return [];
+            if (!allExpenses) return { data: [], hasMore: false, totalCount: 0 };
 
-            // Önce filtrele
+            // Takım Filtrelemesi
             const filtered = allExpenses.filter(exp => 
                 String(exp.teamId).trim() === String(teamId).trim()
             );
 
-            // Sonra kullanıcı bilgileriyle eşleştir
-            return await expenseService.enrichExpensesWithUserData(filtered);
+            // Sayfalama Hesaplaması
+            const startIndex = (page - 1) * limit;
+            const endIndex = startIndex + limit;
+            const paginatedData = filtered.slice(startIndex, endIndex);
+
+            // Kontrol Mekanizması
+            const hasMore = filtered.length > endIndex;
+
+            // Veriyi Zenginleştir
+            const enrichedData = await expenseService.enrichExpensesWithUserData(paginatedData);
+
+            // Hook'un beklediği standart nesneyi dönüyoruz
+            return {
+                data: enrichedData,
+                hasMore: hasMore,
+                totalCount: filtered.length
+            };
         } catch (error) {
             console.error("Service Error", error);
             throw error;

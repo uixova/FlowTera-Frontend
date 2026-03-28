@@ -1,24 +1,30 @@
 import { api } from '../../../services/api'; 
 
 export const historyService = {
-    // Takım bazlı logları getirme fonksiyonu
-    getHistoryByTeam: async (teamId) => {
+    getHistoryByTeam: async (teamId, page = 1, limit = 20) => {
         try {
-            //  Tüm takımları getir
             const allTeams = await api.teams.getAll();
-            
-            if (!allTeams || !teamId) return [];
+            if (!allTeams || !teamId) return { data: [], hasMore: false };
 
-            //  LocalStorage'dan gelen ID ile eşleşen takımı bul
             const currentTeam = allTeams.find(t => String(t.id) === String(teamId));
+            const allLogs = currentTeam ? (currentTeam.history || []) : [];
 
-            //  Takımı bulduysak içindeki history'yi, bulamadıysak boş array dön
-            console.log(`${teamId} için loglar çekildi.`);
-            return currentTeam ? (currentTeam.history || []) : [];
+            // Sayfalama (Pagination)
+            const startIndex = (page - 1) * limit;
+            const endIndex = startIndex + limit;
+            const paginatedData = allLogs.slice(startIndex, endIndex);
+            
+            const hasMore = allLogs.length > endIndex;
+
+            return {
+                data: paginatedData,
+                hasMore: hasMore,
+                totalCount: allLogs.length
+            };
             
         } catch (error) {
             console.error("History çekilirken hata oluştu:", error);
-            return [];
+            return { data: [], hasMore: false };
         }
     }
 };
