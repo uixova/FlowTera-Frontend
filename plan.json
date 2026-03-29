@@ -1,0 +1,94 @@
+[
+    {
+        "id": "78b11082-5f20-431f-b4cf-f21121e50fbb",
+        "name": "Ücretsiz",
+        "price": 0,
+        "currency": "USD",
+        "features": [
+            { "text": "Günlük harcama takibi", "included": true },
+            { "text": "Topluluk destek forumu", "included": true },
+            { "text": "Sınırlı işlem geçmişi (son 2 ay)", "included": true },
+            { "text": "Akıllı OCR Fatura Tarama", "included": false },
+            { "text": "Tema Yönetim Paneli", "included": false },
+            { "text": "AI Finansal Analiz", "included": false },
+            { "text": "Otomasyon", "included": false }
+        ],
+        "Promise": { "teamLimit": "2 takım", "TeamMemberLimit": "5 üye" },
+        "description": "Bireysel takip için temel araçlar.",
+        "cta": "Ücretsiz Başlayın",
+        "icon": "ti-home-eco",
+        "badge": "free",
+        "popular": false,
+        "order": 1,
+        "clickedNumber": 0
+    },
+    {
+        "id": "070cf2e2-a805-4a13-9129-e45551e10073",
+        "name": "Premium",
+        "price": 9.99,
+        "currency": "USD",
+        "features": [
+            { "text": "Günlük harcama takibi", "included": true },
+            { "text": "Öncelikli e-posta desteği", "included": true },
+            { "text": "Sınırsız işlem geçmişi", "included": true },
+            { "text": "Akıllı OCR Fatura Tarama", "included": false },
+            { "text": "Tema Yönetim Paneli", "included": false },
+            { "text": "AI Finansal Analiz", "included": false },
+            { "text": "Otomasyon", "included": true }
+        ],
+        "Promise": { "teamLimit": "5 takım", "TeamMemberLimit": "20 üye" },
+        "description": "Daha disiplinli bir bütçe yönetimi.",
+        "cta": "Premium'a Yükselt",
+        "icon": "ti-flag-star",
+        "badge": "premium",
+        "popular": true,
+        "order": 2,
+        "clickedNumber": 0
+    },
+    {
+        "id": "13433988-d39c-43f0-a731-51f2bb4749ec",
+        "name": "Professional",
+        "price": 19.99,
+        "currency": "USD",
+        "features": [
+            { "text": "Günlük harcama takibi", "included": true },
+            { "text": "Öncelikli e-posta desteği", "included": true },
+            { "text": "Sınırsız işlem geçmişi", "included": true },
+            { "text": "Akıllı OCR Fatura Tarama", "included": true },
+            { "text": "Tema Yönetim Paneli", "included": true },
+            { "text": "Gelişmiş Fatura Arşivi", "included": true },
+            { "text": "AI Finansal Analiz", "included": false }
+        ],
+        "Promise": { "teamLimit": "15 takım", "TeamMemberLimit": "50 üye" },
+        "description": "Ekipler ve profesyoneller için.",
+        "cta": "Pro'ya Geç",
+        "icon": "ti-shield-check",
+        "badge": "professional",
+        "popular": false,
+        "order": 3,
+        "clickedNumber": 0
+    },
+    {
+        "id": "7fe59f64-6bee-4816-bd66-4d12a8822042",
+        "name": "Kurumsal",
+        "price": 49.99,
+        "currency": "USD",
+        "features": [
+            { "text": "Günlük harcama takibi", "included": true },
+            { "text": "7/24 Özel Destek Hattı", "included": true },
+            { "text": "Sınırsız işlem geçmişi", "included": true },
+            { "text": "Gelişmiş Toplu OCR", "included": true },
+            { "text": "Özel Ekip Paneli", "included": true },
+            { "text": "AI Destekli Analiz", "included": true },
+            { "text": "Tüm Özellikler", "included": true }
+        ],
+        "Promise": { "teamLimit": "Sınırsız", "TeamMemberLimit": "Sınırsız" },
+        "description": "Tam otomasyon ve kurumsal çözümler.",
+        "cta": "Satışla Görüşün",
+        "icon": "ti-building-skyscraper",
+        "badge": "enterprise",
+        "popular": false,
+        "order": 4,
+        "clickedNumber": 0
+    }
+]
