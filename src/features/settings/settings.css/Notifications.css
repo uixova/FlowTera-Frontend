@@ -1,0 +1,73 @@
+.notification-card {
+    padding: 20px 40px !important;
+}
+
+.st-toggle-row-modern {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 0;
+    border-bottom: 1px solid #282828;
+    transition: 0.2s;
+}
+
+.st-toggle-row-modern:last-of-type {
+    border-bottom: none;
+    margin-bottom: 20px;
+}
+
+.toggle-title-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.toggle-title-area i {
+    font-size: 1.4rem;
+    color: #0ed45a;
+}
+
+.toggle-info h4 {
+    font-size: 1.1rem;
+    color: #ffffff;
+    margin: 0;
+}
+
+.toggle-info p {
+    font-size: 0.9rem;
+    color: #777;
+    max-width: 500px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.status-text {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-text.on {
+    color: #0ed45a;
+}
+
+.status-text.off {
+    color: #ff4444;
+}
+
+.notification-footer {
+    margin-top: 20px;
+    padding-top: 25px;
+    border-top: 1px solid #282828;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-footer p {
+    font-size: 0.8rem;
+    color: #444;
+}
+

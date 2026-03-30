@@ -1,0 +1,26 @@
+.report-container { display: flex; flex-direction: column; gap: 20px; }
+.report-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+.report-options {
+    background: #141414;
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.st-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.st-checkbox-group input {
+    width: 18px;
+    height: 18px;
+    accent-color: #0ed45a;
+}

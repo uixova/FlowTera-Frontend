@@ -54,13 +54,22 @@ export const teamsService = {
     // Takım bilgilerini getirme fonksiyonu (Simülasyon)
     getUserLogs: async (userId, teamId) => {
         await randomDelay(400, 800); 
-        const allLogs = await api.logs.getAll() || [];
-        
-        // Hem kullanıcıya hem de o takıma ait olan aksiyonları süzüyoruz
+        const response = await api.logs.getAll() || [];
+    
+        // JSON içindeki TeamMemberLogs dizisini bulup çıkarıyoruz
+        const teamMemberLogContainer = response.find(item => item.TeamMemberLogs);
+        const allLogs = teamMemberLogContainer ? teamMemberLogContainer.TeamMemberLogs : [];
+
+        // userId ve teamId'ye göre filtreleyip, tarih ve saate göre sıralıyoruz
         return allLogs.filter(log => 
             String(log.userId) === String(userId) && 
             String(log.teamId) === String(teamId)
-        ).sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time)); // En yeni log en üstte
+        ).sort((a, b) => {
+            // Tarih ve saat birleştirme işlemi
+            const dateA = new Date(`${a.date} ${a.time}`);
+            const dateB = new Date(`${b.date} ${b.time}`);
+            return dateB - dateA;
+        });
     },
 
     // Yeni üye ekleme fonksiyonu (Simülasyon)

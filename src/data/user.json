@@ -2,6 +2,7 @@
   {
     "id": "u1",
     "name": "Ahmet Yılmaz",
+    "username": "ahmetyilmaz",
     "email": "ahmet.yilmaz@example.com",
     "avatar": "/src/assets/images/user-profile.png",
     "phone": "+90 555 123 4567",
@@ -38,15 +39,12 @@
       "sms": false,
       "push": true
     },
-    "activity": [
-      { "date": "2024-05-30", "action": "Logged in" },
-      { "date": "2024-05-29", "action": "Updated profile" }
-    ],
     "teams": ["team-1", "team-2"]
   },
   {
     "id": "u2",
     "name": "Caner Demir",
+    "username": "canerdemir",
     "email": "caner.demir@example.com",
     "avatar": "/src/assets/images/user-profile.png",
     "phone": "+90 555 987 6543",
@@ -61,6 +59,15 @@
         "maxMembersPerTeam": 5,
         "features": ["basic_expenses", "standard_logs"]
     },
+    "settings": {
+      "theme": "light",
+      "language": "Turkish",
+      "notifications": {
+        "email": true,
+        "sms": true,
+        "push": false
+      }
+    },
     "role": [
       {
         "teamId": "team-1",
@@ -69,24 +76,12 @@
       }
     ],
     "status": "active",
-    "preferences": {
-      "language": "Turkish",
-      "theme": "light"
-    },
-    "notifications": {
-      "email": true,
-      "sms": true,
-      "push": false
-    },
-    "activity": [
-      { "date": "2024-06-02", "action": "Logged in" },
-      { "date": "2024-05-20", "action": "Added new expense" }
-    ],
     "teams": ["team-1"]
   },
   {
     "id": "u3",
     "name": "Ayşe Güngör",
+    "username": "aysegungor",
     "email": "ayse.gungor@example.com",
     "avatar": "/src/assets/images/user-profile.png",
     "phone": "+90 555 444 33 22",
@@ -101,6 +96,15 @@
         "maxMembersPerTeam": 50,
         "features": ["advanced_reports", "unlimited_logs", "custom_roles"]
     },
+    "settings": {
+      "theme": "dark",
+      "language": "English",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "push": true
+      }
+    },
     "role": [
       {
         "teamId": "team-2",
@@ -109,24 +113,12 @@
       }
     ],
     "status": "active",
-    "preferences": {
-      "language": "English",
-      "theme": "dark"
-    },
-    "notifications": {
-      "email": true,
-      "sms": false,
-      "push": true
-    },
-    "activity": [
-      { "date": "2024-06-01", "action": "Logged in" },
-      { "date": "2024-05-15", "action": "Created Marketing Group" }
-    ],
     "teams": ["team-2"]
   },
   {
     "id": "u4",
     "name": "Melek Aydoğdu",
+    "username": "melekaydogdu",
     "email": "melek.aydogdu@example.com",
     "avatar": "/src/assets/images/user-profile.png",
     "phone": "+90 555 111 22 33",
@@ -140,7 +132,16 @@
         "maxTeams": 2,
         "maxMembersPerTeam": 5,
         "features": ["basic_expenses", "standard_logs"]
-    },  
+    },
+    "settings": {
+      "theme": "light",
+      "language": "Turkish",
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "push": false
+      }
+    },
     "role": [
       {
         "teamId": "team-2",
@@ -149,18 +150,6 @@
       }
     ],
     "status": "inactive",
-    "preferences": {
-      "language": "Turkish",
-      "theme": "light"
-    },
-    "notifications": {
-      "email": false,
-      "sms": false,
-      "push": false
-    },
-    "activity": [
-      { "date": "2024-05-28", "action": "Logged in" }
-    ],
     "teams": ["team-2"]
   }
 ]

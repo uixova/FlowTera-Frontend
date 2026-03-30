@@ -19,6 +19,12 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
+.timeline-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
 .status-dot {
     position: absolute;
     bottom: -2px;
@@ -92,6 +98,8 @@
 
 .timeline-item {
     display: flex;
+    flex-direction: row;
+    align-items: center;
     gap: 18px;
     padding-bottom: 30px;
     position: relative;

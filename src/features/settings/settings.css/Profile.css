@@ -1,0 +1,134 @@
+.st-user-top {
+    display: flex;
+    align-items: center;
+    gap: 35px;
+    margin-bottom: 45px;
+    padding-bottom: 35px;
+    border-bottom: 1px solid #282828;
+}
+
+.name-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content; /* Sadece içeriği kadar genişlik */
+    position: relative; /* Noktayı hizalamak için güvenli alan */
+}
+
+/* NOKTA FIX: Buradaki absolute veya shadow taşmasını engelliyoruz */
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0; 
+    display: inline-block;
+    position: relative;
+}
+
+.status-dot.active { 
+    background: #0ed45a; 
+    box-shadow: 0 0 8px rgba(14, 212, 90, 0.4); /* Shadow'u kıstık taşmasın */
+}
+.status-dot.inactive { background: #ff4444; }
+
+.st-content-section {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 0 20px; 
+    box-sizing: border-box; /* Padding'i genişliğe dahil eder, scroll yapmaz */
+}
+
+.st-avatar-box {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.st-avatar-box img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #0ed45a;
+    padding: 4px;
+    background: #1a1a1a;
+}
+
+.st-avatar-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: #0ed45a;
+    color: #000;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: 4px solid #1a1a1a;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.st-avatar-badge:hover { transform: scale(1.1); }
+
+.st-user-meta h4 {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+    color: #ffffff;
+}
+
+.st-user-meta span {
+    color: #0ed45a;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    background: rgba(14, 212, 90, 0.1);
+    padding: 6px 14px;
+    border-radius: 20px;
+}
+
+/* Form Düzenlemeleri */
+.st-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    width: 100%;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+/* Tıklanamayan Read-only Alanlar */
+.static-field .static-value {
+    background: #111;
+    border: 1px dashed #222;
+    padding: 14px 16px;
+    border-radius: 12px;
+    color: #555;
+    font-size: 0.95rem;
+    cursor: default; 
+    user-select: none; 
+    outline: none;
+    box-sizing: border-box;
+}
+
+.st-input-group label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 8px;
+    padding-left: 5px;
+}
+
+/* Buton ve Form Ayrımı */
+.st-form-footer {
+    margin-top: 50px; 
+    padding-top: 20px;
+    border-top: 1px solid #222;
+    margin-bottom: 30px; /* Alttan biraz pay kalsın */
+}

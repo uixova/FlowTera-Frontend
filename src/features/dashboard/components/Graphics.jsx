@@ -1,6 +1,6 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
-import '../dashboard.css/Report.css';
+import '../dashboard.css/Graphics.css';
 
 const MonthlyReport = ({ trendData, distributionData, typeData, teamData }) => {
   return (

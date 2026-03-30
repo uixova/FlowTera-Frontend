@@ -1,0 +1,165 @@
+.current-plan-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #111111 100%);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.plan-badge {
+    display: inline-block;
+    background: rgba(14, 212, 90, 0.1);
+    color: #0ed45a;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.plan-info-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.plan-text h3 {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -1px;
+}
+
+.plan-text p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+.plan-price-display {
+    font-size: 2.2rem;
+    font-weight: 800;
+}
+
+.plan-price-display span {
+    font-size: 1rem;
+    color: #444;
+}
+
+/* Progress Bar */
+.plan-progress-area {
+    margin-top: 30px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #252525;
+    border-radius: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #0ed45a;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(14, 212, 90, 0.4);
+}
+
+/* Plan Grid */
+.plan-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.plan-option-card {
+    background: #161616;
+    border: 1px solid #222;
+    padding: 30px;
+    border-radius: 20px;
+    transition: 0.3s;
+    position: relative;
+}
+
+.plan-option-card.active {
+    border-color: #0ed45a;
+    background: #1a1a1a;
+}
+
+.active-tag {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0ed45a;
+    color: #000;
+    padding: 4px 15px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.plan-option-card h4 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.option-price {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 25px;
+}
+
+.option-price span {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.option-features {
+    list-style: none;
+    margin-bottom: 30px;
+}
+
+.option-features li {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.option-features li i {
+    color: #0ed45a;
+}
+
+.plan-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    background: transparent;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.plan-btn:hover:not(.disabled) {
+    background: #fff;
+    color: #000;
+}
+
+.plan-btn.disabled {
+    border-color: #0ed45a;
+    color: #0ed45a;
+    cursor: default;
+}
+

@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Loader from '../../components/common/Loader';
 import './dashboard.css/Dashboard.css';
-import MonthlyReport from './components/MontlyReport';
+import MonthlyReport from './components/Graphics';
 import { dashboardService } from './services/dashboardService'; 
+
+// Modalları ve Sidebarları içeri alıyoruz
+import CreateExpense from '../expenses/modals/CreateExpense';
+import CreateTrips from '../trips/modals/CreateTrip';
+import CreateReport from './modals/CreateReport';
+import OCRSidebar from './modals/OCR';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({ pendingCount: 0, activeTrips: 0, totalExpenses: 0, rejectedCount: 0 });
@@ -10,11 +16,15 @@ const Dashboard = () => {
     const [chartData, setChartData] = useState({ trend: [], distribution: [] });
     const [loading, setLoading] = useState(true);
 
-    // Dashboard verilerini çekmek için useEffect kullanıyoruz
+    // Modal ve Sidebar Kontrol Stateleri
+    const [isExpenseOpen, setIsExpenseOpen] = useState(false);
+    const [isTripOpen, setIsTripOpen] = useState(false);
+    const [isOCROpen, setIsOCROpen] = useState(false);
+    const [isReportOpen, setIsReportOpen] = useState(false);
+
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                // Şimdilik kullanıcı ID'sini sabit olarak veriyoruz, gerçek uygulamada auth'dan alınabilir
                 const data = await dashboardService.getDashboardStats("u2");
                 if (data) {
                     setStats(data.stats);
@@ -32,12 +42,9 @@ const Dashboard = () => {
                 setLoading(false);
             }
         };
-
-        // Dashboard verilerini çekmeye başlıyoruz
         fetchDashboardData();
     }, []);
 
-    // Yükleniyor durumunu göstermek için basit bir loader
     if (loading) return <Loader type="butterfly" />;
 
     return (
@@ -93,15 +100,11 @@ const Dashboard = () => {
                         {myActivities.length > 0 ? myActivities.map((item) => (
                             <div key={item.id} className="hm-recent-box">
                                 <span className="col-subject" title={item.subject}>{item.subject}</span>
-                
                                 <span className="col-team-name">{item.teamName}</span>
-                
                                 <span className="col-type">{item.type}</span>
-                
                                 <span className={`badge badge-${item.category.replace(/\s+/g, '-').toLowerCase()}`}>
                                     {item.category}
                                 </span>
-                
                                 <span className="col-amount">{item.amount}</span>
                             </div>
                         )) : <p className="no-data">Henüz bir aktiviteniz yok.</p>}
@@ -109,15 +112,27 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* ORTA: Quick Access */}
+            {/* ORTA: Quick Access - Butonlar Buradan Canlanıyor */}
             <div className="hm-mid-ct hm-card">
                 <div className="card-header"><h2>Quick Access</h2></div>
                 <hr />
                 <div className="quick-access-container">
-                    <div className="create-box"><i className="ti ti-credit-card"></i><span>New Expense</span></div>
-                    <div className="create-box"><i className="ti ti-news"></i><span>Add Receipt</span></div>
-                    <div className="create-box"><i className="ti ti-file-description"></i><span>Create Report</span></div>
-                    <div className="create-box"><i className="ti ti-globe"></i><span>Create Trip</span></div>
+                    <div className="create-box" onClick={() => setIsExpenseOpen(true)}>
+                        <i className="ti ti-credit-card"></i>
+                        <span>New Expense</span>
+                    </div>
+                    <div className="create-box" onClick={() => setIsOCROpen(true)}>
+                        <i className="ti ti-news"></i>
+                        <span>Add Receipt</span>
+                    </div>
+                    <div className="create-box" onClick={() => setIsReportOpen(true)}>
+                        <i className="ti ti-file-description"></i>
+                        <span>Create Report</span>
+                    </div>
+                    <div className="create-box" onClick={() => setIsTripOpen(true)}>
+                        <i className="ti ti-globe"></i>
+                        <span>Create Trip</span>
+                    </div>
                 </div>
             </div>
 
@@ -130,6 +145,27 @@ const Dashboard = () => {
                     teamData={chartData.teamSpend || []} 
                 />
             </div>
+
+            {/* --- MODALLAR VE SIDEBARLAR --- */}
+            <CreateExpense 
+                isOpen={isExpenseOpen} 
+                onClose={() => setIsExpenseOpen(false)} 
+            />
+
+            <CreateTrips 
+                isOpen={isTripOpen} 
+                onClose={() => setIsTripOpen(false)} 
+            />
+
+            <OCRSidebar 
+                isOpen={isOCROpen} 
+                onClose={() => setIsOCROpen(false)} 
+            />
+
+            <CreateReport 
+                isOpen={isReportOpen} 
+                onClose={() => setIsReportOpen(false)} 
+            />
         </div>
     );
 };

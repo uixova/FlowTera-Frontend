@@ -1,0 +1,112 @@
+.activity-card {
+    padding: 30px !important;
+}
+
+.st-log-list-modern {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.st-log-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 18px;
+    border: 1px solid #282828;
+    transition: all 0.3s ease;
+}
+
+.st-log-card:hover {
+    border-color: #0ed45a;
+    transform: translateX(5px);
+    background: #222222;
+}
+
+.log-indicator {
+    width: 4px;
+    height: 45px;
+    background: #0ed45a;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(14, 212, 90, 0.4);
+}
+
+.log-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.log-main-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.log-action {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.log-status-badge {
+    font-size: 0.7rem;
+    background: rgba(14, 212, 90, 0.1);
+    color: #0ed45a;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.log-meta-row {
+    display: flex;
+    gap: 20px;
+}
+
+.log-date, .log-device {
+    color: #666;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.log-date i, .log-device i {
+    font-size: 1rem;
+}
+
+/* Empty State */
+.st-empty-logs {
+    text-align: center;
+    padding: 60px 0;
+    color: #444;
+}
+
+.st-empty-logs i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.st-btn-load-more {
+    width: 100%;
+    margin-top: 20px;
+    background: transparent;
+    border: 1px solid #333;
+    color: #888;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.st-btn-load-more:hover {
+    background: #252525;
+    color: #fff;
+    border-color: #444;
+}

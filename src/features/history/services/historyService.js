@@ -1,30 +1,46 @@
-import { api } from '../../../services/api'; 
+import { api } from '../../../services/api';
+
+// Yapay gecikme fonksiyonu (200-800ms arasında rastgele)
+const randomDelay = (min = 200, max = 800) => {
+    const ms = Math.floor(Math.random() * (max - min + 1) + min);
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
 
 export const historyService = {
+    // Takım bazlı geçmiş verilerini getirme
     getHistoryByTeam: async (teamId, page = 1, limit = 20) => {
         try {
-            const allTeams = await api.teams.getAll();
-            if (!allTeams || !teamId) return { data: [], hasMore: false };
+            // Takım değiştiğinde Loader'ın ekranda kalması için yapay gecikme
+            await randomDelay(400, 1000);
 
-            const currentTeam = allTeams.find(t => String(t.id) === String(teamId));
-            const allLogs = currentTeam ? (currentTeam.history || []) : [];
+            // Veri çekme işlemi
+            const response = await api.logs.getAll() || [];
+            
+            // JSON yapısından TeamLogs dizisini ayıkla
+            const teamLogContainer = response.find(item => item.TeamLogs);
+            const allLogs = teamLogContainer ? teamLogContainer.TeamLogs : [];
 
-            // Sayfalama (Pagination)
+            // teamId'ye göre filtrele 
+            const filteredLogs = allLogs.filter(log => 
+                String(log.teamId) === String(teamId)
+            );
+
+            // Sayfalama (Pagination) hesaplamaları
             const startIndex = (page - 1) * limit;
             const endIndex = startIndex + limit;
-            const paginatedData = allLogs.slice(startIndex, endIndex);
+            const paginatedData = filteredLogs.slice(startIndex, endIndex);
             
-            const hasMore = allLogs.length > endIndex;
+            // Daha fazla veri olup olmadığını kontrol et
+            const hasMore = filteredLogs.length > endIndex;
 
             return {
                 data: paginatedData,
                 hasMore: hasMore,
-                totalCount: allLogs.length
+                totalCount: filteredLogs.length
             };
-            
         } catch (error) {
-            console.error("History çekilirken hata oluştu:", error);
-            return { data: [], hasMore: false };
+            console.error("History fetching error:", error);
+            return { data: [], hasMore: false, totalCount: 0 };
         }
     }
 };
