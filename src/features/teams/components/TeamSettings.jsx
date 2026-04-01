@@ -1,15 +1,17 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'; 
+import Loader from '../../../components/common/Loader';
 import '../teams.css/Settings.css';
 import { teamsService } from '../services/teamsService';
 
-const TeamSettings = ({ onBack, currentUser }) => {
+const TeamSettings = ({ team, onBack, currentUser }) => {
+  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
   const [planMaxMembers, setPlanMaxMembers] = useState(5);
   const [loading, setLoading] = useState(true);
   const selectedTeamId = localStorage.getItem('tm_selected_id');
 
   // 1. FormData State Güncellendi
   const [formData, setFormData] = useState({
-    teamName: '',
+    teamName: team?.name || '',
     category: 'Software Development', // Yeni
     workspaceType: 'Corporate',
     status: 'active',
@@ -21,7 +23,9 @@ const TeamSettings = ({ onBack, currentUser }) => {
     currency: 'USD' // Create panelindeki ile uyum için eklendi
   });
 
-  const [preview, setPreview] = useState('https://via.placeholder.com/160?text=LOGO');
+  const [preview, setPreview] = useState(team?.image || 'https://via.placeholder.com/160?text=LOGO');
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoError, setLogoError] = useState('');
   const fileInputRef = useRef(null);
 
   const loadTeamData = useCallback(async () => {
@@ -76,11 +80,33 @@ const TeamSettings = ({ onBack, currentUser }) => {
 
   const handleUpdate = (e) => {
     e.preventDefault();
-    console.log("Settings Updated:", { id: selectedTeamId, ...formData });
+    console.log("Settings Updated:", { id: selectedTeamId, ...formData, logoFile });
     alert("Settings updated successfully!");
   };
 
-  if (loading) return null;
+  const handleLogoSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setLogoError('Only JPG, PNG or WEBP images are allowed.');
+      setLogoFile(null);
+      e.target.value = '';
+      return;
+    }
+
+    setLogoError('');
+    setLogoFile(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  if (loading) {
+    return (
+      <div className="full-screen-loader">
+        <Loader type="butterfly" />
+      </div>
+    );
+  }
 
   return (
     <div className="tm-page-layout">
@@ -101,10 +127,15 @@ const TeamSettings = ({ onBack, currentUser }) => {
                   <img src={preview} alt="Team Logo" />
                   <div className="tm-upload-overlay"><span style={{fontSize: '24px'}}>+</span></div>
                 </div>
-                <input type="file" ref={fileInputRef} accept="image/*" style={{ display: 'none' }} onChange={(e) => {
-                  if (e.target.files[0]) setPreview(URL.createObjectURL(e.target.files[0]));
-                }} />
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept=".jpg,.jpeg,.png,.webp"
+                  style={{ display: 'none' }}
+                  onChange={handleLogoSelect}
+                />
                 <button type="button" className="tm-upload-btn" onClick={() => fileInputRef.current.click()}>Change Logo</button>
+                {logoError && <span className="tm-upload-error">{logoError}</span>}
                 <span className="tm-preview-label">Organization Branding</span>
               </div>
             </aside>

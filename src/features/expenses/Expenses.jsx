@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; 
+import React, { useEffect, useState } from 'react'; 
 import Loader from '../../components/common/Loader';
 import './expenses.css/Expenses.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
@@ -22,7 +22,24 @@ const Expenses = () => {
     });
 
     // VERİ YÖNETİMİ (HOOK)
-    const activeTeamId = localStorage.getItem('tm_selected_id');
+    const [activeTeamId, setActiveTeamId] = useState(() => localStorage.getItem('tm_selected_id'));
+
+    useEffect(() => {
+        const syncSelectedTeam = () => {
+            const nextTeamId = localStorage.getItem('tm_selected_id');
+            setActiveTeamId(prevTeamId =>
+                String(prevTeamId || '') === String(nextTeamId || '') ? prevTeamId : nextTeamId
+            );
+        };
+
+        window.addEventListener('teamChanged', syncSelectedTeam);
+        window.addEventListener('storage', syncSelectedTeam);
+
+        return () => {
+            window.removeEventListener('teamChanged', syncSelectedTeam);
+            window.removeEventListener('storage', syncSelectedTeam);
+        };
+    }, []);
     
     // expenseService.getExpensesByTeam'i hook'a bağlıyoruz.
     const { 
@@ -30,7 +47,8 @@ const Expenses = () => {
         loading, 
         loadingMore, 
         hasMore, 
-        loadMore 
+        loadMore,
+        totalCount
     } = usePagination(expenseService.getExpensesByTeam, activeTeamId, 20);
 
     // Detay sidebar'ını açmak için seçilen harcamayı state'e atıyoruz
@@ -130,6 +148,7 @@ const Expenses = () => {
                                 loadingMore={loadingMore}
                                 loadMore={loadMore}
                                 currentCount={expenses.length} 
+                                totalCount={totalCount}
                                 label="expenses"
                             />
                         </>

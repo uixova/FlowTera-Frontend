@@ -1,4 +1,4 @@
-import { api } from '../../../services/api';
+import { api } from '../../../api/api';
 
 const randomDelay = (min = 200, max = 800) => {
     const ms = Math.floor(Math.random() * (max - min + 1) + min);
@@ -83,7 +83,7 @@ export const teamsService = {
     // Takım detaylarını getirme fonksiyonu (Simülasyon)
     getTeamSettings: async (teamId) => {
         if (!teamId) return null;
-        await randomDelay(300, 600); // Gerçekçi yükleme simülasyonu
+        await randomDelay(60, 140);
     
         const teams = await api.teams.getAll() || [];
         const allUsers = await api.users.getAll() || [];
@@ -100,6 +100,14 @@ export const teamsService = {
             ...team,
             adminPlanLimit: adminUser?.subscription?.maxMembersPerTeam || 5
         };
-    }
+    },
+
+    // Basit takım listesini getirme fonksiyonu (Simülasyon)
+    getSimpleTeams: async () => {
+        await randomDelay(100, 300); 
+        const teams = await api.teams.getAll() || [];
+        // Alfabetik sıralama
+        return teams.sort((a, b) => a.name.localeCompare(b.name));
+    },
 
 };

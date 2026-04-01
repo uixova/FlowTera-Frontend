@@ -1,7 +1,26 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import '../settings.css/Profile.css';
 
 const Profile = ({ user }) => {
+  const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+  const fileInputRef = useRef(null);
+  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || '');
+  const [avatarError, setAvatarError] = useState('');
+
+  const handleAvatarPick = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!allowedImageTypes.includes(file.type)) {
+      setAvatarError('Only JPG, PNG or WEBP images are allowed.');
+      event.target.value = '';
+      return;
+    }
+
+    setAvatarError('');
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
   if (!user) return null;
 
   return (
@@ -15,9 +34,16 @@ const Profile = ({ user }) => {
         {/* Üst Profil Alanı */}
         <div className="st-user-top">
           <div className="st-avatar-box">
-            <img src={user.avatar} alt="Avatar" />
-            <div className="st-avatar-badge">
+            <img src={avatarPreview || user.avatar} alt="Avatar" />
+            <div className="st-avatar-badge" onClick={() => fileInputRef.current?.click()}>
               <i className="ti ti-camera"></i>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".jpg,.jpeg,.png,.webp"
+                onChange={handleAvatarPick}
+                style={{ display: 'none' }}
+              />
             </div>
           </div>
           <div className="st-user-meta">
@@ -28,6 +54,7 @@ const Profile = ({ user }) => {
             <span>{user.subscription?.plan?.toUpperCase()} ACCOUNT</span>
             </div>
         </div>
+        {avatarError && <p className="st-avatar-error">{avatarError}</p>}
 
         {/* Form Alanı */}
         <div className="st-form-grid">

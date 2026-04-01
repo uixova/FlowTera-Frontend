@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Input from '../common/Input';
 import '../components.css/SubNavbar.css';
-import allTeams from '../../features/teams/data/teams.json';
+import { teamsService } from '../../features/teams/services/teamsService';
 
 const SubNavbar = ({ 
     title, 
@@ -15,46 +15,105 @@ const SubNavbar = ({
     showSearch = true,
     showCreate = true 
 }) => {
-    // İSMİ DAHA STATE OLUŞURKEN HESAPLA (Hata veren useEffect'teki ilk çağrıyı iptal eder)
-    const [displayTeamName, setDisplayTeamName] = useState(() => {
-        const selectedId = localStorage.getItem('tm_selected_id');
-        const currentTeam = allTeams.find(t => String(t.id) === String(selectedId));
-        if (currentTeam) {
-            return currentTeam.name.length > 18 
-                ? currentTeam.name.substring(0, 15) + "..." 
-                : currentTeam.name;
-        }
-        return "Team";
-    });
+    const getTeamNameFromCache = useCallback((teamId) => {
+        if (!teamId) return "";
 
-    // Güncelleme fonksiyonunu useCallback ile koru
-    const updateTeamName = useCallback(() => {
-        const selectedId = localStorage.getItem('tm_selected_id');
-        const currentTeam = allTeams.find(t => String(t.id) === String(selectedId));
-        
-        // Takım ismini kısaltarak göster (18 karakterden uzun ise)
-        const newName = currentTeam 
-            ? (currentTeam.name.length > 18 ? currentTeam.name.substring(0, 15) + "..." : currentTeam.name)
-            : "Team";
-            
-        // Sadece isim gerçekten değiştiyse state güncelle (render maliyetini düşürür)
-        setDisplayTeamName(prev => (prev !== newName ? newName : prev));
+        const directName = localStorage.getItem('tm_selected_name');
+        if (directName) return directName;
+
+        try {
+            const rawCache = localStorage.getItem('tm_teams_cache');
+            const parsedCache = rawCache ? JSON.parse(rawCache) : [];
+            if (!Array.isArray(parsedCache)) return "";
+
+            const matchedTeam = parsedCache.find((team) => String(team.id) === String(teamId));
+            return matchedTeam?.name || "";
+        } catch {
+            return "";
+        }
     }, []);
 
+    const formatTeamName = useCallback((teamName) => {
+        if (!teamName) return "";
+        return teamName.length > 18
+            ? `${teamName.substring(0, 15)}...`
+            : teamName;
+    }, []);
+
+    const [displayTeamName, setDisplayTeamName] = useState(() => {
+        const selectedId = localStorage.getItem('tm_selected_id');
+        return formatTeamName(getTeamNameFromCache(selectedId));
+    });
+
+    const updateTeamName = useCallback(async (isMounted = { current: true }) => {
+        const selectedId = localStorage.getItem('tm_selected_id');
+        if (!selectedId) return;
+
+        const cachedTeamName = getTeamNameFromCache(selectedId);
+        if (cachedTeamName && isMounted.current) {
+            setDisplayTeamName(formatTeamName(cachedTeamName));
+        }
+
+        try {
+            const teams = await teamsService.getTeams();
+            if (teams && isMounted.current) {
+                const currentTeam = teams.find(t => String(t.id) === String(selectedId));
+                if (currentTeam) {
+                    localStorage.setItem('tm_selected_name', currentTeam.name || '');
+                    const newName = formatTeamName(currentTeam.name);
+                    setDisplayTeamName(newName);
+                }
+            }
+        } catch (error) {
+            console.error("SubNavbar update error:", error);
+        }
+    }, [formatTeamName, getTeamNameFromCache]);
+
     useEffect(() => {
-        // Takım değişikliklerini dinlemek için hem custom event hem de storage event'ini kullanıyoruz
-        const handleStorageChange = () => {
-            updateTeamName();
+        // Component'in hala mount edilip edilmediğini kontrol etmek için
+        const status = { current: true };
+
+        // useEffect içinde doğrudan çağırmak yerine bir fonksiyon aracılığıyla tetikliyoruz
+        const initUpdate = async () => {
+            await updateTeamName(status);
         };
 
-        window.addEventListener('teamChanged', handleStorageChange);
+        initUpdate();
+
+        const handleTeamChange = (event) => {
+            const incomingName = event?.detail?.teamName || localStorage.getItem('tm_selected_name');
+            if (incomingName) {
+                setDisplayTeamName(formatTeamName(incomingName));
+                return;
+            }
+
+            const selectedId = event?.detail?.teamId || localStorage.getItem('tm_selected_id');
+            const cachedName = getTeamNameFromCache(selectedId);
+            if (cachedName) {
+                setDisplayTeamName(formatTeamName(cachedName));
+                return;
+            }
+
+            updateTeamName(status);
+        };
+
+        const handleStorageChange = () => {
+            const cachedTeamName = localStorage.getItem('tm_selected_name');
+            if (cachedTeamName) {
+                setDisplayTeamName(formatTeamName(cachedTeamName));
+            }
+            updateTeamName(status);
+        };
+
+        window.addEventListener('teamChanged', handleTeamChange);
         window.addEventListener('storage', handleStorageChange);
 
         return () => {
-            window.removeEventListener('teamChanged', handleStorageChange);
+            status.current = false; 
+            window.removeEventListener('teamChanged', handleTeamChange);
             window.removeEventListener('storage', handleStorageChange);
         };
-    }, [updateTeamName]); // Sadece event dinleyicileri kurar
+    }, [formatTeamName, getTeamNameFromCache, updateTeamName]);
 
     return (
         <div className="sub-navbar-container">
@@ -71,10 +130,8 @@ const SubNavbar = ({
             </div>
             
             <div className="sub-nav-right">
-                {showCurrency && (
-                    <div className="nav-currency-indicator" title="Multi-currency enabled"></div>
-                )}
-
+                {showCurrency && <div className="nav-currency-indicator" title="Multi-currency enabled"></div>}
+                
                 {showSearch && (
                     <Input 
                         placeholder={searchPlaceholder}

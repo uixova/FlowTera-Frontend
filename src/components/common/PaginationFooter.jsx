@@ -1,6 +1,8 @@
 import React from 'react';
 
-const PaginationFooter = ({ hasMore, loadingMore, loadMore, currentCount, label = "items" }) => {
+const PaginationFooter = ({ hasMore, loadingMore, loadMore, currentCount, totalCount, label = "items" }) => {
+    const safeCurrentCount = Number(currentCount) || 0;
+    const safeTotalCount = Number.isFinite(Number(totalCount)) ? Number(totalCount) : safeCurrentCount;
     
     return (
         <div className="pagination-footer">
@@ -18,7 +20,7 @@ const PaginationFooter = ({ hasMore, loadingMore, loadMore, currentCount, label 
                 </button>
             )}
             <div className="pagination-info">
-                Showing {currentCount} {label}
+                Showing {safeCurrentCount} / {safeTotalCount} {label}
             </div>
         </div>
     );

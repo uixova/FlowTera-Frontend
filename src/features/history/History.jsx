@@ -16,17 +16,23 @@ const History = () => {
     const [teamId, setTeamId] = useState(() => localStorage.getItem('tm_selected_id'));
 
 
-    // Takım ID'si değiştiğinde (örneğin başka bir takıma geçildiğinde) verilerin güncellenmesi için dinleyici ekliyoruz
+    // Takım ID'si değiştiğinde verilerin güncellenmesi için dinleyici ekliyoruz
     useEffect(() => {
         const handleTeamUpdate = () => {
             const currentId = localStorage.getItem('tm_selected_id');
-            if (currentId !== teamId) {
-                setTeamId(currentId);
-            }
+            setTeamId(prevTeamId =>
+                String(prevTeamId || '') === String(currentId || '') ? prevTeamId : currentId
+            );
         };
+
+        window.addEventListener('teamChanged', handleTeamUpdate);
         window.addEventListener('storage', handleTeamUpdate);
-        return () => window.removeEventListener('storage', handleTeamUpdate);
-    }, [teamId]);
+
+        return () => {
+            window.removeEventListener('teamChanged', handleTeamUpdate);
+            window.removeEventListener('storage', handleTeamUpdate);
+        };
+    }, []);
 
     // usePagination hook'u, verilen fetch fonksiyonunu kullanarak sayfalama ve veri yönetimi sağlar
     const { 
@@ -34,7 +40,8 @@ const History = () => {
         loading, 
         loadingMore, 
         hasMore, 
-        loadMore 
+        loadMore,
+        totalCount
     } = usePagination(historyService.getHistoryByTeam, teamId, 20);
 
     // Bir log öğesinin genişletilmesi veya daraltılması için toggle fonksiyonu
@@ -78,7 +85,8 @@ const History = () => {
                             hasMore={hasMore} 
                             loadingMore={loadingMore} 
                             loadMore={loadMore} 
-                            currentCount={historyData.length} 
+                            currentCount={searchTerm ? filteredData.length : historyData.length} 
+                            totalCount={searchTerm ? filteredData.length : totalCount}
                             label="activity logs" 
                         />
                     </>

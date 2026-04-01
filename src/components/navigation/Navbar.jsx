@@ -19,19 +19,27 @@ const Navbar = () => {
         return localStorage.getItem('tm_selected_id') || null;
     });
 
-    // Takım değişikliklerini dinlemek için storage event'ini kullanıyoruz
+    // Takım değişikliklerini hem same-tab hem cross-tab dinle
     useEffect(() => {
-      const handleStorageChange = () => {
+      const syncSelectedTeam = () => {
         const updatedId = localStorage.getItem('tm_selected_id');
-        // Sadece kendi state'imizi güncelliyoruz (aktiflik ikonu vs. için)
-          if (updatedId !== selectedTeamId) {
-            setSelectedTeamId(updatedId);
-          }
-        };
+        setSelectedTeamId(prevId =>
+          String(prevId || '') === String(updatedId || '') ? prevId : updatedId
+        );
+      };
 
-      window.addEventListener('storage', handleStorageChange);
-      return () => window.removeEventListener('storage', handleStorageChange);
-    }, [selectedTeamId]);
+      const handleTeamChanged = () => {
+        syncSelectedTeam();
+      };
+
+      window.addEventListener('teamChanged', handleTeamChanged);
+      window.addEventListener('storage', syncSelectedTeam);
+
+      return () => {
+        window.removeEventListener('teamChanged', handleTeamChanged);
+        window.removeEventListener('storage', syncSelectedTeam);
+      };
+    }, []);
 
     // Takım seçildiğinde çağrılacak fonksiyon
     const handleTeamChange = (teamId) => {
@@ -39,9 +47,12 @@ const Navbar = () => {
       localStorage.setItem('tm_selected_id', stringId);
       localStorage.setItem('tm_view_mode', 'main');
       setSelectedTeamId(stringId);
-    
-    // Bu satır Teams.jsx'teki useEffect'i uyandırır
-    window.dispatchEvent(new Event('storage')); 
+
+      window.dispatchEvent(
+        new CustomEvent('teamChanged', {
+          detail: { teamId: stringId, viewMode: 'main' }
+        })
+      );
   };
 
     // React Router'un useNavigate hook'u ile programatik navigasyon

@@ -1,4 +1,4 @@
-/* Container & Layout */
+
 .settings-container {
     display: flex;
     height: 100vh;
@@ -13,7 +13,6 @@
     max-width: 100% !important;
 }
 
-/* Sidebar */
 .st-sidebar {
     width: 280px;
     background: #141414;
@@ -68,7 +67,6 @@
     font-weight: 700;
 }
 
-/* Main Content Wrapper */
 .st-main-content {
     flex: 1;
     padding: 50px 60px;
@@ -100,7 +98,6 @@
     margin-bottom: 25px;
 }
 
-/* Forms & Inputs */
 .st-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
 .st-input-group { display: flex; flex-direction: column; gap: 8px; }
 .st-input-group label { font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase; }
@@ -128,7 +125,6 @@
     border-style: dashed;
 }
 
-/* Buttons */
 .st-btn-save {
     background: #0ed45a;
     color: #000;
@@ -145,7 +141,6 @@
     box-shadow: 0 8px 20px rgba(14, 212, 90, 0.3);
 }
 
-/* Global Switches */
 .st-switch {
     width: 44px;
     height: 22px;
@@ -176,7 +171,6 @@
 input:checked + .st-slider { background: #0ed45a; }
 input:checked + .st-slider:before { transform: translateX(22px); }
 
-/* Loader */
 .st-loader {
     height: 100vh;
     display: flex;

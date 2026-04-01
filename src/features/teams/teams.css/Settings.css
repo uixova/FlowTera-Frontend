@@ -121,6 +121,15 @@
     border-color: #444;
 }
 
+.tm-upload-error {
+    display: block;
+    margin-top: 10px;
+    color: #ff7a7a;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: center;
+}
+
 .tm-preview-label {
     display: block;
     font-size: 0.65rem;
@@ -150,23 +159,6 @@
     letter-spacing: 1px;
 }
 
-.tm-input-group input, .tm-input-group select {
-    width: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 18px;
-    border-radius: 16px;
-    color: #fff;
-    font-size: 1rem;
-    outline: none;
-    transition: all 0.3s ease;
-}
-
-.tm-input-group input:focus, .tm-input-group select:focus {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: #0ed45a;
-    box-shadow: 0 0 20px rgba(14, 212, 90, 0.1);
-}
 
 .tm-automation-settings {
     background: rgba(255, 255, 255, 0.02);
@@ -219,33 +211,6 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-.tm-radio-vertical {
-    display: flex;
-    justify-content: space-evenly;
-    flex-direction: row;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.tm-radio-option {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 16px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-}
-
-.tm-radio-option input[type="radio"] {
-    position: absolute;
-    opacity: 0; 
-}
-
 .tm-radio-option .option-icon {
     width: 48px;
     height: 48px;
@@ -260,37 +225,6 @@
     margin-right: 15px;
 }
 
-.tm-radio-option .option-text {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.tm-radio-option .option-text strong {
-    font-size: 1rem;
-    color: #fff;
-    display: block;
-}
-
-.tm-radio-option .option-text span {
-    font-size: 0.85rem;
-    color: #666;
-}
-
-.tm-radio-option.selected {
-    background: rgba(14, 212, 90, 0.03);
-    border-color: rgba(14, 212, 90, 0.4);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.tm-radio-option.selected .option-text strong {
-    color: #0ed45a;
-}
-
-.tm-radio-option:hover:not(.selected) {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-}
 
 .plan-tag {
     font-size: 0.75rem;

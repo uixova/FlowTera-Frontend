@@ -1,6 +1,7 @@
 import React, { useState, useEffect, memo } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import Loader from '../../../components/common/Loader';
+import Input from '../../../components/common/Input';
 import '../teams.css/Activity.css';
 // API servislerini içe aktar
 import { teamsService } from '../services/teamsService';
@@ -64,15 +65,13 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
             <div className="tm-log-container-internal">
                 {/* Arama Alanı */}
                 <div className="tm-log-search-wrapper">
-                    <div className="modal-search-input">
-                        <i className="ti ti-search"></i>
-                        <input 
-                            type="text" 
-                            placeholder="Filter activities..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+                    <Input
+                        className="tm-log-search-input"
+                        icon="ti ti-search"
+                        placeholder="Filter activities..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
 
                 <div className="tm-log-body-content">

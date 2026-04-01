@@ -11,11 +11,10 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    width: fit-content; /* Sadece içeriği kadar genişlik */
-    position: relative; /* Noktayı hizalamak için güvenli alan */
+    width: fit-content; 
+    position: relative; 
 }
 
-/* NOKTA FIX: Buradaki absolute veya shadow taşmasını engelliyoruz */
 .status-dot {
     width: 10px;
     height: 10px;
@@ -27,7 +26,7 @@
 
 .status-dot.active { 
     background: #0ed45a; 
-    box-shadow: 0 0 8px rgba(14, 212, 90, 0.4); /* Shadow'u kıstık taşmasın */
+    box-shadow: 0 0 8px rgba(14, 212, 90, 0.4); 
 }
 .status-dot.inactive { background: #ff4444; }
 
@@ -35,7 +34,7 @@
     max-width: 850px;
     margin: 0 auto;
     padding: 0 20px; 
-    box-sizing: border-box; /* Padding'i genişliğe dahil eder, scroll yapmaz */
+    box-sizing: border-box; 
 }
 
 .st-avatar-box {
@@ -74,6 +73,14 @@
 
 .st-avatar-badge:hover { transform: scale(1.1); }
 
+.st-avatar-error {
+    margin-top: -24px;
+    margin-bottom: 18px;
+    color: #ff7a7a;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
 .st-user-meta h4 {
     font-size: 1.6rem;
     margin-bottom: 8px;
@@ -91,7 +98,6 @@
     border-radius: 20px;
 }
 
-/* Form Düzenlemeleri */
 .st-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -103,7 +109,6 @@
     grid-column: span 2;
 }
 
-/* Tıklanamayan Read-only Alanlar */
 .static-field .static-value {
     background: #111;
     border: 1px dashed #222;
@@ -125,10 +130,9 @@
     padding-left: 5px;
 }
 
-/* Buton ve Form Ayrımı */
 .st-form-footer {
     margin-top: 50px; 
     padding-top: 20px;
     border-top: 1px solid #222;
-    margin-bottom: 30px; /* Alttan biraz pay kalsın */
+    margin-bottom: 30px; 
 }

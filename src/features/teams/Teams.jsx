@@ -8,8 +8,12 @@ import { teamsService } from './services/teamsService';
 import './teams.css/Team.css';
 
 const Teams = () => {
+  const getRandomDelay = (min = 250, max = 700) =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
   const [teams, setTeams] = useState([]); 
   const [loading, setLoading] = useState(true);
+  const [switchingTeam, setSwitchingTeam] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   // Başlangıç durumlarını belirle
@@ -29,6 +33,7 @@ const Teams = () => {
         setLoading(true);
         const data = await teamsService.getTeams();
         setTeams(data || []);
+        localStorage.setItem('tm_teams_cache', JSON.stringify(data || []));
       } catch (error) {
         console.error("Takımlar yüklenemedi:", error);
       } finally {
@@ -50,11 +55,15 @@ const Teams = () => {
     }
   };
 
-  // Hem tarayıcının kendi storage event'ini (farklı sekmeler için) 
-  // hem de bizim Navbar'dan gönderdiğimiz manuel event'i dinle
+  // Hem tarayıcının kendi storage event'ini (farklı sekmeler için)
+  // hem de aynı sekme için gönderilen teamChanged event'ini dinle.
   window.addEventListener('storage', handleManualStorageChange);
+  window.addEventListener('teamChanged', handleManualStorageChange);
   
-  return () => window.removeEventListener('storage', handleManualStorageChange);
+  return () => {
+    window.removeEventListener('storage', handleManualStorageChange);
+    window.removeEventListener('teamChanged', handleManualStorageChange);
+  };
   }, [selectedTeamId]);
 
   // Seçilen takım bilgisi (ID'ye göre) - useMemo ile optimize ediyoruz
@@ -77,22 +86,45 @@ const Teams = () => {
     if (selectedTeamId) {
       localStorage.setItem('tm_selected_id', selectedTeamId);
       localStorage.setItem('tm_view_mode', viewMode);
+      if (activeTeam?.name) {
+        localStorage.setItem('tm_selected_name', activeTeam.name);
+      }
     } else {
       localStorage.removeItem('tm_selected_id');
       localStorage.setItem('tm_view_mode', 'selection');
+      localStorage.removeItem('tm_selected_name');
     }
-  }, [selectedTeamId, viewMode]);
 
-  const handleNavigate = (page, teamId = null) => {
+    window.dispatchEvent(
+      new CustomEvent('teamChanged', {
+        detail: {
+          teamId: selectedTeamId ? String(selectedTeamId) : null,
+          viewMode
+        }
+      })
+    );
+  }, [activeTeam?.name, selectedTeamId, viewMode]);
+
+  const handleNavigate = async (page, teamId = null) => {
     if (page === 'CreateTeamPanel') {
       setIsCreateOpen(true);
       return;
     }
+
+    if (page === 'main' && teamId) {
+      setSwitchingTeam(true);
+      await new Promise(resolve => setTimeout(resolve, getRandomDelay()));
+      setSelectedTeamId(String(teamId));
+      setViewMode('main');
+      setSwitchingTeam(false);
+      return;
+    }
+
     if (teamId) setSelectedTeamId(String(teamId));
     setViewMode(page);
   };
 
-  if (loading) {
+  if (loading || switchingTeam) {
     return (
       <div className="full-screen-loader">
         <Loader type="butterfly" />

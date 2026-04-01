@@ -1,10 +1,10 @@
 const DATA_PATHS = {
-    TEAMS: '/src/features/teams/data/teams.json',
-    USERS: '/src/data/user.json', 
-    NOTIFICATIONS: '/src/assets/data/notification.json',
-    EXPENSES: '/src/features/expenses/data/expenses.json',
-    TRIPS: '/src/features/trips/data/trips.json',
-    LOGS: '/src/data/Logs.json'
+    TEAMS: '/data/teams.json',
+    USERS: '/data/user.json', 
+    NOTIFICATIONS: '/data/notification.json',
+    EXPENSES: '/data/expenses.json',
+    TRIPS: '/data/trips.json',
+    LOGS: '/data/logs.json'
 };
 
 export const api = {

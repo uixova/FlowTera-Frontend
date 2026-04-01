@@ -1,4 +1,4 @@
-import { api } from '../../../services/api';
+import { api } from '../../../api/api';
 
 // Yapay gecikme fonksiyonu (200-800ms arasında rastgele)
 const randomDelay = (min = 200, max = 800) => {

@@ -37,11 +37,6 @@
     color: #9b59b6;
 }
 
-.tm-role-badge.admin {
-    background: rgba(14, 212, 90, 0.15);
-    color: #0ed45a;
-}
-
 .tm-actions {
     display: flex;
     gap: 6px;
@@ -156,6 +151,6 @@
     margin-bottom: 12px;
 }
 
-.tm-role-badge.admin { background: #ff4757; color: white; }
-.tm-role-badge.moderator { background: #ffa502; color: white; }
-.tm-role-badge.member { background: #2f3542; color: white; }
+.tm-role-badge.admin { background: #ff4757; color: #fff; }
+.tm-role-badge.moderator { background: #ffa502; color: #fff; }
+.tm-role-badge.member { background: #2f3542; color: #fff; }

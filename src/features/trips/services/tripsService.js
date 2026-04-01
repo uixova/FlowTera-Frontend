@@ -1,4 +1,4 @@
-import { api } from '../../../services/api';
+import { api } from '../../../api/api';
 
 const randomDelay = (min = 200, max = 800) => {
     const ms = Math.floor(Math.random() * (max - min + 1) + min);

@@ -1,20 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../common/Loader';
-import notificationData from '../../assets/data/notification.json';
+import { notificationService } from '../../services/notificationService'; // Süslü parantezli kalsın, export const yapmışsın
 import '../../components/components.css/Notification.css';
 
-// Veriyi simüle eden basit bir servis
-const mockNotificationService = {
-    getAll: async () => {
-        return new Promise((resolve) => {
-            setTimeout(() => resolve(notificationData.notifications), 100);
-        });
-    }
-};
-
 const Notification = ({ isOpen, onClose, userRole = 'admin' }) => {
-    const [allData, setAllData] = useState([]);
+    const [requests, setRequests] = useState([]);
+    const [infos, setInfos] = useState([]);
+    const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -22,8 +15,12 @@ const Notification = ({ isOpen, onClose, userRole = 'admin' }) => {
     const fetchNotifications = async () => {
         setLoading(true);
         try {
-            const data = await mockNotificationService.getAll();
-            setAllData(data || []);
+            // HATA BURADAYDI: .getAll() yerine servisteki gerçek ismi çağırdık
+            const result = await notificationService.getSortedNotifications();
+            
+            setRequests(result.requests || []);
+            setInfos(result.infos || []);
+            setTotalCount(result.total || 0);
         } catch (error) {
             console.error("Hata: Bildirimler çekilemedi", error);
         } finally {
@@ -31,31 +28,24 @@ const Notification = ({ isOpen, onClose, userRole = 'admin' }) => {
         }
     };
 
-    {/* Modal açıldığında verileri çek */}
+    // Modal açıldığında verileri çek
     useEffect(() => {
         if (isOpen) {
             fetchNotifications();
         }
     }, [isOpen]);
 
-    {/* Verileri türlerine göre ayır */}
-    const requests = useMemo(() => {
-        return Array.isArray(allData) ? allData.filter(item => item.type === 'request') : [];
-    }, [allData]);
-
-    {/* Sadece 'info' türündeki bildirimleri al */}
-    const infos = useMemo(() => {
-        return Array.isArray(allData) ? allData.filter(item => item.type === 'info') : [];
-    }, [allData]);
-
     if (!isOpen) return null;
 
-    {/* Bildirim silme fonksiyonu (sadece frontend'de) */}
-    const removeNotification = (id) => {
-        setAllData(prev => prev.filter(item => item.id !== id));
+    // Bildirim silme fonksiyonu (Servise bağladık)
+    const removeNotification = async (id) => {
+        await notificationService.deleteNotification(id);
+        // UI'dan da anlık temizleyelim
+        setInfos(prev => prev.filter(item => item.id !== id));
+        setRequests(prev => prev.filter(item => item.id !== id));
+        setTotalCount(prev => prev - 1);
     };
 
-    {/* Bildirim kartına tıklandığında ilgili sayfaya yönlendirme */}
     const handleNavigate = (path, targetId) => {
         navigate(`${path}?id=${targetId}`);
         onClose();
@@ -68,7 +58,7 @@ const Notification = ({ isOpen, onClose, userRole = 'admin' }) => {
                     <div className="nt-header-title">
                         <h3>Activity Center</h3>
                         <span className="count-badge">
-                            {loading ? "..." : allData.length}
+                            {loading ? "..." : totalCount}
                         </span>
                     </div>
                     <button className="nt-close-btn" onClick={onClose}>
@@ -108,7 +98,7 @@ const Notification = ({ isOpen, onClose, userRole = 'admin' }) => {
                             <section className="nt-section">
                                 <div className="section-title"><span>Recent Notifications</span></div>
                                 <div className="nt-list">
-                                    {infos.map(nt => (
+                                    {infos.length > 0 ? infos.map(nt => (
                                         <div key={nt.id} className={`nt-item ${nt.category}`}>
                                             <div className="nt-icon">
                                                 <i className={nt.category === 'success' ? 'ti ti-circle-check' : 'ti ti-info-square-rounded'}></i>
@@ -121,7 +111,7 @@ const Notification = ({ isOpen, onClose, userRole = 'admin' }) => {
                                                 <i className="ti ti-trash"></i>
                                             </button>
                                         </div>
-                                    ))}
+                                    )) : <p className="no-data">Herhangi bir bildirim bulunamadı.</p>}
                                 </div>
                             </section>
                         </>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; 
+import React, { useEffect, useState } from 'react'; 
 import Loader from '../../components/common/Loader';
 import './trips.css/Trips.css';
 import SubNavbar from '../../components/navigation/SubNavbar'; 
@@ -22,7 +22,24 @@ const Trips = () => {
     });
 
     // VERİ YÖNETİMİ (HOOK)
-    const activeTeamId = localStorage.getItem('tm_selected_id');
+    const [activeTeamId, setActiveTeamId] = useState(() => localStorage.getItem('tm_selected_id'));
+
+    useEffect(() => {
+        const syncSelectedTeam = () => {
+            const nextTeamId = localStorage.getItem('tm_selected_id');
+            setActiveTeamId(prevTeamId =>
+                String(prevTeamId || '') === String(nextTeamId || '') ? prevTeamId : nextTeamId
+            );
+        };
+
+        window.addEventListener('teamChanged', syncSelectedTeam);
+        window.addEventListener('storage', syncSelectedTeam);
+
+        return () => {
+            window.removeEventListener('teamChanged', syncSelectedTeam);
+            window.removeEventListener('storage', syncSelectedTeam);
+        };
+    }, []);
     
     // tripsService.getTripsByTeam'i hook'a bağlıyoruz.
     const { 
@@ -30,7 +47,8 @@ const Trips = () => {
         loading, 
         loadingMore, 
         hasMore, 
-        loadMore 
+        loadMore,
+        totalCount
     } = usePagination(tripsService.getTripsByTeam, activeTeamId, 20);
 
     // YARDIMCI FONKSİYONLAR 
@@ -120,6 +138,7 @@ const Trips = () => {
                                 loadingMore={loadingMore}
                                 loadMore={loadMore}
                                 currentCount={trips.length} 
+                                totalCount={totalCount}
                                 label="trips"
                             />
                         </>

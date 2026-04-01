@@ -8,6 +8,9 @@ import TeamLogModal from '../modals/TeamActivityLog';
 import { teamsService } from '../services/teamsService'; 
 
 // teamId'yi dışarıdan (Selection sayfasından) prop olarak alıyoruz
+const teamMembersCache = new Map();
+const teamMembersRequestCache = new Map();
+const getMembersStorageKey = (teamId) => `tm_team_members_cache_${teamId}`;
 
 const TeamMemberList = ({ team, onBack, onNavigate }) => {
   const teamId = team?.id;
@@ -18,27 +21,82 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [members, setMembers] = useState(() => {
+    if (!teamId) return [];
+    try {
+      const raw = localStorage.getItem(getMembersStorageKey(String(teamId)));
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
+  const [loading, setLoading] = useState(() => members.length === 0);
 
   // Takım üyelerini yüklemek için useEffect kullanıyoruz
   useEffect(() => {
+    let isCancelled = false;
+
     const fetchMembers = async () => {
         if (!teamId) return;
 
+        const normalizedTeamId = String(teamId);
+        const cachedMembers = teamMembersCache.get(normalizedTeamId);
+        if (cachedMembers) {
+          if (!isCancelled) {
+            setMembers(cachedMembers);
+            setLoading(false);
+          }
+          return;
+        }
+
         try {
-            setLoading(true); // Loader'ı başlat
-            setMembers([]);   // Eski üyeleri temizle (ki yenileri gelene kadar eskiler görünmesin)
-            const data = await teamsService.getTeamMembers(teamId);
-            setMembers(data);
+          const raw = localStorage.getItem(getMembersStorageKey(normalizedTeamId));
+          const parsed = raw ? JSON.parse(raw) : [];
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            teamMembersCache.set(normalizedTeamId, parsed);
+            if (!isCancelled) {
+              setMembers(parsed);
+              setLoading(false);
+            }
+            return;
+          }
+        } catch {
+          // Storage parse hatasında servise düşer
+        }
+
+        try {
+            if (!isCancelled) {
+              setLoading(true);
+              setMembers([]);
+            }
+
+            let pendingRequest = teamMembersRequestCache.get(normalizedTeamId);
+            if (!pendingRequest) {
+              pendingRequest = teamsService.getTeamMembers(teamId);
+              teamMembersRequestCache.set(normalizedTeamId, pendingRequest);
+            }
+
+            const data = await pendingRequest;
+            teamMembersCache.set(normalizedTeamId, data);
+            localStorage.setItem(getMembersStorageKey(normalizedTeamId), JSON.stringify(data || []));
+            if (!isCancelled) {
+              setMembers(data);
+            }
         } catch (error) {
             console.error("Üyeler yüklenirken hata:", error);
         } finally {
-            setLoading(false);
+            teamMembersRequestCache.delete(normalizedTeamId);
+            if (!isCancelled) {
+              setLoading(false);
+            }
         }
     };
 
     fetchMembers();
+    return () => {
+      isCancelled = true;
+    };
   }, [teamId]); // teamId değiştiğinde tekrar çalışır
 
   // Üye düzenleme butonuna tıklandığında açılan fonksiyon
@@ -54,7 +112,7 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
   };
 
   // Yükleniyor durumunu göstermek için basit bir loader
-  if (loading) return <Loader type="dots" />;
+  if (loading) return <Loader type="butterfly" />;
 
   return (
     <div className="tm-member-list-page">

@@ -6,6 +6,7 @@ export const usePagination = (serviceMethod, externalId, limit = 20) => {
     const [loadingMore, setLoadingMore] = useState(false);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(false);
+    const [totalCount, setTotalCount] = useState(0);
 
     const loadData = useCallback(async (targetPage, isFirstLoad = false) => {
         try {
@@ -22,6 +23,7 @@ export const usePagination = (serviceMethod, externalId, limit = 20) => {
             }
             
             setHasMore(response.hasMore);
+            setTotalCount(response.totalCount ?? 0);
         } catch (error) {
             console.error("Pagination Hook Error:", error);
         } finally {
@@ -44,5 +46,5 @@ export const usePagination = (serviceMethod, externalId, limit = 20) => {
         }
     };
 
-    return { data, loading, loadingMore, hasMore, loadMore, setData };
+    return { data, loading, loadingMore, hasMore, loadMore, setData, totalCount };
 };

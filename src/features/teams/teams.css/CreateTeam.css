@@ -33,6 +33,7 @@
     font-size: 0.7rem;
     font-weight: 800;
     text-transform: uppercase;
+    margin: 0 !important;
 }
 
 .plan-badge.pro { background: #0ed45a; color: #000; }
