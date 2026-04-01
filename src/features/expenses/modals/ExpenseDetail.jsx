@@ -1,13 +1,15 @@
 import React, { memo } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
+import ImageBox from '../../../components/modals/ImageBox'; 
+import { useImageBox } from '../../../hooks/useLightbox'; 
 import '../expenses.css/ExpenseDetail.css'; 
 
-const ExpenseDetail = ({ isOpen, onClose, data }) => {
-  
-  // Sadece veri yoksa render etme. 
-  if (!data) return null;
+const ExpenseDetail = ({ isOpen, onClose, data, onReopen }) => {
+  const { wrapSidebarClose } = useImageBox();
 
-  // Custom Footer: İndirme butonu
+  if (!data) return null;
+  const protectedClose = wrapSidebarClose(onClose);
+
   const sidebarFooter = (
     <div className="ex-panel-footer" style={{ width: '100%', borderTop: 'none', padding: 0 }}>
       <button className="ex-primary-btn">
@@ -20,19 +22,34 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
   return (
     <ActionSidebar
       isOpen={isOpen}
-      onClose={onClose}
-      title={null} // Resimli header'ı body içinde yöneteceğiz
+      onClose={protectedClose} 
+      title={null}
       footer={sidebarFooter}
       width="480px"
     >
-      {/* Header Image Area */}
+      {/* Header Image Area - ImageBox ile sarmalandı */}
       <div className="ex-panel-header-image">
-        <img src={data.image || '/src/assets/images/receipt-placeholder.png'} alt="Receipt" />
-        <div className="ex-header-overlay"></div>
+        <ImageBox 
+          src={data.image || '/src/assets/images/receipt-placeholder.png'} 
+          alt={data.title}
+          // Resim açılınca sidebar'ı kapat (onClose tetiklenir)
+          onToggle={(state) => {
+            if (state) {
+              // Resim açıldı, sidebar'ı kapat
+              onClose(); 
+            } else {
+              // Resim kapandı, sidebar'ı tekrar açan fonksiyonu tetikle
+              if (onReopen) onReopen(); 
+            }
+          }}
+        >
+          {/* Sidebar içindeki tetikleyici görsel */}
+          <img src={data.image || '/src/assets/images/receipt-placeholder.png'} alt="Receipt" />
+          <div className="ex-header-overlay"></div>
+        </ImageBox>
       </div>
 
       <div className="ex-panel-content-internal">
-        {/* Title Section */}
         <div className="ex-panel-title-section">
           <div className="ex-type-icon">
             <i className={`ti ${data.icon || 'ti-receipt'}`}></i>
@@ -43,7 +60,6 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
           </div>
         </div>
 
-        {/* Financial Summary Box */}
         <div className="ex-financial-card">
           <div className="ex-amount-group">
             <label>Total Amount</label>
@@ -65,13 +81,11 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
           </div>
         </div>
 
-        {/* Rate Info Banner */}
         <div className="ex-rate-banner">
           <i className="ti ti-history"></i>
           <span>Rate: 1 {data.currency} = {data.exchangeRate} {data.localCurrency}</span>
         </div>
 
-        {/* Rejection Alert - Sadece Reddedildiyse Görünür */}
         {data.status === 'rejected' && (
           <div className="ex-rejection-box">
             <div className="ex-rej-header">
@@ -84,7 +98,6 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
 
         <hr className="ex-divider" />
 
-        {/* Info List */}
         <div className="ex-info-list">
           <div className="ex-info-item">
             <span className="ex-label"><i className="ti ti-user-circle"></i> Submitter</span>

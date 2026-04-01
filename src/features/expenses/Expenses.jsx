@@ -24,6 +24,7 @@ const Expenses = () => {
     // VERİ YÖNETİMİ (HOOK)
     const activeTeamId = localStorage.getItem('tm_selected_id');
     
+    // expenseService.getExpensesByTeam'i hook'a bağlıyoruz.
     const { 
         data: expenses, 
         loading, 
@@ -32,11 +33,13 @@ const Expenses = () => {
         loadMore 
     } = usePagination(expenseService.getExpensesByTeam, activeTeamId, 20);
 
+    // Detay sidebar'ını açmak için seçilen harcamayı state'e atıyoruz
     const handleOpenDetail = (expense) => {
         setSelectedExpense(expense);
         setIsDetailOpen(true);
     };
 
+    // Para Birimi Seçimi Handler'ı
     const handleCurrencySelect = (currencyCode) => {
         setSelectedCurrency(currencyCode);
         sessionStorage.setItem('selectedCurrency', currencyCode);
@@ -142,7 +145,8 @@ const Expenses = () => {
             <ExpenseDetail 
                 isOpen={isDetailOpen} 
                 onClose={() => setIsDetailOpen(false)} 
-                data={selectedExpense} 
+                data={selectedExpense}
+                onReopen={() => setIsDetailOpen(true)} 
             />
 
             <CurrencyModal 

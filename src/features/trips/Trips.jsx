@@ -33,7 +33,7 @@ const Trips = () => {
         loadMore 
     } = usePagination(tripsService.getTripsByTeam, activeTeamId, 20);
 
-    // --- YARDIMCI FONKSİYONLAR ---
+    // YARDIMCI FONKSİYONLAR 
     const handleOpenDetail = (trip) => {
         setSelectedTrip(trip);
         setIsDetailOpen(true);
@@ -130,7 +130,12 @@ const Trips = () => {
             </div>
             
             <CreateTrip isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
-            <TripDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedTrip} />
+            <TripDetail 
+                isOpen={isDetailOpen} 
+                onClose={() => setIsDetailOpen(false)} 
+                data={selectedTrip} 
+                onReopen={() => setIsDetailOpen(true)} 
+            />
             <CurrencyModal 
                 isOpen={isCurrencyOpen} 
                 onClose={() => setIsCurrencyOpen(false)} 

@@ -1,12 +1,17 @@
 import React, { memo } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
+import ImageBox from '../../../components/modals/ImageBox';
+import { useImageBox } from '../../../hooks/useLightbox';
 import '../trips.css/TripDetail.css';
 
-const TripDetail = ({ isOpen, onClose, data }) => {
-  
+const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
+  const { handleImageToggle, wrapSidebarClose } = useImageBox();
+
   if (!data) return null;
 
-  // Custom Footer yapısı
+  // Sidebar'ın dışarı tıklanma veya ESC ile kapanmasını korumaya al
+  const protectedClose = wrapSidebarClose(onClose);
+
   const sidebarFooter = (
     <div className="tr-panel-footer" style={{ width: '100%', borderTop: 'none', padding: 0 }}>
       <button className="tr-action-btn primary">
@@ -18,25 +23,34 @@ const TripDetail = ({ isOpen, onClose, data }) => {
   return (
     <ActionSidebar
       isOpen={isOpen}
-      onClose={onClose}
-      title={null} // Görsel header'ı body içinde kendimiz yöneteceğiz
+      onClose={protectedClose}
+      title={null}
       footer={sidebarFooter}
       width="480px"
     >
-      {/* Header Image - Sidebar'ın en üstüne yapışması için body-internal içinde en başta */}
+      {/* Header Image Area - ImageBox Entegrasyonu */}
       <div className="tr-panel-header-image">
-        <img 
-          src="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=2070&auto=format&fit=crop" 
-          alt="destination" 
-        />
-        {/* Kapatma butonu zaten ActionSidebar'da var ama senin tasarımın için burada da kalabilir veya silebilirsin */}
-        <button className="tr-panel-close-btn" onClick={onClose}>
-          <i className="ti ti-x"></i>
-        </button>
+        <ImageBox 
+          src={data.image || "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=2070&auto=format&fit=crop"} 
+          alt={data.title}
+          onToggle={(state) => {
+            handleImageToggle(state); // Hook state'ini günceller
+            if (state) {
+              onClose(); // Resim açılınca sidebar'ı kapat
+            } else {
+              if (onReopen) onReopen(); // Resim kapanınca sidebar'ı geri aç
+            }
+          }}
+        >
+          <img 
+            src={data.image || "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=2070&auto=format&fit=crop"} 
+            alt="destination" 
+          />
+          <div className="tr-header-overlay"></div>
+        </ImageBox>
       </div>
 
       <div className="tr-panel-content-internal">
-        {/* Title Section */}
         <div className="tr-panel-title-section">
           <div className="tr-type-icon">
             <i className={`ti ${data.icon || 'ti-map-pin'}`}></i>
@@ -47,7 +61,6 @@ const TripDetail = ({ isOpen, onClose, data }) => {
           </div>
         </div>
 
-        {/* Stats Grid */}
         <div className="tr-panel-stats-grid">
           <div className="tr-stat-item">
             <label>Estimated Cost</label>
@@ -70,7 +83,6 @@ const TripDetail = ({ isOpen, onClose, data }) => {
           </div>
         </div>
 
-        {/* Rate Info Banner */}
         <div className="tr-rate-info">
           <i className="ti ti-history"></i>
           <span>Rate: 1 {data.currency} = {data.exchangeRate?.rate} {data.localCurrency}</span>
@@ -78,7 +90,6 @@ const TripDetail = ({ isOpen, onClose, data }) => {
 
         <hr className="tr-divider" />
 
-        {/* Detail Rows */}
         <div className="tr-detail-row">
           <span><i className="ti ti-map-2"></i> Destination</span>
           <p>{data.destination}</p>

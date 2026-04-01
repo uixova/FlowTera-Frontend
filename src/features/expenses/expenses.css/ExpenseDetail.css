@@ -4,6 +4,7 @@
     position: relative;
     background: #000;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .ex-panel-header-image img {
@@ -18,18 +19,21 @@
     transform: scale(1.05); 
 }
 
+.ex-panel-header-image .image-box-trigger {
+    width: 100%;
+    height: 100%;
+}
+
 .ex-header-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(to bottom, rgba(18,18,18,0.2) 0%, rgba(18,18,18,1) 100%);
 }
 
-.ex-panel-content {
+.ex-panel-content-internal {
     padding: 25px;
     flex: 1;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #333 transparent;
 }
 
 .ex-panel-title-section {

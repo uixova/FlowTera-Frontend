@@ -21,7 +21,9 @@ const Dashboard = () => {
     const [isTripOpen, setIsTripOpen] = useState(false);
     const [isOCROpen, setIsOCROpen] = useState(false);
     const [isReportOpen, setIsReportOpen] = useState(false);
+    const [userTeams, setUserTeams] = useState([]);
 
+    // Dashboard verilerini çekmek için useEffect kullanıyoruz
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
@@ -34,7 +36,8 @@ const Dashboard = () => {
                         distribution: data.categoryDistribution,
                         typeComp: data.typeComparison,
                         teamSpend: data.teamSpending
-                    }); 
+                    });
+                    setUserTeams(data.userTeams);
                 }
                 setLoading(false);
             } catch (error) {
@@ -146,7 +149,7 @@ const Dashboard = () => {
                 />
             </div>
 
-            {/* --- MODALLAR VE SIDEBARLAR --- */}
+            {/* MODALLAR VE SIDEBARLAR */}
             <CreateExpense 
                 isOpen={isExpenseOpen} 
                 onClose={() => setIsExpenseOpen(false)} 
@@ -165,6 +168,7 @@ const Dashboard = () => {
             <CreateReport 
                 isOpen={isReportOpen} 
                 onClose={() => setIsReportOpen(false)} 
+                teams={userTeams}
             />
         </div>
     );

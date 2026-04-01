@@ -37,6 +37,12 @@ export const dashboardService = {
                 rejectedCount: userExpenses.filter(e => e.status === 'rejected').length
             };
 
+            const userTeams = Array.from(new Set([
+                ...userExpenses.map(exp => getTeamName(exp.teamId)),
+                ...userTrips.map(trip => getTeamName(trip.teamId))
+            ])).map(name => ({ id: name, name: name }));
+
+
             // Grafik: Harcama ve Seyahat Karşılaştırması (Kullanıcıya özel)
             const teamSpending = userExpenses.reduce((acc, exp) => {
                 const tName = getTeamName(exp.teamId);
@@ -92,7 +98,7 @@ export const dashboardService = {
                 return dateB - dateA;
             }).slice(0, 10); // En son 10 aktivite
 
-            return { stats, monthlyTrend, categoryDistribution, myActivities, typeComparison, teamSpending };
+            return { stats, monthlyTrend, categoryDistribution, myActivities, typeComparison, teamSpending, userTeams };
         } catch (error) {
             console.error("Dashboard Service Error:", error);
             throw error;

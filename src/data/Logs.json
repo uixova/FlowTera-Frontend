@@ -24,89 +24,131 @@
     {
         "TeamLogs": [
             {
-                "id": 1,
-                "teamId": "team-1",
-                "type": "system_update",
-                "role": "system",
-                "icon": "ti-settings-automation",
-                "iconClass": "log-system",
-                "user": "Flowtera Bot",
-                "badge": "System",
-                "action": "automatically updated:",
-                "target": "Exchange Rates",
-                "time": "Just now",
-                "tag": "Updated",
-                "tagClass": "hi-tag-alt",
-                "details": {
-                "process_id": "SYS-AUTO-992",
+            "id": "log-0",
+            "teamId": "team-1",
+            "type": "system_update",
+            "role": "system",
+            "icon": "ti-settings-automation",
+            "iconClass": "log-system",
+            "user": "Flowtera Bot",
+            "badge": "System",
+            "action": "automatically updated:",
+            "target": "Exchange Rates",
+            "createdAt": "2026-04-01T13:05:00Z",
+            "tag": "Updated",
+            "tagClass": "hi-tag-alt",
+            "details": {
                 "service": "Currency Oracle v2",
+                "sync_status": "Synchronized",
                 "updated_nodes": "TR-ANK-01, TR-IST-04",
-                "sync_status": "Synchronized"
-                }
+                "process_id": "SYS-AUTO-992"
+            }
             },
             {
-                "id": 3,
-                "teamId": "team-1",
-                "type": "expense_add",
-                "role": "member",
-                "icon": "ti-plus",
-                "iconClass": "log-expense",
-                "user": "Caner Durmuş",
-                "badge": "Member",
-                "action": "added a new expense:",
-                "target": "Fuel for Truck",
-                "time": "5 mins ago",
-                "amount": "-$120.00",
-                "details": {
-                "expense_id": "EXP-7721-BC",
-                "category": "Logistics / Fuel",
-                "tax_status": "Verified",
-                "receipt_status": "Uploaded",
-                "project_code": "FLW-2026-TR"
-                }
+            "id": "log-1",
+            "teamId": "team-1",
+            "type": "expense_add",
+            "role": "member",
+            "icon": "ti-cloud-computing",
+            "iconClass": "log-expense",
+            "user": "Ahmet Yılmaz",
+            "badge": "Member",
+            "action": "added a new expense:",
+            "target": "Server Hosting",
+            "createdAt": "2026-04-01T12:50:00Z",
+            "amount": "$45.00",
+            "details": {
+                "merchant": "DigitalOcean",
+                "category": "Infrastructure",
+                "report": "March_2026_Tech",
+                "payment_method": "Credit Card",
+                "status": "Approved"
+            }
             },
             {
-                "id": 4,
-                "teamId": "team-1",
-                "type": "trip_approval",
-                "role": "admin",
-                "icon": "ti-circle-check",
-                "iconClass": "log-trip",
-                "user": "Sistem",
-                "badge": "Admin",
-                "action": "approved the trip:",
-                "target": "Istanbul Logistics",
-                "time": "2 hours ago",
-                "tag": "Confirmed",
-                "tagClass": "hi-tag",
-                "details": {
-                "trip_id": "TRP-4409",
-                "priority": "High Priority",
-                "approval_message": "Route is optimized and driver assigned.",
-                "estimated_arrival": "14/03/2026 09:00",
-                "fleet_unit": "Unit-12"
-                }
+            "id": "log-2",
+            "teamId": "team-1",
+            "type": "member_join",
+            "role": "admin",
+            "icon": "ti-user-plus",
+            "iconClass": "log-system",
+            "user": "Sistem",
+            "badge": "Admin",
+            "action": "added new member:",
+            "target": "Mehmet Can",
+            "createdAt": "2026-04-01T11:00:00Z",
+            "tag": "New Member",
+            "tagClass": "hi-tag",
+            "details": {
+                "assigned_role": "Developer",
+                "permissions": "Standard Access",
+                "invited_by": "System Admin",
+                "team_name": "Development Alpha"
+            }
             },
             {
-                "id": 6,
-                "teamId": "team-2",
-                "type": "rejection",
-                "role": "moderator",
-                "icon": "ti-x",
-                "iconClass": "log-delete",
-                "user": "Ece Naz",
-                "badge": "Mod",
-                "action": "rejected the request:",
-                "target": "Extra Budget Request",
-                "time": "5 hours ago",
-                "tag": "Rejected",
-                "tagClass": "hi-status-red",
-                "details": {
-                "request_id": "REQ-112",
+            "id": "log-3",
+            "teamId": "team-1",
+            "type": "trip_approval",
+            "role": "admin",
+            "icon": "ti-plane-departure",
+            "iconClass": "log-trip",
+            "user": "Sistem",
+            "badge": "Admin",
+            "action": "approved the trip:",
+            "target": "Berlin Strategy",
+            "createdAt": "2026-03-31T15:30:00Z",
+            "amount": "$1200.00",
+            "details": {
+                "destination": "Berlin, DE",
+                "category": "Corporate",
+                "vehicle": "Flight",
+                "duration": "3 Days",
+                "local_amount": "41400.00 ₺"
+            }
+            },
+            {
+            "id": "log-4",
+            "teamId": "team-2",
+            "type": "rejection",
+            "role": "moderator",
+            "icon": "ti-x",
+            "iconClass": "log-delete",
+            "user": "Ece Naz",
+            "badge": "Mod",
+            "action": "rejected the request:",
+            "target": "Extra Budget Request",
+            "createdAt": "2026-02-25T05:20:00Z",
+            "tag": "Rejected",
+            "tagClass": "hi-status-red",
+            "details": {
                 "rejection_reason": "Missing documentation for extra mileage.",
                 "action_required": "Please re-upload receipts.",
+                "request_id": "REQ-112",
                 "review_date": "12/03/2026"
-                }
+            }
+            },
+            {
+            "id": "log-5",
+            "teamId": "team-2",
+            "type": "status_update",
+            "role": "member",
+            "icon": "ti-car",
+            "iconClass": "log-trip",
+            "user": "Caner Demir",
+            "badge": "Member",
+            "action": "is currently:",
+            "target": "On Road (Izmir)",
+            "createdAt": "2026-04-01T12:43:00Z",
+            "tag": "Active",
+            "tagClass": "onroad",
+            "details": {
+                "destination": "Izmir, TR",
+                "vehicle": "Car",
+                "duration": "5 Days",
+                "local_amount": "10350.00 ₺",
+                "project": "Personal Travel"
+            }
             }
         ]
     },

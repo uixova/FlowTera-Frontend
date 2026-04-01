@@ -4,6 +4,7 @@
     position: relative;
     background: #000;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .tr-panel-header-image img {
@@ -18,19 +19,29 @@
     transform: scale(1.05);
 }
 
-.tr-panel-header-image::after {
-    content: '';
+.tr-panel-header-image .image-box-trigger {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.tr-panel-header-image .image-box-trigger img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tr-header-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(to bottom, rgba(18,18,18,0.2) 0%, rgba(18,18,18,1) 100%);
+    pointer-events: none;
 }
 
-.tr-panel-content {
+.tr-panel-content-internal {
     padding: 25px;
     flex: 1;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #333 transparent;
 }
 
 .tr-panel-title-section {

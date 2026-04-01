@@ -33,11 +33,6 @@
     transform: translateY(-3px);
 }
 
-.tm-sel-card.active {
-    border-color: #0ed45a;
-    background: rgba(14, 212, 90, 0.03);
-}
-
 .tm-sel-avatar {
     width: 48px;
     height: 48px;
