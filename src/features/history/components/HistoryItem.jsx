@@ -7,7 +7,7 @@ const HistoryItem = ({ item, isActive, onToggle }) => {
     return (
         <div 
             className={`history-wrapper ${isActive ? 'is-expanded' : ''}`}
-            data-role={item.role} // CSS'teki border-left-color için KRİTİK!
+            data-role={item.role} 
         >
             <div className="history-item" onClick={() => onToggle(item.id)}>
                 <div className="hi-status-line"></div>

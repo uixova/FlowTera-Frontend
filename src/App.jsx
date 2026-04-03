@@ -7,8 +7,10 @@ import Expenses from './features/expenses/Expenses'
 import Trips from './features/trips/Trips'
 import Analysis from './features/analysis/Analysis'
 import History from './features/history/History'
+import Requests from './features/requests/Requests'
 import TeamSelection from './features/teams/Teams'
 import Settings from './features/settings/Settings'
+import './components/components.css/GlobalFilter.css'; 
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
           <Route path="/trips" element={<Trips />} />
           <Route path="/analysis" element={<Analysis />} />
           <Route path="/history" element={<History />} />
+          <Route path="/requests" element={<Requests />} /> 
           <Route path="/team" element={<TeamSelection />} />
           <Route path="/settings" element={<Settings />} />
           

@@ -3,6 +3,7 @@ import { api } from '../../../api/api';
 export const dashboardService = {
     getDashboardStats: async (currentUserId) => {
         try {
+            const normalizedCurrentUserId = String(currentUserId);
             // Sadece ihtiyacımız olanları çekiyoruz
             const [expenses, trips, teams] = await Promise.all([
                 api.expenses.getAll(),
@@ -12,9 +13,12 @@ export const dashboardService = {
 
             if (!expenses || !trips || !teams) return null;
 
-            // Önce kullanıcının kendi verilerini ayıralım (Sadece bir kez yapıyoruz)
-            const userExpenses = expenses.filter(e => e.userId === currentUserId);
-            const userTrips = trips.filter(t => t.userId === currentUserId);
+            // Önce kullanıcının kendi verilerini ayıralım (JSON'da createdBy var)
+            const getExpenseOwnerId = (e) => e?.createdBy?.id ?? e?.userId ?? e?.submitterId ?? null;
+            const getTripOwnerId = (t) => t?.createdBy?.id ?? t?.userId ?? t?.submitterId ?? null;
+
+            const userExpenses = expenses.filter(e => String(getExpenseOwnerId(e)) === normalizedCurrentUserId);
+            const userTrips = trips.filter(t => String(getTripOwnerId(t)) === normalizedCurrentUserId);
 
             // Takım ismini bulmak için yardımcı fonksiyon
             const getTeamName = (teamId) => {

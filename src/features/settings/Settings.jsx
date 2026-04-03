@@ -8,6 +8,7 @@ import UserPlan from './components/UserPlan';
 import Security from './components/Security';
 import Activity from './components/Activity';
 import Notification from './components/Notifications';
+import { useAuth } from '../../hooks/useAuth';
 
 const Settings = () => {
   const [activeSection, setActiveSection] = useState('st-profile');
@@ -16,7 +17,7 @@ const Settings = () => {
   const [notifConfig, setNotifConfig] = useState({ email: false, sms: false, push: false });
   const [loading, setLoading] = useState(true);
 
-  const CURRENT_USER_ID = "u2"; // Senin belirttiğin ID
+  const { currentUserId, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const appContainer = document.querySelector('.app-container');
@@ -26,9 +27,9 @@ const Settings = () => {
       setLoading(true);
       try {
         const [userData, userLogs, userNotifs] = await Promise.all([
-          settingsService.getCurrentUser(CURRENT_USER_ID),
-          settingsService.getUserLogs(CURRENT_USER_ID),
-          settingsService.getUserNotifications(CURRENT_USER_ID)
+          settingsService.getCurrentUser(currentUserId),
+          settingsService.getUserLogs(currentUserId),
+          settingsService.getUserNotifications(currentUserId)
         ]);
         
         setUser(userData);
@@ -41,8 +42,8 @@ const Settings = () => {
       }
     };
 
-    fetchSettingsData();
-  }, []);
+    if (currentUserId) fetchSettingsData();
+  }, [currentUserId]);
 
   useEffect(() => {
   const appContainer = document.querySelector('.app-container');
@@ -60,7 +61,16 @@ const Settings = () => {
   };
 }, []);
 
-  if (loading || !user) return <div className="st-loader">FLOWTERA LOADING...</div>;
+  if (authLoading || loading || !user) return <div className="st-loader">FLOWTERA LOADING...</div>;
+
+  if (user?.isDeleted) {
+    return (
+      <div className="st-loader" style={{ textAlign: 'center', paddingTop: 40 }}>
+        <i className="ti ti-trash" style={{ fontSize: 42, color: '#ff4757' }}></i>
+        <div style={{ marginTop: 12, fontWeight: 700 }}>This account was deleted.</div>
+      </div>
+    );
+  }
 
   const menuItems = [
     { id: 'st-profile', label: 'Profile Details', icon: 'ti-user-circle' },

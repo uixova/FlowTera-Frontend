@@ -4,7 +4,21 @@
     "name": "Main Development Team",
     "category": "Software Development",
     "membersCount": 2,
-    "active": true,
+    "members": [
+      {
+        "id": "u1",
+        "name": "Ahmet Yılmaz",
+        "avatar": "/src/assets/images/user-profile.png",
+        "email": "ahmet.yilmaz@example.com"
+      },
+      {
+        "id": "u2",
+        "name": "Caner Demir",
+        "avatar": "/src/assets/images/user-profile.png",
+        "email": "caner.demir@example.com"
+      }
+    ],
+    "isDeleted": false,
     "createdAt": "2026-01-15",
     "image": "https://ui-avatars.com/api/?name=Main+Dev&background=0D8ABC&color=fff&size=128",
     "settings": {
@@ -89,7 +103,27 @@
     "name": "Marketing Group",
     "category": "Marketing & Ads",
     "membersCount": 2,
-    "active": false,
+    "members": [
+      {
+        "id": "u2",
+        "name": "Caner Demir",
+        "avatar": "/src/assets/images/user-profile.png",
+        "email": "caner.demir@example.com"
+      },
+      {
+        "id": "u3",
+        "name": "Ayşe Güngör",
+        "avatar": "/src/assets/images/user-profile.png",
+        "email": "ayse.gungor@example.com"
+      },
+      {
+        "id": "u4",
+        "name": "Ece Naz",
+        "avatar": "/src/assets/images/user-profile.png",
+        "email": "ece.naz@example.com"
+      }
+    ],
+    "isDeleted": false,
     "createdAt": "2026-02-10",
     "image": "https://ui-avatars.com/api/?name=Marketing+Group&background=8e44ad&color=fff&size=128",
     "settings": {

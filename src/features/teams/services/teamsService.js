@@ -16,14 +16,11 @@ export const teamsService = {
     getTeams: async () => {
         await randomDelay(400, 1000);
         const teams = await api.teams.getAll() || [];
-        const allUsers = await api.users.getAll() || [];
-
+        
+        // Teams.json içinde üyeler doğrudan tutuluyor; user.teams üzerinden filtrelemiyoruz.
         return teams.map(team => ({
             ...team,
-            // ID'leri string yaparak karşılaştırıyoruz
-            members: allUsers.filter(u => 
-                u.teams.some(tId => String(tId) === String(team.id))
-            ).length
+            members: Array.isArray(team.members) ? team.members.length : (team.membersCount || 0)
         }));
     },
 
@@ -31,24 +28,35 @@ export const teamsService = {
     getTeamMembers: async (teamId) => {
         if (!teamId) return [];
         await randomDelay(300, 600);
+        const allTeams = await api.teams.getAll() || [];
         const allUsers = await api.users.getAll() || [];
 
-        const members = allUsers
-            .filter(user => user.teams.includes(teamId))
-            .map(user => {
-                const specificRole = user.role.find(r => String(r.teamId) === String(teamId));
-                return {
-                    ...user,
-                    roleName: specificRole?.roleName || "Member",
-                    permissions: specificRole?.permissions || []
-                };
-            });
+        const userMap = new Map(allUsers.map(u => [String(u.id), u]));
 
-        //  SIRALAMA MANTIĞI 
-        // Admin en başa, sonra Moderator, sonra Member gelir
-        return members.sort((a, b) => {
-            return (ROLE_PRIORITY[a.roleName] || 99) - (ROLE_PRIORITY[b.roleName] || 99);
+        const team = allTeams.find(t => String(t.id) === String(teamId));
+        const teamMembers = Array.isArray(team?.members) ? team.members : [];
+
+        const normalized = teamMembers.map((tm) => {
+            const memberId = String(tm.id);
+            const userDetail = userMap.get(memberId);
+            const isDeleted = Boolean(userDetail?.isDeleted);
+
+            const specificRole = userDetail?.role?.find(r => String(r.teamId) === String(teamId));
+
+            return {
+                id: memberId,
+                name: isDeleted ? "DeletedUser" : (tm.name || userDetail?.name || "Unknown"),
+                avatar: isDeleted ? null : (tm.avatar || userDetail?.avatar || null),
+                email: isDeleted ? '' : (tm.email || userDetail?.email || ''),
+                isDeleted,
+                lastLogin: userDetail?.lastLogin || null,
+                roleName: specificRole?.roleName || "Member",
+                permissions: specificRole?.permissions || []
+            };
         });
+
+        // Admin en başa, sonra Moderator, sonra Member gelir
+        return normalized.sort((a, b) => (ROLE_PRIORITY[a.roleName] || 99) - (ROLE_PRIORITY[b.roleName] || 99));
     },
 
     // Takım bilgilerini getirme fonksiyonu (Simülasyon)
@@ -60,16 +68,22 @@ export const teamsService = {
         const teamMemberLogContainer = response.find(item => item.TeamMemberLogs);
         const allLogs = teamMemberLogContainer ? teamMemberLogContainer.TeamMemberLogs : [];
 
-        // userId ve teamId'ye göre filtreleyip, tarih ve saate göre sıralıyoruz
-        return allLogs.filter(log => 
-            String(log.userId) === String(userId) && 
-            String(log.teamId) === String(teamId)
-        ).sort((a, b) => {
-            // Tarih ve saat birleştirme işlemi
-            const dateA = new Date(`${a.date} ${a.time}`);
-            const dateB = new Date(`${b.date} ${b.time}`);
-            return dateB - dateA;
-        });
+        // TeamMemberLogs içinde user eşleşmesi createdBy.id üzerinden geliyor.
+        return allLogs
+            .filter(log => {
+                const createdById = log?.createdBy?.id || log?.userId || null;
+                return String(createdById) === String(userId) && String(log.teamId) === String(teamId);
+            })
+            .map(log => ({
+                ...log,
+                // UI tarafında details aranıyor; yoksa aksiyonu fallback yapıyoruz.
+                details: log.details ?? log.action ?? ''
+            }))
+            .sort((a, b) => {
+                const dateA = new Date(`${a.date} ${a.time}`);
+                const dateB = new Date(`${b.date} ${b.time}`);
+                return dateB - dateA;
+            });
     },
 
     // Yeni üye ekleme fonksiyonu (Simülasyon)

@@ -30,14 +30,15 @@
       }
     ],
     "status": "active",
-    "preferences": {
+    "isDeleted": false,
+    "settings": {
+      "theme": "dark",
       "language": "Turkish",
-      "theme": "dark"
-    },
-    "notifications": {
-      "email": true,
-      "sms": false,
-      "push": true
+      "notifications": {
+        "email": true,
+        "sms": false,
+        "push": true
+      }
     },
     "teams": ["team-1", "team-2"]
   },
@@ -71,11 +72,12 @@
     "role": [
       {
         "teamId": "team-1",
-        "roleName": "Member",
+        "roleName": "Admin",
         "permissions": []
       }
     ],
     "status": "active",
+    "isDeleted": false,
     "teams": ["team-1"]
   },
   {
@@ -113,6 +115,7 @@
       }
     ],
     "status": "active",
+    "isDeleted": false,
     "teams": ["team-2"]
   },
   {
@@ -150,6 +153,7 @@
       }
     ],
     "status": "inactive",
+    "isDeleted": false,
     "teams": ["team-2"]
   }
 ]

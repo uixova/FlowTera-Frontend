@@ -101,6 +101,11 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
         </div>
 
         <div className="tr-detail-row">
+          <span><i className="ti ti-clock"></i> Start/End Date</span>
+          <p>{data.startDate} - {data.endDate}</p>
+        </div>
+
+        <div className="tr-detail-row">
           <span><i className="ti ti-notes"></i> Trip Description</span>
           <p className="tr-desc-text">{data.desc || "No additional notes."}</p>
         </div>

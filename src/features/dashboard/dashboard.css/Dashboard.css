@@ -73,11 +73,6 @@ hr {
     font-size: 1.3rem;
 }
 
-.status-icon.pending { background: rgba(255, 171, 0, 0.1); color: #ffab00; }
-.status-icon.trips { background: rgba(0, 184, 217, 0.1); color: #00b8d9; }
-.status-icon.total { background: rgba(14, 212, 90, 0.1); color: #0ed45a; }
-.status-icon.reject { background: rgba(255, 86, 48, 0.1); color: #ff5630; }
-
 .status-label { display: block; color: #666; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
 .status-value { display: block; color: #fff; font-size: 1.4rem; font-weight: 800; margin-top: 2px; }
 
@@ -118,7 +113,7 @@ hr {
     transform: translateX(5px);
 }
 
-.col-subject { color: #eee; font-weight: 600; font-size: 0.9rem; }
+.col-subject { color: #eee; font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .col-team-name { color: #888; font-size: 0.85rem; font-weight: 500; }
 .col-amount { text-align: right; font-weight: 800; color: #fff; }
 .col-type { color: #0ed45a; font-weight: 600; }
@@ -178,18 +173,6 @@ hr {
     justify-self: start; 
     display: inline-block;
     white-space: nowrap;
-
-}
-
-.badge {
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.7rem;
-    font-weight: 800;
-    text-align: center;
-    justify-self: start; 
-    display: inline-block;
-    white-space: nowrap;
     background: rgba(255, 255, 255, 0.05); 
     color: #888;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -202,7 +185,3 @@ hr {
     border-color: rgba(14, 212, 90, 0.2);
 }
 
-.custom-scroll::-webkit-scrollbar { width: 4px; }
-.custom-scroll::-webkit-scrollbar-track { background: transparent; }
-.custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-.custom-scroll::-webkit-scrollbar-thumb:hover { background: #444; }

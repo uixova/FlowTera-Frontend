@@ -12,15 +12,26 @@ export const tripsService = {
         if (!users || !trips) return trips;
 
         return trips.map(trip => {
-            // userId'ye göre gerçek kullanıcıyı bul
-            const owner = users.find(u => String(u.id) === String(trip.userId));
+            const createdBy = trip.createdBy;
+            const ownerId =
+                createdBy?.id ??
+                trip.userId ??
+                trip.ownerId ??
+                trip.createdById ??
+                null;
+
+            const createdByName = createdBy?.name;
+            const owner = ownerId ? users.find(u => String(u.id) === String(ownerId)) : null;
+            const isDeleted = Boolean(owner?.isDeleted);
             
             return {
                 ...trip,
-                // Kullanıcı ismini ve avatarını user.json'dan çekiyoruz
-                userName: owner ? owner.name : "Unknown Traveller",
-                userAvatar: owner ? owner.avatar : null,
-                userPlan: owner ? owner.subscription?.plan : 'free'
+                // createdBy varsa onu kullan, yoksa user.json'dan owner'ı ararız.
+                userName: isDeleted
+                    ? "DeletedUser"
+                    : (createdByName || owner?.name || "Unknown Traveller"),
+                userAvatar: isDeleted ? null : (owner?.avatar || null),
+                userPlan: isDeleted ? 'free' : (owner?.subscription?.plan || 'free')
             };
         });
     },

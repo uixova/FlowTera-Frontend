@@ -75,6 +75,20 @@
     margin-bottom: 10px;
 }
 
+.tm-user-avatar-deleted {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 2px solid #5a5a5a;
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px auto;
+    color: #ff4757;
+    font-size: 28px;
+}
+
 .tm-user-body h3 {
     color: #fff;
     font-size: 1.1rem;

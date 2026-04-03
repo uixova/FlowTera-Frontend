@@ -45,11 +45,17 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
         <div className="tm-log-header-alt">
             <div className="tm-log-user-info">
                 <div className="tm-avatar-wrapper">
-                    <img src={user?.avatar || 'https://via.placeholder.com/40'} alt="User" />
+                    {user?.isDeleted ? (
+                        <div className="tm-avatar-deleted" aria-hidden="true">
+                            <i className="ti ti-trash"></i>
+                        </div>
+                    ) : (
+                        <img src={user?.avatar || 'https://via.placeholder.com/40'} alt="User" />
+                    )}
                 </div>
                 <div className="user-meta">
                     <h3>{user?.name || 'User Activity'}</h3>
-                    <span>{user?.email}</span>
+                    {!user?.isDeleted && user?.email ? <span>{user.email}</span> : null}
                 </div>
             </div>
         </div>

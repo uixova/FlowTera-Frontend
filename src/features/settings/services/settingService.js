@@ -26,6 +26,9 @@ export const settingsService = {
             console.error("Log verisi okunamadı.");
             return [];
         }
-        return logsData[0].UserLogs.filter(log => log.userId === userId);
+        return logsData[0].UserLogs.filter(log => {
+            const ownerId = log?.createdBy?.id ?? log?.userId ?? null;
+            return String(ownerId) === String(userId);
+        });
     }
 };

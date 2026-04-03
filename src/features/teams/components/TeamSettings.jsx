@@ -2,12 +2,15 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Loader from '../../../components/common/Loader';
 import '../teams.css/Settings.css';
 import { teamsService } from '../services/teamsService';
+import { useAuth } from '../../../hooks/useAuth';
 
-const TeamSettings = ({ team, onBack, currentUser }) => {
+const TeamSettings = ({ team, onBack }) => {
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+  const { roleNameForTeam, currentUser: authUser, loading: authLoading } = useAuth();
   const [planMaxMembers, setPlanMaxMembers] = useState(5);
   const [loading, setLoading] = useState(true);
   const selectedTeamId = localStorage.getItem('tm_selected_id');
+  const canManageMembers = !authLoading && !!authUser && String(authUser?.isDeleted) !== 'true' && roleNameForTeam(selectedTeamId) === 'Admin';
 
   // 1. FormData State Güncellendi
   const [formData, setFormData] = useState({
@@ -36,7 +39,7 @@ const TeamSettings = ({ team, onBack, currentUser }) => {
       const data = await teamsService.getTeamSettings(selectedTeamId);
 
       if (data) {
-        const activeLimit = data.adminPlanLimit || currentUser?.subscription?.maxMembersPerTeam || 5;
+        const activeLimit = data.adminPlanLimit || authUser?.subscription?.maxMembersPerTeam || 5;
         setPlanMaxMembers(activeLimit);
 
         // 2. Servisten gelen veriyi yeni alanlarla eşleştiriyoruz
@@ -60,11 +63,11 @@ const TeamSettings = ({ team, onBack, currentUser }) => {
     } finally {
       setLoading(false);
     }
-  }, [selectedTeamId, currentUser]); 
+  }, [selectedTeamId, authUser]); 
 
   useEffect(() => {
-    loadTeamData();
-  }, [loadTeamData]);
+    if (canManageMembers) loadTeamData();
+  }, [loadTeamData, canManageMembers]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -100,10 +103,29 @@ const TeamSettings = ({ team, onBack, currentUser }) => {
     setPreview(URL.createObjectURL(file));
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="full-screen-loader">
         <Loader type="butterfly" />
+      </div>
+    );
+  }
+
+  if (!canManageMembers) {
+    return (
+      <div className="tm-page-layout">
+        <div className="tm-container">
+          <div className="tm-page-header">
+            <div className="tm-header-left">
+              <h1>Team Settings</h1>
+              <span className="current-id-badge">ID: {selectedTeamId}</span>
+            </div>
+            <button className="tm-back-btn" onClick={onBack}>Back to Team</button>
+          </div>
+          <div style={{ padding: '20px 0', color: '#ff4757', fontWeight: 700 }}>
+            You don't have permission to edit this team's settings.
+          </div>
+        </div>
       </div>
     );
   }

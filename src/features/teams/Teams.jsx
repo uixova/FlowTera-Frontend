@@ -16,13 +16,13 @@ const Teams = () => {
   const [switchingTeam, setSwitchingTeam] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  // Başlangıç durumlarını belirle
+  // Başlangıç durumlarını belirle 
   const [selectedTeamId, setSelectedTeamId] = useState(() => {
     return localStorage.getItem('tm_selected_id') || null;
   });
 
   const [viewMode, setViewMode] = useState(() => {
-    // Eğer localStorage'da bir ID varsa direkt 'main' (takım içeriği) başlasın
+    // Eğer localStorage'da bir ID varsa direkt 'main' başlasın
     return localStorage.getItem('tm_selected_id') ? 'main' : 'selection';
   });
 
@@ -33,7 +33,6 @@ const Teams = () => {
         setLoading(true);
         const data = await teamsService.getTeams();
         setTeams(data || []);
-        localStorage.setItem('tm_teams_cache', JSON.stringify(data || []));
       } catch (error) {
         console.error("Takımlar yüklenemedi:", error);
       } finally {
@@ -45,25 +44,23 @@ const Teams = () => {
 
   // LocalStorage değişimini dinleme (Navbar'dan takım değiştirme durumunu yakalamak için)
   useEffect(() => {
-  const handleManualStorageChange = () => {
-    const updatedId = localStorage.getItem('tm_selected_id');
-    const updatedView = localStorage.getItem('tm_view_mode') || 'main';
-    
-    if (updatedId !== selectedTeamId) {
-      setSelectedTeamId(updatedId);
-      setViewMode(updatedView);
-    }
-  };
+    const handleManualStorageChange = () => {
+      const updatedId = localStorage.getItem('tm_selected_id');
+      const updatedView = localStorage.getItem('tm_view_mode') || 'main';
+      
+      if (updatedId !== selectedTeamId) {
+        setSelectedTeamId(updatedId);
+        setViewMode(updatedView);
+      }
+    };
 
-  // Hem tarayıcının kendi storage event'ini (farklı sekmeler için)
-  // hem de aynı sekme için gönderilen teamChanged event'ini dinle.
-  window.addEventListener('storage', handleManualStorageChange);
-  window.addEventListener('teamChanged', handleManualStorageChange);
-  
-  return () => {
-    window.removeEventListener('storage', handleManualStorageChange);
-    window.removeEventListener('teamChanged', handleManualStorageChange);
-  };
+    window.addEventListener('storage', handleManualStorageChange);
+    window.addEventListener('teamChanged', handleManualStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleManualStorageChange);
+      window.removeEventListener('teamChanged', handleManualStorageChange);
+    };
   }, [selectedTeamId]);
 
   // Seçilen takım bilgisi (ID'ye göre) - useMemo ile optimize ediyoruz
@@ -72,16 +69,17 @@ const Teams = () => {
     return teams.find(t => String(t.id) === String(selectedTeamId)) || null;
   }, [teams, selectedTeamId]);
 
-  // Eğer takım bulunamazsa (silinmişse vb.) seçime geri yolla
+  // Eğer takım bulunamazsa seçime geri yolla
   useEffect(() => {
     if (!loading && selectedTeamId && !activeTeam) {
       setSelectedTeamId(null);
       setViewMode('selection');
       localStorage.removeItem('tm_selected_id');
+      localStorage.removeItem('tm_selected_name');
     }
   }, [loading, activeTeam, selectedTeamId]);
 
-  // LocalStorage senkronizasyonu
+  // Sayfa yapısı ve navigasyon için gereken LocalStorage senkronizasyonu
   useEffect(() => {
     if (selectedTeamId) {
       localStorage.setItem('tm_selected_id', selectedTeamId);
@@ -95,6 +93,7 @@ const Teams = () => {
       localStorage.removeItem('tm_selected_name');
     }
 
+    // Takım değişikliğini bildir
     window.dispatchEvent(
       new CustomEvent('teamChanged', {
         detail: {
@@ -105,6 +104,7 @@ const Teams = () => {
     );
   }, [activeTeam?.name, selectedTeamId, viewMode]);
 
+  // Navigasyon fonksiyonu
   const handleNavigate = async (page, teamId = null) => {
     if (page === 'CreateTeamPanel') {
       setIsCreateOpen(true);
@@ -134,7 +134,7 @@ const Teams = () => {
 
   return (
     <div className="tm-feature-wrapper">
-      {/* SEÇİM EKRANI: Mod selection ise VEYA aktif bir takım seçili değilse */}
+      {/* SEÇİM EKRANI */}
       {(viewMode === 'selection' || !activeTeam) && (
         <TeamSelection 
           teams={teams} 
@@ -142,7 +142,7 @@ const Teams = () => {
         />
       )}
     
-      {/* TAKIM İÇERİĞİ: Bir takım seçiliyse ve mod main ise */}
+      {/* TAKIM İÇERİĞİ */}
       {viewMode === 'main' && activeTeam && (
         <TeamMemberList 
           team={activeTeam} 

@@ -9,6 +9,7 @@ const SubNavbar = ({
     onCreate, 
     createLabel, 
     onSearch, 
+    searchValue,
     showCurrency = false, 
     searchPlaceholder, 
     buttons = [],
@@ -136,6 +137,7 @@ const SubNavbar = ({
                     <Input 
                         placeholder={searchPlaceholder}
                         icon="ti ti-search"
+                        value={searchValue}
                         onChange={(e) => onSearch && onSearch(e.target.value)}
                     />
                 )}

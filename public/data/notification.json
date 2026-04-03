@@ -3,38 +3,42 @@
     {
       "id": "nt_001",
       "type": "request",
+      "teamId": "team-1",
       "category": "expense",
       "user": "Ahmet Yılmaz",
       "title": "Harcama Onayı",
       "detail": "Ofis Malzemeleri - 400$",
-      "date": "12.03.2026",
+      "date": "2026-03-12T14:30:00Z",
       "targetId": "exp_445",
       "path": "/expense"
     },
     {
       "id": "nt_002",
       "type": "info",
+      "userId": "u2",
       "category": "success",
       "text": "Yeni üye Caner Demir gruba katıldı.",
-      "time": "2 saat önce"
+      "date": "2026-04-03T10:00:00Z"
     },
     {
       "id": "nt_003",
       "type": "request",
+      "teamId": "team-1",
       "category": "team",
       "user": "Selin Ak",
       "title": "Takımdan Çıkarma",
       "detail": "Moderatör talebi: Kullanıcı pasif.",
-      "date": "11.03.2026",
+      "date": "2026-04-02T18:15:00Z",
       "targetId": "usr_992",
       "path": "/team"
     },
     {
       "id": "nt_004",
       "type": "info",
+      "userId": "u1",
       "category": "warning",
       "text": "Aylık bütçe limitinin %90'ına ulaşıldı!",
-      "time": "5 saat önce"
+      "date": "2026-04-03T09:45:00Z"
     }
   ]
 }

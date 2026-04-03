@@ -1,12 +1,15 @@
 [
   {
     "id": "tr-001",
-    "userId": "u1",
+    "createdBy": {
+      "id": "u1",
+      "name": "Ahmet Yılmaz"
+    },
     "teamId": "team-1",
     "title": "Business Meeting",
     "category": "Corporate",
     "destination": "Berlin, DE",
-    "vehicle": "Flight",
+    "vehicle": "Plane",
     "amount": 1200.00,
     "currency": "USD",
     "currencySymbol": "$",
@@ -20,6 +23,8 @@
     },
     "duration": "3 Days",
     "date": "15/03/2026",
+    "startDate": "15/03/2026",
+    "endDate": "18/03/2026",
     "status": "approved",
     "statusClass": "approved",
     "icon": "ti-plane-departure",
@@ -28,7 +33,10 @@
   },
   {
     "id": "tr-002",
-    "userId": "u2",
+    "createdBy": {
+      "id": "u2",
+      "name": "Caner Demir"
+    },
     "teamId": "team-2",
     "title": "Family Visit",
     "category": "Personal",
@@ -47,6 +55,8 @@
     },
     "duration": "5 Days",
     "date": "20/03/2026",
+    "startDate": "20/03/2026",
+    "endDate": "25/03/2026",
     "status": "On Road",
     "statusClass": "onroad",
     "icon": "ti-car",
@@ -55,7 +65,10 @@
   },
   {
     "id": "tr-003",
-    "userId": "u3",
+    "createdBy": {
+      "id": "u3",
+      "name": "Ayşe Güngör"
+    },
     "teamId": "team-2",
     "title": "Tech Conf 2026",
     "category": "Education",
@@ -74,6 +87,8 @@
     },
     "duration": "7 Days",
     "date": "10/04/2026",
+    "startDate": "10/04/2026",
+    "endDate": "17/04/2026",
     "status": "Pending",
     "statusClass": "pending",
     "icon": "ti-devices-pc",

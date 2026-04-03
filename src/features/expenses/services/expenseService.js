@@ -12,16 +12,28 @@ export const expenseService = {
         if (!users || !expenses) return expenses;
 
         return expenses.map(expense => {
-            // userId'ye göre kullanıcıyı bul
-            const userDetail = users.find(u => u.id === expense.userId);
+            const createdBy = expense.createdBy;
+            const submitterId =
+                createdBy?.id ??
+                expense.userId ??
+                expense.submitterId ??
+                null;
+
+            const createdByName = createdBy?.name;
+            const userDetail = submitterId
+                ? users.find(u => String(u.id) === String(submitterId))
+                : null;
+
+            const isDeleted = Boolean(userDetail?.isDeleted);
             
             return {
                 ...expense,
-                // Eğer kullanıcı bulunduysa gerçek ismini ve avatarını bas, 
-                // yoksa json'daki eski değeri koru
-                user: userDetail ? userDetail.name : expense.user,
-                userAvatar: userDetail ? userDetail.avatar : null,
-                userRole: userDetail ? userDetail.subscription?.plan : 'free'
+                // createdBy varsa onu kullan, yoksa id üzerinden user.json'dan ararız.
+                user: isDeleted
+                    ? "DeletedUser"
+                    : (createdByName || expense.user || userDetail?.name || "Unknown"),
+                userAvatar: isDeleted ? null : (userDetail?.avatar || null),
+                userRole: isDeleted ? 'free' : (userDetail?.subscription?.plan || 'free')
             };
         });
     },

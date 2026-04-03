@@ -19,7 +19,7 @@ export const useTimeAgo = (dateString) => {
             const diffInSeconds = Math.floor((now - createdDate) / 1000);
 
             if (diffInSeconds < 0) {
-                setTimeAgo('Just now'); // Gelecek tarih gelirse koruma
+                setTimeAgo('Just now');
                 return;
             }
 
