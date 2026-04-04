@@ -12,7 +12,7 @@ const Analysis = () => {
   const [analysisData, setAnalysisData] = useState(null);
   const [viewMode, setViewMode] = useState('all');
 
-  // 1. fetchData'yı useCallback içine alıyoruz (ESLint hatasını önlemek ve her renderda değişmemesi için)
+  // fetchData'yı useCallback içine alıyoruz (ESLint hatasını önlemek ve her renderda değişmemesi için)
   const fetchData = useCallback(async () => {
     setLoading(true);
     const selectedTeamId = localStorage.getItem('tm_selected_id');
@@ -24,17 +24,16 @@ const Analysis = () => {
             setAnalysisData(data);
         }
     } catch (error) {
-        console.error("Veri çekme hatası:", error);
+        console.error("Data Fetch Error:", error);
     } finally {
         setTimeout(() => setLoading(false), 500); 
     }
   }, [viewMode]);
-  // 2. Sayfa ilk açıldığında veriyi çek
+  // Sayfa ilk açıldığında veriyi çek
   useEffect(() => {
     fetchData();
   }, [fetchData]); // useCallback sayesinde burada güvenle kullanabiliriz
 
-  // 3. KRİTİK NOKTA: localStorage değişimini dinle
   // Eğer Navbar'da takımı değiştirdiğinde sayfaya f5 atmadan değişsin istiyorsan:
   useEffect(() => {
     const handleStorageChange = () => {
@@ -57,8 +56,8 @@ const Analysis = () => {
   return (
     <div className="analysis-page">
       <SubNavbar 
-        pageName="Financial Analysis"
-        createLabel="Export Data"
+        pageName="Finansal Analiz"
+        createLabel="Rapor Oluştur"
         showSearch={false} 
         onCreate={() => setIsExportOpen(true)}
         buttons={[
@@ -84,32 +83,32 @@ const Analysis = () => {
         {/* TOPLAM HARCAMA KARTI */}
         <div className="an-card">
           <span className="an-card-title">
-            Total {viewMode.charAt(0).toUpperCase() + viewMode.slice(1)} Spending
+            Toplam Harcama
           </span>
           <span className="an-card-value">{analysisData?.summary?.totalSpending || "$0.00"}</span>
           <span className={`an-card-sub ${parseFloat(analysisData?.summary?.spendingGrowth) >= 0 ? 'trend-up' : 'trend-down'}`}>
             {parseFloat(analysisData?.summary?.spendingGrowth) >= 0 ? '↑' : '↓'} 
-            {Math.abs(analysisData?.summary?.spendingGrowth)}% from last month
+            {Math.abs(analysisData?.summary?.spendingGrowth)}% Geçen aydan
           </span>
         </div>
 
         {/* BU AYIN HARCAMASI */}
         <div className="an-card">
-          <span className="an-card-title">Monthly {viewMode === 'all' ? 'Volume' : viewMode}</span>
+          <span className="an-card-title">Aylık {viewMode === 'all' ? 'Volume' : viewMode}</span>
           <span className="an-card-value">{analysisData?.summary?.currentMonthSpending || "$0.00"}</span>
-          <span className="an-card-sub">Expenses in March 2026</span>
+          <span className="an-card-sub">Mart 2026 Masrafları</span>
         </div>
 
         {/* DURUM KARTI (DİNAMİK) */}
         <div className="an-card">
           <span className="an-card-title">
-            {viewMode === 'trips' ? 'Active Journeys' : 'Pending Reports'}
+            {viewMode === 'trips' ? 'Aktif Yolculuklar' : 'Bekleyen Raporlar'}
           </span>
           <span className="an-card-value">
             {viewMode === 'trips' ? analysisData?.summary?.activeTrips : analysisData?.summary?.pendingReports}
           </span>
           <span className="an-card-sub">
-            {viewMode === 'trips' ? 'Currently on road' : 'Awaiting management approval'}
+            {viewMode === 'trips' ? 'Şu anda yolda' : 'Yönetim onayı bekliyor'}
           </span>
         </div>
       </div>

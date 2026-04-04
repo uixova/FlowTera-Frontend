@@ -8,28 +8,28 @@ export const StatusOverview = ({ stats }) => {
             <div className="status-item">
                 <div className="status-icon pending"><i className="ti ti-clock-pause"></i></div>
                 <div className="status-info">
-                    <span className="status-label">Pending</span>
+                    <span className="status-label">Beklemede</span>
                     <span className="status-value">{String(stats.pendingCount || 0).padStart(2, '0')}</span>
                 </div>
             </div>
             <div className="status-item">
                 <div className="status-icon trips"><i className="ti ti-plane-tilt"></i></div>
                 <div className="status-info">
-                    <span className="status-label">Active Trips</span>
+                    <span className="status-label">Aktif Geziler</span>
                     <span className="status-value">{String(stats.activeTrips || 0).padStart(2, '0')}</span>
                 </div>
             </div>
             <div className="status-item">
                 <div className="status-icon total"><i className="ti ti-receipt-2"></i></div>
                 <div className="status-info">
-                    <span className="status-label">Total Exp.</span>
+                    <span className="status-label">Toplam Gider</span>
                     <span className="status-value">${stats.totalExpenses || 0}</span>
                 </div>
             </div>
             <div className="status-item rejected">
                 <div className="status-icon reject"><i className="ti ti-circle-x"></i></div>
                 <div className="status-info">
-                    <span className="status-label">Rejected</span>
+                    <span className="status-label">Reddedilen</span>
                     <span className="status-value">{String(stats.rejectedCount || 0).padStart(2, '0')}</span>
                 </div>
             </div>
@@ -42,15 +42,15 @@ export const RecentActivities = ({ activities }) => {
     return (
         <div className="hm-card hm-recent-expenses">
             <div className="card-header">
-                <h2>My Recent Activities</h2>
+                <h2>Son Aktivitelerim</h2>
             </div>
             <hr />
             <div className="recent-grid-header">
-                <span>Subject</span>
-                <span>Team</span> 
-                <span>Type</span>
-                <span>Category</span>
-                <span className="text-right">Info</span>
+                <span>Konu</span>
+                <span>Takım</span> 
+                <span>Tür</span>
+                <span>Kategori</span>
+                <span className="text-right">Bilgi</span>
             </div>
 
             <div className="hm-recent-container custom-scroll">

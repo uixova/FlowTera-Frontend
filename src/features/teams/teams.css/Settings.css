@@ -336,7 +336,6 @@
 .tm-input-group input:focus, 
 .tm-input-group select:focus {
     border-color: #0ed45a;
-    background: #222;
     box-shadow: 0 0 15px rgba(14, 212, 90, 0.1);
 }
 

@@ -95,11 +95,11 @@ const Trips = () => {
         <div className="trips" id="trips">
             <div className="trip-page" id="tripsPage">
                 <SubNavbar 
-                    pageName="Trips & Travels"
-                    searchPlaceholder="Search trips..."
+                    pageName="Geziler ve Seyahatler"
+                    searchPlaceholder="Gezi ara..."
                     searchValue={searchTerm}
                     showCurrency={true}
-                    createLabel="New Trip"
+                    createLabel="Gezi Oluştur"
                     onSearch={(val) => setSearchTerm(val)} 
                     onCreate={() => setIsCreateOpen(true)}
                     buttons={[
@@ -112,13 +112,13 @@ const Trips = () => {
 
                 <div className="trip-title-nav">
                     <input type="checkbox" id="selectAllTrips" />
-                    <span className="tr-title-span">Trip Details</span>
-                    <span className="tr-title-span">Category</span>
-                    <span className="tr-title-span">Destination</span>
-                    <span className="tr-title-span">Vehicle</span>
-                    <span className="tr-title-span">Est. Cost</span>
-                    <span className="tr-title-span">Duration</span>
-                    <span className="tr-title-span">Status</span>
+                    <span className="tr-title-span">Gezi Detayları</span>
+                    <span className="tr-title-span">Kategori</span>
+                    <span className="tr-title-span">Varış Noktası</span>
+                    <span className="tr-title-span">Araç</span>
+                    <span className="tr-title-span">Tahmini Gider</span>
+                    <span className="tr-title-span">Süre</span>
+                    <span className="tr-title-span">İşlem Durumu</span>
                 </div>
                 
                 <div className="trip-list-container">

@@ -28,7 +28,7 @@ const TeamCard = ({ team, onSelect }) => {
       <div className="tm-sel-card-bottom">
         <div className="tm-sel-stats">
           <i className="ti ti-users"></i>
-          <span>{team.members} Members</span>
+          <span>{team.members} Üye</span>
         </div>
         <div className="tm-sel-arrow">
           <i className="ti ti-chevron-right"></i>

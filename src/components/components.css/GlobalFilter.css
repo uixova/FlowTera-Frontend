@@ -37,8 +37,7 @@
 
 .filter-input-group input:focus, 
 .filter-input-group select:focus {
-    border-color: #0ed45a; 
-    background: #202020;
+    border-color: #0ed45a;
     box-shadow: 0 0 0 3px rgba(14, 212, 90, 0.1);
 }
 

@@ -12,7 +12,7 @@ const HistoryFilter = ({ filters, setFilters }) => {
             {/* Tarih Aralığı (ISO Formatı İçin) */}
             <div className="filter-row">
                 <div className="filter-input-group">
-                    <label>From Date</label>
+                    <label>Başlangıç Tarihi</label>
                     <input 
                         type="date" 
                         name="startDate" 
@@ -21,7 +21,7 @@ const HistoryFilter = ({ filters, setFilters }) => {
                     />
                 </div>
                 <div className="filter-input-group">
-                    <label>To Date</label>
+                    <label>Bitiş Tarihi</label>
                     <input 
                         type="date" 
                         name="endDate" 
@@ -31,35 +31,35 @@ const HistoryFilter = ({ filters, setFilters }) => {
                 </div>
             </div>
 
-            {/* Rol Filtresi (admin, member, moderator, system) */}
+            {/* Rol Filtresi (Yönetici, Üye, Moderatör, Sistem) */}
             <div className="filter-input-group">
-                <label>Performed By (Role)</label>
+                <label>İşlemi Yapan (Rol)</label>
                 <select name="role" value={filters.role || ''} onChange={handleChange}>
-                    <option value="">All Roles</option>
+                    <option value="">Tüm Roller</option>
                     <option value="admin">Admin</option>
-                    <option value="moderator">Moderator</option>
-                    <option value="member">Member</option>
-                    <option value="system">System</option>
+                    <option value="moderator">Moderatör</option>
+                    <option value="member">Üye</option>
+                    <option value="system">Sistem</option>
                 </select>
             </div>
 
             {/* İşlem Tipi (Log Type) */}
             <div className="filter-input-group">
-                <label>Action Type</label>
+                <label>İşlem Türü</label>
                 <select name="type" value={filters.type || ''} onChange={handleChange}>
-                    <option value="">All Actions</option>
-                    <option value="expense_add">Expense Added</option>
-                    <option value="system_update">System Update</option>
-                    <option value="member_join">Member Join</option>
-                    <option value="trip_approval">Trip Approval</option>
-                    <option value="rejection">Rejection</option>
-                    <option value="status_update">Status Update</option>
+                    <option value="">Tüm İşlemler</option>
+                    <option value="expense_add">Harcama Eklendi</option>
+                    <option value="system_update">Sistem Güncellemesi</option>
+                    <option value="member_join">Yeni Üye Kaydı</option>
+                    <option value="trip_approval">Gezi Onayı</option>
+                    <option value="rejection">Reddedilen Talepler</option>
+                    <option value="status_update">Durum Güncellemesi</option>
                 </select>
             </div>
 
             {/* Kullanıcı Bazlı Hızlı Filtre (Opsiyonel) */}
             <div className="filter-input-group">
-                <label>Target User/Object</label>
+                <label>Hedef Kullanıcı/İşlem</label>
                 <input 
                     type="text" 
                     name="target" 

@@ -12,17 +12,17 @@ const TeamSettings = ({ team, onBack }) => {
   const selectedTeamId = localStorage.getItem('tm_selected_id');
   const canManageMembers = !authLoading && !!authUser && String(authUser?.isDeleted) !== 'true' && roleNameForTeam(selectedTeamId) === 'Admin';
 
-  // 1. FormData State Güncellendi
+  // FormData State Güncellendi
   const [formData, setFormData] = useState({
     teamName: team?.name || '',
-    category: 'Software Development', // Yeni
+    category: 'Software Development',
     workspaceType: 'Corporate',
     status: 'active',
     privacy: 'private',
     maxExpenseLimit: 0,
     memberLimit: 1,
-    autoApproved: false, // Yeni
-    autoApprovedLimit: 0, // Yeni
+    autoApproved: false, 
+    autoApprovedLimit: 0, 
     currency: 'USD' // Create panelindeki ile uyum için eklendi
   });
 
@@ -42,7 +42,7 @@ const TeamSettings = ({ team, onBack }) => {
         const activeLimit = data.adminPlanLimit || authUser?.subscription?.maxMembersPerTeam || 5;
         setPlanMaxMembers(activeLimit);
 
-        // 2. Servisten gelen veriyi yeni alanlarla eşleştiriyoruz
+        // Servisten gelen veriyi yeni alanlarla eşleştiriyoruz
         setFormData({
           teamName: data.name || '', 
           category: data.category || 'Software Development', // Veride yoksa default
@@ -51,15 +51,15 @@ const TeamSettings = ({ team, onBack }) => {
           privacy: data.settings?.privacy || 'private', 
           maxExpenseLimit: data.settings?.maxExpenseLimit || 0,
           memberLimit: data.settings?.memberLimit || 1,
-          autoApproved: data.settings?.autoApproved || false, // Yeni
-          autoApprovedLimit: data.settings?.autoApprovedLimit || 0, // Yeni
+          autoApproved: data.settings?.autoApproved || false, 
+          autoApprovedLimit: data.settings?.autoApprovedLimit || 0,
           currency: data.settings?.currency || 'USD'
         });
         
         setPreview(data.image || 'https://via.placeholder.com/160?text=LOGO');
       }
     } catch (err) {
-      console.error("Veri yükleme hatası:", err);
+      console.error("Data Download Error:", err);
     } finally {
       setLoading(false);
     }
@@ -117,13 +117,13 @@ const TeamSettings = ({ team, onBack }) => {
         <div className="tm-container">
           <div className="tm-page-header">
             <div className="tm-header-left">
-              <h1>Team Settings</h1>
+              <h1>Takım Ayarları</h1>
               <span className="current-id-badge">ID: {selectedTeamId}</span>
             </div>
-            <button className="tm-back-btn" onClick={onBack}>Back to Team</button>
+            <button className="tm-back-btn" onClick={onBack}>Takıma Dön</button>
           </div>
           <div style={{ padding: '20px 0', color: '#ff4757', fontWeight: 700 }}>
-            You don't have permission to edit this team's settings.
+            Bu takımın ayarlarını düzenleme izniniz yok.
           </div>
         </div>
       </div>
@@ -135,10 +135,10 @@ const TeamSettings = ({ team, onBack }) => {
       <div className="tm-container">
         <div className="tm-page-header">
           <div className="tm-header-left">
-            <h1>Team Settings</h1>
+            <h1>Takım Ayarları</h1>
             <span className="current-id-badge">ID: {selectedTeamId}</span>
           </div>
-          <button className="tm-back-btn" onClick={onBack}>Back to Team</button>
+          <button className="tm-back-btn" onClick={onBack}>Takıma Dön</button>
         </div>
 
         <form id="editTeamForm" onSubmit={handleUpdate}>
@@ -156,46 +156,46 @@ const TeamSettings = ({ team, onBack }) => {
                   style={{ display: 'none' }}
                   onChange={handleLogoSelect}
                 />
-                <button type="button" className="tm-upload-btn" onClick={() => fileInputRef.current.click()}>Change Logo</button>
+                <button type="button" className="tm-upload-btn" onClick={() => fileInputRef.current.click()}>Logoyu Güncelle</button>
                 {logoError && <span className="tm-upload-error">{logoError}</span>}
-                <span className="tm-preview-label">Organization Branding</span>
+                <span className="tm-preview-label">Organizasyon Simgesi</span>
               </div>
             </aside>
 
             <main className="tm-setup-main">
               {/* General Configuration */}
               <section className="tm-form-section">
-                <h3 className="section-title">General Configuration</h3>
+                <h3 className="section-title">Genel Konfigürasyon</h3>
                 <div className="tm-grid-row">
                     <div className="tm-input-group">
-                        <label>Organization Name</label>
+                        <label>Organizasyon Adı</label>
                         <input type="text" name="teamName" value={formData.teamName} onChange={handleChange} required />
                     </div>
                     {/* YENİ: Kategori Seçimi */}
                     <div className="tm-input-group">
-                        <label>Category</label>
+                        <label>Kategori</label>
                         <select name="category" value={formData.category} onChange={handleChange}>
-                            <option value="Software Development">Software Development</option>
-                            <option value="Marketing & Ads">Marketing & Ads</option>
-                            <option value="Logistics">Logistics</option>
-                            <option value="Finance">Finance</option>
+                            <option value="Software Development">Yazılım Geliştirme</option>
+                            <option value="Marketing & Ads">Pazarlama & Ads</option>
+                            <option value="Logistics">Lojistik</option>
+                            <option value="Finance">Finans</option>
                         </select>
                     </div>
                 </div>
                 
                 <div className="tm-grid-row">
                   <div className="tm-input-group">
-                    <label>Workspace Type</label>
+                    <label>Takım Türü</label>
                     <select name="workspaceType" value={formData.workspaceType} onChange={handleChange}>
-                      <option value="Corporate">Corporate</option>
-                      <option value="Personal">Personal</option>
+                      <option value="Corporate">Kurumsal</option>
+                      <option value="Personal">Bireysel</option>
                     </select>
                   </div>
                   <div className="tm-input-group">
-                    <label>System Status</label>
+                    <label>Sistem Durumu</label>
                     <select name="status" value={formData.status} onChange={handleChange}>
-                      <option value="active">Active</option>
-                      <option value="maintenance">Maintenance</option>
+                      <option value="active">Aktif</option>
+                      <option value="maintenance">Bakım</option>
                     </select>
                   </div>
                 </div>
@@ -203,36 +203,36 @@ const TeamSettings = ({ team, onBack }) => {
 
               {/* Automation & Limits (YENİLENMİŞ BÖLÜM) */}
               <section className="tm-form-section limit-section-box">
-                <h3 className="section-title">Automation & Limits</h3>
+                <h3 className="section-title">Otomasyon ve Limitler</h3>
                 
                 <div className="tm-grid-row">
                   <div className="tm-input-group">
-                    <label>Monthly Spending Limit ({formData.currency})</label>
+                    <label>Aylık Harcama Limiti ({formData.currency})</label>
                     <input type="number" name="maxExpenseLimit" value={formData.maxExpenseLimit} onChange={handleChange} />
                   </div>
                   <div className="tm-input-group">
-                    <label>Member Capacity (Max: {planMaxMembers})</label>
+                    <label>Üye Kapasitesi (Max: {planMaxMembers})</label>
                     <input type="number" name="memberLimit" value={formData.memberLimit} onChange={handleChange} max={planMaxMembers} min="1" />
                   </div>
                 </div>
 
-                {/* YENİ: Auto Approval Checkbox ve Limit */}
+                {/* Auto Approval Checkbox ve Limit */}
                 <div className="tm-automation-settings">
                     <div className="tm-checkbox-wrapper">
                         <label className="tm-custom-checkbox">
                             <input type="checkbox" name="autoApproved" checked={formData.autoApproved} onChange={handleChange} />
                             <span className="checkmark"></span>
-                            <span className="checkbox-text">Enable Auto-Approval</span>
+                            <span className="checkbox-text">Otomatik Onayı Etkinleştir</span>
                         </label>
                     </div>
 
                     {formData.autoApproved && (
                         <div className="tm-input-group animate-in">
-                            <label>Auto-Approve Limit ({formData.currency})</label>
+                            <label>Otomatik Onay Limiti ({formData.currency})</label>
                             <input 
                                 type="number" name="autoApprovedLimit" 
                                 value={formData.autoApprovedLimit} onChange={handleChange} 
-                                placeholder="Threshold for auto approval"
+                                placeholder="Otomatik onay limiti"
                             />
                         </div>
                     )}
@@ -241,14 +241,14 @@ const TeamSettings = ({ team, onBack }) => {
 
               {/* Privacy Settings */}
               <section className="tm-form-section">
-                <h3 className="section-title">Privacy Settings</h3>
+                <h3 className="section-title">Gizlilik Ayarları</h3>
                 <div className="tm-radio-vertical">
                   <label className={`tm-radio-option ${formData.privacy === 'private' ? 'selected' : ''}`}>
                     <input type="radio" name="privacy" value="private" checked={formData.privacy === 'private'} onChange={handleChange} />
                     <i className="ti ti-lock option-icon"></i> 
                     <div className="option-text">
-                      <strong>Private Organization</strong>
-                      <span>Only invited members can access data.</span>
+                      <strong>Özel Organizasyon</strong>
+                      <span>Sadece davetli üyeler verilere erişebilir.</span>
                     </div>
                   </label>
 
@@ -256,18 +256,18 @@ const TeamSettings = ({ team, onBack }) => {
                     <input type="radio" name="privacy" value="internal" checked={formData.privacy === 'internal'} onChange={handleChange} />
                     <i className="ti ti-world option-icon"></i> 
                     <div className="option-text">
-                      <strong>Internal (Domain Only)</strong>
-                      <span>Verified email domains can join.</span>
+                      <strong>İç (Sadece Alan Alanı)</strong>
+                      <span>Doğrulanmış e-posta alan adları katılabilir.</span>
                     </div>
                   </label>
                 </div>
               </section>
 
               <div className="tm-setup-footer">
-                <button type="button" className="tm-btn-delete">Delete Team</button>
+                <button type="button" className="tm-btn-delete">Takımı Sil</button>
                 <div className="tm-footer-right">
-                  <button type="button" className="tm-btn-ghost" onClick={onBack}>Cancel</button>
-                  <button type="submit" className="tm-btn-primary">Update Settings</button>
+                  <button type="button" className="tm-btn-ghost" onClick={onBack}>İptal Et</button>
+                  <button type="submit" className="tm-btn-primary">Ayarları Güncelle</button>
                 </div>
               </div>
             </main>

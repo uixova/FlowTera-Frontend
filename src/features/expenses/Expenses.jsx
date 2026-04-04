@@ -88,13 +88,13 @@ const Expenses = () => {
                 className="btn-clear" 
                 onClick={clearFilters}
             >
-                Clear All
+                Tümünü Temizle
             </button>
             <button 
                 className="btn-apply" 
                 onClick={() => { applyFilters(); setIsFilterOpen(false); }}
             >
-                Apply Filters
+                Filtreleri Uygula
             </button>
         </div>
     );
@@ -104,11 +104,11 @@ const Expenses = () => {
     return (
         <div className="expense-page-container">
             <SubNavbar 
-                pageName="Expenses"
+                pageName="Giderler"
                 showCurrency={true}
-                searchPlaceholder="Search expenses..."
+                searchPlaceholder="Harcama ara..."
                 searchValue={searchTerm}
-                createLabel="New Expense"
+                createLabel="Harcama Oluştur"
                 onCreate={() => setIsCreateOpen(true)}
                 onSearch={(val) => setSearchTerm(val)}
                 buttons={[
@@ -131,13 +131,13 @@ const Expenses = () => {
             <div className="expense-table-wrapper">
                 <div className="expense-title-nav">
                     <input type="checkbox" />
-                    <span className="ex-title-span">Details</span>
-                    <span className="ex-title-span">Category</span>
-                    <span className="ex-title-span">Merchant</span>
-                    <span className="ex-title-span">Payment</span>
-                    <span className="ex-title-span">Amount</span>
-                    <span className="ex-title-span">Report</span>
-                    <span className="ex-title-span">Status</span>
+                    <span className="ex-title-span">Detaylar</span>
+                    <span className="ex-title-span">Kategori</span>
+                    <span className="ex-title-span">İşletme</span>
+                    <span className="ex-title-span">Ödeme</span>
+                    <span className="ex-title-span">Miktar</span>
+                    <span className="ex-title-span">Rapor</span>
+                    <span className="ex-title-span">İşlem Durumu</span>
                 </div>
 
                 <div className="expense-list-container">
@@ -184,7 +184,7 @@ const Expenses = () => {
                             />
                         </>
                     ) : (
-                        <div className="no-data-info">No expenses found matching your criteria.</div>
+                        <div className="no-data-info">Kriterlerinize uyan hiçbir gider bulunmamaktadır.</div>
                     )}
                 </div>
             </div>

@@ -8,8 +8,8 @@ const MonthlyReport = ({ trendData, distributionData, typeData, teamData }) => {
       {/* KART 1: Harcama Trendi (AreaChart) */}
       <div className="report-card">
         <div className="report-header">
-          <h3>Expense Analytics</h3>
-          <span className="report-period">Trend (All Time)</span>
+          <h3>Harcama Analitiği</h3>
+          <span className="report-period">Trend (Tüm Zamanlar)</span>
         </div>
         <div className="chart-wrapper">
           <ResponsiveContainer width="100%" height={250}>
@@ -36,8 +36,8 @@ const MonthlyReport = ({ trendData, distributionData, typeData, teamData }) => {
       {/* KART 2: Kategori Dağılımı (BarChart) */}
       <div className="report-card">
         <div className="report-header">
-          <h3>Category Distribution</h3>
-          <span className="report-period">By Category Total</span>
+          <h3>Kategori Dağılımı</h3>
+          <span className="report-period">Kategori Sayısına Göre</span>
         </div>
         <div className="chart-wrapper">
           <ResponsiveContainer width="100%" height={250}>
@@ -57,8 +57,8 @@ const MonthlyReport = ({ trendData, distributionData, typeData, teamData }) => {
       {/* KART 3: Harcama Tipi (PieChart) */}
       <div className="report-card">
         <div className="report-header">
-          <h3>Trip vs Expense</h3>
-          <span className="report-period">Cost Breakdown</span>
+          <h3>Seyahat vs Harcama</h3>
+          <span className="report-period">Maliyet Dağılımı</span>
         </div>
         <div className="chart-wrapper">
           <ResponsiveContainer width="100%" height={250}>
@@ -76,8 +76,8 @@ const MonthlyReport = ({ trendData, distributionData, typeData, teamData }) => {
       {/* KART 4: Takım Harcamaları (Horizontal BarChart) */}
       <div className="report-card">
         <div className="report-header">
-          <h3>Team Spending</h3>
-          <span className="report-period">By Team Total</span>
+          <h3>Takım Harcamaları</h3>
+          <span className="report-period">Takım Sayısına Göre</span>
         </div>
         <div className="chart-wrapper">
           <ResponsiveContainer width="100%" height={250}>

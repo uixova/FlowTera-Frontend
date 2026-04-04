@@ -19,7 +19,7 @@ const ExportModal = ({ isOpen, onClose }) => {
         <div className="ex-header">
           <div className="ex-title">
             <i className="ti ti-file-export"></i>
-            <span>Export Report</span>
+            <span>Rapor Oluştur</span>
           </div>
           <button className="ex-close" onClick={onClose}>
             <i className="ti ti-x"></i>
@@ -30,7 +30,7 @@ const ExportModal = ({ isOpen, onClose }) => {
           {/* İhracat edilecek verinin önizlemesi */}
           <div className="ex-document-preview">
             <div className="ex-doc-header">
-              <p>Flowtera Financial Report</p>
+              <p>Flowtera finansal raporu</p>
               <span id="exCurrentDate">{new Date().toLocaleDateString('tr-TR')}</span>
             </div>
             <div className="ex-doc-content">
@@ -51,7 +51,7 @@ const ExportModal = ({ isOpen, onClose }) => {
               />
               <div className="ex-option-card">
                 <i className="ti ti-file-type-pdf"></i>
-                <span>PDF Document</span>
+                <span>PDF Dökümanı</span>
               </div>
             </label>
             <label className="ex-option">
@@ -77,7 +77,7 @@ const ExportModal = ({ isOpen, onClose }) => {
               />
               <div className="ex-option-card">
                 <i className="ti ti-file-text"></i>
-                <span>CSV File</span>
+                <span>CSV Dosyası</span>
               </div>
             </label>
           </div>
@@ -87,7 +87,7 @@ const ExportModal = ({ isOpen, onClose }) => {
         <div className="ex-footer">
           <button className="ex-btn cancel" onClick={onClose}>Cancel</button>
           <button className="ex-btn download" onClick={handleDownload}>
-            <i className="ti ti-download"></i> Download
+            <i className="ti ti-download"></i> İndir
           </button>
         </div>
       </div>

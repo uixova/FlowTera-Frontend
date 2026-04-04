@@ -19,8 +19,8 @@ const TeamSelection = ({ onNavigate, teams, loading }) => {
         <div className="tm-selection-page">
             <SubNavbar 
                 title="Select Organization"
-                searchPlaceholder="Search teams..."
-                createLabel="Create Team"
+                searchPlaceholder="Takım ara..."
+                createLabel="Takım Oluştur"
                 showSearch={true}
                 showCreate={true}
                 onSearch={(val) => setSearchTerm(val)}
@@ -40,7 +40,7 @@ const TeamSelection = ({ onNavigate, teams, loading }) => {
                         />
                     ))
                 ) : (
-                    <div className="no-results">No teams found matching your search.</div>
+                    <div className="no-results">Aramanızla eşleşen takım bulunamadı.</div>
                 )}
             </div>
         </div>

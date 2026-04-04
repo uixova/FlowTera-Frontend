@@ -12,7 +12,7 @@ const AnalysisCharts = ({ categoryData = [], cashFlowData = [], statusData = [] 
     <div className="analysis-charts-container">
       {/* 1. Üst Sol: Kategori Dağılımı */}
       <div className="chart-box">
-        <h3>Expense Categories</h3>
+        <h3>Kategoriler</h3>
         <ResponsiveContainer width="100%" height={250}>
           <PieChart>
             <Pie data={categoryData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
@@ -27,7 +27,7 @@ const AnalysisCharts = ({ categoryData = [], cashFlowData = [], statusData = [] 
 
       {/* 2. Üst Sağ: Nakit Akışı */}
       <div className="chart-box">
-        <h3>Monthly Cash Flow</h3>
+        <h3>Aylık Para Akışı</h3>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={cashFlowData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
@@ -41,7 +41,7 @@ const AnalysisCharts = ({ categoryData = [], cashFlowData = [], statusData = [] 
 
       {/* 3. Alt Sol: Harcama Trendi (YENİ) */}
       <div className="chart-box">
-        <h3>Spending Trend</h3>
+        <h3>Harcama Trendi</h3>
         <ResponsiveContainer width="100%" height={250}>
           <AreaChart data={cashFlowData}>
             <defs>
@@ -61,7 +61,7 @@ const AnalysisCharts = ({ categoryData = [], cashFlowData = [], statusData = [] 
 
       {/* 4. Alt Sağ: Onay Durumu (YENİ) */}
       <div className="chart-box">
-        <h3>Report Status Distribution</h3>
+        <h3>Rapor Durum Dağılımı</h3>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart layout="vertical" data={statusData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#222" horizontal={false} />

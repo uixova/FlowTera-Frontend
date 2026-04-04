@@ -47,16 +47,16 @@ const AddMemberModal = ({ isOpen, onClose }) => {
       width="460px"
       footer={
         <div className="adm-panel-footer" style={{width: '100%', padding: 0, borderTop: 'none'}}>
-          <button className="adm-btn-cancel" onClick={onClose} style={{flex: 1}}>Discard</button>
+          <button className="adm-btn-cancel" onClick={onClose} style={{flex: 1}}>Gönderme</button>
           <button className="adm-btn-invite" onClick={handleInvite} style={{flex: 2}}>
-            Send Invitation
+            İstek Gönder
           </button>
         </div>
       }
     >
       <div className="adm-panel-body-internal">
         <div className="adm-input-group">
-          <label>Email or User ID</label>
+          <label>Email veya Kullanıcı ID'si</label>
           <div className="adm-input-wrapper">
             <i className="ti ti-mail"></i>
             <input 
@@ -69,7 +69,7 @@ const AddMemberModal = ({ isOpen, onClose }) => {
         </div>
 
         <div className="adm-role-section">
-          <label>Select Role & Constraints</label>
+          <label>Rol ve Kısıtlamaları Seç</label>
           <div className="adm-role-list">
             {roles.map((role) => (
               <div key={role.id} className="adm-role-group">
@@ -120,7 +120,7 @@ const AddMemberModal = ({ isOpen, onClose }) => {
                       ) : (
                         <div style={{ paddingTop: '10px' }}>
                           <small style={{ color: '#555', fontStyle: 'italic' }}>
-                            <i className="ti ti-info-circle"></i> Admin roles have full authorization.
+                            <i className="ti ti-info-circle"></i> Yönetici pozisyonları tam yetkiye sahip.
                           </small>
                         </div>
                       )}

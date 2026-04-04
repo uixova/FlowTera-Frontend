@@ -13,14 +13,14 @@ const PaginationFooter = ({ hasMore, loadingMore, loadMore, currentCount, totalC
                     disabled={loadingMore}
                 >
                     {loadingMore ? (
-                        <><i className="ti ti-loader-2 animate-spin"></i> Loading...</>
+                        <><i className="ti ti-loader-2 animate-spin"></i> Yükleniyor...</>
                     ) : (
-                        <>Show More <i className="ti ti-chevron-down"></i></>
+                        <>Daha Fazla Göster <i className="ti ti-chevron-down"></i></>
                     )}
                 </button>
             )}
             <div className="pagination-info">
-                Showing {safeCurrentCount} / {safeTotalCount} {label}
+                Gösteriliyor {safeCurrentCount} / {safeTotalCount} {label}
             </div>
         </div>
     );

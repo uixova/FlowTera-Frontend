@@ -10,43 +10,43 @@ const ExpenseFilter = ({ filters, setFilters }) => {
         <div className="filter-sidebar-content">
             {/* Category Seçimi */}
             <div className="filter-input-group">
-                <label>Category</label>
+                <label>Kategori</label>
                 <select name="category" value={filters.category} onChange={handleChange}>
-                    <option value="">All Categories</option>
-                    <option value="Travel">Travel</option>
-                    <option value="Food & Drink">Food & Drink</option>
-                    <option value="Accommodation">Accommodation</option>
-                    <option value="Transport">Transport</option>
-                    <option value="Entertainment">Entertainment</option>
+                    <option value="">Tüm Kategoriler</option>
+                    <option value="Travel">Seyahat</option>
+                    <option value="Food & Drink">Yiyecek ve İçecek</option>
+                    <option value="Accommodation">Konaklama</option>
+                    <option value="Transport">Ulaşım</option>
+                    <option value="Entertainment">Eğlence</option>
                 </select>
             </div>
 
             {/* Status Seçimi */}
             <div className="filter-input-group">
-                <label>Status</label>
+                <label>İşlem Durumu</label>
                 <select name="status" value={filters.status} onChange={handleChange}>
-                    <option value="">All Statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
+                    <option value="">Tüm Durumlar</option>
+                    <option value="pending">Beklemede</option>
+                    <option value="approved">Onaylandı</option>
+                    <option value="rejected">Reddedildi</option>
                 </select>
             </div>
 
             {/* Payment Method Seçimi */}
             <div className="filter-input-group">
-                <label>Payment Method</label>
+                <label>Ödeme Yöntemi</label>
                 <select name="paymentMethod" value={filters.paymentMethod} onChange={handleChange}>
-                    <option value="">All Methods</option>
-                    <option value="Credit Card">Credit Card</option>
-                    <option value="Cash">Cash</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="">Tüm Yöntemler</option>
+                    <option value="Credit Card">Kredi Kartı</option>
+                    <option value="Cash">Nakit</option>
+                    <option value="Bank Transfer">Banka Transferi</option>
                 </select>
             </div>
 
             {/* Amount Aralığı (Min - Max) */}
             <div className="filter-amount-row">
                 <div className="filter-input-group">
-                    <label>Min Amount</label>
+                    <label>Min Miktar</label>
                     <input 
                         type="number" 
                         name="minAmount"
@@ -56,7 +56,7 @@ const ExpenseFilter = ({ filters, setFilters }) => {
                     />
                 </div>
                 <div className="filter-input-group max-amount">
-                    <label>Max Amount</label>
+                    <label>Max Miktar</label>
                     <input 
                         type="number" 
                         name="maxAmount"

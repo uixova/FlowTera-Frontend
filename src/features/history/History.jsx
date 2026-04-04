@@ -68,10 +68,10 @@ const History = () => {
     const filterFooter = (
         <div className="as-filter-footer">
             <button className="btn-clear" onClick={clearFilters}>
-                Clear All
+                Tümünü Temizle
             </button>
             <button className="btn-apply" onClick={() => { applyFilters(); setIsFilterOpen(false); }}>
-                Apply Filters
+                Filtreleri Uygula
             </button>
         </div>
     );
@@ -81,7 +81,7 @@ const History = () => {
     return (
         <div className="history-page" key={teamId}>
             <SubNavbar 
-                pageName="Activity History"
+                pageName="Aktif Geçmiş"
                 searchValue={searchTerm}
                 onSearch={(val) => setSearchTerm(val)} 
                 showSearch={true}      
@@ -89,7 +89,7 @@ const History = () => {
                 buttons={[
                     { 
                         icon: 'ti ti-adjustments-horizontal', 
-                        tooltip: 'Filter Logs', 
+                        tooltip: 'Filtre Geçmişi', 
                         onClick: () => setIsFilterOpen(true) 
                     }
                 ]}
@@ -115,7 +115,7 @@ const History = () => {
                             loadMore={loadMore} 
                             currentCount={filteredLogs.length} 
                             totalCount={searchTerm || Object.values(tempFilters).some(x => x) ? filteredLogs.length : totalCount}
-                            label="activity logs" 
+                            label="İşlem Geçmişi" 
                         />
                     </>
                 ) : (
@@ -131,7 +131,7 @@ const History = () => {
             <ActionSidebar 
                 isOpen={isFilterOpen} 
                 onClose={() => setIsFilterOpen(false)} 
-                title="Filter Activities"
+                title="İşlemleri Filtrele"
                 footer={filterFooter}
             >
                 {/* BURADA tempFilters KULLANIYORUZ - ANLIK DEĞİŞİM SADECE BURADA GÖRÜNÜR */}

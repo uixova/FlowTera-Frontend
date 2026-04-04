@@ -15,8 +15,8 @@ const UserPlan = ({ user }) => {
   return (
     <div className="st-content-section">
       <div className="st-header-box">
-        <h2>Subscriptions</h2>
-        <p>Manage your billing, plan limits and upgrade your experience.</p>
+        <h2>Abonelikler</h2>
+        <p>Faturalandırmanızı yönetin, plan limitlerinizi belirleyin ve deneyiminizi yükseltin.</p>
       </div>
 
       {/* Mevcut Plan Özeti */}

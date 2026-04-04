@@ -14,8 +14,8 @@ const Notification = ({ notifConfig, setNotifConfig }) => {
   return (
     <div className="st-content-section">
       <div className="st-header-box">
-        <h2>Notifications</h2>
-        <p>Stay updated. Choose how and when you want to receive alerts.</p>
+        <h2>Bildirimler</h2>
+        <p>Güncel kalın. Uyarıları nasıl ve ne zaman almak istediğinizi seçin.</p>
       </div>
 
       <div className="st-card notification-card">
@@ -24,9 +24,9 @@ const Notification = ({ notifConfig, setNotifConfig }) => {
           <div className="toggle-info">
             <div className="toggle-title-area">
                 <i className="ti ti-mail"></i>
-                <h4>Email Notifications</h4>
+                <h4>E-posta Bildirimleri</h4>
             </div>
-            <p>Receive daily summaries, expense reports and system updates via email.</p>
+            <p>Günlük özetler, gider raporları ve sistem güncellemelerini e-posta yoluyla alın.</p>
             <span className={`status-text ${notifConfig.email ? 'on' : 'off'}`}>
                 {notifConfig.email ? 'Enabled' : 'Disabled'}
             </span>
@@ -46,9 +46,9 @@ const Notification = ({ notifConfig, setNotifConfig }) => {
           <div className="toggle-info">
             <div className="toggle-title-area">
                 <i className="ti ti-message-dots"></i>
-                <h4>SMS Alerts</h4>
+                <h4>SMS Uyarıları</h4>
             </div>
-            <p>Get instant text messages for critical security alerts and large transactions.</p>
+            <p>Kritik güvenlik uyarıları ve büyük işlemler için anında mesajlar alın.</p>
             <span className={`status-text ${notifConfig.sms ? 'on' : 'off'}`}>
                 {notifConfig.sms ? 'Enabled' : 'Disabled'}
             </span>
@@ -68,9 +68,9 @@ const Notification = ({ notifConfig, setNotifConfig }) => {
           <div className="toggle-info">
             <div className="toggle-title-area">
                 <i className="ti ti-device-mobile-message"></i>
-                <h4>Push Notifications</h4>
+                <h4>Push Bildirimleri</h4>
             </div>
-            <p>Desktop and mobile browser notifications for real-time activity.</p>
+            <p>Gerçek zamanlı etkinlik için masaüstü ve mobil tarayıcı bildirimleri.</p>
             <span className={`status-text ${notifConfig.push ? 'on' : 'off'}`}>
                 {notifConfig.push ? 'Enabled' : 'Disabled'}
             </span>
@@ -86,8 +86,7 @@ const Notification = ({ notifConfig, setNotifConfig }) => {
         </div>
 
         <div className="notification-footer">
-            <button className="st-btn-save">Save Preferences</button>
-            <p>Last updated: Just now</p>
+            <button className="st-btn-save">Değişiklikleri Kaydet</button>
         </div>
       </div>
     </div>

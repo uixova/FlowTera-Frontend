@@ -35,7 +35,7 @@ const ImageBox = ({ src, alt, children, onToggle }) => {
                 {children || <img src={src} alt={alt} />}
                 <div className="image-box-zoom-overlay">
                     <i className="ti ti-maximize"></i>
-                    <span>VIEW FULL RECEIPT</span>
+                    <span>Tam Faturayı Görüntüleyin</span>
                 </div>
             </div>
 
@@ -46,7 +46,7 @@ const ImageBox = ({ src, alt, children, onToggle }) => {
                         <span className="image-box-filename">{alt || 'Receipt View'}</span>
                         <button className="image-box-close" onClick={() => toggleOpen(false)}>
                             <i className="ti ti-x"></i>
-                            <span>Close</span>
+                            <span>Kapat</span>
                         </button>
                     </div>
 

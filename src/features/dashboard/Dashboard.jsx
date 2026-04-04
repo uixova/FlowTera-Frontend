@@ -63,24 +63,24 @@ const Dashboard = () => {
 
             {/* ORTA: Quick Access */}
             <div className="hm-mid-ct hm-card">
-                <div className="card-header"><h2>Quick Access</h2></div>
+                <div className="card-header"><h2>Hızlı Erişim</h2></div>
                 <hr />
                 <div className="quick-access-container">
                     <div className="create-box" onClick={() => setIsExpenseOpen(true)}>
                         <i className="ti ti-credit-card"></i>
-                        <span>New Expense</span>
+                        <span>Yeni Gider</span>
                     </div>
                     <div className="create-box" onClick={() => setIsOCROpen(true)}>
                         <i className="ti ti-news"></i>
-                        <span>Add Receipt</span>
+                        <span>Fatura Ekle</span>
                     </div>
                     <div className="create-box" onClick={() => setIsReportOpen(true)}>
                         <i className="ti ti-file-description"></i>
-                        <span>Create Report</span>
+                        <span>Rapor Oluştur</span>
                     </div>
                     <div className="create-box" onClick={() => setIsTripOpen(true)}>
                         <i className="ti ti-globe"></i>
-                        <span>Create Trip</span>
+                        <span>Gezi Oluştur</span>
                     </div>
                 </div>
             </div>

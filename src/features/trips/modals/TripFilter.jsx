@@ -11,7 +11,7 @@ const TripFilter = ({ filters, setFilters }) => {
             {/* Tarih Aralığı */}
             <div className="filter-row">
                 <div className="filter-input-group">
-                    <label>Start Date</label>
+                    <label>Başlangıç Tarihi</label>
                     <input 
                         type="date" 
                         name="startDate" 
@@ -20,7 +20,7 @@ const TripFilter = ({ filters, setFilters }) => {
                     />
                 </div>
                 <div className="filter-input-group">
-                    <label>End Date</label>
+                    <label>Bitiş Tarihi</label>
                     <input 
                         type="date" 
                         name="endDate" 
@@ -32,43 +32,43 @@ const TripFilter = ({ filters, setFilters }) => {
 
             {/* Kategori */}
             <div className="filter-input-group">
-                <label>Category</label>
+                <label>Kategori</label>
                 <select name="category" value={filters.category} onChange={handleChange}>
-                    <option value="">All Categories</option>
-                    <option value="Business">Business</option>
-                    <option value="Vacation">Vacation</option>
-                    <option value="Road Trip">Road Trip</option>
+                    <option value="">Tüm Kategoriler</option>
+                    <option value="Business">İş Gezisi</option>
+                    <option value="Vacation">Tatil</option>
+                    <option value="Road Trip">Yolculuk</option>
                 </select>
             </div>
 
             {/* Araç Tipi */}
             <div className="filter-input-group">
-                <label>Vehicle Type</label>
+                <label>Araç Türü</label>
                 <select name="vehicle" value={filters.vehicle} onChange={handleChange}>
-                    <option value="">All Vehicles</option>
-                    <option value="Plane">Plane</option>
-                    <option value="Car">Car</option>
-                    <option value="Train">Train</option>
-                    <option value="Bus">Bus</option>
+                    <option value="">Tüm Araçlar</option>
+                    <option value="Plane">Uçak</option>
+                    <option value="Car">Araba</option>
+                    <option value="Train">Tren</option>
+                    <option value="Bus">Otobüs</option>
                 </select>
             </div>
 
             {/* Trip Durumu */}
             <div className="filter-input-group">
-                <label>Trip Status</label>
+                <label>Gezi Durumu</label>
                 <select name="status" value={filters.status || ''} onChange={handleChange}>
-                    <option value="">All Status</option>
-                    <option value="approved">Approved</option>
-                    <option value="pending">Pending</option>
-                    <option value="onroad">On Road</option>
-                    <option value="rejected">Rejected</option>
+                    <option value="">Tüm Durumlar</option>
+                    <option value="approved">Onaylandı</option>
+                    <option value="pending">Beklemede</option>
+                    <option value="onroad">Yolda</option>
+                    <option value="rejected">Reddedildi</option>
                 </select>
             </div>
 
             {/* Süre Aralığı */}
             <div className="filter-row">
                 <div className="filter-input-group">
-                    <label>Min Duration (Days)</label>
+                    <label>Min Süre (Gün)</label>
                     <input 
                         type="number" 
                         name="minDuration" 
@@ -79,7 +79,7 @@ const TripFilter = ({ filters, setFilters }) => {
                     />
                 </div>
                 <div className="filter-input-group">
-                    <label>Max Duration (Days)</label>
+                    <label>Max Süre (Gün)</label>
                     <input 
                         type="number" 
                         name="maxDuration" 

@@ -44,7 +44,7 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
       }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, planMaxMembers]); // resetForm'u eklemeye gerek yok, dışarıdaki bağımlılıklara göre çalışıyor
+  }, [isOpen, planMaxMembers]); // dışarıdaki bağımlılıklara göre çalışıyor
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -88,7 +88,7 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
   // Sidebar başlığı ve altbilgisi için özel içerikler
   const sidebarTitle = (
     <div className="header-content">
-      <h2>Create Workspace</h2>
+      <h2>Takım Oluştur</h2>
       <span className={`plan-badge ${currentUser?.subscription?.plan || 'free'}`}>
         {currentUser?.subscription?.plan || 'Free'}
       </span>
@@ -97,9 +97,9 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
 
   // Footer kısmında iptal ve oluştur butonları
   const sidebarFooter = (
-    <div className="tm-panel-footer-alt"> 
-      <button type="button" className="tm-btn-cancel" onClick={onClose}>Cancel</button>
-      <button type="submit" form="create-team-form" className="tm-btn-submit">Create Workspace</button>
+    <div className="tm-panel-footer-alt" style={{width: '100%', padding: 0, borderTop: 'none'}}> 
+      <button type="button" className="tm-btn-cancel" onClick={onClose} style={{flex: 1}}>İptal Et</button>
+      <button type="submit" form="create-team-form" className="tm-btn-submit" style={{flex: 2}}>Takımı Oluştur</button>
     </div>
   );
 
@@ -123,40 +123,40 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
               </div>
             </div>
             <input type="file" ref={fileInputRef} accept="image/*" hidden onChange={handleLogoChange} />
-            <p className="tm-help-text">Click to upload workspace logo</p>
+            <p className="tm-help-text">Takım logosu yüklemek için tıklayın</p>
           </div>
 
           {/* Basic Info */}
           <div className="tm-input-group">
-            <label>Organization Name</label>
+            <label>Organizasyon Adı</label>
             <input 
               type="text" name="teamName" value={formData.teamName} 
-              onChange={handleChange} placeholder="Enter organization name" required 
+              onChange={handleChange} placeholder="Organizasyon adını girin" required 
             />
           </div>
 
           <div className="tm-input-group">
             <label>Category</label>
             <select name="category" value={formData.category} onChange={handleChange}>
-              <option value="Software Development">Software Development</option>
-              <option value="Marketing & Ads">Marketing & Ads</option>
-              <option value="Logistics">Logistics</option>
-              <option value="Finance">Finance</option>
+              <option value="Software Development">Yazılım Geliştirme</option>
+              <option value="Marketing & Ads">Pazarlama & Ads</option>
+              <option value="Logistics">Lojistik</option>
+              <option value="Finance">Finans</option>
             </select>
           </div>
 
           {/* Limits Section */}
           <div className="tm-panel-section highlight">
-            <label className="section-label">Limits & Budget</label>
+            <label className="section-label">Limitler ve Bütçe</label>
             <div className="tm-grid-row">
               <div className="tm-input-group">
-                <label>Max Monthly Expense ({formData.currency})</label>
+                <label>Max Aylık Gider ({formData.currency})</label>
                 <input type="number" name="maxExpenseLimit" value={formData.maxExpenseLimit} onChange={handleChange} min="0" />
               </div>
               <div className="tm-input-group">
-                <label>Member Limit (Max: {planMaxMembers})</label>
+                <label>Takım Üye Limiti (Max: {planMaxMembers})</label>
                 <input type="number" name="memberLimit" value={formData.memberLimit} onChange={handleChange} max={planMaxMembers} min="1" />
-                {formData.memberLimit >= planMaxMembers && <span className="limit-warning">Plan max limit reached!</span>}
+                {formData.memberLimit >= planMaxMembers && <span className="limit-warning">Planın maximum limitine ulaşıldı!</span>}
               </div>
             </div>
           </div>
@@ -169,13 +169,13 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
                   type="checkbox" id="autoApproved" name="autoApproved" 
                   checked={formData.autoApproved} onChange={handleChange} 
                 />
-                <label htmlFor="autoApproved">Enable Auto Approval</label>
+                <label htmlFor="autoApproved">Otomatik Onayı Etkinleştir</label>
               </div>
             </div>
 
             {formData.autoApproved && (
               <div className="tm-input-group animate-in">
-                <label>Auto Approval Limit ({formData.currency})</label>
+                <label>Otomatik Onay Limiti ({formData.currency})</label>
                 <input 
                   type="number" name="autoApprovedLimit" 
                   value={formData.autoApprovedLimit} onChange={handleChange} min="0"
@@ -187,7 +187,7 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
           {/* Currency & Type */}
           <div className="tm-grid-row">
             <div className="tm-input-group">
-              <label>Currency</label>
+              <label>Para birimi</label>
               <select name="currency" value={formData.currency} onChange={handleChange}>
                 <option value="USD">USD ($)</option>
                 <option value="EUR">EUR (€)</option>
@@ -195,32 +195,32 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
               </select>
             </div>
             <div className="tm-input-group">
-              <label>Workspace Type</label>
+              <label>Takım Türü</label>
               <select name="workspaceType" value={formData.workspaceType} onChange={handleChange}>
-                <option value="Corporate">Corporate</option>
-                <option value="Personal">Personal</option>
+                <option value="Corporate">Kurumsal</option>
+                <option value="Personal">Bireysel</option>
               </select>
             </div>
           </div>
 
           {/* Privacy */}
           <div className="tm-panel-section">
-            <label className="section-label">Privacy Settings</label>
+            <label className="section-label">Gizlilik Ayarları</label>
             <div className="tm-radio-vertical">
               <label className={`tm-radio-option ${formData.privacy === 'private' ? 'selected' : ''}`}>
                 <input type="radio" name="privacy" value="private" checked={formData.privacy === 'private'} onChange={handleChange} />
                 <i className="ti ti-lock"></i>
                 <div className="option-text">
-                  <strong>Private</strong>
-                  <span>Only invited members can access</span>
+                  <strong>Özel</strong>
+                  <span>Sadece davetli üyeler erişebilir</span>
                 </div>
               </label>
               <label className={`tm-radio-option ${formData.privacy === 'internal' ? 'selected' : ''}`}>
                 <input type="radio" name="privacy" value="internal" checked={formData.privacy === 'internal'} onChange={handleChange} />
                 <i className="ti ti-world"></i>
                 <div className="option-text">
-                  <strong>Internal</strong>
-                  <span>Open to anyone in your organization</span>
+                  <strong>Bağlantıya Açık</strong>
+                  <span>Herkes bağlantı ile katılabilir</span>
                 </div>
               </label>
             </div>

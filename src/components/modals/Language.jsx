@@ -16,7 +16,7 @@ const Language = ({ isOpen, onClose }) => {
       <div className="lang-overlay" onClick={onClose}></div>
       <div className="lang-dropdown-modal" onClick={(e) => e.stopPropagation()}>
         <div className="lang-modal-header">
-          <span>Select Language</span>
+          <span>Dil Seç</span>
         </div>
         <div className="lang-list">
           {languages.map((lang) => (

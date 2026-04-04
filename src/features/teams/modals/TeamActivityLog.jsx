@@ -25,7 +25,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                 const data = await teamsService.getUserLogs(user.id, teamId);
                 setUserLogs(data);
             } catch (error) {
-                console.error("Loglar çekilirken hata:", error);
+                console.error("Error when pulling logs:", error);
             } finally {
                 setLoading(false);
             }
@@ -54,7 +54,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                     )}
                 </div>
                 <div className="user-meta">
-                    <h3>{user?.name || 'User Activity'}</h3>
+                    <h3>{user?.name || 'Kullanıcı Aktivitesi'}</h3>
                     {!user?.isDeleted && user?.email ? <span>{user.email}</span> : null}
                 </div>
             </div>
@@ -74,7 +74,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                     <Input
                         className="tm-log-search-input"
                         icon="ti ti-search"
-                        placeholder="Filter activities..."
+                        placeholder="İşlemleri Filtrele..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -83,7 +83,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                 <div className="tm-log-body-content">
                     {loading ? (
                         <div className="log-loader-container">
-                            <Loader type="dots" text="Fetching logs..." />
+                            <Loader type="dots" />
                         </div>
                     ) : filteredDisplayLogs.length > 0 ? (
                         <div className="timeline-container">
@@ -105,7 +105,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                     ) : (
                         <div className="no-activity">
                             <i className="ti ti-history"></i>
-                            <p>No records found for this user.</p>
+                            <p>Bu kullanıcıya ait bir işlem geçmişi bulunamadı.</p>
                         </div>
                     )}
                 </div>

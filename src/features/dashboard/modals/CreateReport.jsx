@@ -18,7 +18,7 @@ const CreateReport = ({ isOpen, onClose, teams = [] }) => {
             style={{ width: '100%' }}
             onClick={() => console.log("Generating report for:", reportConfig)}
         >
-            Generate PDF Report
+            PDF Raporu Oluştur
         </button>
     );
 
@@ -26,7 +26,7 @@ const CreateReport = ({ isOpen, onClose, teams = [] }) => {
         <ActionSidebar
             isOpen={isOpen}
             onClose={onClose}
-            title={<h2>Create Report</h2>}
+            title={<h2>Rapor Oluştur</h2>}
             footer={footer}
             width="480px"
         >
@@ -44,14 +44,14 @@ const CreateReport = ({ isOpen, onClose, teams = [] }) => {
                 {/* Tarih Aralığı */}
                 <div className="report-grid-2">
                     <div className="st-input-group">
-                        <label>Start Date</label>
+                        <label>Başlangıç Tarihi</label>
                         <input 
                             type="date" 
                             onChange={(e) => setReportConfig({...reportConfig, startDate: e.target.value})}
                         />
                     </div>
                     <div className="st-input-group">
-                        <label>End Date</label>
+                        <label>Bitiş Tarihi</label>
                         <input 
                             type="date" 
                             onChange={(e) => setReportConfig({...reportConfig, endDate: e.target.value})}
@@ -61,13 +61,13 @@ const CreateReport = ({ isOpen, onClose, teams = [] }) => {
 
                 {/* Takım Seçimi - Dinamik Kısım */}
                 <div className="st-input-group full-width">
-                    <label>Select Team / Project</label>
+                    <label>Takım / Proje Seçin</label>
                     <select 
                         className="st-select"
                         value={reportConfig.selectedTeam}
                         onChange={(e) => setReportConfig({...reportConfig, selectedTeam: e.target.value})}
                     >
-                        <option value="all">All My Teams</option>
+                        <option value="all">Tüm Takımlarım</option>
                         
                         {/* Veri Kontrolü: Teams varsa maple, yoksa boş olduğunu belirt */}
                         {teams && teams.length > 0 ? (
@@ -77,7 +77,7 @@ const CreateReport = ({ isOpen, onClose, teams = [] }) => {
                                 </option>
                             ))
                         ) : (
-                            <option disabled>No active teams found</option>
+                            <option disabled>Aktif takım bulunmadı</option>
                         )}
                     </select>
                 </div>
@@ -86,11 +86,11 @@ const CreateReport = ({ isOpen, onClose, teams = [] }) => {
                 <div className="report-options">
                     <label className="st-checkbox-group">
                         <input type="checkbox" defaultChecked />
-                        <span>Include Receipt Images</span>
+                        <span>Fatura Görsellerini / Belgelerini Dahil Et</span>
                     </label>
                     <label className="st-checkbox-group">
                         <input type="checkbox" />
-                        <span>Send copy to email</span>
+                        <span>E-posta ile bir kopya gönder</span>
                     </label>
                 </div>
             </div>

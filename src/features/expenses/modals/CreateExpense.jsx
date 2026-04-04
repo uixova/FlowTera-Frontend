@@ -31,7 +31,7 @@ const CreateExpense = ({ isOpen, onClose }) => {
         };
 
         // Konsola yazdırarak API'ye giden veri yapısını görebiliriz
-        console.log("Flowtera API'ye giden veri:", finalExpenseData);
+        console.log("Data going to the Flowtera API:", finalExpenseData);
         
         // Modal'ı kapat
         onClose();
@@ -41,15 +41,15 @@ const CreateExpense = ({ isOpen, onClose }) => {
     const sidebarTitle = (
         <div className="ex-panel-title">
             <i className="ti ti-plus"></i>
-            <span>Add New Expense</span>
+            <span>Yeni Harcama Ekle</span>
         </div>
     );
 
     // Footer kısmında iptal ve oluştur butonları
     const sidebarFooter = (
         <div className="ex-panel-footer-alt" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
-            <button type="button" className="ex-panel-btn cancel" onClick={onClose}>Cancel</button>
-            <button type="submit" form="newExpenseForm" className="ex-panel-btn save">Create Expense</button>
+            <button type="button" className="ex-panel-btn cancel" onClick={onClose}>İptal Et</button>
+            <button type="submit" form="newExpenseForm" className="ex-panel-btn save">Gider Oluştur</button>
         </div>
     );
 
@@ -70,51 +70,51 @@ const CreateExpense = ({ isOpen, onClose }) => {
                     </div>
                     <div className="info-item">
                         <i className="ti ti-shield-check"></i>
-                        <span>Status: Pending</span>
+                        <span>Durum: Beklemede</span>
                     </div>
                 </div>
 
                 <form id="newExpenseForm" onSubmit={handleSubmit} className="ex-panel-form">
                     <div className="ex-input-group full">
-                        <label htmlFor="exInpTitle">Detail / Title</label>
-                        <input name="exInpTitle" type="text" id="exInpTitle" placeholder="e.g. Server Maintenance" required />
+                        <label htmlFor="exInpTitle">Detay / Başlık</label>
+                        <input name="exInpTitle" type="text" id="exInpTitle" placeholder="Sunucu Bakımı" required />
                     </div>
 
                     <div className="ex-input-row">
                         <div className="ex-input-group">
-                            <label htmlFor="exInpCategory">Category</label>
+                            <label htmlFor="exInpCategory">Kategori</label>
                             <select name="exInpCategory" id="exInpCategory">
-                                <option value="Food">Food & Drink</option>
-                                <option value="Transport">Transport</option>
-                                <option value="Accommodation">Accommodation</option>
-                                <option value="Health">Health</option>
-                                <option value="Entertainment">Entertainment</option>
+                                <option value="Food">Yiyecek ve İçecek</option>
+                                <option value="Transport">Ulaşım</option>
+                                <option value="Accommodation">Konaklama</option>
+                                <option value="Health">Sağlık</option>
+                                <option value="Entertainment">Eğlence</option>
                             </select>
                         </div>
                         <div className="ex-input-group">
-                            <label htmlFor="exInpMerchant">Merchant</label>
+                            <label htmlFor="exInpMerchant">İşletme</label>
                             <input name="exInpMerchant" type="text" id="exInpMerchant" placeholder="Amazon, Starbucks" />
                         </div>
                     </div>
 
                     <div className="ex-input-group full">
-                        <label htmlFor="exInpMethod">Payment Method</label>
+                        <label htmlFor="exInpMethod">Ödeme Yöntemi</label>
                         <select name="exInpMethod" id="exInpMethod">
-                            <option value="Cash">Cash</option>
-                            <option value="Credit Card">Credit Card</option>
-                            <option value="Bank Transfer">Bank Transfer</option>
+                            <option value="Cash">Nakit</option>
+                            <option value="Credit Card">Kredi Kartı</option>
+                            <option value="Bank Transfer">Banka Transferi</option>
                         </select>
                     </div>
 
                     <div className="ex-input-group full">
-                        <label>Receipt / Document</label>
+                        <label>Fatura / Belge</label>
                         <div 
                             className="ex-simple-upload" 
                             onClick={() => document.getElementById('exInpReceipt').click()}
                         >
                             <div className="upload-placeholder">
                                 <i className="ti ti-file-upload"></i>
-                                <span>Upload Receipt</span>
+                                <span>Fatura Ekle</span>
                             </div>
                             <input type="file" id="exInpReceipt" hidden accept=".pdf, .jpg, .jpeg, .png, .webp" />
                         </div>
@@ -122,7 +122,7 @@ const CreateExpense = ({ isOpen, onClose }) => {
 
                     {/* Amount ve Currency'nin yan yana olduğu özel bir grup */ }
                     <div className="ex-input-group full">
-                        <label htmlFor="exInpAmount">Amount & Currency</label>
+                        <label htmlFor="exInpAmount">Miktar ve Para Birimi</label>
                         <div className="ex-amount-wrapper">
                             <input name="exInpAmount" type="number" id="exInpAmount" placeholder="0.00" step="0.01" required />
                             <select name="exInpCurrency" id="exInpCurrency" className="ex-currency-select">
@@ -135,7 +135,7 @@ const CreateExpense = ({ isOpen, onClose }) => {
 
                     {/* Raporlama toggle'ı */ }
                     <div className="report-toggle-wrapper">
-                        <span>Add to Monthly Report?</span>
+                        <span>Aylık rapor eklensin mi?</span>
                         <label className="switch">
                             <input type="checkbox" name="exInpReport" id="exInpReport" defaultChecked />
                             <span className="slider round"></span>

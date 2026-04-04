@@ -14,7 +14,7 @@ const OCRSidebar = ({ isOpen, onClose }) => {
 
     const footer = selectedImage && (
         <button className="st-btn-save" style={{ width: '100%' }}>
-            Confirm & Save Expense
+            Onayla ve Harcamayı Kaydet
         </button>
     );
 
@@ -22,7 +22,7 @@ const OCRSidebar = ({ isOpen, onClose }) => {
         <ActionSidebar
             isOpen={isOpen}
             onClose={onClose}
-            title={<h2>Smart OCR Scan</h2>}
+            title={<h2>Akıllı OCR Tarama</h2>}
             footer={footer}
             width="520px"
         >
@@ -32,8 +32,8 @@ const OCRSidebar = ({ isOpen, onClose }) => {
                     <div className="ocr-dropzone" onClick={() => document.getElementById('ocr-file').click()}>
                         <input type="file" id="ocr-file" hidden onChange={handleFileChange} accept="image/*" />
                         <i className="ti ti-cloud-upload"></i>
-                        <p>Drop your receipt here or <span>browse</span></p>
-                        <small>Supports JPG, PNG, PDF (Max 5MB)</small>
+                        <p>Fişinizi buraya bırakın ya da <span>göz atın</span></p>
+                        <small>Desteklenenler: JPG, PNG, PDF (Max 5MB)</small>
                     </div>
                 ) : (
                     <div className="ocr-preview-container">
@@ -46,34 +46,34 @@ const OCRSidebar = ({ isOpen, onClose }) => {
 
                 <div className="ocr-info-banner">
                     <i className="ti ti-sparkles"></i>
-                    <span>AI is scanning your receipt to extract data automatically.</span>
+                    <span>Yapay zeka, fişinizi otomatik olarak çıkarmak için tarayarak veri çıkarıyor.</span>
                 </div>
 
                 {/* Görsel Yüklendiyse Çıkan Veriler */}
                 {selectedImage && (
                     <div className="ocr-results-form st-form-grid">
                         <div className="st-input-group full-width">
-                            <label>Merchant / Store</label>
+                            <label>İşletme / Mağaza</label>
                             <input type="text" defaultValue="Starbucks Coffee" />
                         </div>
                         <div className="st-input-group">
-                            <label>Total Amount</label>
+                            <label>Toplam Miktar</label>
                             <input type="text" defaultValue="14.50" />
                         </div>
                         <div className="st-input-group">
-                            <label>Currency</label>
+                            <label>Para birimi</label>
                             <input type="text" defaultValue="USD" />
                         </div>
                         <div className="st-input-group">
-                            <label>Date</label>
+                            <label>Tarih</label>
                             <input type="date" defaultValue="2026-03-30" />
                         </div>
                         <div className="st-input-group">
-                            <label>Category</label>
+                            <label>Kategori</label>
                             <select className="st-select">
-                                <option>Meals & Entertainment</option>
-                                <option>Travel</option>
-                                <option>Office Supplies</option>
+                                <option>Yemekler ve Eğlence</option>
+                                <option>Seyahat</option>
+                                <option>Ofis Malzemeleri</option>
                             </select>
                         </div>
                     </div>

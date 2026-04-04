@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './settings.css/Settings.css'; 
 import { settingsService } from './services/settingService';
+import Loader from '../../components/common/Loader'
 
 // Alt Sayfalar (Hazırladığımız Componentler)
 import Profile from './components/Profile';
@@ -36,7 +37,7 @@ const Settings = () => {
         setLogs(userLogs);
         if (userNotifs) setNotifConfig(userNotifs);
       } catch (error) {
-        console.error("Veri yükleme hatası:", error);
+        console.error("Data Download Error:", error);
       } finally {
         setLoading(false);
       }
@@ -61,23 +62,23 @@ const Settings = () => {
   };
 }, []);
 
-  if (authLoading || loading || !user) return <div className="st-loader">FLOWTERA LOADING...</div>;
+  if (authLoading || loading || !user) return <Loader type="butterfly" />;
 
   if (user?.isDeleted) {
     return (
       <div className="st-loader" style={{ textAlign: 'center', paddingTop: 40 }}>
         <i className="ti ti-trash" style={{ fontSize: 42, color: '#ff4757' }}></i>
-        <div style={{ marginTop: 12, fontWeight: 700 }}>This account was deleted.</div>
+        <div style={{ marginTop: 12, fontWeight: 700 }}>Bu hesap silindi.</div>
       </div>
     );
   }
 
   const menuItems = [
-    { id: 'st-profile', label: 'Profile Details', icon: 'ti-user-circle' },
-    { id: 'st-subscription', label: 'Subscriptions', icon: 'ti-credit-card' },
-    { id: 'st-security', label: 'Security & Privacy', icon: 'ti-shield-lock' },
-    { id: 'st-logs', label: 'Activity Logs', icon: 'ti-list-details' },
-    { id: 'st-notifications', label: 'Notifications', icon: 'ti-bell-ringing' },
+    { id: 'st-profile', label: 'Profil Detayları', icon: 'ti-user-circle' },
+    { id: 'st-subscription', label: 'Abonelik & Planlar', icon: 'ti-credit-card' },
+    { id: 'st-security', label: 'Gizlilik & Güvenlik', icon: 'ti-shield-lock' },
+    { id: 'st-logs', label: 'Aktivite Kayıtları', icon: 'ti-list-details' },
+    { id: 'st-notifications', label: 'Bildirimler', icon: 'ti-bell-ringing' },
   ];
 
   // Render Logic: Hangi sayfa gösterilecek?
@@ -98,7 +99,7 @@ const Settings = () => {
       <div className="st-sidebar">
         <div className="st-menu">
           <div className="st-sidebar-header">
-              <h3>Settings</h3>
+              <h3>Ayarlar</h3>
           </div>
           {menuItems.map((item) => (
             <div 
@@ -112,7 +113,7 @@ const Settings = () => {
         </div>
 
         <div className="st-logout-btn">
-          <i className="ti ti-logout"></i> Logout Account
+          <i className="ti ti-logout"></i> Hesaptan Çık
         </div>
       </div>
 

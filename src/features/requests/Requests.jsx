@@ -44,7 +44,7 @@ const Requests = () => {
             );
             setRequests(teamRequests);
         } catch (error) {
-            console.error("Talepler yüklenemedi:", error);
+            console.error("Failed to load claims:", error);
         } finally {
             setLoading(false);
         }
@@ -82,7 +82,7 @@ const Requests = () => {
             }));
             setRejectReason({ id: null, text: '' });
         } catch (error) {
-            console.error("İşlem tamamlanamadı:", error);
+            console.error("Operation could not be completed:", error);
         }
     };
 
@@ -91,7 +91,7 @@ const Requests = () => {
     return (
         <div className="requests-page">
             <SubNavbar 
-                pageName="Request Management" 
+                pageName="Talep Yönetimi" 
                 showSearch={true}
                 searchValue={searchTerm}
                 onSearchChange={(e) => setSearchTerm(e.target.value)}
@@ -100,13 +100,13 @@ const Requests = () => {
 
             <div className="req-tabs">
                 <button className={activeTab === 'pending' ? 'active' : ''} onClick={() => setActiveTab('pending')}>
-                    Pending ({requests.filter(r => !r.status || r.status === 'pending').length})
+                    Beklemede ({requests.filter(r => !r.status || r.status === 'pending').length})
                 </button>
                 <button className={activeTab === 'approved' ? 'active' : ''} onClick={() => setActiveTab('approved')}>
-                    Approved ({requests.filter(r => r.status === 'approved').length})
+                    Onaylandı ({requests.filter(r => r.status === 'approved').length})
                 </button>
                 <button className={activeTab === 'rejected' ? 'active' : ''} onClick={() => setActiveTab('rejected')}>
-                    Rejected ({requests.filter(r => r.status === 'rejected').length})
+                    Reddedildi ({requests.filter(r => r.status === 'rejected').length})
                 </button>
             </div>
 
@@ -148,7 +148,7 @@ const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReas
                 <p className="req-sub"><strong>{req.title}:</strong> {req.detail}</p>
                 {req.rejectionReason && (
                     <div className="view-reason">
-                        <strong>Reason:</strong> {req.rejectionReason}
+                        <strong>Neden:</strong> {req.rejectionReason}
                     </div>
                 )}
             </div>
@@ -169,20 +169,20 @@ const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReas
                                     onClick={() => handleAction(req.id, 'rejected', rejectReason.text)}
                                     disabled={!rejectReason.text.trim()}
                                 >
-                                    Confirm Reject
+                                    Reddi Onayla
                                 </button>
                                 <button className="btn-cancel" onClick={() => setRejectReason({ id: null, text: '' })}>
-                                    Cancel
+                                    İptal et
                                 </button>
                             </div>
                         </div>
                     ) : (
                         <div className="action-btns">
                             <button className="btn-approve" onClick={() => handleAction(req.id, 'approved')}>
-                                Approve
+                                Onayla
                             </button>
                             <button className="btn-reject" onClick={() => setRejectReason({ id: req.id, text: '' })}>
-                                Reject
+                                Reddet
                             </button>
                         </div>
                     )}

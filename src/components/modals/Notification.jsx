@@ -26,7 +26,7 @@ const Notification = ({ isOpen, onClose }) => {
             setInfos(result.infos || []);
             setTotalCount(result.infos?.length || 0);
         } catch (error) {
-            console.error("Hata: Bildirimler çekilemedi", error);
+            console.error("Error: Failed to pull notifications", error);
         } finally {
             setLoading(false);
         }
@@ -46,7 +46,7 @@ const Notification = ({ isOpen, onClose }) => {
             setInfos(prev => prev.filter(item => item.id !== id));
             setTotalCount(prev => prev - 1);
         } catch (error) {
-            console.error("Bildirim silinirken hata oluştu:", error);
+            console.error("Error deleting the notification:", error);
         }
     };
 
@@ -63,7 +63,7 @@ const Notification = ({ isOpen, onClose }) => {
             <div className="nt-panel-container" onClick={(e) => e.stopPropagation()}>
                 <div className="nt-header">
                     <div className="nt-header-title">
-                        <h3>Activity Center</h3>
+                        <h3>Aktivite Merkezi</h3>
                         <span className="count-badge">{loading ? "..." : totalCount}</span>
                     </div>
                     <button className="nt-close-btn" onClick={onClose}>
@@ -74,10 +74,10 @@ const Notification = ({ isOpen, onClose }) => {
                 <div className="nt-content">
                     {/* Auth veya bildirim yükleniyorsa loader göster */}
                     {loading || authLoading ? (
-                        <Loader type="dots" text="Yükleniyor..." />
+                        <Loader type="dots"/>
                     ) : (
                         <section className="nt-section">
-                            <div className="section-title"><span>Recent Notifications</span></div>
+                            <div className="section-title"><span>Son Bildirimler</span></div>
                             <div className="nt-list">
                                 {infos.length > 0 ? infos.map(nt => (
                                     <NotificationItem 

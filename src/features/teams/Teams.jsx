@@ -34,7 +34,7 @@ const Teams = () => {
         const data = await teamsService.getTeams();
         setTeams(data || []);
       } catch (error) {
-        console.error("Takımlar yüklenemedi:", error);
+        console.error("Teams failed to load:", error);
       } finally {
         setLoading(false);
       }

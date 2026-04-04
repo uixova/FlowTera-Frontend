@@ -7,27 +7,27 @@ const Security = () => {
   return (
     <div className="st-content-section">
       <div className="st-header-box">
-        <h2>Security & Privacy</h2>
-        <p>Manage your account password, authentication and privacy data.</p>
+        <h2>Gizlilik & Güvenlik</h2>
+        <p>Hesap şifrenizi, kimlik doğrulama ve gizlilik verilerinizi yönetin.</p>
       </div>
 
       {/* Password Change Card */}
       <div className="st-card security-card">
         <div className="security-header">
             <i className="ti ti-key"></i>
-            <h4>Change Password</h4>
+            <h4>Şifreni Değiştir</h4>
         </div>
         <div className="st-form-grid">
           <div className="st-input-group">
-            <label>Current Password</label>
+            <label>Güncel Şifren</label>
             <input type="password" placeholder="••••••••" />
           </div>
           <div className="st-input-group">
-            <label>New Password</label>
-            <input type="password" placeholder="Min. 8 characters" />
+            <label>Yeni Şifren</label>
+            <input type="password" placeholder="Min. 8 Karakter" />
           </div>
         </div>
-        <button className="st-btn-save security-btn">Update Password</button>
+        <button className="st-btn-save security-btn">Şifreyi Güncelle</button>
       </div>
 
       {/* 2FA & Privacy Settings */}
@@ -35,31 +35,32 @@ const Security = () => {
         <div className="st-card security-mini-card">
             <div className="security-toggle-header">
                 <div className="info">
-                    <h4>Two-Factor Authentication</h4>
-                    <p>Add an extra layer of security.</p>
+                    <h4>İki Faktörlü Kimlik Doğrulama (Yakında)</h4>
+                    <p>Ekstra bir güvenlik katmanı ekleyin.</p>
                 </div>
                 <label className="st-switch">
                   <input 
                     type="checkbox" 
                     checked={twoFA} 
                     onChange={() => setTwoFA(!twoFA)} 
+                    disabled
                   />
                   <span className="st-slider"></span>
                 </label>
             </div>
             <div className={`two-fa-status ${twoFA ? 'active' : ''}`}>
-                {twoFA ? 'Protected by Authenticator' : 'Not configured'}
+                {twoFA ? 'Doğrulayıcı ile Korunuyor' : 'Ayarlanmadı'}
             </div>
         </div>
 
         <div className="st-card security-mini-card">
             <div className="security-toggle-header">
                 <div className="info">
-                    <h4>Privacy Mode</h4>
-                    <p>Hide your trip details from reports.</p>
+                    <h4>Gizli Mod (Yakında)</h4>
+                    <p>Seyahat detaylarınızı raporlardan gizleyin.</p>
                 </div>
                 <label className="st-switch">
-                  <input type="checkbox" defaultChecked />
+                  <input type="checkbox" disabled />
                   <span className="st-slider"></span>
                 </label>
             </div>
@@ -69,10 +70,10 @@ const Security = () => {
       {/* Danger Zone */}
       <div className="st-danger-zone">
         <div className="danger-header">
-            <h4>Danger Zone</h4>
-            <p>Once you delete your account, there is no going back. Please be certain.</p>
+            <h4>Tehlike Bölge</h4>
+            <p>Hesabınızı sildikten sonra geri dönüş yok. Lütfen emin olun.</p>
         </div>
-        <button className="st-btn-delete">Delete My Flowtera Account</button>
+        <button className="st-btn-delete">Flowtera Hesabımı Sil</button>
       </div>
     </div>
   );

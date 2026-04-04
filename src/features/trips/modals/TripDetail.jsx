@@ -15,7 +15,7 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
   const sidebarFooter = (
     <div className="tr-panel-footer" style={{ width: '100%', borderTop: 'none', padding: 0 }}>
       <button className="tr-action-btn primary">
-        <i className="ti ti-edit"></i> Edit Trip Details
+        <i className="ti ti-edit"></i> Gezi Detaylarını Düzenle
       </button>
     </div>
   );
@@ -44,7 +44,7 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
         >
           <img 
             src={data.image || "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=2070&auto=format&fit=crop"} 
-            alt="destination" 
+            alt="Varış noktası" 
           />
           <div className="tr-header-overlay"></div>
         </ImageBox>
@@ -63,7 +63,7 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
 
         <div className="tr-panel-stats-grid">
           <div className="tr-stat-item">
-            <label>Estimated Cost</label>
+            <label>Tahmini Gider</label>
             <div className="tr-amount-section">
               <span className="tr-amount-symbol">{data.currencySymbol}</span>
               <strong className="tr-amount-val">
@@ -76,7 +76,7 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
             </div>
           </div>
           <div className="tr-stat-item">
-            <label>Current Status</label>
+            <label>Mevcut Durum</label>
             <span className={`tr-status-badge ${data.statusClass}`}>
               {data.status}
             </span>
@@ -85,29 +85,29 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
 
         <div className="tr-rate-info">
           <i className="ti ti-history"></i>
-          <span>Rate: 1 {data.currency} = {data.exchangeRate?.rate} {data.localCurrency}</span>
+          <span>Oran: 1 {data.currency} = {data.exchangeRate?.rate} {data.localCurrency}</span>
         </div>
 
         <hr className="tr-divider" />
 
         <div className="tr-detail-row">
-          <span><i className="ti ti-map-2"></i> Destination</span>
+          <span><i className="ti ti-map-2"></i> Varış Noktası</span>
           <p>{data.destination}</p>
         </div>
 
         <div className="tr-detail-row">
-          <span><i className="ti ti-car"></i> Vehicle & Duration</span>
+          <span><i className="ti ti-car"></i> Araç ve Süre</span>
           <p>{data.vehicle} • {data.duration}</p>
         </div>
 
         <div className="tr-detail-row">
-          <span><i className="ti ti-clock"></i> Start/End Date</span>
+          <span><i className="ti ti-clock"></i> Başlangıç/Bitiş Tarihi</span>
           <p>{data.startDate} - {data.endDate}</p>
         </div>
 
         <div className="tr-detail-row">
-          <span><i className="ti ti-notes"></i> Trip Description</span>
-          <p className="tr-desc-text">{data.desc || "No additional notes."}</p>
+          <span><i className="ti ti-notes"></i> Gezi Açıklaması</span>
+          <p className="tr-desc-text">{data.desc || "Ek not yok."}</p>
         </div>
       </div>
     </ActionSidebar>

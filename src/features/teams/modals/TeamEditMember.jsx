@@ -63,16 +63,16 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
                 <div className="tm-modal-user">
                     <div className="role-icon-box"><i className="ti ti-shield-lock"></i></div>
                     <div className="user-meta">
-                        <h3>Edit Member Role</h3>
+                        <h3>Üye Rolünü Düzenle</h3>
                         <p>{user?.name || 'User'} — {user?.roleName || 'Member'}</p>
                     </div>
                 </div>
             }
             footer={
-                <div className="tm-modal-footer-grid">
-                    <button className="tm-cancel-btn" onClick={onClose} disabled={isUpdating}>Cancel</button>
-                    <button className="tm-save-role-btn" onClick={handleUpdate} disabled={isUpdating}>
-                        {isUpdating ? 'Updating...' : 'Update Role'}
+                <div className="tm-modal-footer-grid" style={{width: '100%', padding: 0, borderTop: 'none'}}>
+                    <button className="tm-cancel-btn" onClick={onClose} disabled={isUpdating} style={{flex: 1}}>Cancel</button>
+                    <button className="tm-save-role-btn" onClick={handleUpdate} disabled={isUpdating} style={{flex: 2}}>
+                        {isUpdating ? 'Güncelleniyor...' : 'Güncelle'}
                     </button>
                 </div>
             }
@@ -126,7 +126,7 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
                                             ))
                                         ) : (
                                             <div className="admin-notice">
-                                                <i className="ti ti-info-circle"></i> Admins cannot be restricted.
+                                                <i className="ti ti-info-circle"></i> Yöneticiler kısıtlanamaz.
                                             </div>
                                         )}
                                     </div>

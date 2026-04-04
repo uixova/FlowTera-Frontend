@@ -5,10 +5,10 @@ const CurrencyModal = ({ isOpen, onClose, onSelect, currentCurrency }) => {
   if (!isOpen) return null;
 
   const currencies = [
-    { code: 'TRY', symbol: '₺', name: 'Turkish Lira' },
-    { code: 'USD', symbol: '$', name: 'US Dollar' },
-    { code: 'EUR', symbol: '€', name: 'Euro' },
-    { code: 'GBP', symbol: '£', name: 'British Pound' }
+    { code: 'TRY', symbol: '₺' },
+    { code: 'USD', symbol: '$' },
+    { code: 'EUR', symbol: '€' },
+    { code: 'GBP', symbol: '£' }
   ];
 
   return (
@@ -19,7 +19,7 @@ const CurrencyModal = ({ isOpen, onClose, onSelect, currentCurrency }) => {
       {/* Dropdown Kutusu */}
       <div className="currency-dropdown-modal" onClick={e => e.stopPropagation()}>
         <div className="currency-modal-header">
-          <span>Select Currency</span>
+          <span>Para Birimi Seçiniz</span>
         </div>
         
         <div className="currency-list">

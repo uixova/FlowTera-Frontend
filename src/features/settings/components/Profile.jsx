@@ -26,8 +26,8 @@ const Profile = ({ user }) => {
   return (
     <div className="st-content-section">
       <div className="st-header-box">
-        <h2>Profile Details</h2>
-        <p>Personal information and profile identity.</p>
+        <h2>Profil Detayları</h2>
+        <p>Kişisel bilgiler ve profil kimliği.</p>
       </div>
       
       <div className="st-card">
@@ -51,7 +51,7 @@ const Profile = ({ user }) => {
                 <h4>{user.name}</h4>
                 <div className={`status-dot ${user.status}`}></div>
             </div>
-            <span>{user.subscription?.plan?.toUpperCase()} ACCOUNT</span>
+            <span>{user.subscription?.plan?.toUpperCase()} Hesap</span>
             </div>
         </div>
         {avatarError && <p className="st-avatar-error">{avatarError}</p>}
@@ -60,36 +60,36 @@ const Profile = ({ user }) => {
         <div className="st-form-grid">
           {/* Read-Only Alanlar (Tıklanamaz) */}
           <div className="st-input-group static-field">
-            <label>User ID</label>
+            <label>Kullanıcı ID'si</label>
             <div className="static-value">{user.id}</div>
           </div>
           <div className="st-input-group static-field">
-            <label>Joined Date</label>
+            <label>Katılma Tarihi</label>
             <div className="static-value">{user.joinedDate}</div>
           </div>
 
           {/* Düzenlenebilir Alanlar */}
           <div className="st-input-group">
-            <label>Full Name</label>
-            <input type="text" defaultValue={user.name} placeholder="Your name" />
+            <label>Tam İsim</label>
+            <input type="text" defaultValue={user.name} placeholder="Adın" />
           </div>
           <div className="st-input-group">
-            <label>Username</label>
+            <label>Kullanıcı Adı</label>
             <input type="text" defaultValue={user.username} placeholder="username" />
           </div>
           <div className="st-input-group">
-            <label>Email Address</label>
+            <label>Email Adresi</label>
             <input type="email" defaultValue={user.email} placeholder="email@example.com" />
           </div>
           <div className="st-input-group">
-            <label>Phone Number</label>
+            <label>Telefon Numarası</label>
             <input type="text" defaultValue={user.phone} placeholder="+90 5XX XXX XX XX" />
           </div>
         </div>
         
         {/* Buton ile form arasına boşluk */}
         <div className="st-form-footer">
-            <button className="st-btn-save">Update Profile</button>
+            <button className="st-btn-save">Profili Güncelle</button>
         </div>
       </div>
     </div>

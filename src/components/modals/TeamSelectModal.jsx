@@ -78,7 +78,7 @@ const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
       
       <div className="team-dropdown-modal" onClick={(e) => e.stopPropagation()}>
         <div className="team-modal-header">
-          <span>Active Teams</span>
+          <span>Aktif Takımlar</span>
         </div>
 
         <div className="team-dropdown-list">
@@ -97,14 +97,14 @@ const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
               </button>
             ))
           ) : isLoading ? null : (
-            <div className="no-teams-info">No teams found.</div>
+            <div className="no-teams-info">Takım bulunmadı.</div>
           )}
         </div>
 
         <div className="team-dropdown-footer">
           <button className="add-team-small-btn" onClick={handleCreateNew}>
             <i className="ti ti-plus"></i>
-            Create New Team
+            Yeni Takım Oluştur
           </button>
         </div>
       </div>

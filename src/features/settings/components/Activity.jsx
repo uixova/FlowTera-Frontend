@@ -5,8 +5,8 @@ const Activity = ({ logs }) => {
   return (
     <div className="st-content-section">
       <div className="st-header-box">
-        <h2>Activity Logs</h2>
-        <p>Recent actions performed by your account across Flowtera modules.</p>
+        <h2>Aktivite Kayıtları</h2>
+        <p>Hesabınızın Flowtera modülleri boyunca yaptığı son işlemler.</p>
       </div>
 
       <div className="st-card activity-card">
@@ -18,7 +18,7 @@ const Activity = ({ logs }) => {
                 <div className="log-info">
                   <div className="log-main-row">
                     <p className="log-action">{log.action}</p>
-                    <span className="log-status-badge">Success</span>
+                    <span className="log-status-badge">Başarılı</span>
                   </div>
                   <div className="log-meta-row">
                     <span className="log-date">
@@ -27,7 +27,7 @@ const Activity = ({ logs }) => {
                     </span>
                     <span className="log-device">
                       <i className="ti ti-device-laptop"></i>
-                      System
+                      Sistem
                     </span>
                   </div>
                 </div>
@@ -36,13 +36,13 @@ const Activity = ({ logs }) => {
           ) : (
             <div className="st-empty-logs">
               <i className="ti ti-ghost"></i>
-              <p>No activity recorded yet.</p>
+              <p>Henüz bir faaliyet kaydedilmedi.</p>
             </div>
           )}
         </div>
         
         {logs && logs.length > 5 && (
-            <button className="st-btn-load-more">Load Previous Logs</button>
+            <button className="st-btn-load-more">Önceki Günlükleri Yükle</button>
         )}
       </div>
     </div>

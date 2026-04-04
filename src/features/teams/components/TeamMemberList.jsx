@@ -15,7 +15,7 @@ const teamMembersRequestCache = new Map();
 
 const TeamMemberList = ({ team, onBack, onNavigate }) => {
   const teamId = team?.id;
-  const teamName = team?.name || "Team Details";
+  const teamName = team?.name || "Takım Detayları";
   const { currentUserId, roleNameForTeam, currentUser, loading: authLoading } = useAuth();
   
   // Yetki kontrolü: Admin mi ve silinmemiş mi?
@@ -67,14 +67,14 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
 
       const data = await pendingRequest;
 
-      // RAM cache'e yazıyoruz
+      //! RAM cache'e yazıyoruz!!!!!!
       teamMembersCache.set(normalizedTeamId, data);
 
       if (!isCancelled) {
         setMembers(data || []);
       }
     } catch (error) {
-      console.error("Üyeler yüklenirken hata:", error);
+      console.error("Error loading members:", error);
     } finally {
       teamMembersRequestCache.delete(normalizedTeamId);
       if (!isCancelled) {
@@ -98,7 +98,7 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
     setIsEditModalOpen(true);
   };
 
-  // Aktivite loglarını göstermek için kullanıcı seçildiğinde açılan fonksiyon
+  // İşlem loglarını göstermek için kullanıcı seçildiğinde açılan fonksiyon
   const handleLogClick = (user) => {
     setSelectedUser(user);
     setIsLogModalOpen(true);
@@ -123,22 +123,22 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
     <div className="tm-member-list-page">
       <SubNavbar 
         title={teamName}
-        searchPlaceholder="Search member..."
-        createLabel="Quick Add"
+        searchPlaceholder="Üye ara..."
+        createLabel="Hızlı Ekleme"
         showSearch={true}
         showCreate={canManageMembersSafe}
         onCreate={() => setIsAddModalOpen(true)}
-        onSearch={(val) => console.log("Üye arama:", val)}
+        onSearch={(val) => console.log("Member search:", val)}
         buttons={[
           { 
             icon: 'ti ti-list', 
-            tooltip: 'My Teams', 
+            tooltip: 'Takımım', 
             onClick: onBack 
           },
           ...(canManageMembersSafe
             ? [{
                 icon: 'ti ti-settings', 
-                tooltip: 'Settings', 
+                tooltip: 'Ayarlar', 
                 onClick: () => onNavigate('settings') 
               }]
             : [])
@@ -195,7 +195,7 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
     
             <div className="tm-user-footer">
               <div className="tm-stat">
-                <span className="stat-label">Last Login</span>
+                <span className="stat-label">Son Giriş</span>
                 {/* user.json'daki lastLogin verisini daha okunaklı basıyoruz */}
                 <span className="stat-value">
                     {member.lastLogin ? new Date(member.lastLogin).toLocaleDateString('tr-TR') : 'Never'}
@@ -206,7 +206,7 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
                   className="view-full-logs-btn" 
                   onClick={() => handleLogClick(member)}
                 >
-                  Full Activity Log
+                  Tam Geçmiş Kaydı
                 </button>
               )}
             </div>
@@ -217,7 +217,7 @@ const TeamMemberList = ({ team, onBack, onNavigate }) => {
         {canManageMembersSafe && (
           <div className="team-card add-member-card" onClick={() => setIsAddModalOpen(true)}>
             <div className="add-icon-wrapper"><i className="ti ti-plus"></i></div>
-            <span>New Member</span>
+            <span>Yeni Üye</span>
           </div>
         )}
       </div>
