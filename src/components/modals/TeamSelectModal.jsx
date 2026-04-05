@@ -25,7 +25,7 @@ const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
           setIsLoading(true);
         }
         try {
-          const data = await teamsService.getTeams(); // Servis fonksiyonunu çağırıyoruz
+          const data = await teamsService.getTeams(); // Servis fonksiyonunu çağır
           if (!isCancelled) {
             setTeams(data || []);
           }

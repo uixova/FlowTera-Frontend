@@ -2,18 +2,14 @@ import React, { useState } from 'react';
 import '../components.css/ThemeModal.css';
 
 const ThemeModal = ({ isOpen, onClose }) => {
-  // Tema seçimlerini tutacak local stateler 
   const [activeMode, setActiveMode] = useState('dark');
   const [accentColor, setAccentColor] = useState('#50e091');
-  const [radius, setRadius] = useState('Soft');
+  const [radius, setRadius] = useState('Yumuşak');
 
-  {/* Örnek renk seçenekleri ve köşe yarıçapı seçenekleri */}
   const colors = [
-    '#50e091', '#0ed45a', '#8cbed1', '#f1c40f', 
-    '#e74c3c', '#f10ff1', '#943ce7', '#0f97f1'
+    '#50e091', '#0ed45a', '#3a86ff', '#8338ec', 
+    '#ff006e', '#fb5607', '#ffbe0b', '#8cbed1'
   ];
-
-  const radiusOptions = ['Sharp', 'Soft', 'Round', 'Ultra'];
 
   return (
     <div className={`panel-overlay ${isOpen ? 'active' : ''}`} onClick={onClose}>
@@ -21,8 +17,8 @@ const ThemeModal = ({ isOpen, onClose }) => {
         
         <div className="panel-header">
           <div className="header-text">
-            <h3>Appearance</h3>
-            <p>Customize your workspace interface</p>
+            <h3>Görünüm Ayarları</h3>
+            <p>Sistemi kendine göre özelleştir</p>
           </div>
           <button className="panel-close" onClick={onClose}>
             <i className="ti ti-x"></i>
@@ -30,67 +26,68 @@ const ThemeModal = ({ isOpen, onClose }) => {
         </div>
 
         <div className="panel-body">
-          {/* SYSTEM MODE */}
+          {/* TEMA SEÇİMİ */}
           <div className="panel-section">
-            <label>Interface Mode</label>
-            <div className="mode-switch-group">
-              <button 
-                className={`mode-opt ${activeMode === 'dark' ? 'active' : ''}`}
+            <label>Arayüz Modu</label>
+            <div className="mode-selection-grid">
+              <div 
+                className={`mode-card ${activeMode === 'dark' ? 'active' : ''}`}
                 onClick={() => setActiveMode('dark')}
               >
-                <i className="ti ti-moon"></i> Dark Mode
-              </button>
-              <button 
-                className={`mode-opt ${activeMode === 'light' ? 'active' : ''}`}
+                <div className="mode-preview-box dark-preview"></div>
+                <span>Koyu Tema</span>
+              </div>
+              <div 
+                className={`mode-card ${activeMode === 'light' ? 'active' : ''}`}
                 onClick={() => setActiveMode('light')}
               >
-                <i className="ti ti-sun"></i> Light Mode
-              </button>
+                <div className="mode-preview-box light-preview"></div>
+                <span>Açık Tema</span>
+              </div>
             </div>
           </div>
 
-          {/* ACCENT COLOR */}
+          {/* RENK SEÇİMİ */}
           <div className="panel-section">
-            <label>Brand Color</label>
+            <label>Vurgu Rengi</label>
             <div className="color-picker-grid">
-              {colors.map(color => (
+              {colors.map(c => (
                 <div 
-                  key={color}
-                  className={`color-dot ${accentColor === color ? 'active' : ''}`} 
-                  style={{ background: color }}
-                  onClick={() => setAccentColor(color)}
+                  key={c}
+                  className={`color-dot ${accentColor === c ? 'active' : ''}`} 
+                  style={{ background: c }}
+                  onClick={() => setAccentColor(c)}
                 >
-                  {accentColor === color && <i className="ti ti-check"></i>}
+                  {accentColor === c && <i className="ti ti-check" style={{color: '#fff'}}></i>}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* CORNER RADIUS */}
+          {/* RADIUS */}
           <div className="panel-section">
-            <label>Element Curves</label>
-            <div className="radius-list">
-              {radiusOptions.map(opt => (
+            <label>Kenar Yapısı</label>
+            <div className="radius-list-modern">
+              {['Keskin', 'Yumuşak', 'Oval', 'Tam'].map(r => (
                 <button 
-                  key={opt}
-                  className={`rad-opt ${radius === opt ? 'active' : ''}`}
-                  onClick={() => setRadius(opt)}
+                  key={r}
+                  className={`rad-btn ${radius === r ? 'active' : ''}`}
+                  onClick={() => setRadius(r)}
                 >
-                  {opt}
+                  {r}
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Footer with actions */}
         <div className="panel-footer">
-          <button className="btn-reset" onClick={() => {
+          <button className="btn-reset-plain" onClick={() => {
             setActiveMode('dark');
             setAccentColor('#50e091');
-            setRadius('Soft');
-          }}>Reset to Default</button>
-          <button className="btn-save">Apply Changes</button>
+            setRadius('Yumuşak');
+          }}>Sıfırla</button>
+          <button className="btn-apply" onClick={onClose}>Değişiklikleri Uygula</button>
         </div>
       </div>
     </div>

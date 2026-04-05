@@ -30,73 +30,7 @@
       "status": "active",
       "autoApproved": false,
       "autoApprovedLimit": 500
-    },
-    "history": [
-      {
-        "id": 1,
-        "teamId": "team-1",
-        "type": "system_update",
-        "role": "system",
-        "icon": "ti-settings-automation",
-        "iconClass": "log-system",
-        "user": "Flowtera Bot",
-        "badge": "System",
-        "action": "automatically updated:",
-        "target": "Exchange Rates",
-        "time": "Just now",
-        "tag": "Updated",
-        "tagClass": "hi-tag-alt",
-        "details": {
-          "process_id": "SYS-AUTO-992",
-          "service": "Currency Oracle v2",
-          "updated_nodes": "TR-ANK-01, TR-IST-04",
-          "sync_status": "Synchronized"
-        }
-      },
-      {
-        "id": 3,
-        "teamId": "team-1",
-        "type": "expense_add",
-        "role": "member",
-        "icon": "ti-plus",
-        "iconClass": "log-expense",
-        "user": "Caner Durmuş",
-        "badge": "Member",
-        "action": "added a new expense:",
-        "target": "Fuel for Truck",
-        "time": "5 mins ago",
-        "amount": "-$120.00",
-        "details": {
-          "expense_id": "EXP-7721-BC",
-          "category": "Logistics / Fuel",
-          "tax_status": "Verified",
-          "receipt_status": "Uploaded",
-          "project_code": "FLW-2026-TR"
-        }
-      },
-      {
-        "id": 4,
-        "teamId": "team-1",
-        "type": "trip_approval",
-        "role": "admin",
-        "icon": "ti-circle-check",
-        "iconClass": "log-trip",
-        "user": "Sistem",
-        "badge": "Admin",
-        "action": "approved the trip:",
-        "target": "Istanbul Logistics",
-        "time": "2 hours ago",
-        "tag": "Confirmed",
-        "tagClass": "hi-tag",
-        "details": {
-          "trip_id": "TRP-4409",
-          "priority": "High Priority",
-          "approval_message": "Route is optimized and driver assigned.",
-          "estimated_arrival": "14/03/2026 09:00",
-          "fleet_unit": "Unit-12"
-        }
-      }
-    ]
+    }
   },
   {
     "id": "team-2",
@@ -135,29 +69,6 @@
       "status": "active",
       "autoApproved": false,
       "autoApprovedLimit": 500
-    },
-    "history": [
-      {
-        "id": 6,
-        "teamId": "team-1",
-        "type": "rejection",
-        "role": "moderator",
-        "icon": "ti-x",
-        "iconClass": "log-delete",
-        "user": "Ece Naz",
-        "badge": "Mod",
-        "action": "rejected the request:",
-        "target": "Extra Budget Request",
-        "time": "5 hours ago",
-        "tag": "Rejected",
-        "tagClass": "hi-status-red",
-        "details": {
-          "request_id": "REQ-112",
-          "rejection_reason": "Missing documentation for extra mileage.",
-          "action_required": "Please re-upload receipts.",
-          "review_date": "12/03/2026"
-        }
-      }
-    ]
+    }
   }
 ]

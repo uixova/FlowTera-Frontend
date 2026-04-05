@@ -4,35 +4,40 @@ export const dashboardService = {
     getDashboardStats: async (currentUserId) => {
         try {
             const normalizedCurrentUserId = String(currentUserId);
-            // Sadece ihtiyacımız olanları çekiyoruz
-            const [expenses, trips, teams] = await Promise.all([
+            
+            // Tüm verileri paralel çekiyoruz
+            const [expenses, trips, allTeams, allUsers] = await Promise.all([
                 api.expenses.getAll(),
                 api.trips.getAll(),
-                api.teams.getAll() // Takım isimlerini eşleştirmek için ekledik
+                api.teams.getAll(),
+                api.users.getAll() // Kullanıcı datasına erişmek için eklendi
             ]);
 
-            if (!expenses || !trips || !teams) return null;
+            if (!expenses || !trips || !allTeams) return null;
+            
 
-            // Önce kullanıcının kendi verilerini ayıralım (JSON'da createdBy var)
-            const getExpenseOwnerId = (e) => e?.createdBy?.id ?? e?.userId ?? e?.submitterId ?? null;
-            const getTripOwnerId = (t) => t?.createdBy?.id ?? t?.userId ?? t?.submitterId ?? null;
+            // Kullanıcının kendi verilerini filtreleme (Owner/Submitter kontrolü)
+            const getOwnerId = (item) => item?.createdBy?.id ?? item?.userId ?? item?.submitterId ?? null;
+            
+            const userExpenses = expenses.filter(e => String(getOwnerId(e)) === normalizedCurrentUserId);
+            const userTrips = trips.filter(t => String(getOwnerId(t)) === normalizedCurrentUserId);
 
-            const userExpenses = expenses.filter(e => String(getExpenseOwnerId(e)) === normalizedCurrentUserId);
-            const userTrips = trips.filter(t => String(getTripOwnerId(t)) === normalizedCurrentUserId);
-
-            // Takım ismini bulmak için yardımcı fonksiyon
+            // Yardımcı Fonksiyon: Takım ismini ID'den bulma
             const getTeamName = (teamId) => {
-                const team = teams.find(t => t.id === teamId);
-                return team ? team.name : "Unknown Team";
+                const team = allTeams.find(t => String(t.id) === String(teamId));
+                return team ? team.name : "Bilinmeyen Takım";
             };
 
-            // Kullanıcının harcamalarını ve seyahatlerini ayrı ayrı hesaplayarak grafik verisi oluşturuyoruz
-            const typeComparison = [
-                { name: 'Expenses', value: userExpenses.reduce((sum, e) => sum + e.amount, 0) },
-                { name: 'Trips', value: userTrips.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0) }
-            ];
+            // Kullanıcı verisinden takımları eşleştirme (u1 datasına göre düzenlendi)
+            const currentUserData = allUsers.find(u => String(u.id) === normalizedCurrentUserId);
             
-            // Özet İstatistikler (userExpenses ve userTrips üzerinden)
+            // Sadece Kullanıcının Üye Olduğu Takımlar (Filtrelenmiş)
+            // Kullanıcı objesindeki "teams" dizisinde bulunan ID'lere göre allTeams'den filtreleme yapıyoruz
+            const userTeams = allTeams
+                .filter(team => currentUserData?.teams?.includes(String(team.id)))
+                .map(t => ({ id: t.id, name: t.name }));
+
+            // Özet İstatistikler
             const stats = {
                 pendingCount: userExpenses.filter(e => e.status === 'pending').length + 
                               userTrips.filter(t => t.status.toLowerCase() === 'pending').length,
@@ -41,13 +46,13 @@ export const dashboardService = {
                 rejectedCount: userExpenses.filter(e => e.status === 'rejected').length
             };
 
-            const userTeams = Array.from(new Set([
-                ...userExpenses.map(exp => getTeamName(exp.teamId)),
-                ...userTrips.map(trip => getTeamName(trip.teamId))
-            ])).map(name => ({ id: name, name: name }));
+            // Harcama vs Seyahat (Type Comparison)
+            const typeComparison = [
+                { name: 'Expenses', value: userExpenses.reduce((sum, e) => sum + e.amount, 0) },
+                { name: 'Trips', value: userTrips.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0) }
+            ];
 
-
-            // Grafik: Harcama ve Seyahat Karşılaştırması (Kullanıcıya özel)
+            // Takımlara Göre Harcama Dağılımı
             const teamSpending = userExpenses.reduce((acc, exp) => {
                 const tName = getTeamName(exp.teamId);
                 const existing = acc.find(item => item.name === tName);
@@ -56,7 +61,7 @@ export const dashboardService = {
                 return acc;
             }, []);
 
-            // Grafik: Aylık Harcama Trendi (Kullanıcıya özel olması için userExpenses kullandık)
+            // Aylık Harcama Trendi
             const monthlyTrend = userExpenses.reduce((acc, exp) => {
                 const month = exp.date.split('/')[1];
                 const monthName = new Date(2026, parseInt(month) - 1).toLocaleString('en-US', { month: 'short' });
@@ -66,7 +71,7 @@ export const dashboardService = {
                 return acc;
             }, []).sort((a, b) => new Date(a.name + " 1") - new Date(b.name + " 1"));
 
-            // Grafik: Kategori Dağılımı (Kullanıcıya özel)
+            // Kategori Dağılımı
             const categoryMap = { 'Infrastructure': '#9d4edd', 'Food & Beverage': '#4361ee', 'Office Equipment': '#e63946', 'Logistics': '#0ed45a' };
             const categoryDistribution = userExpenses.reduce((acc, exp) => {
                 const existing = acc.find(item => item.name === exp.category);
@@ -75,13 +80,13 @@ export const dashboardService = {
                 return acc;
             }, []);
 
-            // Hibrit Aktiviteler
+            // Hibrit Aktiviteler (Son 10)
             const myActivities = [
                 ...userExpenses.map(exp => ({
                     id: exp.id, 
                     subject: exp.title, 
-                    type: "Expense", // UI'da team yerine tip olarak gösterilebilir
-                    teamName: getTeamName(exp.teamId), // Takım ismini buradan çekiyoruz
+                    type: "Expense",
+                    teamName: getTeamName(exp.teamId),
                     category: exp.category,
                     amount: `${exp.currencySymbol}${exp.amount.toFixed(2)}`, 
                     date: exp.date 
@@ -90,17 +95,16 @@ export const dashboardService = {
                     id: trip.id, 
                     subject: trip.destination, 
                     type: "Trip", 
-                    teamName: getTeamName(trip.teamId), // Takım ismini buradan çekiyoruz
+                    teamName: getTeamName(trip.teamId),
                     category: trip.category,
                     amount: trip.status, 
                     date: trip.date
                 }))
             ].sort((a, b) => {
-                // Harcama ve seyahat aktivitelerini tarihe göre sıralayıp en son 10 tanesini alıyoruz
                 const dateA = new Date(a.date.split('/').reverse().join('-'));
                 const dateB = new Date(b.date.split('/').reverse().join('-'));
                 return dateB - dateA;
-            }).slice(0, 10); // En son 10 aktivite
+            }).slice(0, 10);
 
             return { stats, monthlyTrend, categoryDistribution, myActivities, typeComparison, teamSpending, userTeams };
         } catch (error) {

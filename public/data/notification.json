@@ -39,6 +39,16 @@
       "category": "warning",
       "text": "Aylık bütçe limitinin %90'ına ulaşıldı!",
       "date": "2026-04-03T09:45:00Z"
+    },
+    {
+      "id": "nt_invite_99",
+      "type": "invite", 
+      "userId": "u1",
+      "teamId": "team-3",
+      "teamName": "FlowTera Alpha Team",
+      "sender": "Selin Ak",
+      "text": "Seni ekibine davet etti.",
+      "date": "2026-04-05T12:00:00Z"
     }
   ]
 }

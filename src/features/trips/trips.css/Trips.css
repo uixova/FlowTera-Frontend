@@ -1,6 +1,6 @@
 .trip-title-nav, .trip-block {
     display: grid;
-    grid-template-columns: 40px 2.2fr 1.5fr 1.5fr 1.5fr 1fr 1.5fr 1.2fr;
+    grid-template-columns: 40px 2.2fr 1.2fr 1.5fr 1.2fr 1.5fr 1fr 1.2fr 80px; 
     gap: 15px;
     align-items: center;
     padding: 14px 22px;
@@ -32,10 +32,21 @@
     cursor: pointer;
 }
 
+.ex-row-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    opacity: 0; 
+    transition: opacity 0.2s ease;
+}
+
+.trip-block:hover .ex-row-actions {
+    opacity: 1; 
+}
+
 .trip-block:hover {
     background: #222;
     border-color: #333;
-    transform: translateX(5px);
     box-shadow: -5px 0 20px rgba(0,0,0,0.3);
 }
 
@@ -148,3 +159,20 @@
     color: #0ed45a;
     font-family: 'JetBrains Mono', monospace;
 }
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #252525;
+    color: #888;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.action-btn.edit:hover { background: rgba(67, 97, 238, 0.1); color: #4361ee; border-color: rgba(67, 97, 238, 0.3); }
+.action-btn.delete:hover { background: rgba(255, 71, 87, 0.1); color: #ff4757; border-color: rgba(255, 71, 87, 0.3); }

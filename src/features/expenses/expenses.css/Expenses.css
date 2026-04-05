@@ -1,6 +1,6 @@
 .expense-title-nav, .expense-block {
     display: grid;
-    grid-template-columns: 40px 2.2fr 1.5fr 1.5fr 1.5fr 1fr 1.5fr 1.2fr;
+    grid-template-columns: 40px 2.2fr 1.5fr 1.5fr 1.5fr 1fr 1.5fr 1.2fr 80px;
     gap: 15px;
     align-items: center;
     padding: 14px 22px;
@@ -28,15 +28,14 @@
     margin-bottom: 4px;
     border-radius: 8px;
     border: 1px solid #222;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .expense-block:hover {
     background: #222;
     border-color: #333;
-    transform: translateX(5px);
-    box-shadow: -5px 0 20px rgba(0,0,0,0.3);
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
 }
 
 .expense-block-details {
@@ -69,6 +68,18 @@
     font-size: 0.75rem;
     color: #555;
     font-family: 'JetBrains Mono', monospace;
+}
+
+.ex-row-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.expense-block:hover .ex-row-actions {
+    opacity: 1;
 }
 
 .ex-category-tag, .ex-merchant-text,
@@ -112,20 +123,50 @@
     letter-spacing: 0.5px;
 }
 
-.expense-status.approved { 
-    background: rgba(14, 212, 90, 0.12); 
-    color: #0ed45a; 
-    border: 1px solid rgba(14, 212, 90, 0.2); 
+.expense-status.approved {
+    background: rgba(14, 212, 90, 0.12);
+    color: #0ed45a;
+    border: 1px solid rgba(14, 212, 90, 0.2);
 }
 
-.expense-status.pending { 
-    background: rgba(241, 196, 15, 0.12); 
-    color: #f1c40f; 
-    border: 1px solid rgba(241, 196, 15, 0.2); 
+.expense-status.pending {
+    background: rgba(241, 196, 15, 0.12);
+    color: #f1c40f;
+    border: 1px solid rgba(241, 196, 15, 0.2);
 }
 
-.expense-status.rejected { 
-    background: rgba(255, 71, 87, 0.12); 
-    color: #ff4757; 
-    border: 1px solid rgba(255, 71, 87, 0.2); 
+.expense-status.rejected {
+    background: rgba(255, 71, 87, 0.12);
+    color: #ff4757;
+    border: 1px solid rgba(255, 71, 87, 0.2);
+}
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: #252525;
+    color: #888;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.action-btn i {
+    font-size: 16px;
+}
+
+.action-btn.edit:hover {
+    background: rgba(67, 97, 238, 0.1);
+    color: #4361ee;
+    border-color: rgba(67, 97, 238, 0.3);
+}
+
+.action-btn.delete:hover {
+    background: rgba(255, 71, 87, 0.1);
+    color: #ff4757;
+    border-color: rgba(255, 71, 87, 0.3);
 }

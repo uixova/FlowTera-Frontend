@@ -8,6 +8,7 @@ import CurrencyModal from '../../components/modals/CurrencyModal';
 import PaginationFooter from '../../components/common/PaginationFooter';
 import ActionSidebar from '../../components/navigation/ActionSidebar'; 
 import ExpenseFilter from './modals/ExpenseFilter';
+import ExpensesList from './components/ExpensesList'; 
 
 // Servis ve Hook importları
 import { expenseService } from './services/expenseService';
@@ -15,21 +16,20 @@ import { usePagination } from '../../hooks/usePagination';
 import { useFilter } from '../../hooks/useFilter'; 
 
 const Expenses = () => {
-    // MODAL VE UI STATELERİ 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [isCurrencyOpen, setIsCurrencyOpen] = useState(false); 
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     
     const [selectedExpense, setSelectedExpense] = useState(null);
+    const [isEditMode, setIsEditMode] = useState(false); 
+    
     const [selectedCurrency, setSelectedCurrency] = useState(() => {
         return sessionStorage.getItem('selectedCurrency') || 'USD';
     });
 
-    // VERİ YÖNETİMİ
     const [activeTeamId, setActiveTeamId] = useState(() => localStorage.getItem('tm_selected_id'));
 
-    // Takım değişikliklerini dinleyerek activeTeamId'yi güncelleyen useEffect
     useEffect(() => {
         const syncSelectedTeam = () => {
             const nextTeamId = localStorage.getItem('tm_selected_id');
@@ -37,7 +37,6 @@ const Expenses = () => {
                 String(prevTeamId || '') === String(nextTeamId || '') ? prevTeamId : nextTeamId
             );
         };
-        // Hem özel event hem de storage event'ini dinleyerek takım değişikliklerini senkronize ediyoruz
         window.addEventListener('teamChanged', syncSelectedTeam);
         window.addEventListener('storage', syncSelectedTeam);
         return () => {
@@ -46,12 +45,10 @@ const Expenses = () => {
         };
     }, []);
     
-    // Sayfalama ve Veri Çekme
     const { 
-        data: expenses, loading, loadingMore, hasMore, loadMore, totalCount
+        data: expenses, loading, loadingMore, hasMore, loadMore, totalCount, refreshData
     } = usePagination(expenseService.getExpensesByTeam, activeTeamId, 20);
 
-    // Filtreleme işlemi için özel hook kullanımı
     const {
         searchTerm, setSearchTerm,
         tempFilters, setTempFilters,
@@ -69,33 +66,44 @@ const Expenses = () => {
         ['title', 'merchant']
     );
 
-    // Expense detay modalını açan fonksiyon
+    // Kullanıcının kendi verilerini filtreleme (Owner/Submitter kontrolü)
+    const handleDelete = async (e, id) => {
+        e.stopPropagation();
+        if (window.confirm("Bu gideri silmek istediğinize emin misiniz?")) {
+            try {
+                await expenseService.deleteExpense(id);
+                refreshData(); 
+            } catch (err) {
+                console.error("Silme hatası:", err);
+            }
+        }
+    };
+
+    // Yardımcı Fonksiyon: Takım ismini ID'den bulma
+    const handleEdit = (e, expense) => {
+        e.stopPropagation();
+        setSelectedExpense(expense);
+        setIsEditMode(true);
+        setIsCreateOpen(true);
+    };
+
+    // Sadece Kullanıcının Üye Olduğu Takımlar (Filtrelenmiş)
     const handleOpenDetail = (expense) => {
         setSelectedExpense(expense);
         setIsDetailOpen(true);
     };
 
-    // Para Birimi Seçimi
+    // Özet İstatistikler
     const handleCurrencySelect = (currencyCode) => {
         setSelectedCurrency(currencyCode);
         sessionStorage.setItem('selectedCurrency', currencyCode);
     };
 
-    // Filtreleme sidebar'ının footer'ı (Clear ve Apply butonları)
+    // Harcama vs Seyahat (Type Comparison)
     const filterFooter = (
         <div className="as-filter-footer">
-            <button 
-                className="btn-clear" 
-                onClick={clearFilters}
-            >
-                Tümünü Temizle
-            </button>
-            <button 
-                className="btn-apply" 
-                onClick={() => { applyFilters(); setIsFilterOpen(false); }}
-            >
-                Filtreleri Uygula
-            </button>
+            <button className="btn-clear" onClick={clearFilters}>Tümünü Temizle</button>
+            <button className="btn-apply" onClick={() => { applyFilters(); setIsFilterOpen(false); }}>Filtreleri Uygula</button>
         </div>
     );
 
@@ -109,7 +117,11 @@ const Expenses = () => {
                 searchPlaceholder="Harcama ara..."
                 searchValue={searchTerm}
                 createLabel="Harcama Oluştur"
-                onCreate={() => setIsCreateOpen(true)}
+                onCreate={() => { 
+                    setIsEditMode(false); 
+                    setSelectedExpense(null); 
+                    setIsCreateOpen(true); 
+                }}
                 onSearch={(val) => setSearchTerm(val)}
                 buttons={[
                     { 
@@ -134,45 +146,23 @@ const Expenses = () => {
                     <span className="ex-title-span">Detaylar</span>
                     <span className="ex-title-span">Kategori</span>
                     <span className="ex-title-span">İşletme</span>
-                    <span className="ex-title-span">Ödeme</span>
+                    <span className="ex-title-span">Ödeme Yöntemi</span>
                     <span className="ex-title-span">Miktar</span>
                     <span className="ex-title-span">Rapor</span>
                     <span className="ex-title-span">İşlem Durumu</span>
+                    <span className="ex-title-span">İşlemler</span>
                 </div>
 
                 <div className="expense-list-container">
                     {filteredExpenses.length > 0 ? (
                         <>
-                            {filteredExpenses.map((expense) => (
-                                <div 
-                                    key={expense.id} 
-                                    className="expense-block" 
-                                    onClick={() => handleOpenDetail(expense)}
-                                >
-                                    <input type="checkbox" onClick={(e) => e.stopPropagation()} />
-                                    <div className="expense-block-details">
-                                        <span className="expense-icon">
-                                            <i className={`ti ${expense.icon || 'ti-receipt'}`}></i>
-                                        </span>
-                                        <div className="expense-details-text">
-                                            <span className="expense-date">{expense.date}</span>
-                                            <span className="expense-title">{expense.title}</span>
-                                        </div>
-                                    </div>
-                                    <span className="ex-category-tag">{expense.category}</span>
-                                    <span className="ex-merchant-text">{expense.merchant}</span>
-                                    <span className="ex-method-text">{expense.paymentMethod}</span>
-                                    <div className="ex-list-amount-wrapper">
-                                        <span className="ex-list-symbol">{expense.currencySymbol}</span>
-                                        <span className="ex-list-amount-val">{(Number(expense.amount) || 0).toFixed(2)}</span>
-                                        <span className="ex-list-currency">{expense.currency}</span>
-                                    </div>
-                                    <span className="ex-report-name">{expense.report || 'General'}</span>
-                                    <span className={`expense-status ${expense.status?.toLowerCase()}`}>
-                                        {expense.status}
-                                    </span>
-                                </div>
-                            ))}
+                            {/* Liste bileşeni buraya taşındı, hook hatası alt bileşende çözüldü */}
+                            <ExpensesList 
+                                data={filteredExpenses}
+                                onOpenDetail={handleOpenDetail}
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                            />
 
                             <PaginationFooter 
                                 hasMore={hasMore}
@@ -189,7 +179,6 @@ const Expenses = () => {
                 </div>
             </div>
 
-            
             <ActionSidebar 
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}
@@ -200,14 +189,24 @@ const Expenses = () => {
                 <ExpenseFilter filters={tempFilters} setFilters={setTempFilters} />
             </ActionSidebar>
 
-            {/* Modalların render edilmesi */}
-            <CreateExpense isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+            <CreateExpense 
+                isOpen={isCreateOpen} 
+                onClose={() => { 
+                    setIsCreateOpen(false); 
+                    setIsEditMode(false); 
+                    setSelectedExpense(null); 
+                }} 
+                editData={isEditMode ? selectedExpense : null}
+                onSuccess={refreshData}
+            />
+
             <ExpenseDetail 
                 isOpen={isDetailOpen} 
                 onClose={() => setIsDetailOpen(false)} 
                 data={selectedExpense}
                 onReopen={() => setIsDetailOpen(true)} 
             />
+
             <CurrencyModal 
                 isOpen={isCurrencyOpen} 
                 onClose={() => setIsCurrencyOpen(false)} 

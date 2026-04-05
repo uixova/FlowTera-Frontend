@@ -8,6 +8,7 @@ import CurrencyModal from '../../components/modals/CurrencyModal';
 import PaginationFooter from '../../components/common/PaginationFooter';
 import ActionSidebar from '../../components/navigation/ActionSidebar';
 import TripFilter from './modals/TripFilter';
+import TripList from './components/TripList'; 
 
 // Servis ve Hook importları
 import { tripsService } from './services/tripsService'; 
@@ -21,6 +22,8 @@ const Trips = () => {
     const [selectedTrip, setSelectedTrip] = useState(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false); // Edit modu eklendi
+
     const [selectedCurrency, setSelectedCurrency] = useState(() => {
         return sessionStorage.getItem('selectedCurrency') || 'USD';
     });
@@ -43,15 +46,10 @@ const Trips = () => {
     
     // Veri Çekme
     const { 
-        data: trips, 
-        loading, 
-        loadingMore, 
-        hasMore, 
-        loadMore,
-        totalCount
+        data: trips, loading, loadingMore, hasMore, loadMore, totalCount, refreshData 
     } = usePagination(tripsService.getTripsByTeam, activeTeamId, 20);
 
-    // Filtreleme işlemi için özel hook kullanımı
+    // Filtreleme
     const {
         searchTerm, setSearchTerm,
         tempFilters, setTempFilters,
@@ -67,24 +65,43 @@ const Trips = () => {
         ['title', 'destination']
     );
 
-    // Helper Fonksiyonlar
+    // İşlem Fonksiyonları: Detayları Açma
     const handleOpenDetail = (trip) => {
         setSelectedTrip(trip);
         setIsDetailOpen(true);
     };
 
-    // Para Birimi Seçimi
+    // İşlem Fonksiyonları: Düzenleme Modu
+    const handleEdit = (e, trip) => {
+        e.stopPropagation();
+        setSelectedTrip(trip);
+        setIsEditMode(true);
+        setIsCreateOpen(true);
+    };
+
+    // İşlem Fonksiyonları: Veri Silme (Permission check alt bileşende)
+    const handleDelete = async (e, id) => {
+        e.stopPropagation();
+        if (window.confirm("Bu geziyi silmek istediğinize emin misiniz?")) {
+            try {
+                await tripsService.deleteTrip(id);
+                refreshData();
+            } catch (err) {
+                console.error("Silme hatası:", err);
+            }
+        }
+    };
+
     const handleCurrencySelect = (currencyCode) => {
         setSelectedCurrency(currencyCode);
         sessionStorage.setItem('selectedCurrency', currencyCode);
     };
 
-    // Sidebar Butonları
     const filterFooter = (
         <div className="as-filter-footer">
-            <button className="btn-clear" onClick={clearFilters}>Clear All</button>
+            <button className="btn-clear" onClick={clearFilters}>Tümünü Temizle</button>
             <button className="btn-apply" onClick={() => { applyFilters(); setIsFilterOpen(false); }}>
-                Apply Filters
+                Filtreleri Uygula
             </button>
         </div>
     );
@@ -101,7 +118,11 @@ const Trips = () => {
                     showCurrency={true}
                     createLabel="Gezi Oluştur"
                     onSearch={(val) => setSearchTerm(val)} 
-                    onCreate={() => setIsCreateOpen(true)}
+                    onCreate={() => {
+                        setIsEditMode(false);
+                        setSelectedTrip(null);
+                        setIsCreateOpen(true);
+                    }}
                     buttons={[
                         { icon: 'ti ti-coins', label: selectedCurrency, onClick: () => setIsCurrencyOpen(true) },
                         { icon: 'ti ti-adjustments-horizontal', tooltip: 'Filter', onClick: () => setIsFilterOpen(true) }
@@ -119,40 +140,26 @@ const Trips = () => {
                     <span className="tr-title-span">Tahmini Gider</span>
                     <span className="tr-title-span">Süre</span>
                     <span className="tr-title-span">İşlem Durumu</span>
+                    <span className="tr-title-span">İşlemler</span>
                 </div>
                 
                 <div className="trip-list-container">
                     {finalFilteredTrips.length > 0 ? (
                         <>
-                            {finalFilteredTrips.map((trip) => (
-                                <div key={trip.id} className="trip-block" onClick={() => handleOpenDetail(trip)}>
-                                    <input type="checkbox" onClick={(e) => e.stopPropagation()} />
-                                    <div className="trip-block-details">
-                                        <span className="trip-icon"><i className={`ti ${trip.icon}`}></i></span>
-                                        <div className="trip-details-text">
-                                            <span className="trip-date">{trip.date}</span>
-                                            <span className="trip-title">{trip.title}</span>
-                                        </div>
-                                    </div>
-                                    <span className="trip-category">{trip.category}</span>
-                                    <span className="trip-destination">{trip.destination}</span>
-                                    <span className="trip-vehicle">{trip.vehicle}</span>
-                                    <div className="tr-list-amount-wrapper">
-                                        <span className="tr-list-symbol">{trip.currencySymbol}</span>
-                                        <span className="tr-list-amount-val">{Number(trip.amount).toFixed(2)}</span>
-                                        <span className="tr-list-currency">{trip.currency}</span>
-                                    </div>
-                                    <span className="trip-duration">{trip.duration}</span>
-                                    <span className={`trip-status status-${trip.statusClass}`}>{trip.status}</span>
-                                </div>
-                            ))}
+                            {/* Ana liste bileşeni */}
+                            <TripList 
+                                data={finalFilteredTrips}
+                                onOpenDetail={handleOpenDetail}
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                            />
 
                             <PaginationFooter 
                                 hasMore={hasMore}
                                 loadingMore={loadingMore}
                                 loadMore={loadMore}
                                 currentCount={finalFilteredTrips.length} 
-                                totalCount={searchTerm || Object.values(tempFilters).some(x => x) ? finalFilteredTrips.length : totalCount}
+                                totalCount={totalCount}
                                 label="trips"
                             />
                         </>
@@ -170,9 +177,19 @@ const Trips = () => {
                 <TripFilter filters={tempFilters} setFilters={setTempFilters} />
             </ActionSidebar>
             
-            {/* Diğer Modallar */}
-            <CreateTrip isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} />
+            <CreateTrip 
+                isOpen={isCreateOpen} 
+                onClose={() => {
+                    setIsCreateOpen(false);
+                    setIsEditMode(false);
+                    setSelectedTrip(null);
+                }} 
+                editData={isEditMode ? selectedTrip : null}
+                onSuccess={refreshData}
+            />
+
             <TripDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedTrip} />
+
             <CurrencyModal 
                 isOpen={isCurrencyOpen} onClose={() => setIsCurrencyOpen(false)} 
                 currentCurrency={selectedCurrency} onSelect={handleCurrencySelect} 

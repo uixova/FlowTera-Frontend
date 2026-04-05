@@ -7,39 +7,47 @@ export const useTimeAgo = (dateString) => {
         const calculateTime = () => {
             if (!dateString) return;
 
-            const now = new Date();
-            const createdDate = new Date(dateString);
+            // DD/MM/YYYY formatını YYYY-MM-DD'ye çevirerek güvenli hale getiriyoruz
+            let formattedDate = dateString;
+            if (dateString.includes('/') && dateString.split('/').length === 3) {
+                const [day, month, year] = dateString.split('/');
+                formattedDate = `${year}-${month}-${day}`;
+            }
 
-            // Geçersiz tarih kontrolü (NaN önleyici)
+            const now = new Date();
+            const createdDate = new Date(formattedDate);
+
             if (isNaN(createdDate.getTime())) {
-                setTimeAgo('Invalid date');
+                setTimeAgo('Geçersiz tarih');
                 return;
             }
 
             const diffInSeconds = Math.floor((now - createdDate) / 1000);
 
             if (diffInSeconds < 0) {
-                setTimeAgo('Just now');
+                // Gelecek bir tarihse 
+                setTimeAgo('Yakında');
                 return;
             }
 
             if (diffInSeconds < 60) {
-                setTimeAgo('Just now');
+                setTimeAgo('Az önce');
             } else if (diffInSeconds < 3600) {
                 const mins = Math.floor(diffInSeconds / 60);
-                setTimeAgo(`${mins} mins ago`);
+                setTimeAgo(`${mins} dk önce`);
             } else if (diffInSeconds < 86400) {
                 const hours = Math.floor(diffInSeconds / 3600);
-                setTimeAgo(`${hours} hours ago`);
-            } else {
+                setTimeAgo(`${hours} sa önce`);
+            } else if (diffInSeconds < 2592000) { // 30 güne kadar
                 const days = Math.floor(diffInSeconds / 86400);
-                setTimeAgo(`${days} days ago`);
+                setTimeAgo(days === 1 ? 'Dün' : `${days} gün önce`);
+            } else {
+                // Çok eskiyse direkt tarihi göster
+                setTimeAgo(dateString);
             }
         };
 
         calculateTime();
-        
-        // Zamanın akışına göre güncellenmesi için interval
         const interval = setInterval(calculateTime, 60000);
         return () => clearInterval(interval);
     }, [dateString]);

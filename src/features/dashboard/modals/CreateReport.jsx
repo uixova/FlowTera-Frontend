@@ -3,7 +3,6 @@ import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import '../dashboard.css/CreateReport.css';
 
 const CreateReport = ({ isOpen, onClose, teams = [] }) => {
-    // Form verilerini yönetmek istersen burayı kullanabilirsin
     const [reportConfig, setReportConfig] = useState({
         name: '',
         startDate: '',
@@ -11,7 +10,6 @@ const CreateReport = ({ isOpen, onClose, teams = [] }) => {
         selectedTeam: 'all'
     });
 
-    // Rapor oluşturma butonu için basit bir handler (gerçek API entegrasyonu burada yapılacak)
     const footer = (
         <button 
             className="st-btn-save" 
@@ -33,10 +31,11 @@ const CreateReport = ({ isOpen, onClose, teams = [] }) => {
             <div className="report-container">
                 {/* Rapor Adı */}
                 <div className="st-input-group full-width">
-                    <label>Report Name</label>
+                    <label>Rapor Adı</label>
                     <input 
                         type="text" 
-                        placeholder="e.g. March 2026 Marketing"
+                        placeholder="Örn: Mart 2026 Pazarlama Raporu"
+                        value={reportConfig.name}
                         onChange={(e) => setReportConfig({...reportConfig, name: e.target.value})}
                     />
                 </div>
@@ -59,7 +58,7 @@ const CreateReport = ({ isOpen, onClose, teams = [] }) => {
                     </div>
                 </div>
 
-                {/* Takım Seçimi - Dinamik Kısım */}
+                {/* Takım Seçimi - Dinamik Liste */}
                 <div className="st-input-group full-width">
                     <label>Takım / Proje Seçin</label>
                     <select 
@@ -69,15 +68,15 @@ const CreateReport = ({ isOpen, onClose, teams = [] }) => {
                     >
                         <option value="all">Tüm Takımlarım</option>
                         
-                        {/* Veri Kontrolü: Teams varsa maple, yoksa boş olduğunu belirt */}
+                        {/* Gelen teams array'ini güvenli şekilde mapliyoruz */}
                         {teams && teams.length > 0 ? (
-                            teams.map((team, index) => (
-                                <option key={team.id || index} value={team.id}>
+                            teams.map((team) => (
+                                <option key={team.id} value={team.id}>
                                     {team.name}
                                 </option>
                             ))
                         ) : (
-                            <option disabled>Aktif takım bulunmadı</option>
+                            <option disabled>Üye olduğunuz takım bulunamadı</option>
                         )}
                     </select>
                 </div>
@@ -85,11 +84,18 @@ const CreateReport = ({ isOpen, onClose, teams = [] }) => {
                 {/* Ek Seçenekler */}
                 <div className="report-options">
                     <label className="st-checkbox-group">
-                        <input type="checkbox" defaultChecked />
+                        <input 
+                            type="checkbox" 
+                            defaultChecked 
+                            onChange={(e) => setReportConfig({...reportConfig, includeDocs: e.target.checked})}
+                        />
                         <span>Fatura Görsellerini / Belgelerini Dahil Et</span>
                     </label>
                     <label className="st-checkbox-group">
-                        <input type="checkbox" />
+                        <input 
+                            type="checkbox" 
+                            onChange={(e) => setReportConfig({...reportConfig, sendEmail: e.target.checked})}
+                        />
                         <span>E-posta ile bir kopya gönder</span>
                     </label>
                 </div>

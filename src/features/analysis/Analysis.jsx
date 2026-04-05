@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './analysis.css/Analysis.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import ExportModal from './components/ExportData';
@@ -11,43 +11,61 @@ const Analysis = () => {
   const [loading, setLoading] = useState(true);
   const [analysisData, setAnalysisData] = useState(null);
   const [viewMode, setViewMode] = useState('all');
+  
+  // Takım ID'sini takip etmek için ref
+  const currentTeamIdRef = useRef(localStorage.getItem('tm_selected_id'));
 
-  // fetchData'yı useCallback içine alıyoruz (ESLint hatasını önlemek ve her renderda değişmemesi için)
   const fetchData = useCallback(async () => {
-    setLoading(true);
     const selectedTeamId = localStorage.getItem('tm_selected_id');
     
+    // Eğer takım seçili değilse loader'ı kapat ve boş dön (Hata almamak için)
+    if (!selectedTeamId) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    currentTeamIdRef.current = selectedTeamId;
+    
     try {
-        // viewMode'u parametre olarak gönderiyoruz!
         const data = await analysisService.getTeamAnalysis(selectedTeamId, viewMode);
         if (data) {
             setAnalysisData(data);
         }
     } catch (error) {
-        console.error("Data Fetch Error:", error);
+        console.error("Analysis Fetch Error:", error);
     } finally {
-        setTimeout(() => setLoading(false), 500); 
+        // Geçişin hissedilmesi için 600ms ideal
+        setTimeout(() => setLoading(false), 600); 
     }
   }, [viewMode]);
-  // Sayfa ilk açıldığında veriyi çek
+
+  // Sayfa yüklendiğinde çalış
   useEffect(() => {
     fetchData();
-  }, [fetchData]); // useCallback sayesinde burada güvenle kullanabiliriz
+  }, [fetchData]);
 
-  // Eğer Navbar'da takımı değiştirdiğinde sayfaya f5 atmadan değişsin istiyorsan:
+  // Dinamik güncelleme için teamChanged Event'inle Bağlantı
   useEffect(() => {
-    const handleStorageChange = () => {
-        fetchData(); // LocalStorage değişince veriyi tekrar çek
+    const handleTeamChange = (e) => {
+        const newId = e.detail?.teamId || localStorage.getItem('tm_selected_id');
+        
+        if (newId !== currentTeamIdRef.current) {
+            console.log("FlowTera: Takım Değişimi Algılandı ->", newId);
+            fetchData();
+        }
     };
 
-    // Aynı penceredeki değişiklikleri yakalamak için (Eğer navbar aynı sayfadaysa)
-    window.addEventListener('storage_change', handleStorageChange);
-    // Farklı sekmeler için
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('teamChanged', handleTeamChange);
+    
+    // Tarayıcı sekmeleri arası senkronizasyon için standart event
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'tm_selected_id') fetchData();
+    });
 
     return () => {
-        window.removeEventListener('storage_change', handleStorageChange);
-        window.removeEventListener('storage', handleStorageChange);
+        window.removeEventListener('teamChanged', handleTeamChange);
+        window.removeEventListener('storage', fetchData);
     };
   }, [fetchData]);
 
@@ -61,54 +79,51 @@ const Analysis = () => {
         showSearch={false} 
         onCreate={() => setIsExportOpen(true)}
         buttons={[
-        {
-          icon: viewMode === 'all' ? 'ti ti-layers-intersect' : viewMode === 'expenses' ? 'ti ti-receipt' : 'ti ti-plane-arrival',
-          tooltip: `Showing: ${viewMode}`,
-          onClick: () => {
-              const modes = ['all', 'expenses', 'trips'];
-              const nextMode = modes[(modes.indexOf(viewMode) + 1) % modes.length];
-              setViewMode(nextMode);
-          }
-        },
-        { 
-          icon: 'ti ti-refresh', tooltip: 'Refresh Data', onClick: fetchData 
-        }
-      ]}
+          {
+            icon: viewMode === 'all' ? 'ti ti-layers-intersect' : viewMode === 'expenses' ? 'ti ti-receipt' : 'ti ti-plane-arrival',
+            tooltip: viewMode === 'all' ? 'Tüm Veriler' : viewMode === 'expenses' ? 'Gider Analizi' : 'Seyahat Analizi',
+            onClick: () => {
+                const modes = ['all', 'expenses', 'trips'];
+                const nextMode = modes[(modes.indexOf(viewMode) + 1) % modes.length];
+                setViewMode(nextMode);
+            }
+          },
+          { icon: 'ti ti-refresh', tooltip: 'Verileri Tazele', onClick: fetchData }
+        ]}
       />
 
       <hr className="sub-nav-divider" />
 
-      {/* Veri gelmeden kartların hata vermemesi için optional chaining (?.) kullanıyoruz */}
+      {/* ÖZET KARTLARI */}
       <div className="analysis-summary-cards">
-        {/* TOPLAM HARCAMA KARTI */}
         <div className="an-card">
           <span className="an-card-title">
-            Toplam Harcama
+            {viewMode === 'all' ? 'Genel Toplam' : viewMode === 'expenses' ? 'Toplam Harcama' : 'Seyahat Maliyeti'}
           </span>
           <span className="an-card-value">{analysisData?.summary?.totalSpending || "$0.00"}</span>
           <span className={`an-card-sub ${parseFloat(analysisData?.summary?.spendingGrowth) >= 0 ? 'trend-up' : 'trend-down'}`}>
             {parseFloat(analysisData?.summary?.spendingGrowth) >= 0 ? '↑' : '↓'} 
-            {Math.abs(analysisData?.summary?.spendingGrowth)}% Geçen aydan
+            %{Math.abs(analysisData?.summary?.spendingGrowth)} <small>Geçen aya göre</small>
           </span>
         </div>
 
-        {/* BU AYIN HARCAMASI */}
-        <div className="an-card">
-          <span className="an-card-title">Aylık {viewMode === 'all' ? 'Volume' : viewMode}</span>
-          <span className="an-card-value">{analysisData?.summary?.currentMonthSpending || "$0.00"}</span>
-          <span className="an-card-sub">Mart 2026 Masrafları</span>
-        </div>
-
-        {/* DURUM KARTI (DİNAMİK) */}
         <div className="an-card">
           <span className="an-card-title">
-            {viewMode === 'trips' ? 'Aktif Yolculuklar' : 'Bekleyen Raporlar'}
+            {viewMode === 'all' ? 'Aylık İşlem Hacmi' : viewMode === 'expenses' ? 'Bu Ayki Giderler' : 'Bu Ayki Seyahatler'}
+          </span>
+          <span className="an-card-value">{analysisData?.summary?.currentMonthSpending || "$0.00"}</span>
+          <span className="an-card-sub">Nisan 2026 Dönemi</span>
+        </div>
+
+        <div className="an-card">
+          <span className="an-card-title">
+            {viewMode === 'trips' ? 'Aktif Görevler' : 'Onay Bekleyenler'}
           </span>
           <span className="an-card-value">
             {viewMode === 'trips' ? analysisData?.summary?.activeTrips : analysisData?.summary?.pendingReports}
           </span>
           <span className="an-card-sub">
-            {viewMode === 'trips' ? 'Şu anda yolda' : 'Yönetim onayı bekliyor'}
+            {viewMode === 'trips' ? 'Şu an sahada olan ekip' : 'İnceleme bekleyen kayıtlar'}
           </span>
         </div>
       </div>
@@ -116,6 +131,7 @@ const Analysis = () => {
       <AnalysisCharts 
         categoryData={analysisData?.categoryData || []} 
         cashFlowData={analysisData?.cashFlowData || []} 
+        statusData={analysisData?.statusData || []} 
       />
 
       <ExportModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
