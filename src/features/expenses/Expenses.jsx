@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState, useCallback } from 'react'; 
 import Loader from '../../components/common/Loader';
 import './expenses.css/Expenses.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
@@ -14,6 +14,7 @@ import ExpensesList from './components/ExpensesList';
 import { expenseService } from './services/expenseService';
 import { usePagination } from '../../hooks/usePagination';
 import { useFilter } from '../../hooks/useFilter'; 
+import { useCurrency } from '../../context/CurrencyContext';
 
 const Expenses = () => {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -24,31 +25,50 @@ const Expenses = () => {
     const [selectedExpense, setSelectedExpense] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false); 
     
-    const [selectedCurrency, setSelectedCurrency] = useState(() => {
-        return sessionStorage.getItem('selectedCurrency') || 'USD';
-    });
-
+    const { selectedCurrency, updateCurrency } = useCurrency();
     const [activeTeamId, setActiveTeamId] = useState(() => localStorage.getItem('tm_selected_id'));
 
+    const [teamDefaultCurrency, setTeamDefaultCurrency] = useState(() => {
+        const nextTeamId = localStorage.getItem('tm_selected_id');
+        const rawCache = localStorage.getItem('tm_teams_cache');
+        if (rawCache && nextTeamId) {
+            const teams = JSON.parse(rawCache);
+            const currentTeam = teams.find(t => String(t.id) === String(nextTeamId));
+            return currentTeam?.settings?.currency || '';
+        }
+        return '';
+    });
+
+    // Takım Değişikliklerini Senkronize Etme 
+    const syncSelectedTeam = useCallback(() => {
+        const nextTeamId = localStorage.getItem('tm_selected_id');
+        const rawCache = localStorage.getItem('tm_teams_cache');
+
+        if (rawCache && nextTeamId) {
+            const teams = JSON.parse(rawCache);
+            const currentTeam = teams.find(t => String(t.id) === String(nextTeamId));
+            
+            if (currentTeam?.settings?.currency) {
+                // Sadece state farklıysa güncelleme yap 
+                setActiveTeamId(nextTeamId);
+                setTeamDefaultCurrency(currentTeam.settings.currency);
+                updateCurrency(currentTeam.settings.currency);
+            }
+        }
+    }, [updateCurrency]); 
+
+    // Takım Değişim Event Listener'ı ve İlk Yükleme
     useEffect(() => {
-        const syncSelectedTeam = () => {
-            const nextTeamId = localStorage.getItem('tm_selected_id');
-            setActiveTeamId(prevTeamId =>
-                String(prevTeamId || '') === String(nextTeamId || '') ? prevTeamId : nextTeamId
-            );
-        };
         window.addEventListener('teamChanged', syncSelectedTeam);
-        window.addEventListener('storage', syncSelectedTeam);
-        return () => {
-            window.removeEventListener('teamChanged', syncSelectedTeam);
-            window.removeEventListener('storage', syncSelectedTeam);
-        };
-    }, []);
+        return () => window.removeEventListener('teamChanged', syncSelectedTeam);
+    }, [syncSelectedTeam]); // Sadece syncSelectedTeam değişimine bakar
     
+    // Sayfalamalı Veri Çekme İşlemi (Custom Hook)
     const { 
         data: expenses, loading, loadingMore, hasMore, loadMore, totalCount, refreshData
     } = usePagination(expenseService.getExpensesByTeam, activeTeamId, 20);
 
+    // Filtreleme ve Arama Mantığı (Custom Hook)
     const {
         searchTerm, setSearchTerm,
         tempFilters, setTempFilters,
@@ -66,7 +86,7 @@ const Expenses = () => {
         ['title', 'merchant']
     );
 
-    // Kullanıcının kendi verilerini filtreleme (Owner/Submitter kontrolü)
+    // Gider Silme İşlemi (API Call)
     const handleDelete = async (e, id) => {
         e.stopPropagation();
         if (window.confirm("Bu gideri silmek istediğinize emin misiniz?")) {
@@ -79,7 +99,7 @@ const Expenses = () => {
         }
     };
 
-    // Yardımcı Fonksiyon: Takım ismini ID'den bulma
+    // Gider Düzenleme Modu Tetikleyici
     const handleEdit = (e, expense) => {
         e.stopPropagation();
         setSelectedExpense(expense);
@@ -87,19 +107,18 @@ const Expenses = () => {
         setIsCreateOpen(true);
     };
 
-    // Sadece Kullanıcının Üye Olduğu Takımlar (Filtrelenmiş)
+    // Gider Detaylarını Görüntüleme
     const handleOpenDetail = (expense) => {
         setSelectedExpense(expense);
         setIsDetailOpen(true);
     };
 
-    // Özet İstatistikler
+    // Para Birimi Değiştirme Manuel Seçim
     const handleCurrencySelect = (currencyCode) => {
-        setSelectedCurrency(currencyCode);
-        sessionStorage.setItem('selectedCurrency', currencyCode);
+        updateCurrency(currencyCode);
     };
 
-    // Harcama vs Seyahat (Type Comparison)
+    // Filtreleme Paneli Alt Butonları
     const filterFooter = (
         <div className="as-filter-footer">
             <button className="btn-clear" onClick={clearFilters}>Tümünü Temizle</button>
@@ -107,10 +126,12 @@ const Expenses = () => {
         </div>
     );
 
+    // İlk Yükleme Esnasında Butterfly Loader Gösterimi
     if (loading) return <Loader type="butterfly" />;
 
     return (
         <div className="expense-page-container">
+            {/* Sayfa Üst Gezinti ve Aksiyon Çubuğu */}
             <SubNavbar 
                 pageName="Giderler"
                 showCurrency={true}
@@ -140,6 +161,7 @@ const Expenses = () => {
             
             <hr className="sub-nav-divider" />
 
+            {/* Gider Tablo ve Liste Alanı */}
             <div className="expense-table-wrapper">
                 <div className="expense-title-nav">
                     <input type="checkbox" />
@@ -156,7 +178,7 @@ const Expenses = () => {
                 <div className="expense-list-container">
                     {filteredExpenses.length > 0 ? (
                         <>
-                            {/* Liste bileşeni buraya taşındı, hook hatası alt bileşende çözüldü */}
+                            {/* Harcama Listesi Bileşeni */}
                             <ExpensesList 
                                 data={filteredExpenses}
                                 onOpenDetail={handleOpenDetail}
@@ -164,6 +186,7 @@ const Expenses = () => {
                                 onDelete={handleDelete}
                             />
 
+                            {/* Daha Fazla Yükle ve Sayfalama Bilgisi */}
                             <PaginationFooter 
                                 hasMore={hasMore}
                                 loadingMore={loadingMore}
@@ -179,6 +202,7 @@ const Expenses = () => {
                 </div>
             </div>
 
+            {/* Sağ Panel Filtreleme Modalı */}
             <ActionSidebar 
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}
@@ -189,6 +213,7 @@ const Expenses = () => {
                 <ExpenseFilter filters={tempFilters} setFilters={setTempFilters} />
             </ActionSidebar>
 
+            {/* Yeni Gider Ekleme / Düzenleme Modalı */}
             <CreateExpense 
                 isOpen={isCreateOpen} 
                 onClose={() => { 
@@ -200,6 +225,7 @@ const Expenses = () => {
                 onSuccess={refreshData}
             />
 
+            {/* Gider Detay Görüntüleme Modalı */}
             <ExpenseDetail 
                 isOpen={isDetailOpen} 
                 onClose={() => setIsDetailOpen(false)} 
@@ -207,10 +233,12 @@ const Expenses = () => {
                 onReopen={() => setIsDetailOpen(true)} 
             />
 
+            {/* Para Birimi Seçim Modalı */}
             <CurrencyModal 
                 isOpen={isCurrencyOpen} 
                 onClose={() => setIsCurrencyOpen(false)} 
                 currentCurrency={selectedCurrency}
+                teamDefaultCurrency={teamDefaultCurrency}
                 onSelect={handleCurrencySelect}
             />
         </div>

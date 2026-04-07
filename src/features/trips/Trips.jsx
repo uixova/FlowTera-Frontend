@@ -14,6 +14,7 @@ import TripList from './components/TripList';
 import { tripsService } from './services/tripsService'; 
 import { usePagination } from '../../hooks/usePagination';
 import { useFilter } from '../../hooks/useFilter';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const Trips = () => {
     // UI STATELERİ
@@ -22,28 +23,49 @@ const Trips = () => {
     const [selectedTrip, setSelectedTrip] = useState(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
-    const [isEditMode, setIsEditMode] = useState(false); // Edit modu eklendi
+    const [isEditMode, setIsEditMode] = useState(false);
 
-    const [selectedCurrency, setSelectedCurrency] = useState(() => {
-        return sessionStorage.getItem('selectedCurrency') || 'USD';
-    });
-
+    const { selectedCurrency, updateCurrency } = useCurrency();
     const [activeTeamId, setActiveTeamId] = useState(() => localStorage.getItem('tm_selected_id'));
+    const [teamDefaultCurrency, setTeamDefaultCurrency] = useState('');
 
-    // Takım Senkronizasyonu
+    // TAKIM VE KUR SENKRONİZASYONU (BUG FIXED)
     useEffect(() => {
         const syncSelectedTeam = () => {
             const nextTeamId = localStorage.getItem('tm_selected_id');
-            setActiveTeamId(prevId => String(prevId || '') === String(nextTeamId || '') ? prevId : nextTeamId);
+            
+            // Eğer takım ID'si aynıysa, efekti durdur (Seçilen kuru ezmemek için)
+            if (String(nextTeamId) === String(activeTeamId) && teamDefaultCurrency !== '') {
+                return;
+            }
+
+            setActiveTeamId(nextTeamId);
+
+            // Takım değiştiyse, o takımın default para birimini ayarla
+            const rawCache = localStorage.getItem('tm_teams_cache');
+            if (rawCache && nextTeamId) {
+                try {
+                    const teams = JSON.parse(rawCache);
+                    const currentTeam = teams.find(t => String(t.id) === String(nextTeamId));
+                    if (currentTeam?.settings?.currency) {
+                        setTeamDefaultCurrency(currentTeam.settings.currency);
+                        // Sadece takım değiştiğinde (ilk yükleme dahil) context'i güncelle
+                        updateCurrency(currentTeam.settings.currency);
+                    }
+                } catch (e) { console.error("Cache parse error:", e); }
+            }
         };
+
+        syncSelectedTeam();
+        
         window.addEventListener('teamChanged', syncSelectedTeam);
         window.addEventListener('storage', syncSelectedTeam);
         return () => {
             window.removeEventListener('teamChanged', syncSelectedTeam);
             window.removeEventListener('storage', syncSelectedTeam);
         };
-    }, []);
-    
+    }, [activeTeamId, teamDefaultCurrency, updateCurrency]); 
+
     // Veri Çekme
     const { 
         data: trips, loading, loadingMore, hasMore, loadMore, totalCount, refreshData 
@@ -65,36 +87,8 @@ const Trips = () => {
         ['title', 'destination']
     );
 
-    // İşlem Fonksiyonları: Detayları Açma
-    const handleOpenDetail = (trip) => {
-        setSelectedTrip(trip);
-        setIsDetailOpen(true);
-    };
-
-    // İşlem Fonksiyonları: Düzenleme Modu
-    const handleEdit = (e, trip) => {
-        e.stopPropagation();
-        setSelectedTrip(trip);
-        setIsEditMode(true);
-        setIsCreateOpen(true);
-    };
-
-    // İşlem Fonksiyonları: Veri Silme (Permission check alt bileşende)
-    const handleDelete = async (e, id) => {
-        e.stopPropagation();
-        if (window.confirm("Bu geziyi silmek istediğinize emin misiniz?")) {
-            try {
-                await tripsService.deleteTrip(id);
-                refreshData();
-            } catch (err) {
-                console.error("Silme hatası:", err);
-            }
-        }
-    };
-
     const handleCurrencySelect = (currencyCode) => {
-        setSelectedCurrency(currencyCode);
-        sessionStorage.setItem('selectedCurrency', currencyCode);
+        updateCurrency(currencyCode);
     };
 
     const filterFooter = (
@@ -124,8 +118,17 @@ const Trips = () => {
                         setIsCreateOpen(true);
                     }}
                     buttons={[
-                        { icon: 'ti ti-coins', label: selectedCurrency, onClick: () => setIsCurrencyOpen(true) },
-                        { icon: 'ti ti-adjustments-horizontal', tooltip: 'Filter', onClick: () => setIsFilterOpen(true) }
+                        { 
+                            icon: 'ti ti-coins', 
+                            label: selectedCurrency, 
+                            className: 'currency-btn-trigger',
+                            onClick: () => setIsCurrencyOpen(true) 
+                        },
+                        { 
+                            icon: 'ti ti-adjustments-horizontal', 
+                            tooltip: 'Filter', 
+                            onClick: () => setIsFilterOpen(true) 
+                        }
                     ]}
                 />
                 
@@ -146,12 +149,22 @@ const Trips = () => {
                 <div className="trip-list-container">
                     {finalFilteredTrips.length > 0 ? (
                         <>
-                            {/* Ana liste bileşeni */}
                             <TripList 
                                 data={finalFilteredTrips}
-                                onOpenDetail={handleOpenDetail}
-                                onEdit={handleEdit}
-                                onDelete={handleDelete}
+                                onOpenDetail={(trip) => { setSelectedTrip(trip); setIsDetailOpen(true); }}
+                                onEdit={(e, trip) => {
+                                    e.stopPropagation();
+                                    setSelectedTrip(trip);
+                                    setIsEditMode(true);
+                                    setIsCreateOpen(true);
+                                }}
+                                onDelete={async (e, id) => {
+                                    e.stopPropagation();
+                                    if (window.confirm("Bu geziyi silmek istediğinize emin misiniz?")) {
+                                        await tripsService.deleteTrip(id);
+                                        refreshData();
+                                    }
+                                }}
                             />
 
                             <PaginationFooter 
@@ -191,8 +204,11 @@ const Trips = () => {
             <TripDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedTrip} />
 
             <CurrencyModal 
-                isOpen={isCurrencyOpen} onClose={() => setIsCurrencyOpen(false)} 
-                currentCurrency={selectedCurrency} onSelect={handleCurrencySelect} 
+                isOpen={isCurrencyOpen} 
+                onClose={() => setIsCurrencyOpen(false)} 
+                currentCurrency={selectedCurrency} 
+                teamDefaultCurrency={teamDefaultCurrency}
+                onSelect={handleCurrencySelect} 
             />
         </div>
     );

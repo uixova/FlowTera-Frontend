@@ -2,17 +2,35 @@ import React, { useState } from 'react';
 import Loader from '../../../components/common/Loader';
 import TeamCard from './TeamCard';
 import SubNavbar from '../../../components/navigation/SubNavbar';
+import { useAuth } from '../../../hooks/useAuth'; 
 
-// Artık teams ve loading proplarını üst bileşenden (Teams.jsx) alıyoruz
 const TeamSelection = ({ onNavigate, teams, loading }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const { roleNameForTeam } = useAuth(); // Yetki kontrolü için hook
 
-    // Arama terimine göre takımları filtreleme
     const filteredTeams = teams.filter(team => 
         team.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Yükleniyor durumu (Veri üstten gelene kadar)
+    // TAKIM SEÇİM BARİKATI
+    const handleTeamAction = (team) => {
+        const userRole = roleNameForTeam(team.id);
+        const isMaintenance = team.settings?.status === 'maintenance';
+
+        // Mantık: Eğer takım bakımda ise VE kullanıcı Admin değilse girişi engelle
+        if (isMaintenance && userRole !== 'Admin') {
+            alert(
+                `⛔ ERİŞİM ENGELİ: ${team.name.toUpperCase()}\n\n` +
+                `Bu takım şu anda teknik bir bakım çalışması nedeniyle geçici olarak erişime kapatılmıştır.\n\n` +
+                `Lütfen daha sonra tekrar deneyiniz veya takım yöneticinizle iletişime geçiniz.`
+            );
+            return; // Fonksiyondan çık, içeri alma
+        }
+
+        // Eğer bakımda değilse veya kullanıcı Admin ise içeri al
+        onNavigate('main', team.id);
+    };
+
     if (loading) return <Loader type="butterfly" />;
 
     return (
@@ -35,8 +53,8 @@ const TeamSelection = ({ onNavigate, teams, loading }) => {
                         <TeamCard 
                             key={team.id} 
                             team={team} 
-                            // Takım seçildiğinde hem 'main' moduna geç hem de ID'yi gönder
-                            onSelect={() => onNavigate('main', team.id)} 
+                            // Artık doğrudan onNavigate değil, bizim kontrol fonksiyonumuzu çağırıyor
+                            onSelect={() => handleTeamAction(team)} 
                         />
                     ))
                 ) : (

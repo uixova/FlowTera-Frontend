@@ -69,7 +69,7 @@ const ExpenseDetail = ({ isOpen, onClose, data, onReopen }) => {
               <span className="ex-price-cur">{data.currency}</span>
             </div>
             <div className="ex-local-conv">
-              ≈ {data.localSymbol}{data.localAmount?.toLocaleString()} {data.localCurrency}
+              Ödenen: {data.localSymbol}{data.localAmount?.toLocaleString('tr-TR')} {data.localCurrency}
             </div>
           </div>
           
@@ -83,7 +83,7 @@ const ExpenseDetail = ({ isOpen, onClose, data, onReopen }) => {
 
         <div className="ex-rate-banner">
           <i className="ti ti-history"></i>
-          <span>Oran: 1 {data.currency} = {data.exchangeRate} {data.localCurrency}</span>
+          İşlem Kuru: 1 {data.currency} = {data.exchangeRates?.[data.localCurrency] || data.exchangeRate} {data.localCurrency}
         </div>
 
         {data.status === 'rejected' && (

@@ -57,11 +57,29 @@
     color: #fff;
 }
 
-/* AKTİF PARA BİRİMİ */
 .currency-option.active {
     color: #0ed45a !important;
     background: rgba(14, 212, 90, 0.05) !important;
 }
+
+.curr-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.team-default-badge {
+    font-size: 9px;
+    background: #e3f2fd;
+    color: #d21919;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 1px solid #bbdefb;
+}
+
 
 .currency-symbol-box {
     width: 24px;

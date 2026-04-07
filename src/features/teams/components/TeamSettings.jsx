@@ -81,10 +81,48 @@ const TeamSettings = ({ team, onBack }) => {
     setFormData(prev => ({ ...prev, [name]: finalValue }));
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    console.log("Settings Updated:", { id: selectedTeamId, ...formData, logoFile });
-    alert("Settings updated successfully!");
+    try {
+      setLoading(true);
+
+      // Temel gönderilen ayarlar
+      const updatePayload = {
+        name: formData.teamName,
+        category: formData.category,
+        settings: {
+          workspaceType: formData.workspaceType,
+          status: formData.status,
+          privacy: formData.privacy,
+          maxExpenseLimit: formData.maxExpenseLimit,
+          memberLimit: formData.memberLimit,
+          autoApproved: formData.autoApproved,
+          autoApprovedLimit: formData.autoApprovedLimit,
+          currency: formData.currency
+        }
+      };
+
+      // Yeni bir logo seçildiyse payload'a ekle 
+      if (logoFile) {
+        updatePayload.imageFile = logoFile;
+      }
+
+      const result = await teamsService.updateTeamSettings(selectedTeamId, updatePayload);
+    
+      if (result.success) {
+        alert(formData.status === 'maintenance' 
+          ? "Takım Bakım Moduna Alındı!" 
+          : "Ayarlar ve Logo Güncellendi.");
+      
+        // İşlem başarılıysa seçili dosyayı sıfırla 
+        setLogoFile(null);
+      }
+    } catch (err) {
+      console.error("Güncelleme hatası:", err);
+      alert("Güncelleme sırasında bir hata oluştu.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogoSelect = (e) => {
@@ -256,7 +294,7 @@ const TeamSettings = ({ team, onBack }) => {
                     <input type="radio" name="privacy" value="internal" checked={formData.privacy === 'internal'} onChange={handleChange} />
                     <i className="ti ti-world option-icon"></i> 
                     <div className="option-text">
-                      <strong>İç (Sadece Alan Alanı)</strong>
+                      <strong>Takım İçi (Sadece Alan Alanı)</strong>
                       <span>Doğrulanmış e-posta alan adları katılabilir.</span>
                     </div>
                   </label>

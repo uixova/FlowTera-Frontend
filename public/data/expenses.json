@@ -17,7 +17,12 @@
     "localAmount": 1580.40,
     "localCurrency": "TRY",
     "localSymbol": "₺",
-    "exchangeRate": 35.12,
+    "exchangeRates": {
+      "USD": 1,
+      "TRY": 35.12,
+      "EUR": 0.94,
+      "GBP": 0.79
+    },
     "paymentMethod": "Credit Card",
     "status": "approved",
     "user": "Ahmet Yılmaz",
@@ -35,7 +40,7 @@
     "title": "Team Dinner",
     "category": "Food",
     "merchant": "Burger King",
-    "date": "08/03/2026",
+    "date": "08/04/2026",
     "report": "March_2026_Social",
     "amount": 12.50,
     "currency": "USD",
@@ -43,7 +48,12 @@
     "localAmount": 439.00,
     "localCurrency": "TRY",
     "localSymbol": "₺",
-    "exchangeRate": 35.12,
+    "exchangeRates": {
+      "USD": 1,
+      "TRY": 35.12,
+      "EUR": 0.92,
+      "GBP": 0.78
+    },
     "paymentMethod": "Cash",
     "status": "pending",
     "user": "Caner Demir",
@@ -69,7 +79,12 @@
     "localAmount": 1580.40,
     "localCurrency": "TRY",
     "localSymbol": "₺",
-    "exchangeRate": 35.12,
+    "exchangeRates": {
+      "USD": 1,
+      "TRY": 35.12,
+      "EUR": 0.95,
+      "GBP": 0.81
+    },
     "paymentMethod": "Credit Card",
     "status": "rejected",
     "rejectionReason": "This equipment is not on the pre-approved list.",
@@ -79,4 +94,3 @@
     "image": "/src/assets/images/receipt.jpg"
   }
 ]
-

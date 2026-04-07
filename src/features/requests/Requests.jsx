@@ -3,52 +3,59 @@ import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import { notificationService } from '../../services/notificationService';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuthContext } from '../../context/AuthContext';
 import { useFilter } from '../../hooks/useFilter'; 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import './css/Requests.css';
 
 const Requests = () => {
     const navigate = useNavigate();
-    const { roleNameForTeam, loading: authLoading } = useAuth();
+    const { currentUserId, roleNameForTeam, loading: authLoading } = useAuthContext();
     
     const [loading, setLoading] = useState(false);
     const [requests, setRequests] = useState([]);
     const [activeTab, setActiveTab] = useState('pending');
     const [rejectReason, setRejectReason] = useState({ id: null, text: '' });
-    const [searchTerm, setSearchTerm] = useState(""); 
+    const [searchTerm, setSearchTerm] = useState("");
     const [selectedTeamId, setSelectedTeamId] = useState(localStorage.getItem('tm_selected_id'));
 
-    // GÜVENLİK VE TAKIM DEĞİŞİMİ KONTROLÜ
+    // Takım değiştirme kontrolü
     useEffect(() => {
         const handleTeamChange = () => {
             const newId = localStorage.getItem('tm_selected_id');
-            setSelectedTeamId(newId);
-            if (newId && roleNameForTeam(newId) !== 'Admin') {
-                navigate('/team'); 
-            }
+            setSelectedTeamId(newId); 
         };
+
         window.addEventListener('teamChanged', handleTeamChange);
         return () => window.removeEventListener('teamChanged', handleTeamChange);
-    }, [roleNameForTeam, navigate]);
+    }, []);
 
-    // Veri Çekme - Callback bozulmadı
+    // Güvenlik kontrolü
+    useEffect(() => {
+        if (!authLoading && selectedTeamId) {
+            const role = roleNameForTeam(selectedTeamId);
+            if (role !== 'Admin') {
+                console.warn("Yetkisiz erişim: Admin değilsiniz.");
+                navigate('/team'); 
+            }
+        }
+    }, [authLoading, selectedTeamId, roleNameForTeam, navigate]);
+
+    // Veri Çekme - Servis yapısına ve ESLint kurallarına uygun
     const fetchRequests = useCallback(async () => {
-        if (!selectedTeamId) return;
+        if (!selectedTeamId || !currentUserId) return;
         setLoading(true);
         try {
-            const result = await notificationService.getSortedNotifications();
-            // teamId'ye göre filtreleme yapıyoruz
-            const teamRequests = (result.requests || []).filter(item => 
-                item.type === 'request' && String(item.teamId) === String(selectedTeamId)
-            );
-            setRequests(teamRequests);
+            // Servise hem kullanıcı hem takım bilgisini gönderiyoruz
+            const result = await notificationService.getSortedNotifications(currentUserId, selectedTeamId);
+            // Servis artık { requests, invites, infos } dönüyor, biz requests kısmını alıyoruz
+            setRequests(result.requests || []);
         } catch (error) {
             console.error("Failed to load claims:", error);
         } finally {
             setLoading(false);
         }
-    }, [selectedTeamId]);
+    }, [selectedTeamId, currentUserId]); 
 
     useEffect(() => { 
         if (!authLoading) {
@@ -57,19 +64,21 @@ const Requests = () => {
     }, [fetchRequests, authLoading]);
 
     // Arama Filtrelemesi (useFilter)
-    const { filteredData } = useFilter(requests, searchTerm, ['user', 'title', 'detail']);
+    const { filteredData } = useFilter(requests, {}, ['user', 'title', 'detail'], searchTerm);
 
     // Sekme Filtrelemesi
     const finalDisplayData = useMemo(() => {
+        // filteredData zaten useFilter'dan süzülmüş olarak geliyor
         return filteredData.filter(req => {
             if (activeTab === 'pending') return !req.status || req.status === 'pending';
             return req.status === activeTab;
         });
     }, [filteredData, activeTab]);
 
-    // API üzerinden veri çekme 
+    // Aksiyon Yönetimi (Onay/Red)
     const handleAction = async (id, status, reasonText = '') => {
         try {
+            // İleride buraya notificationService.respondToRequest eklenebilir
             setRequests(prev => prev.map(req => {
                 if (req.id === id) {
                     return { 
@@ -82,7 +91,7 @@ const Requests = () => {
             }));
             setRejectReason({ id: null, text: '' });
         } catch (error) {
-            console.error("Operation could not be completed:", error);
+            console.error("Operation error:", error);
         }
     };
 
@@ -94,11 +103,12 @@ const Requests = () => {
                 pageName="Talep Yönetimi" 
                 showSearch={true}
                 searchValue={searchTerm}
-                onSearchChange={(e) => setSearchTerm(e.target.value)}
+                onSearch={(val) => setSearchTerm(val)}
                 showCreate={false}
             />
 
             <div className="req-tabs">
+                {/* Tab sayılarını ham requests üzerinden değil, aramaya göre göstermek istersen requests yerine filteredData kullanabilirsin */}
                 <button className={activeTab === 'pending' ? 'active' : ''} onClick={() => setActiveTab('pending')}>
                     Beklemede ({requests.filter(r => !r.status || r.status === 'pending').length})
                 </button>
@@ -125,14 +135,16 @@ const Requests = () => {
                         />
                     ))
                 ) : (
-                    <div className="no-req">Henüz kriterlere uygun bir talep yok.</div>
+                    <div className="no-req">
+                        {searchTerm ? `"${searchTerm}" aramasına uygun sonuç bulunamadı.` : "Henüz kriterlere uygun bir talep yok."}
+                    </div>
                 )}
             </div>
         </div>
     );
 };
 
-// Alt Bileşen: useTimeAgo'yu her kart için ayrı yönetmek sağlıklı olandır
+// Alt Bileşen
 const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReason }) => {
     const timeDisplay = useTimeAgo(req.date);
 

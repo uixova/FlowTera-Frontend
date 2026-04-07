@@ -115,6 +115,33 @@
     transition: transform 0.2s;
 }
 
+.tm-sel-card.maintenance-mode {
+    border: 1px dashed #f1c40f; 
+    background: #fffdf5; 
+    cursor: not-allowed;
+}
+
+.tm-maintenance-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #f1c40f;
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tm-sel-card.maintenance-mode .tm-sel-info h4 {
+    color: #888; 
+}
+
 @keyframes tmFadeIn {
     from {
         opacity: 0;

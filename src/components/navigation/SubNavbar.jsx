@@ -16,8 +16,17 @@ const SubNavbar = ({
     showSearch = true,
     showCreate = true 
 }) => {
-    const getTeamNameFromCache = useCallback((teamId) => {
-        if (!teamId) return "";
+    
+    // Takım ismini formatla 
+    const formatTeamName = useCallback((teamName) => {
+        if (!teamName) return "";
+        return teamName.length > 18 ? `${teamName.substring(0, 15)}...` : teamName;
+    }, []);
+
+    // Cache'den isim çek 
+    const getTeamNameFromCache = useCallback(() => {
+        const selectedId = localStorage.getItem('tm_selected_id');
+        if (!selectedId) return "";
 
         const directName = localStorage.getItem('tm_selected_name');
         if (directName) return directName;
@@ -25,96 +34,60 @@ const SubNavbar = ({
         try {
             const rawCache = localStorage.getItem('tm_teams_cache');
             const parsedCache = rawCache ? JSON.parse(rawCache) : [];
-            if (!Array.isArray(parsedCache)) return "";
-
-            const matchedTeam = parsedCache.find((team) => String(team.id) === String(teamId));
+            const matchedTeam = parsedCache.find((t) => String(t.id) === String(selectedId));
             return matchedTeam?.name || "";
-        } catch {
-            return "";
-        }
+        } catch { return ""; }
     }, []);
 
-    const formatTeamName = useCallback((teamName) => {
-        if (!teamName) return "";
-        return teamName.length > 18
-            ? `${teamName.substring(0, 15)}...`
-            : teamName;
-    }, []);
-
+    // Sayfa açılır açılmaz veriyi buradan alıyoruz (Effect'e gerek kalmıyor)
     const [displayTeamName, setDisplayTeamName] = useState(() => {
-        const selectedId = localStorage.getItem('tm_selected_id');
-        return formatTeamName(getTeamNameFromCache(selectedId));
+        return formatTeamName(getTeamNameFromCache());
     });
 
-    const updateTeamName = useCallback(async (isMounted = { current: true }) => {
+    // Takım İsmini API'den Güncelleme (Async)
+    const updateTeamName = useCallback(async (isMounted) => {
         const selectedId = localStorage.getItem('tm_selected_id');
         if (!selectedId) return;
 
-        const cachedTeamName = getTeamNameFromCache(selectedId);
-        if (cachedTeamName && isMounted.current) {
-            setDisplayTeamName(formatTeamName(cachedTeamName));
-        }
-
         try {
             const teams = await teamsService.getTeams();
+            // Component hala ekrandaysa ve veri geldiyse güncelle
             if (teams && isMounted.current) {
                 const currentTeam = teams.find(t => String(t.id) === String(selectedId));
                 if (currentTeam) {
                     localStorage.setItem('tm_selected_name', currentTeam.name || '');
-                    const newName = formatTeamName(currentTeam.name);
-                    setDisplayTeamName(newName);
+                    setDisplayTeamName(formatTeamName(currentTeam.name));
                 }
             }
-        } catch (error) {
-            console.error("SubNavbar update error:", error);
+        } catch (error) { 
+            console.error("SubNavbar update error:", error); 
         }
-    }, [formatTeamName, getTeamNameFromCache]);
+    }, [formatTeamName]);
 
+    // Sadece dış değişiklikleri dinliyoruz
     useEffect(() => {
-        // Component'in hala mount edilip edilmediğini kontrol etmek için
         const status = { current: true };
 
-        // useEffect içinde doğrudan çağırmak yerine bir fonksiyon aracılığıyla tetikliyoruz
-        const initUpdate = async () => {
-            await updateTeamName(status);
-        };
-
-        initUpdate();
-
-        const handleTeamChange = (event) => {
-            const incomingName = event?.detail?.teamName || localStorage.getItem('tm_selected_name');
-            if (incomingName) {
-                setDisplayTeamName(formatTeamName(incomingName));
-                return;
-            }
-
-            const selectedId = event?.detail?.teamId || localStorage.getItem('tm_selected_id');
-            const cachedName = getTeamNameFromCache(selectedId);
-            if (cachedName) {
-                setDisplayTeamName(formatTeamName(cachedName));
-                return;
-            }
-
+        const initUpdate = setTimeout(() => {
             updateTeamName(status);
-        };
+        }, 0);
 
-        const handleStorageChange = () => {
-            const cachedTeamName = localStorage.getItem('tm_selected_name');
-            if (cachedTeamName) {
-                setDisplayTeamName(formatTeamName(cachedTeamName));
-            }
+        const handleTeamChange = () => {
+            // UI'ı anında cache ile güncelle, arkada API'yi süz
+            setDisplayTeamName(formatTeamName(getTeamNameFromCache()));
             updateTeamName(status);
         };
 
         window.addEventListener('teamChanged', handleTeamChange);
-        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('storage', handleTeamChange);
 
         return () => {
             status.current = false; 
+            clearTimeout(initUpdate); 
             window.removeEventListener('teamChanged', handleTeamChange);
-            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('storage', handleTeamChange);
         };
-    }, [formatTeamName, getTeamNameFromCache, updateTeamName]);
+    }, [updateTeamName, formatTeamName, getTeamNameFromCache]);
 
     return (
         <div className="sub-navbar-container">
@@ -131,7 +104,7 @@ const SubNavbar = ({
             </div>
             
             <div className="sub-nav-right">
-                {showCurrency && <div className="nav-currency-indicator" title="Multi-currency enabled"></div>}
+                {showCurrency && <div className="nav-currency-indicator" title="Multi-currency active"></div>}
                 
                 {showSearch && (
                     <Input 

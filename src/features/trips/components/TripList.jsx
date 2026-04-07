@@ -1,8 +1,12 @@
 import React from 'react';
 import { useActionPermissions } from '../../../hooks/useActionPermissions';
+import { useCurrency } from '../../../context/CurrencyContext';
 
 const TripRow = ({ trip, onOpenDetail, onEdit, onDelete }) => {
     const { canEdit, canDelete } = useActionPermissions(trip);
+    const { convertAmount, selectedCurrency, symbol } = useCurrency();
+
+    const displayAmount = convertAmount(trip);
 
     return (
         <div className="trip-block" onClick={() => onOpenDetail(trip)}>
@@ -18,9 +22,9 @@ const TripRow = ({ trip, onOpenDetail, onEdit, onDelete }) => {
             <span className="trip-destination">{trip.destination}</span>
             <span className="trip-vehicle">{trip.vehicle}</span>
             <div className="tr-list-amount-wrapper">
-                <span className="tr-list-symbol">{trip.currencySymbol}</span>
-                <span className="tr-list-amount-val">{Number(trip.amount).toFixed(2)}</span>
-                <span className="tr-list-currency">{trip.currency}</span>
+                <span className="tr-list-symbol">{symbol}</span>
+                <span className="tr-list-amount-val">{Number(displayAmount).toFixed(2)}</span>
+                <span className="tr-list-currency">{selectedCurrency}</span>
             </div>
             <span className="trip-duration">{trip.duration}</span>
             <span className={`trip-status status-${trip.statusClass?.toLowerCase()}`}>{trip.status}</span>

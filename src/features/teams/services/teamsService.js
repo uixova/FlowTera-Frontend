@@ -116,6 +116,15 @@ export const teamsService = {
         };
     },
 
+    // Takım ayarları güncelleme fonksiyonu (Simülasyon)
+    updateTeamSettings: async (teamId, settingsData) => {
+        await randomDelay(600, 1200);
+        console.log(`[API UPDATE] Team: ${teamId} settings updated:`, settingsData);
+        
+        // Burada gerçekte api.teams.update() gibi bir çağrı olacak
+        return { success: true, message: "Ayarlar başarıyla güncellendi." };
+    },
+
     // Basit takım listesini getirme fonksiyonu (Simülasyon)
     getSimpleTeams: async () => {
         await randomDelay(100, 300); 

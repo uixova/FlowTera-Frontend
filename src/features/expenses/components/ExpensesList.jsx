@@ -1,10 +1,14 @@
 import React from 'react';
 import { useActionPermissions } from '../../../hooks/useActionPermissions';
+import { useCurrency } from '../../../context/CurrencyContext';
 
 // Her bir satırı temsil eden alt bileşen (Hook hatasını çözen kısım burası)
 const ExpenseRow = ({ expense, onOpenDetail, onEdit, onDelete }) => {
     // Hook artık bileşen seviyesinde çağrıldığı için ESLint kızmaz
     const { canEdit, canDelete } = useActionPermissions(expense);
+    const { convertAmount, selectedCurrency, symbol } = useCurrency();
+
+    const displayAmount = convertAmount(expense);
 
     return (
         <div className="expense-block" onClick={() => onOpenDetail(expense)}>
@@ -22,9 +26,9 @@ const ExpenseRow = ({ expense, onOpenDetail, onEdit, onDelete }) => {
             <span className="ex-merchant-text">{expense.merchant}</span>
             <span className="ex-method-text">{expense.paymentMethod}</span>
             <div className="ex-list-amount-wrapper">
-                <span className="ex-list-symbol">{expense.currencySymbol}</span>
-                <span className="ex-list-amount-val">{(Number(expense.amount) || 0).toFixed(2)}</span>
-                <span className="ex-list-currency">{expense.currency}</span>
+                <span className="ex-list-symbol">{symbol}</span>
+                <span className="ex-list-amount-val">{(Number(displayAmount) || 0).toFixed(2)}</span>
+                <span className="ex-list-currency">{selectedCurrency}</span>
             </div>
             <span className="ex-report-name">{expense.report || 'General'}</span>
             <span className={`expense-status ${expense.status?.toLowerCase()}`}>

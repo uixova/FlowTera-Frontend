@@ -9,7 +9,6 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
 
   if (!data) return null;
 
-  // Sidebar'ın dışarı tıklanma veya ESC ile kapanmasını korumaya al
   const protectedClose = wrapSidebarClose(onClose);
 
   const sidebarFooter = (
@@ -28,18 +27,15 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
       footer={sidebarFooter}
       width="480px"
     >
-      {/* Header Image Area - ImageBox Entegrasyonu */}
+      {/* Header Image Area */}
       <div className="tr-panel-header-image">
         <ImageBox 
           src={data.image || "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=2070&auto=format&fit=crop"} 
           alt={data.title}
           onToggle={(state) => {
-            handleImageToggle(state); // Hook state'ini günceller
-            if (state) {
-              onClose(); // Resim açılınca sidebar'ı kapat
-            } else {
-              if (onReopen) onReopen(); // Resim kapanınca sidebar'ı geri aç
-            }
+            handleImageToggle(state);
+            if (state) onClose();
+            else if (onReopen) onReopen();
           }}
         >
           <img 
@@ -63,16 +59,18 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
 
         <div className="tr-panel-stats-grid">
           <div className="tr-stat-item">
-            <label>Tahmini Gider</label>
+            <label>Mali Kayıt Tutarı</label>
             <div className="tr-amount-section">
+              {/* Burası her zaman Base Currency (USD) kalır */}
               <span className="tr-amount-symbol">{data.currencySymbol}</span>
               <strong className="tr-amount-val">
-                {(Number(data.amount) || 0).toFixed(2)}
+                {(Number(data.amount) || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
               </strong>
               <span className="tr-amount-cur">{data.currency}</span>
             </div>
+            {/* Orijinal Yerel Harcama (TRY, EUR vs.) */}
             <div className="tr-currency-freeze">
-              ≈ {data.localSymbol}{data.localAmount?.toLocaleString()} {data.localCurrency}
+              Ödenen: {data.localSymbol}{data.localAmount?.toLocaleString('tr-TR')} {data.localCurrency}
             </div>
           </div>
           <div className="tr-stat-item">
@@ -83,9 +81,12 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
           </div>
         </div>
 
+        {/* SABİT KUR BİLGİSİ - ARTIK DİNAMİK OBJEDEN ÇEKİYORUZ */}
         <div className="tr-rate-info">
           <i className="ti ti-history"></i>
-          <span>Oran: 1 {data.currency} = {data.exchangeRate?.rate} {data.localCurrency}</span>
+          <span>
+            İşlem Kuru: 1 {data.currency} = {data.exchangeRates?.[data.localCurrency] || data.exchangeRate?.rate} {data.localCurrency}
+          </span>
         </div>
 
         <hr className="tr-divider" />
@@ -101,7 +102,7 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
         </div>
 
         <div className="tr-detail-row">
-          <span><i className="ti ti-clock"></i> Başlangıç/Bitiş Tarihi</span>
+          <span><i className="ti ti-clock"></i> Tarih Aralığı</span>
           <p>{data.startDate} - {data.endDate}</p>
         </div>
 

@@ -1,18 +1,23 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 
-export const useFilter = (data, initialFilters, searchFields = ['title']) => {
-    const [searchTerm, setSearchTerm] = useState('');
+// externalSearchTerm ve onExternalSearchChange ekledik (opsiyonel)
+export const useFilter = (data, initialFilters, searchFields = ['title'], externalSearchTerm = null) => {
+    const [internalSearchTerm, setInternalSearchTerm] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
-    const [tempFilters, setTempFilters] = useState(initialFilters);
-    const [appliedFilters, setAppliedFilters] = useState(initialFilters);
+    const [tempFilters, setTempFilters] = useState(initialFilters || {});
+    const [appliedFilters, setAppliedFilters] = useState(initialFilters || {});
 
-    // Debounce mekanizması
+    // Eğer dışarıdan bir term geliyorsa onu kullan, gelmiyorsa hook'un içindekini
+    const currentSearchTerm = externalSearchTerm !== null ? externalSearchTerm : internalSearchTerm;
+
+    // Debounce mekanizması her zaman "aktif" olan term'i dinler
     useEffect(() => {
-        const handler = setTimeout(() => setDebouncedSearch(searchTerm), 500);
+        const handler = setTimeout(() => {
+            setDebouncedSearch(currentSearchTerm);
+        }, 500);
         return () => clearTimeout(handler);
-    }, [searchTerm]);
+    }, [currentSearchTerm]);
 
-    // Tarihleri normalize eden yardımcı fonksiyon
     const normalizeDate = useCallback((date) => {
         if (!date) return null;
         const d = new Date(date);
@@ -73,13 +78,16 @@ export const useFilter = (data, initialFilters, searchFields = ['title']) => {
     }, [data, debouncedSearch, appliedFilters, searchFields, parseCustomDate, normalizeDate]);
 
     return {
-        searchTerm, setSearchTerm,
+        // Eğer dışarıdan yönetiliyorsa dışarıdaki state döner, yoksa içerdeki
+        searchTerm: currentSearchTerm, 
+        setSearchTerm: setInternalSearchTerm,
         tempFilters, setTempFilters,
         appliedFilters, filteredData,
         applyFilters: () => setAppliedFilters({ ...tempFilters }),
         clearFilters: () => {
-            setTempFilters(initialFilters);
-            setAppliedFilters(initialFilters);
+            setTempFilters(initialFilters || {});
+            setAppliedFilters(initialFilters || {});
+            setInternalSearchTerm('');
         }
     };
 };

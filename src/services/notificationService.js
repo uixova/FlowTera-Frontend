@@ -1,18 +1,24 @@
 import { api } from '../api/api';
 
 export const notificationService = {
-    getSortedNotifications: async (currentUserId) => {
+    getSortedNotifications: async (currentUserId, teamId = null) => {
         const data = await api.notifications.getAll();
         if (!data) return { requests: [], infos: [] };
 
-        const list = data.notifications || data; 
+        const list = data.notifications || (Array.isArray(data) ? data : []); 
 
         return {
-            // Tipi 'invite' olan ve bu kullanıcıya (userId) gelmiş davetler
-            requests: list.filter(item => item.type === 'invite' && item.userId === currentUserId),
+            // Kullanıcıya gelen Takım Davetleri (Invite)
+            invites: list.filter(item => item.type === 'invite' && String(item.userId) === String(currentUserId)),
             
-            // Tipi 'info' olan ve sadece giriş yapan kullanıcıya ait bildirimler
-            infos: list.filter(item => item.type === 'info' && item.userId === currentUserId),
+            // Adminin yönettiği takıma gelen Talepler (Request) - Harcama onayı vb.
+            requests: list.filter(item => 
+                item.type === 'request' && 
+                (teamId ? String(item.teamId) === String(teamId) : true)
+            ),
+            
+            // Bilgilendirme mesajları
+            infos: list.filter(item => item.type === 'info' && String(item.userId) === String(currentUserId)),
             
             total: list.length
         };
