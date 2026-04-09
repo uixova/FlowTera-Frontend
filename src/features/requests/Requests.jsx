@@ -10,7 +10,7 @@ import './css/Requests.css';
 
 const Requests = () => {
     const navigate = useNavigate();
-    const { currentUserId, roleNameForTeam, loading: authLoading } = useAuthContext();
+    const { roleNameForTeam, loading: authLoading } = useAuthContext();
     
     const [loading, setLoading] = useState(false);
     const [requests, setRequests] = useState([]);
@@ -41,21 +41,20 @@ const Requests = () => {
         }
     }, [authLoading, selectedTeamId, roleNameForTeam, navigate]);
 
-    // Veri Çekme - Servis yapısına ve ESLint kurallarına uygun
+    // Veri Çekme 
     const fetchRequests = useCallback(async () => {
-        if (!selectedTeamId || !currentUserId) return;
-        setLoading(true);
+        if (!selectedTeamId) return;
+    setLoading(true);
         try {
-            // Servise hem kullanıcı hem takım bilgisini gönderiyoruz
-            const result = await notificationService.getSortedNotifications(currentUserId, selectedTeamId);
-            // Servis artık { requests, invites, infos } dönüyor, biz requests kısmını alıyoruz
-            setRequests(result.requests || []);
+            //İLGİLİ FONKSİYONU ÇAĞIRIYORUZ
+            const result = await notificationService.getTeamRequests(selectedTeamId);
+            setRequests(result); 
         } catch (error) {
             console.error("Failed to load claims:", error);
         } finally {
             setLoading(false);
         }
-    }, [selectedTeamId, currentUserId]); 
+    }, [selectedTeamId]);
 
     useEffect(() => { 
         if (!authLoading) {

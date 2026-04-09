@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'; 
 import '../components.css/Navbar.css';
 import UserImage from '../../assets/images/user-profile.png'
 import ThemeModal from '../modals/ThemeModal';
@@ -13,6 +13,7 @@ import { useAuth } from '../../hooks/useAuth';
 const Navbar = () => {
     const { roleNameForTeam, loading: authLoading } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Modal Açma/Kapama State'leri
     const [isThemeOpen, setIsThemeOpen] = useState(false);
@@ -29,32 +30,46 @@ const Navbar = () => {
     // authLoading devam ediyorsa veya takım seçili değilse false döner
     const isAdmin = !authLoading && selectedTeamId && roleNameForTeam(selectedTeamId) === 'Admin';
 
-    // Takım değişikliklerini dinle
-    useEffect(() => {
-        const syncSelectedTeam = () => {
-            const updatedId = localStorage.getItem('tm_selected_id');
-            setSelectedTeamId(prevId =>
-                String(prevId || '') === String(updatedId || '') ? prevId : updatedId
-            );
-        };
+    const protectedRoutes = useMemo(() => [
+        '/expense', '/trips', '/analysis', '/history', '/requests'
+    ], []);
 
+    // State güncelleme işlemini asenkron hale getiriyoruz 
+    const syncSelectedTeam = useCallback(() => {
+        const updatedId = localStorage.getItem('tm_selected_id');
+        
+        queueMicrotask(() => {
+            setSelectedTeamId(updatedId);
+            
+            if (!updatedId && protectedRoutes.includes(location.pathname)) {
+                navigate('/team');
+            }
+        });
+    }, [location.pathname, navigate, protectedRoutes]);
+
+    useEffect(() => {
         const handleTeamChanged = () => syncSelectedTeam();
 
         // Hem 'storage' event'ini hem de özel 'teamChanged' event'ini dinleyerek takım değişikliklerini senkronize ediyoruz
         window.addEventListener('teamChanged', handleTeamChanged);
         window.addEventListener('storage', syncSelectedTeam);
 
+        // İlk render'da kontrolü çalıştır
+        syncSelectedTeam();
+
         return () => {
             window.removeEventListener('teamChanged', handleTeamChanged);
             window.removeEventListener('storage', syncSelectedTeam);
         };
-    }, []);
+    }, [syncSelectedTeam]);
 
     // Takım seçimi yapıldığında çağrılacak fonksiyon
     const handleTeamChange = (teamId) => {
         const stringId = String(teamId);
         localStorage.setItem('tm_selected_id', stringId);
         localStorage.setItem('tm_view_mode', 'main');
+        
+        // Dispatch öncesi state'i manuel güncelle (Görsel hız için)
         setSelectedTeamId(stringId);
 
         window.dispatchEvent(
@@ -62,6 +77,7 @@ const Navbar = () => {
                 detail: { teamId: stringId, viewMode: 'main' }
             })
         );
+        setIsTeamOpen(false);
     };
 
     return (
@@ -114,13 +130,18 @@ const Navbar = () => {
                 <div className="left-head">
                     <ul>
                         <li><NavLink to="/home"><i className="ti ti-home"></i> Anasayfa</NavLink></li>
-                        <li><NavLink to="/expense"><i className="ti ti-calendar-dollar"></i> Giderler</NavLink></li>
-                        <li><NavLink to="/trips"><i className="ti ti-plane-departure"></i> Geziler</NavLink></li>
-                        <li><NavLink to="/analysis"><i className="ti ti-chart-pie"></i> Analiz</NavLink></li>
-                        <li><NavLink to="/history"><i className="ti ti-history"></i> Geçmiş</NavLink></li>
                         
-                        {isAdmin && (
-                            <li><NavLink to="/requests"><i className="ti ti-pencil-question"></i> İstekler</NavLink></li>
+                        {selectedTeamId && (
+                            <>
+                                <li><NavLink to="/expense"><i className="ti ti-calendar-dollar"></i> Giderler</NavLink></li>
+                                <li><NavLink to="/trips"><i className="ti ti-plane-departure"></i> Geziler</NavLink></li>
+                                <li><NavLink to="/analysis"><i className="ti ti-chart-pie"></i> Analiz</NavLink></li>
+                                <li><NavLink to="/history"><i className="ti ti-history"></i> Geçmiş</NavLink></li>
+                                
+                                {isAdmin && (
+                                    <li><NavLink to="/requests"><i className="ti ti-pencil-question"></i> İstekler</NavLink></li>
+                                )}
+                            </>
                         )}
                         
                         <li><NavLink to="/team"><i className="ti ti-users-group"></i> Takım</NavLink></li>

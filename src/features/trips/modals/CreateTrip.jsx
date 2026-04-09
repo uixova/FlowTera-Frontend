@@ -1,6 +1,7 @@
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import { tripsService } from '../services/tripsService';
 import '../trips.css/CreateTrip.css'; 
 
 
@@ -12,7 +13,9 @@ const formatDateForInput = (dateStr) => {
 };
 
 const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
-  // FORM BAŞLANGIÇ STATE'İ
+  const isEditMode = !!editData;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
     trInpTitle: '',
     trInpCategory: 'Business',
@@ -25,15 +28,9 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
     trInpDescription: ''
   });
 
-  // useEffect kullanmıyoruz! Render sırasında editData veya isOpen değişirse state i senkronize ediyoruz
-  const [prevEditData, setPrevEditData] = useState(null);
-  const [prevIsOpen, setPrevIsOpen] = useState(false);
-
-  if (editData !== prevEditData || isOpen !== prevIsOpen) {
-    setPrevEditData(editData);
-    setPrevIsOpen(isOpen);
-
-    if (editData && isOpen) {
+  // Modal açıldığında veya veri geldiğinde state yönetimi
+  useEffect(() => {
+    if (isOpen && editData) {
       setFormData({
         trInpTitle: editData.title || '',
         trInpCategory: editData.category || 'Business',
@@ -53,26 +50,26 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
         trInpCost: '', trInpCurrency: 'USD', trInpDescription: ''
       });
     }
-  }
+  }, [isOpen, editData]);
 
-  // Mod Kontrolü: Düzenleme mi yoksa yeni kayıt mı
-  const isEditMode = !!editData;
-  
-  // Zaman Geçmişi: Kaydın ne kadar süre önce oluşturulduğunu hesaplar.
   const timeAgoDisplay = useTimeAgo(editData?.date);
 
-  // Input Değişim Yönetimi: Tüm form alanlarındaki değişiklikleri yakalar.
+  // Tüm form alanlarındaki değişiklikleri yakalar.
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Form Gönderimi: Veriyi paketler ve servise gönderir.
+  // Veriyi paketler ve servise gönderir.
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
+    const activeTeamId = localStorage.getItem('tm_selected_id');
 
     const finalTripData = {
-      ...(isEditMode ? { id: editData.id } : { id: `tr-${Math.floor(Math.random() * 10000)}` }),
+      id: isEditMode ? editData.id : `tr-${Math.floor(Math.random() * 10000)}`,
+      teamId: activeTeamId,
       title: formData.trInpTitle,
       category: formData.trInpCategory,
       vehicle: formData.trInpVehicle,
@@ -84,15 +81,26 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
       desc: formData.trInpDescription,
       status: isEditMode ? editData.status : "Pending",
       statusClass: isEditMode ? editData.statusClass : "pending",
+      date: isEditMode ? editData.date : new Date().toLocaleDateString('tr-TR')
     };
 
-    console.log("FlowTera API - Payload:", finalTripData);
-    
-    if (onSuccess) onSuccess();
-    onClose();
+    try {
+      if (isEditMode) {
+        await tripsService.updateTrip(editData.id, finalTripData);
+      } else {
+        await tripsService.createTrip(finalTripData);
+      }
+      
+      if (onSuccess) onSuccess();
+      onClose();
+    } catch (error) {
+      console.error("Trip operation failed:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  // UI Bileşeni: Sidebar Başlık Yapısı
+  // Sidebar Başlık Yapısı
   const sidebarTitle = (
     <div className="tr-create-title">
       <div className="tr-title-icon">
@@ -100,22 +108,18 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
       </div>
       <div className="tr-title-text">
         <span>{isEditMode ? 'Gezi Planını Düzenle' : 'Yeni Gezi Planla'}</span>
-        <small>
-          {isEditMode 
-            ? `Son güncelleme: ${timeAgoDisplay}` 
-            : 'Bir rota oluşturmak için detayları doldurun'}
-        </small>
+        <small>{isEditMode ? `Son güncelleme: ${timeAgoDisplay}` : 'Bir rota oluşturmak için detayları doldurun'}</small>
       </div>
     </div>
   );
 
-  // UI Bileşeni: Sidebar Alt Buton Grubu
+  // Sidebar Alt Buton Grubu
   const sidebarFooter = (
     <div className="tr-create-footer-alt" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
-      <button type="button" className="tr-btn-secondary" onClick={onClose}>İptal</button>
-      <button type="submit" form="newTripForm" className="tr-btn-primary">
+      <button type="button" className="tr-btn-secondary" onClick={onClose} disabled={isSubmitting}>İptal</button>
+      <button type="submit" form="newTripForm" className="tr-btn-primary" disabled={isSubmitting}>
         <i className={`ti ${isEditMode ? 'ti-check' : 'ti-plus'}`}></i>
-        {isEditMode ? 'Güncelle' : 'Gezi Planı Oluştur'}
+        {isSubmitting ? 'Kaydediliyor...' : (isEditMode ? 'Güncelle' : 'Gezi Planı Oluştur')}
       </button>
     </div>
   );
@@ -124,7 +128,7 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
     <ActionSidebar isOpen={isOpen} onClose={onClose} title={sidebarTitle} footer={sidebarFooter} width="480px">
       <div className="tr-create-body-internal">
         <form id="newTripForm" className="tr-create-form" onSubmit={handleSubmit}>
-          
+          {/* Form içeriği */}
           <div className="tr-form-section">
             <label className="tr-section-label">Genel Bilgiler</label>
             <div className="tr-input-group">

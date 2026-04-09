@@ -12,7 +12,6 @@ const ExpenseRow = ({ expense, onOpenDetail, onEdit, onDelete }) => {
 
     return (
         <div className="expense-block" onClick={() => onOpenDetail(expense)}>
-            <input type="checkbox" onClick={(e) => e.stopPropagation()} />
             <div className="expense-block-details">
                 <span className="expense-icon">
                     <i className={`ti ${expense.icon || 'ti-receipt'}`}></i>

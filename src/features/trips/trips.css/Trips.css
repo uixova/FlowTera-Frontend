@@ -1,6 +1,6 @@
 .trip-title-nav, .trip-block {
     display: grid;
-    grid-template-columns: 40px 2.2fr 1.2fr 1.5fr 1.2fr 1.5fr 1fr 1.2fr 80px; 
+    grid-template-columns: 2.2fr 1.2fr 1.5fr 1.2fr 1.5fr 1fr 1.2fr 80px; 
     gap: 15px;
     align-items: center;
     padding: 14px 22px;

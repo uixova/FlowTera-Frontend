@@ -10,7 +10,6 @@ const TripRow = ({ trip, onOpenDetail, onEdit, onDelete }) => {
 
     return (
         <div className="trip-block" onClick={() => onOpenDetail(trip)}>
-            <input type="checkbox" onClick={(e) => e.stopPropagation()} />
             <div className="trip-block-details">
                 <span className="trip-icon"><i className={`ti ${trip.icon}`}></i></span>
                 <div className="trip-details-text">

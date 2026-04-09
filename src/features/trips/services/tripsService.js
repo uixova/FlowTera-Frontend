@@ -12,24 +12,13 @@ export const tripsService = {
         if (!users || !trips) return trips;
 
         return trips.map(trip => {
-            const createdBy = trip.createdBy;
-            const ownerId =
-                createdBy?.id ??
-                trip.userId ??
-                trip.ownerId ??
-                trip.createdById ??
-                null;
-
-            const createdByName = createdBy?.name;
+            const ownerId = trip.createdBy?.id ?? trip.userId ?? trip.ownerId ?? trip.createdById ?? null;
             const owner = ownerId ? users.find(u => String(u.id) === String(ownerId)) : null;
             const isDeleted = Boolean(owner?.isDeleted);
             
             return {
                 ...trip,
-                // createdBy varsa onu kullan, yoksa user.json'dan owner'ı ararız.
-                userName: isDeleted
-                    ? "DeletedUser"
-                    : (createdByName || owner?.name || "Unknown Traveller"),
+                userName: isDeleted ? "DeletedUser" : (trip.createdBy?.name || owner?.name || "Unknown Traveller"),
                 userAvatar: isDeleted ? null : (owner?.avatar || null),
                 userPlan: isDeleted ? 'free' : (owner?.subscription?.plan || 'free')
             };
@@ -38,38 +27,27 @@ export const tripsService = {
 
     // Takım ID'sine göre seyahatleri getir
     getTripsByTeam: async (teamId, page = 1, limit = 20) => {
-        try {
-            await randomDelay(400, 1000);
-            if (!teamId) return { data: [], hasMore: false };
+        await randomDelay(400, 1000);
+        if (!teamId) return { data: [], hasMore: false };
 
-            const allTrips = await api.trips.getAll(); 
-            if (!allTrips) return { data: [], hasMore: false };
+        const allTrips = await api.trips.getAll(); 
+        if (!allTrips) return { data: [], hasMore: false };
 
-            // Önce takıma göre filtrele
-            const filtered = allTrips.filter(trip => 
-                String(trip.teamId).trim() === String(teamId).trim()
-            );
+        const filtered = allTrips.filter(trip => 
+            String(trip.teamId).trim() === String(teamId).trim()
+        );
 
-            // Sayfalama (Pagination)
-            const startIndex = (page - 1) * limit;
-            const endIndex = startIndex + limit;
-            const paginatedData = filtered.slice(startIndex, endIndex);
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedData = filtered.slice(startIndex, endIndex);
 
-            // Daha fazla veri var mı?
-            const hasMore = filtered.length > endIndex;
+        const enrichedData = await tripsService.enrichTripsWithUserData(paginatedData);
 
-            // Kullanıcı bilgilerini zenginleştir
-            const enrichedData = await tripsService.enrichTripsWithUserData(paginatedData);
-
-            return {
-                data: enrichedData,
-                hasMore: hasMore,
-                totalCount: filtered.length
-            };
-        } catch (error) {
-            console.error("Trips Service Error:", error);
-            throw error;
-        }
+        return {
+            data: enrichedData,
+            hasMore: filtered.length > endIndex,
+            totalCount: filtered.length
+        };
     },
 
     // Seyahat ID'sine göre tek bir seyahati getir
@@ -85,13 +63,19 @@ export const tripsService = {
         return enriched[0];
     },
 
-    // Yeni bir seyahat oluşturma (Simülasyon)
+    // Yeni bir seyahat oluşturma
     createTrip: async (tripData) => {
         await randomDelay(600, 1200);
-        // Gerçek API'de burada api.post() olur
-        // tripData içinde userId'nin geldiğinden emin olmalıyız
-        console.log("[API CREATE] New Trip:", tripData);
-
+        
+        // Gelecekte api.trips.post(tripData) buraya gelecek
+        console.log("[API CREATE] New Trip Payload:", tripData);
         return { success: true, data: tripData };
+    },
+
+    // Güncelleme fonksiyonu 
+    updateTrip: async (id, tripData) => {
+        await randomDelay(400, 800);
+        console.log(`[API UPDATE] Trip ID: ${id}`, tripData);
+        return { success: true };
     }
 };

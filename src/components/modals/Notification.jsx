@@ -17,9 +17,11 @@ const Notification = ({ isOpen, onClose }) => {
 
         setLoading(true);
         try {
-            const result = await notificationService.getSortedNotifications(currentUserId);
+            const result = await notificationService.getUserNotifications(currentUserId);
+            
+            // getUserNotifications artık { invites, infos } dönüyor
             setInfos(result.infos || []);
-            setRequests(result.requests || []);
+            setRequests(result.invites || []); // Paneldeki "requests" state'ini davetlerle (invites) dolduruyoruz
         } catch (error) {
             console.error("Bildirimler çekilemedi:", error);
         } finally {

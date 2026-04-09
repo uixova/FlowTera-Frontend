@@ -131,12 +131,10 @@ input:focus {
 .ex-currency-select {
     width: 110px;
     border: none !important;
-    border-left: 1px solid #2a2a2a !important;
     border-radius: 0 !important;
     background: #252525 !important;
     color: #0ed45a !important;
-    font-weight: 800;
-    text-align: center;
+    font-weight: 500;
 }
 
 .report-toggle-wrapper {

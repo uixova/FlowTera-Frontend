@@ -1,40 +1,77 @@
-import React from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
+import { expenseService } from '../services/expenseService'; // Servisi ekledik
 import '../expenses.css/CreateExpense.css';
 
 const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
-    // Eğer editData varsa 'Güncelle', yoksa 'Oluştur' modundayız
     const isEdit = !!editData;
     const displayDate = editData ? editData.date : new Date().toLocaleDateString('tr-TR');
 
-    // Form submit handler
+    // Dosya ve Yükleme Durumu State'leri
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Modal her açıldığında veya editData değiştiğinde state'leri temizle/doldur
+    useEffect(() => {
+        if (isOpen) {
+            setSelectedFile(null);
+            setPreviewUrl(isEdit && editData.receipt ? editData.receipt : null);
+        }
+    }, [isOpen, isEdit, editData]);
+
+    // Dosya Seçme Fonksiyonu 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+            setPreviewUrl(URL.createObjectURL(file));
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsSubmitting(true); // Yükleme başladı
+
         const formData = new FormData(e.target);
         const now = new Date(); 
+        const activeTeamId = localStorage.getItem('tm_selected_id');
 
         const finalExpenseData = {
             title: formData.get('exInpTitle'),
             category: formData.get('exInpCategory'),
             merchant: formData.get('exInpMerchant'),
-            // Select name ile uyumlu olduğundan emin ol
             paymentMethod: formData.get('exInpMethod'), 
             amount: formData.get('exInpAmount'), 
             currency: formData.get('exInpCurrency'),
             isReported: e.target.exInpReport.checked,
+            teamId: activeTeamId, // Filtreleme için ekledik
             
             id: isEdit ? editData.id : `exp-${Math.floor(Math.random() * 10000)}`,
-            status: isEdit ? editData.status : "Pending", // Status'ü koru
+            status: isEdit ? editData.status : "Pending",
             timestamp: isEdit ? editData.timestamp : now.toISOString(),
             date: isEdit ? editData.date : now.toLocaleDateString('tr-TR'),
             desc: isEdit ? editData.desc : "New expense entry via Flowtera UI",
-            icon: isEdit ? editData.icon : "ti-receipt"
+            icon: isEdit ? editData.icon : "ti-receipt",
+            // --- EKLEME: Dosya veya Önizleme ---
+            receipt: selectedFile || previewUrl 
         };
 
-        console.log("Final Data:", finalExpenseData);
-        // İşlem bitince
-        if(onSuccess) onSuccess();
-        onClose();
+        try {
+            // Servis üzerinden DB'ye gönderim
+            if (isEdit) {
+                await expenseService.updateExpense(finalExpenseData.id, finalExpenseData);
+            } else {
+                await expenseService.createExpense(finalExpenseData);
+            }
+
+            if(onSuccess) onSuccess();
+            onClose();
+        } catch (error) {
+            console.error("İşlem başarısız:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     // Sidebar başlığı dinamikleşti
@@ -48,9 +85,9 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
     // Footer buton yazısı dinamikleşti
     const sidebarFooter = (
         <div className="ex-panel-footer-alt" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
-            <button type="button" className="ex-panel-btn cancel" onClick={onClose}>İptal Et</button>
-            <button type="submit" form="newExpenseForm" className="ex-panel-btn save">
-                {isEdit ? 'Değişiklikleri Kaydet' : 'Gider Oluştur'}
+            <button type="button" className="ex-panel-btn cancel" onClick={onClose} disabled={isSubmitting}>İptal Et</button>
+            <button type="submit" form="newExpenseForm" className="ex-panel-btn save" disabled={isSubmitting}>
+                {isSubmitting ? 'Bekleyin...' : (isEdit ? 'Değişiklikleri Kaydet' : 'Gider Oluştur')}
             </button>
         </div>
     );
@@ -116,7 +153,7 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
                         <select 
                             name="exInpMethod" 
                             id="exInpMethod" 
-                            key={editData?.id} // Veri değiştiğinde select'in re-render olması için gerekli
+                            key={editData?.id} 
                             defaultValue={isEdit ? editData.paymentMethod : 'Cash'}
                         >
                             <option value="Cash">Nakit</option>
@@ -128,14 +165,27 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
                     <div className="ex-input-group full">
                         <label>Fatura / Belge</label>
                         <div 
-                            className="ex-simple-upload" 
+                            className={`ex-simple-upload ${previewUrl ? 'has-preview' : ''}`} 
                             onClick={() => document.getElementById('exInpReceipt').click()}
                         >
-                            <div className="upload-placeholder">
-                                <i className="ti ti-file-upload"></i>
-                                <span>{isEdit && editData.receipt ? 'Dosyayı Değiştir' : 'Fatura Ekle'}</span>
-                            </div>
-                            <input type="file" id="exInpReceipt" hidden accept=".pdf, .jpg, .jpeg, .png, .webp" />
+                            {previewUrl ? (
+                                <div className="receipt-preview-box" style={{ width: '100%', height: '100px', overflow: 'hidden', borderRadius: '8px' }}>
+                                    <img src={previewUrl} alt="Fatura" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <div className="preview-overlay">Değiştir</div>
+                                </div>
+                            ) : (
+                                <div className="upload-placeholder">
+                                    <i className="ti ti-file-upload"></i>
+                                    <span>{isEdit && editData.receipt ? 'Dosyayı Değiştir' : 'Fatura Ekle'}</span>
+                                </div>
+                            )}
+                            <input 
+                                type="file" 
+                                id="exInpReceipt" 
+                                hidden 
+                                accept=".pdf, .jpg, .jpeg, .png, .webp" 
+                                onChange={handleFileChange} 
+                            />
                         </div>
                     </div>
 

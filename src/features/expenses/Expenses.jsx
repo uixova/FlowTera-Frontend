@@ -164,7 +164,6 @@ const Expenses = () => {
             {/* Gider Tablo ve Liste Alanı */}
             <div className="expense-table-wrapper">
                 <div className="expense-title-nav">
-                    <input type="checkbox" />
                     <span className="ex-title-span">Detaylar</span>
                     <span className="ex-title-span">Kategori</span>
                     <span className="ex-title-span">İşletme</span>

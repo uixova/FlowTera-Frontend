@@ -5,11 +5,13 @@ import ExportModal from './components/ExportData';
 import AnalysisCharts from './components/Charts'; 
 import Loader from '../../components/common/Loader'; 
 import { analysisService } from './services/analysisService';
+import { useCurrency } from '../../hooks/useCurrency';
 
 const Analysis = () => {
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [analysisData, setAnalysisData] = useState(null);
+  const { convert, format, formatMonthYear } = useCurrency();
   const [viewMode, setViewMode] = useState('all');
   
   // Takım ID'sini takip etmek için ref
@@ -17,28 +19,19 @@ const Analysis = () => {
 
   const fetchData = useCallback(async () => {
     const selectedTeamId = localStorage.getItem('tm_selected_id');
-    
-    // Eğer takım seçili değilse loader'ı kapat ve boş dön (Hata almamak için)
-    if (!selectedTeamId) {
-      setLoading(false);
-      return;
-    }
+    if (!selectedTeamId) { setLoading(false); return; }
 
     setLoading(true);
-    currentTeamIdRef.current = selectedTeamId;
-    
     try {
-        const data = await analysisService.getTeamAnalysis(selectedTeamId, viewMode);
-        if (data) {
-            setAnalysisData(data);
-        }
+        // Convert fonksiyonunu servise gönderiyoruz!
+        const data = await analysisService.getTeamAnalysis(selectedTeamId, viewMode, convert);
+        if (data) setAnalysisData(data);
     } catch (error) {
-        console.error("Analysis Fetch Error:", error);
+        console.error("Analysis Error:", error);
     } finally {
-        // Geçişin hissedilmesi için 600ms ideal
-        setTimeout(() => setLoading(false), 600); 
+        setTimeout(() => setLoading(false), 600);
     }
-  }, [viewMode]);
+  }, [viewMode, convert]);
 
   // Sayfa yüklendiğinde çalış
   useEffect(() => {
@@ -100,7 +93,7 @@ const Analysis = () => {
           <span className="an-card-title">
             {viewMode === 'all' ? 'Genel Toplam' : viewMode === 'expenses' ? 'Toplam Harcama' : 'Seyahat Maliyeti'}
           </span>
-          <span className="an-card-value">{analysisData?.summary?.totalSpending || "$0.00"}</span>
+          <span className="an-card-value">{format(analysisData?.summary?.totalSpending, analysisData?.summary?.teamCurrency)}</span>
           <span className={`an-card-sub ${parseFloat(analysisData?.summary?.spendingGrowth) >= 0 ? 'trend-up' : 'trend-down'}`}>
             {parseFloat(analysisData?.summary?.spendingGrowth) >= 0 ? '↑' : '↓'} 
             %{Math.abs(analysisData?.summary?.spendingGrowth)} <small>Geçen aya göre</small>
@@ -111,8 +104,10 @@ const Analysis = () => {
           <span className="an-card-title">
             {viewMode === 'all' ? 'Aylık İşlem Hacmi' : viewMode === 'expenses' ? 'Bu Ayki Giderler' : 'Bu Ayki Seyahatler'}
           </span>
-          <span className="an-card-value">{analysisData?.summary?.currentMonthSpending || "$0.00"}</span>
-          <span className="an-card-sub">Nisan 2026 Dönemi</span>
+          <span className="an-card-value">
+            {format(analysisData?.summary?.currentMonthSpending || 0, analysisData?.summary?.teamCurrency)}
+          </span>
+          <span className="an-card-sub">{formatMonthYear(new Date())} Dönemi</span>
         </div>
 
         <div className="an-card">

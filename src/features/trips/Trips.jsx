@@ -135,7 +135,6 @@ const Trips = () => {
                 <hr className="sub-nav-divider" />
 
                 <div className="trip-title-nav">
-                    <input type="checkbox" id="selectAllTrips" />
                     <span className="tr-title-span">Gezi Detayları</span>
                     <span className="tr-title-span">Kategori</span>
                     <span className="tr-title-span">Varış Noktası</span>

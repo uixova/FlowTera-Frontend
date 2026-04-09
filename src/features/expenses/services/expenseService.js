@@ -12,91 +12,80 @@ export const expenseService = {
         if (!users || !expenses) return expenses;
 
         return expenses.map(expense => {
-            const createdBy = expense.createdBy;
-            const submitterId =
-                createdBy?.id ??
-                expense.userId ??
-                expense.submitterId ??
-                null;
-
-            const createdByName = createdBy?.name;
-            const userDetail = submitterId
-                ? users.find(u => String(u.id) === String(submitterId))
-                : null;
-
+            const submitterId = expense.createdBy?.id ?? expense.userId ?? expense.submitterId ?? null;
+            const userDetail = users.find(u => String(u.id) === String(submitterId));
             const isDeleted = Boolean(userDetail?.isDeleted);
             
             return {
                 ...expense,
-                // createdBy varsa onu kullan, yoksa id üzerinden user.json'dan ararız.
-                user: isDeleted
-                    ? "DeletedUser"
-                    : (createdByName || expense.user || userDetail?.name || "Unknown"),
+                user: isDeleted ? "DeletedUser" : (expense.createdBy?.name || userDetail?.name || "Unknown"),
                 userAvatar: isDeleted ? null : (userDetail?.avatar || null),
                 userRole: isDeleted ? 'free' : (userDetail?.subscription?.plan || 'free')
             };
         });
     },
 
-    // Tüm giderleri getirme fonksiyonu
-    getAllExpenses: async () => {
-        try {
-            await randomDelay(400, 1200);
-            const rawExpenses = await api.expenses.getAll();
-            if (!rawExpenses) return [];
-
-            // Veriyi kullanıcı bilgileriyle zenginleştirip döndür
-            return await expenseService.enrichExpensesWithUserData(rawExpenses);
-        } catch (error) {
-            console.error("Service Error: GetExpenses failed", error);
-            throw error;
-        }
-    },
-
     // Takım bazında giderleri getirme fonksiyonu
     getExpensesByTeam: async (teamId, page = 1, limit = 20) => {
-        try {
-            await randomDelay(400, 800);
-            if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
+        await randomDelay(400, 800);
+        if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
 
-            const allExpenses = await api.expenses.getAll();
-            if (!allExpenses) return { data: [], hasMore: false, totalCount: 0 };
+        const allExpenses = await api.expenses.getAll();
+        if (!allExpenses) return { data: [], hasMore: false, totalCount: 0 };
 
-            // Takım Filtrelemesi
-            const filtered = allExpenses.filter(exp => 
-                String(exp.teamId).trim() === String(teamId).trim()
-            );
+        // Takım Filtrelemesi
+        const filtered = allExpenses.filter(exp => 
+            String(exp.teamId).trim() === String(teamId).trim()
+        );
 
-            // Sayfalama Hesaplaması
-            const startIndex = (page - 1) * limit;
-            const endIndex = startIndex + limit;
-            const paginatedData = filtered.slice(startIndex, endIndex);
+        // Sayfalama Hesaplaması
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedData = filtered.slice(startIndex, endIndex);
 
-            // Kontrol Mekanizması
-            const hasMore = filtered.length > endIndex;
+        // Veriyi Zenginleştir
+        const enrichedData = await expenseService.enrichExpensesWithUserData(paginatedData);
 
-            // Veriyi Zenginleştir
-            const enrichedData = await expenseService.enrichExpensesWithUserData(paginatedData);
-
-            // Hook'un beklediği standart nesneyi dönüyoruz
-            return {
-                data: enrichedData,
-                hasMore: hasMore,
-                totalCount: filtered.length
-            };
-        } catch (error) {
-            console.error("Service Error", error);
-            throw error;
-        }
+        return {
+            data: enrichedData,
+            hasMore: filtered.length > endIndex,
+            totalCount: filtered.length
+        };
     },
 
-    // Yeni gider oluşturma fonksiyonu (Simülasyon)
-    createExpense: async (expenseData) => {
-        await randomDelay(600, 1500); 
-        return { success: true, data: expenseData };
+    // Yeni gider oluşturma fonksiyonu
+    createExpense: async (payload) => {
+        await randomDelay(500, 1000);
+
+        // Backend dosya bekliyorsa FormData hazır
+        const body = new FormData();
+        Object.keys(payload).forEach(key => {
+            if (key === 'receipt' && payload[key] instanceof File) {
+                body.append('file', payload[key]);
+            } else {
+                body.append(key, payload[key]);
+            }
+        });
+
+        // Gerçek API Call - backend endpoint hazır olduğunda burayı aç
+        // return await api.expenses.create(body); 
+        
+        console.log("API'ye gönderilmeye hazır veri:", payload);
+        return { success: true };
     },
 
-    // Takım bazında giderleri getirme fonksiyonu (Simülasyon)
+    // Gider Güncelleme
+    updateExpense: async (id, payload) => {
+        await randomDelay(400, 800);
+        
+        // Gerçek API Call
+        // return await api.expenses.update(id, payload);
+        
+        console.log(`${id} ID'li kayıt güncelleniyor:`, payload);
+        return { success: true };
+    },
+
+    // Takım bilgisini getir
     getTeamInfo: async (teamId) => {
         await randomDelay(100, 300);
         const allTeams = await api.teams.getAll();
