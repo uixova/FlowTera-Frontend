@@ -1,8 +1,62 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../settings.css/Security.css';
+import { useModal } from '../../../hooks/useModal';
+import Confirm from '../../../components/modals/Confirm';
+import Alert from '../../../components/modals/Alert';
+import { useAuth } from '../../../context/AuthContext';
 
 const Security = () => {
   const [twoFA, setTwoFA] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  // Modal Hook Entegrasyonu
+  const { 
+    alertConfig, showAlert, closeAlert,
+    confirmConfig, askConfirm, closeConfirm 
+  } = useModal();
+
+  // HESAP SİLME LOGIC
+  const executeDeleteAccount = async () => {
+    try {
+      setLoading(true);
+      
+      // 1. Backend isteğini atıyoruz settingsService.deleteAccount()
+      // const result = await settingsService.deleteAccount(); 
+
+      // 2. Onay modalını kapat
+      closeConfirm();
+
+      // 3. Alert göster ve "Tamam"a basınca ana sayfaya uçur
+      showAlert(
+        "Hesap Silme Talebi Alındı",
+        "Hesabınız dondurulmuştur. 14 gün boyunca giriş yapmazsanız kalıcı olarak silinecektir. Şimdi oturumunuz kapatılıyor...",
+        "warning",
+        () => {
+          // ALERT KAPATILDIĞINDA ÇALIŞACAK KISIM
+          if (logout) logout(); // LocalStorage temizliği 
+          navigate('/'); // Ana sayfaya yönlendir
+        }
+      );
+
+    } catch (err) {
+      console.error("Silme hatası:", err);
+      showAlert("Hata", "İşlem gerçekleştirilemedi.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteClick = () => {
+    askConfirm(
+      "HESABINI SİLMEK İSTEDİĞİNDEN EMİN MİSİN?",
+      "Bu işlem geri alınamaz. Hesabınız 14 gün süreyle dondurulacak ve ardından kalıcı olarak silinecektir.",
+      executeDeleteAccount,
+      "warning" // Tehlikeli durması için warning tipi
+    );
+  };
 
   return (
     <div className="st-content-section">
@@ -73,8 +127,18 @@ const Security = () => {
             <h4>Tehlike Bölge</h4>
             <p>Hesabınızı sildikten sonra geri dönüş yok. Lütfen emin olun.</p>
         </div>
-        <button className="st-btn-delete">Flowtera Hesabımı Sil</button>
+        <button 
+          className="st-btn-delete" 
+          onClick={handleDeleteClick}
+          disabled={loading}
+        >
+          {loading ? 'İşleniyor...' : 'Flowtera Hesabımı Sil'}
+        </button>
       </div>
+
+      {/* Modalları Sayfaya Ekledik */}
+      <Confirm {...confirmConfig} onClose={closeConfirm} />
+      <Alert {...alertConfig} onClose={closeAlert} />
     </div>
   );
 };

@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import { notificationService } from '../../services/notificationService';
-import { useAuthContext } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { useFilter } from '../../hooks/useFilter'; 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import './css/Requests.css';
 
 const Requests = () => {
     const navigate = useNavigate();
-    const { roleNameForTeam, loading: authLoading } = useAuthContext();
+    const { roleNameForTeam, loading: authLoading } = useAuth();
     
     const [loading, setLoading] = useState(false);
     const [requests, setRequests] = useState([]);
@@ -107,7 +107,6 @@ const Requests = () => {
             />
 
             <div className="req-tabs">
-                {/* Tab sayılarını ham requests üzerinden değil, aramaya göre göstermek istersen requests yerine filteredData kullanabilirsin */}
                 <button className={activeTab === 'pending' ? 'active' : ''} onClick={() => setActiveTab('pending')}>
                     Beklemede ({requests.filter(r => !r.status || r.status === 'pending').length})
                 </button>

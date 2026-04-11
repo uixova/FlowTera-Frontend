@@ -13,12 +13,17 @@ const ROLE_PRIORITY = {
 
 export const teamsService = {
     // Tüm takımları getirme fonksiyonu
-    getTeams: async () => {
+    getTeams: async (currentUser) => {
         await randomDelay(400, 1000);
-        const teams = await api.teams.getAll() || [];
+        const allTeams = await api.teams.getAll() || [];
         
+        // Eğer kullanıcı verisi yoksa boş dön, varsa sadece kullanıcının takımlarını filtrele
+        const filteredTeams = allTeams.filter(team => 
+            currentUser?.teams?.some(tId => String(tId) === String(team.id)) && team.isDeleted !== true
+        );
+
         // Teams.json içinde üyeler doğrudan tutuluyor; user.teams üzerinden filtrelemiyoruz.
-        return teams.map(team => ({
+        return filteredTeams.map(team => ({
             ...team,
             members: Array.isArray(team.members) ? team.members.length : (team.membersCount || 0)
         }));

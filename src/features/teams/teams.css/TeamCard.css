@@ -11,6 +11,7 @@
 }
 
 .tm-sel-card {
+    position: relative;
     background: #1e1e1e; 
     border: 1px solid #333;
     border-radius: 12px; 
@@ -117,8 +118,13 @@
 
 .tm-sel-card.maintenance-mode {
     border: 1px dashed #f1c40f; 
-    background: #fffdf5; 
+    background: #252210;
     cursor: not-allowed;
+}
+
+.tm-sel-card.maintenance-mode:hover {
+    border-color: #f1c40f;
+    box-shadow: 0 10px 20px rgba(241, 196, 15, 0.1);
 }
 
 .tm-maintenance-badge {

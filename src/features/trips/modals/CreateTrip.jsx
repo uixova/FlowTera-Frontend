@@ -91,14 +91,18 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
         await tripsService.createTrip(finalTripData);
       }
       
-      if (onSuccess) onSuccess();
-      onClose();
+      // ÖNCE listeyi yenile, SONRA kapat
+      if (onSuccess) onSuccess(); 
+      onClose(); 
+      
     } catch (error) {
-      console.error("Trip operation failed:", error);
+      console.error("İşlem patladı:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  
 
   // Sidebar Başlık Yapısı
   const sidebarTitle = (

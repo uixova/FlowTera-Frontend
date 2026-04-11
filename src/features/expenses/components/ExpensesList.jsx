@@ -1,13 +1,12 @@
 import React from 'react';
 import { useActionPermissions } from '../../../hooks/useActionPermissions';
 import { useCurrency } from '../../../context/CurrencyContext';
+import { useModal } from '../../../hooks/useModal';
+import Confirm from '../../../components/modals/Confirm';
 
-// Her bir satırı temsil eden alt bileşen (Hook hatasını çözen kısım burası)
-const ExpenseRow = ({ expense, onOpenDetail, onEdit, onDelete }) => {
-    // Hook artık bileşen seviyesinde çağrıldığı için ESLint kızmaz
+const ExpenseRow = ({ expense, onOpenDetail, onEdit, onDeleteClick }) => {
     const { canEdit, canDelete } = useActionPermissions(expense);
     const { convertAmount, selectedCurrency, symbol } = useCurrency();
-
     const displayAmount = convertAmount(expense);
 
     return (
@@ -41,7 +40,7 @@ const ExpenseRow = ({ expense, onOpenDetail, onEdit, onDelete }) => {
                     </button>
                 )}
                 {canDelete && (
-                    <button className="action-btn delete" onClick={(e) => onDelete(e, expense.id)}>
+                    <button className="action-btn delete" onClick={(e) => onDeleteClick(e, expense)}>
                         <i className="ti ti-trash"></i>
                     </button>
                 )}
@@ -51,6 +50,18 @@ const ExpenseRow = ({ expense, onOpenDetail, onEdit, onDelete }) => {
 };
 
 const ExpensesList = ({ data, onOpenDetail, onEdit, onDelete }) => {
+    const { confirmConfig, askConfirm, closeConfirm } = useModal();
+
+    const handleDeleteClick = (e, expense) => {
+        e.stopPropagation(); 
+        askConfirm(
+            "Harcama Kaydını Sil",
+            `"${expense.title}" başlıklı harcamayı silmek istediğinize emin misiniz?`,
+            () => onDelete(e, expense.id), 
+            "danger"
+        );
+    };
+
     return (
         <div className="expense-list-container">
             {data.map((expense) => (
@@ -59,9 +70,10 @@ const ExpensesList = ({ data, onOpenDetail, onEdit, onDelete }) => {
                     expense={expense} 
                     onOpenDetail={onOpenDetail}
                     onEdit={onEdit}
-                    onDelete={onDelete}
+                    onDeleteClick={handleDeleteClick}
                 />
             ))}
+            <Confirm {...confirmConfig} onClose={closeConfirm} />
         </div>
     );
 };

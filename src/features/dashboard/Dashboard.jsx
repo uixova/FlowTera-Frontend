@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
+import { useAuth } from '../../context/AuthContext';
 import './dashboard.css/Dashboard.css';
 import MonthlyReport from './components/Graphics';
 import { dashboardService } from './services/dashboardService'; 
@@ -11,9 +12,12 @@ import CreateExpense from '../expenses/modals/CreateExpense';
 import CreateTrips from '../trips/modals/CreateTrip';
 import CreateReport from './modals/CreateReport';
 import OCRSidebar from './modals/OCR';
-import { useAuth } from '../../hooks/useAuth';
+import { useModal } from '../../hooks/useModal';
+import Alert from '../../components/modals/Alert';
 
 const Dashboard = () => {
+    // Fonksiyon isimlerini askConfirm/closeAlert standardına çektik
+    const { alertConfig, showAlert, closeAlert } = useModal(); 
     const navigate = useNavigate(); 
     const [stats, setStats] = useState({ pendingCount: 0, activeTrips: 0, totalExpenses: 0, rejectedCount: 0 });
     const [myActivities, setMyActivities] = useState([]);
@@ -30,7 +34,6 @@ const Dashboard = () => {
 
     // Takım Kontrol Fonksiyonu
     const handleQuickAction = (openModalCallback, type) => {
-        // Eğer tip 'report' ise kontrol etmeden aç
         if (type === 'report') {
             openModalCallback(true);
             return;
@@ -39,8 +42,13 @@ const Dashboard = () => {
         const selectedTeamId = localStorage.getItem('tm_selected_id');
     
         if (!selectedTeamId) {
-            alert("Lütfen önce bir takım seçin! Takım seçmeden işlem yapamazsınız.");
-            navigate('/team');
+            // Alert modalını profesyonelce patlatıyoruz
+            showAlert(
+                "Takım Seçilmedi", 
+                "Bu işlemi gerçekleştirebilmek için aktif bir takım seçmiş olmanız gerekiyor. Takım seçim ekranına yönlendiriliyorsunuz.", 
+                "warning",
+                () => navigate('/team') // Tamam'a basınca takıma uçurur
+            );
             return;
         }
     
@@ -65,7 +73,7 @@ const Dashboard = () => {
                 }
                 setLoading(false);
             } catch (error) {
-                console.error("Hata:", error);
+                console.error("Dashboard veri çekme hatası:", error);
                 setLoading(false);
             }
         };
@@ -76,18 +84,15 @@ const Dashboard = () => {
 
     return (
         <div className="home">
-            {/* ÜST KISIM (Tüm verileri gösterir, etkilenmez) */}
             <div className="hm-top-ct">
                 <StatusOverview stats={stats} />
                 <RecentActivities activities={myActivities} />
             </div>
 
-            {/* ORTA: Quick Access - Kontrol eklendi */}
             <div className="hm-mid-ct hm-card">
                 <div className="card-header"><h2>Hızlı Erişim</h2></div>
                 <hr />
                 <div className="quick-access-container">
-                    {/* onClick kısımları handleQuickAction ile sarmalandı */}
                     <div className="create-box" onClick={() => handleQuickAction(setIsExpenseOpen, 'expense')}>
                         <i className="ti ti-credit-card"></i>
                         <span>Yeni Gider</span>
@@ -107,7 +112,6 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* ALT: Monthly Report (Etkilenmez) */}
             <div className="hm-bottom-ct monthly-grid">
                 <MonthlyReport 
                     trendData={chartData.trend} 
@@ -122,7 +126,7 @@ const Dashboard = () => {
                 isOpen={isExpenseOpen} 
                 onClose={() => setIsExpenseOpen(false)} 
                 isDashboard={true} 
-                selectedTeamId={localStorage.getItem('tm_selected_id')} // ID'yi gönderiyoruz
+                selectedTeamId={localStorage.getItem('tm_selected_id')} 
                 teams={userTeams}
             />
 
@@ -145,6 +149,12 @@ const Dashboard = () => {
                 onClose={() => setIsReportOpen(false)} 
                 teams={userTeams} 
                 selectedTeamId={localStorage.getItem('tm_selected_id')}
+            />
+
+            {/* Temizlenmiş Alert Modalı */}
+            <Alert 
+                {...alertConfig} 
+                onClose={closeAlert} 
             />
         </div>
     );

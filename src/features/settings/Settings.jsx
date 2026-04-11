@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import './settings.css/Settings.css'; 
 import { settingsService } from './services/settingService';
-import Loader from '../../components/common/Loader'
+import Loader from '../../components/common/Loader';
 
-// Alt Sayfalar (Hazırladığımız Componentler)
+// Alt Sayfalar
 import Profile from './components/Profile';
 import UserPlan from './components/UserPlan';
 import Security from './components/Security';
 import Activity from './components/Activity';
 import Notification from './components/Notifications';
-import { useAuth } from '../../hooks/useAuth';
+
+// Hooks & Modals
+import { useAuth } from '../../context/AuthContext';
+import { useModal } from '../../hooks/useModal'; 
+import Confirm from '../../components/modals/Confirm'; 
 
 const Settings = () => {
   const [activeSection, setActiveSection] = useState('st-profile');
@@ -18,7 +22,11 @@ const Settings = () => {
   const [notifConfig, setNotifConfig] = useState({ email: false, sms: false, push: false });
   const [loading, setLoading] = useState(true);
 
-  const { currentUserId, loading: authLoading } = useAuth();
+  // Auth'tan logout fonksiyonunu da çekiyoruz
+  const { currentUserId, loading: authLoading, logout } = useAuth();
+  
+  // Modal yönetimi
+  const { confirmConfig, askConfirm, closeConfirm } = useModal();
 
   useEffect(() => {
     const appContainer = document.querySelector('.app-container');
@@ -47,20 +55,38 @@ const Settings = () => {
   }, [currentUserId]);
 
   useEffect(() => {
-  const appContainer = document.querySelector('.app-container');
-  
-  // Settings sayfasına girince class ekle
-  if (appContainer) {
-    appContainer.classList.add('st-page-active');
-  }
-
-  // Sayfadan çıkınca (cleanup) class'ı kaldır
-  return () => {
+    const appContainer = document.querySelector('.app-container');
     if (appContainer) {
-      appContainer.classList.remove('st-page-active');
+      appContainer.classList.add('st-page-active');
     }
+
+    return () => {
+      if (appContainer) {
+        appContainer.classList.remove('st-page-active');
+      }
+    };
+  }, []);
+
+  // LOGOUT MANTIĞI
+  const handleLogoutClick = () => {
+    askConfirm(
+      "Oturumu Kapat",
+      "Hesabınızdan çıkış yapmak istediğinize emin misiniz?",
+      async () => {
+        try {
+          // Eğer serviste logout işlemi varsa önce onu bekle
+          if (logout) {
+            await logout();
+            // Redirect genelde useAuth içinde yapılır ama burada da kontrol edilebilir
+          }
+          closeConfirm();
+        } catch (err) {
+          console.error("Çıkış yapılırken hata:", err);
+        }
+      },
+      "info" // Logout tehlikeli bir işlem olmadığı için 'info' veya 'warning' tipinde olabilir
+    );
   };
-}, []);
 
   if (authLoading || loading || !user) return <Loader type="butterfly" />;
 
@@ -81,7 +107,6 @@ const Settings = () => {
     { id: 'st-notifications', label: 'Bildirimler', icon: 'ti-bell-ringing' },
   ];
 
-  // Render Logic: Hangi sayfa gösterilecek?
   const renderSection = () => {
     switch (activeSection) {
       case 'st-profile': return <Profile user={user} />;
@@ -112,7 +137,8 @@ const Settings = () => {
           ))}
         </div>
 
-        <div className="st-logout-btn">
+        {/* LOGOUT BUTONU */}
+        <div className="st-logout-btn" onClick={handleLogoutClick}>
           <i className="ti ti-logout"></i> Hesaptan Çık
         </div>
       </div>
@@ -121,6 +147,9 @@ const Settings = () => {
       <div className="st-main-content">
           {renderSection()}
       </div>
+
+      {/* CONFIRM MODAL */}
+      <Confirm {...confirmConfig} onClose={closeConfirm} />
     </div>
   );
 };

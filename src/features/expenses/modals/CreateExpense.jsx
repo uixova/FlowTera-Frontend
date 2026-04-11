@@ -53,22 +53,26 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
             date: isEdit ? editData.date : now.toLocaleDateString('tr-TR'),
             desc: isEdit ? editData.desc : "New expense entry via Flowtera UI",
             icon: isEdit ? editData.icon : "ti-receipt",
-            // --- EKLEME: Dosya veya Önizleme ---
+            // Dosya veya Önizleme
             receipt: selectedFile || previewUrl 
         };
 
         try {
-            // Servis üzerinden DB'ye gönderim
             if (isEdit) {
                 await expenseService.updateExpense(finalExpenseData.id, finalExpenseData);
             } else {
                 await expenseService.createExpense(finalExpenseData);
             }
 
-            if(onSuccess) onSuccess();
-            onClose();
+            // Başarılıysa önce onSuccess'i çalıştır
+            if(onSuccess) {
+                onSuccess(); 
+            } else {
+                onClose(); 
+            }
         } catch (error) {
             console.error("İşlem başarısız:", error);
+            // Hata durumunda modal kapanmasın ki kullanıcı düzeltme yapabilsin
         } finally {
             setIsSubmitting(false);
         }

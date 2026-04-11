@@ -2,7 +2,10 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Loader from '../../../components/common/Loader';
 import '../teams.css/Settings.css';
 import { teamsService } from '../services/teamsService';
-import { useAuth } from '../../../hooks/useAuth';
+import { useAuth } from '../../../context/AuthContext';
+import { useModal } from '../../../hooks/useModal';
+import Alert from '../../../components/modals/Alert';
+import Confirm from '../../../components/modals/Confirm';
 
 const TeamSettings = ({ team, onBack }) => {
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -11,6 +14,12 @@ const TeamSettings = ({ team, onBack }) => {
   const [loading, setLoading] = useState(true);
   const selectedTeamId = localStorage.getItem('tm_selected_id');
   const canManageMembers = !authLoading && !!authUser && String(authUser?.isDeleted) !== 'true' && roleNameForTeam(selectedTeamId) === 'Admin';
+
+  // Modal Hook Entegrasyonu
+  const { 
+    alertConfig, showAlert, closeAlert,
+    confirmConfig, askConfirm, closeConfirm 
+  } = useModal();
 
   // FormData State Güncellendi
   const [formData, setFormData] = useState({
@@ -123,6 +132,37 @@ const TeamSettings = ({ team, onBack }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // SİLME İŞLEMİ (Confirm onaylandığında çalışacak olan asıl logic)
+  const executeDeleteTeam = async () => {
+    try {
+      setLoading(true);
+      const result = await teamsService.deleteTeam(selectedTeamId);
+      
+      if (result.success) {
+        closeConfirm(); // Önce onay kutusunu kapat
+        showAlert(
+          "Silme İşlemi Başlatıldı",
+          "Takımınız 14 gün içinde kalıcı olarak silinecektir. Bu süre zarfında takıma tekrar giriş yaparsanız silme işlemi iptal edilecektir.",
+          "warning"
+        );
+      }
+    } catch (err) {
+      console.error("Silme hatası:", err);
+      showAlert("Hata", "Takım silinirken bir hata oluştu.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Silme Butonuna Tıklandığında Confirm'i tetikler
+  const handleDeleteClick = () => {
+    askConfirm(
+      "Takımı Silmek İstediğinize Emin Misiniz?",
+      `"${formData.teamName}" organizasyonu ve tüm bağlı veriler silinecektir. Bu işlem geri alınamaz (14 günlük kurtarma süreci hariç).`,
+      executeDeleteTeam // Onaylanırsa çalışacak fonksiyon
+    );
   };
 
   const handleLogoSelect = (e) => {
@@ -302,7 +342,7 @@ const TeamSettings = ({ team, onBack }) => {
               </section>
 
               <div className="tm-setup-footer">
-                <button type="button" className="tm-btn-delete">Takımı Sil</button>
+                <button type="button" className="tm-btn-delete" onClick={handleDeleteClick}>Takımı Sil</button>
                 <div className="tm-footer-right">
                   <button type="button" className="tm-btn-ghost" onClick={onBack}>İptal Et</button>
                   <button type="submit" className="tm-btn-primary">Ayarları Güncelle</button>
@@ -312,6 +352,10 @@ const TeamSettings = ({ team, onBack }) => {
           </div>
         </form>
       </div>
+
+      {/* Modalların Render Edildiği Yer */}
+      <Alert {...alertConfig} onClose={closeAlert} />
+      <Confirm {...confirmConfig} onClose={closeConfirm} />
     </div>
   );
 };

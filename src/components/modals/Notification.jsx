@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Loader from '../common/Loader';
 import { notificationService } from '../../services/notificationService';
 import { useTimeAgo } from '../../hooks/useTimeAgo';
-import { useAuth } from '../../hooks/useAuth'; 
+import { useAuth } from '../../context/AuthContext';
 import '../../components/components.css/Notification.css';
 
 const Notification = ({ isOpen, onClose }) => {

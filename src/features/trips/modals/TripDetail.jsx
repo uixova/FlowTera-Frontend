@@ -14,7 +14,7 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
   const sidebarFooter = (
     <div className="tr-panel-footer" style={{ width: '100%', borderTop: 'none', padding: 0 }}>
       <button className="tr-action-btn primary">
-        <i className="ti ti-edit"></i> Gezi Detaylarını Düzenle
+        <i className="ti ti-edit"></i> Gezi Detaylarını İndir
       </button>
     </div>
   );

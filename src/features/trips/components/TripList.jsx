@@ -1,11 +1,14 @@
 import React from 'react';
 import { useActionPermissions } from '../../../hooks/useActionPermissions';
 import { useCurrency } from '../../../context/CurrencyContext';
+import { useModal } from '../../../hooks/useModal';
+import Confirm from '../../../components/modals/Confirm';
 
-const TripRow = ({ trip, onOpenDetail, onEdit, onDelete }) => {
+// onDeleteClick prop'unu buraya eklemeyi unutmuşuz!
+const TripRow = ({ trip, onOpenDetail, onEdit, onDeleteClick }) => {
     const { canEdit, canDelete } = useActionPermissions(trip);
     const { convertAmount, selectedCurrency, symbol } = useCurrency();
-
+    
     const displayAmount = convertAmount(trip);
 
     return (
@@ -35,7 +38,7 @@ const TripRow = ({ trip, onOpenDetail, onEdit, onDelete }) => {
                     </button>
                 )}
                 {canDelete && (
-                    <button className="action-btn delete" onClick={(e) => onDelete(e, trip.id)}>
+                    <button className="action-btn delete" onClick={(e) => onDeleteClick(e, trip)}>
                         <i className="ti ti-trash"></i>
                     </button>
                 )}
@@ -45,6 +48,20 @@ const TripRow = ({ trip, onOpenDetail, onEdit, onDelete }) => {
 };
 
 const TripList = ({ data, onOpenDetail, onEdit, onDelete }) => {
+    const { confirmConfig, askConfirm, closeConfirm } = useModal();
+
+    const handleDeleteClick = (e, trip) => {
+        // Tıklamanın satıra (detay paneline) yayılmasını engeller
+        e.stopPropagation(); 
+        
+        askConfirm(
+            "Gezi Kaydını Sil",
+            `"${trip.title}" başlıklı gezi kaydını silmek istediğinize emin misiniz?`,
+            () => onDelete(e, trip.id), 
+            "danger"
+        );
+    };
+
     return (
         <div className="trip-list-container">
             {data.map((trip) => (
@@ -53,9 +70,11 @@ const TripList = ({ data, onOpenDetail, onEdit, onDelete }) => {
                     trip={trip} 
                     onOpenDetail={onOpenDetail} 
                     onEdit={onEdit} 
-                    onDelete={onDelete} 
+                    onDeleteClick={handleDeleteClick} 
                 />
             ))}
+
+            <Confirm {...confirmConfig} onClose={closeConfirm} />
         </div>
     );
 };

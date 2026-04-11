@@ -72,7 +72,7 @@
     "role": [
       {
         "teamId": "team-1",
-        "roleName": "Admin",
+        "roleName": "Member",
         "permissions": []
       }
     ],

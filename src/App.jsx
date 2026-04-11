@@ -3,7 +3,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { CurrencyProvider } from './context/CurrencyContext';
-import { AuthProvider, useAuthContext } from './context/AuthContext'; // Bunu ekliyoruz
+import { AuthProvider, useAuth } from './context/AuthContext'; // Bunu ekliyoruz
 
 import Navbar from './components/navigation/Navbar';
 import Dashboard from './features/dashboard/Dashboard';
@@ -19,7 +19,7 @@ import './components/components.css/GlobalFilter.css';
 
 // Korumalı Rota Bileşeni: Giriş yapmamış kullanıcıyı dışarı atar
 const ProtectedRoute = ({ children }) => {
-    const { currentUser, loading } = useAuthContext();
+    const { currentUser, loading } = useAuth();
     
     // Eğer hala kullanıcı bilgisi yükleniyorsa hiçbir şey yapma 
     if (loading) return null;

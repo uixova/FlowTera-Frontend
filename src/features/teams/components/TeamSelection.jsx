@@ -2,11 +2,18 @@ import React, { useState } from 'react';
 import Loader from '../../../components/common/Loader';
 import TeamCard from './TeamCard';
 import SubNavbar from '../../../components/navigation/SubNavbar';
-import { useAuth } from '../../../hooks/useAuth'; 
+import { useAuth } from '../../../context/AuthContext';
+import { useModal } from '../../../hooks/useModal'; 
+import Alert from '../../../components/modals/Alert'; 
 
 const TeamSelection = ({ onNavigate, teams, loading }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { roleNameForTeam } = useAuth(); // Yetki kontrolü için hook
+    const { roleNameForTeam } = useAuth();
+    
+    // Modal yönetimi için config ve showAlert fonksiyonlarını çekiyoruz
+    const { alertConfig, showAlert, closeAlert } = useModal();
+
+    if (loading && teams.length === 0) return null;
 
     const filteredTeams = teams.filter(team => 
         team.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -17,17 +24,16 @@ const TeamSelection = ({ onNavigate, teams, loading }) => {
         const userRole = roleNameForTeam(team.id);
         const isMaintenance = team.settings?.status === 'maintenance';
 
-        // Mantık: Eğer takım bakımda ise VE kullanıcı Admin değilse girişi engelle
         if (isMaintenance && userRole !== 'Admin') {
-            alert(
-                `⛔ ERİŞİM ENGELİ: ${team.name.toUpperCase()}\n\n` +
-                `Bu takım şu anda teknik bir bakım çalışması nedeniyle geçici olarak erişime kapatılmıştır.\n\n` +
-                `Lütfen daha sonra tekrar deneyiniz veya takım yöneticinizle iletişime geçiniz.`
+            // Tarayıcı alerti yerine senin modalı tetikliyoruz
+            showAlert(
+                "Erişim Engeli",
+                `"${team.name.toUpperCase()}" şu anda teknik bir bakım çalışması nedeniyle erişime kapatılmıştır. Lütfen daha sonra tekrar deneyiniz.`,
+                "warning" 
             );
-            return; // Fonksiyondan çık, içeri alma
+            return;
         }
 
-        // Eğer bakımda değilse veya kullanıcı Admin ise içeri al
         onNavigate('main', team.id);
     };
 
@@ -53,7 +59,6 @@ const TeamSelection = ({ onNavigate, teams, loading }) => {
                         <TeamCard 
                             key={team.id} 
                             team={team} 
-                            // Artık doğrudan onNavigate değil, bizim kontrol fonksiyonumuzu çağırıyor
                             onSelect={() => handleTeamAction(team)} 
                         />
                     ))
@@ -61,6 +66,9 @@ const TeamSelection = ({ onNavigate, teams, loading }) => {
                     <div className="no-results">Aramanızla eşleşen takım bulunamadı.</div>
                 )}
             </div>
+
+            {/* Senin hazırladığın Alert Modal buraya eklendi */}
+            <Alert {...alertConfig} onClose={closeAlert} />
         </div>
     );
 };

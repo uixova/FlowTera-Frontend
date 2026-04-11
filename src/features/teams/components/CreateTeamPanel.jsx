@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import '../teams.css/CreateTeam.css';
+import { useModal } from '../../../hooks/useModal';
+import Alert from '../../../components/modals/Alert';
 
 const INITIAL_FORM_STATE = {
   teamName: '',
@@ -16,11 +18,13 @@ const INITIAL_FORM_STATE = {
 
 const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/160?text=TEAM';
 
-const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
+const CreateTeamPanel = ({ isOpen, onClose, currentUser, onSuccess }) => {
+  const { alertConfig, showAlert, closeAlert } = useModal();
   const planMaxMembers = currentUser?.subscription?.maxMembersPerTeam || 5;
 
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
   const [preview, setPreview] = useState(PLACEHOLDER_IMAGE);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
 
   const resetForm = useCallback(() => {
@@ -29,6 +33,7 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
       memberLimit: Math.min(INITIAL_FORM_STATE.memberLimit, planMaxMembers)
     });
     setPreview(PLACEHOLDER_IMAGE);
+    setIsSubmitting(false);
   }, [planMaxMembers]);
 
   // Panel açılıp kapandığında formu yöneten efekt
@@ -48,11 +53,9 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    let finalValue = value;
+    let finalValue = type === 'checkbox' ? checked : value;
 
-    if (type === 'checkbox') {
-      finalValue = checked;
-    } else if (name === 'maxExpenseLimit' || name === 'memberLimit' || name === 'autoApprovedLimit') {
+    if (['maxExpenseLimit', 'memberLimit', 'autoApprovedLimit'].includes(name)) {
       finalValue = Number(value);
     }
     
@@ -69,20 +72,37 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
   };
 
   // Form submit handler'ı
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 1. Plan Limit Kontrolü (Bizim Modal ile)
     if (formData.memberLimit > planMaxMembers) {
-      alert(`Your plan allows max ${planMaxMembers} members!`);
+      showAlert(
+        "Plan Limiti Aşıldı", 
+        `Mevcut planınız en fazla ${planMaxMembers} üyeye izin veriyor. Lütfen limitinizi düşürün veya planınızı yükseltin.`, 
+        "warning"
+      );
       return;
     }
 
-    console.log("Team Created:", {
-      ...formData,
-      createdBy: currentUser?.id,
-      createdAt: new Date().toISOString(),
-      logo: preview
-    });
-    onClose();
+    setIsSubmitting(true);
+
+    try {
+      // API Simülasyonu
+      console.log("Team Creating...", { ...formData, logo: preview });
+      
+      // await teamService.createTeam(formData); 
+
+      // 2. Başarılı İşlem Bildirimi
+      if (onSuccess) onSuccess();
+      onClose(); 
+      
+    } catch (err) {
+      console.error("Hata:", err);
+      showAlert("Hata", "Takım oluşturulurken teknik bir sorun oluştu.", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Sidebar başlığı ve altbilgisi için özel içerikler
@@ -99,11 +119,12 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
   const sidebarFooter = (
     <div className="tm-panel-footer-alt" style={{width: '100%', padding: 0, borderTop: 'none'}}> 
       <button type="button" className="tm-btn-cancel" onClick={onClose} style={{flex: 1}}>İptal Et</button>
-      <button type="submit" form="create-team-form" className="tm-btn-submit" style={{flex: 2}}>Takımı Oluştur</button>
+      <button type="submit" form="create-team-form" className="tm-btn-submit" style={{flex: 2}} >{isSubmitting ? 'Oluşturuluyor...' : 'Takımı Oluştur'}</button>
     </div>
   );
 
   return (
+    <>
     <ActionSidebar 
       isOpen={isOpen} 
       onClose={onClose} 
@@ -228,6 +249,9 @@ const CreateTeamPanel = ({ isOpen, onClose, currentUser }) => {
         </div>
       </form>
     </ActionSidebar>
+
+    <Alert {...alertConfig} onClose={closeAlert} />
+    </>
   );
 };
 

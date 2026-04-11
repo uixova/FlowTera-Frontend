@@ -9,15 +9,18 @@ import PaginationFooter from '../../components/common/PaginationFooter';
 import ActionSidebar from '../../components/navigation/ActionSidebar';
 import TripFilter from './modals/TripFilter';
 import TripList from './components/TripList'; 
+import Alert from '../../components/modals/Alert';
 
 // Servis ve Hook importları
 import { tripsService } from './services/tripsService'; 
 import { usePagination } from '../../hooks/usePagination';
 import { useFilter } from '../../hooks/useFilter';
 import { useCurrency } from '../../context/CurrencyContext';
+import { useModal } from '../../hooks/useModal';
 
 const Trips = () => {
     // UI STATELERİ
+    const { alertConfig, showAlert, closeAlert } = useModal();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [selectedTrip, setSelectedTrip] = useState(null);
@@ -86,6 +89,29 @@ const Trips = () => {
         },
         ['title', 'destination']
     );
+
+    const handleDelete = async (e, id) => {
+        try {
+            await tripsService.deleteTrip(id);
+            refreshData(); 
+            showAlert("Başarılı", "Seyahat kaydı kalıcı olarak silindi.", "success");
+        } catch (err) { 
+            console.error("Silme hatası:", err); 
+            showAlert("Hata", "Silme işlemi başarısız oldu.", "error");
+        }
+    };
+
+    const handleSuccess = () => {
+        // Önce modalı kapat ki kullanıcı kurtulsun, sonra arkada veriyi yenile
+        setIsCreateOpen(false);
+        setIsEditMode(false);
+        setSelectedTrip(null);
+        
+        // Listeyi yenilemeyi bir sonraki tick'e atalım
+        setTimeout(() => {
+            refreshData();
+        }, 0);
+    };
 
     const handleCurrencySelect = (currencyCode) => {
         updateCurrency(currencyCode);
@@ -157,13 +183,7 @@ const Trips = () => {
                                     setIsEditMode(true);
                                     setIsCreateOpen(true);
                                 }}
-                                onDelete={async (e, id) => {
-                                    e.stopPropagation();
-                                    if (window.confirm("Bu geziyi silmek istediğinize emin misiniz?")) {
-                                        await tripsService.deleteTrip(id);
-                                        refreshData();
-                                    }
-                                }}
+                                onDelete={handleDelete} 
                             />
 
                             <PaginationFooter 
@@ -197,7 +217,7 @@ const Trips = () => {
                     setSelectedTrip(null);
                 }} 
                 editData={isEditMode ? selectedTrip : null}
-                onSuccess={refreshData}
+                onSuccess={handleSuccess}
             />
 
             <TripDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedTrip} />
@@ -209,6 +229,8 @@ const Trips = () => {
                 teamDefaultCurrency={teamDefaultCurrency}
                 onSelect={handleCurrencySelect} 
             />
+
+            <Alert {...alertConfig} onClose={closeAlert} />
         </div>
     );
 };

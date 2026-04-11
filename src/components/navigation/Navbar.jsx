@@ -8,7 +8,7 @@ import UserDropdown from '../modals/UserDropdown';
 import Language from '../modals/Language';
 import TeamSelectModal from '../modals/TeamSelectModal';
 
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
     const { roleNameForTeam, loading: authLoading } = useAuth();
