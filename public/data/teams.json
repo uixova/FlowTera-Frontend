@@ -1,6 +1,7 @@
 [
   {
     "id": "team-1",
+    "ownerId": "u1",
     "name": "Main Development Team",
     "category": "Software Development",
     "membersCount": 2,
@@ -34,6 +35,7 @@
   },
   {
     "id": "team-2",
+    "ownerId": "u3",
     "name": "Marketing Group",
     "category": "Marketing & Ads",
     "membersCount": 2,

@@ -39,15 +39,22 @@ export const notificationService = {
 
     // Bildirimi silmek için
     deleteNotification: async (id) => {
-        console.log(`${id} nolu bildirim siliniyor...`);
+        console.log(`[API DELETE] Notification ID: ${id}`);
         // return await api.delete(`/notifications/${id}`); 
         return true;
     },
 
     // Takım davetine cevap vermek için (Onay/Red)
     respondToRequest: async (id, action, teamId) => {
-        console.log(`${id} nolu bildirim üzerinden ${teamId} takımına işlem: ${action}`);
+        console.log(`[API POST] Request ID: ${id} | Action: ${action} | Team ID: ${teamId}`);
         // return await api.post(`/notifications/${id}/respond`, { action, teamId });
+        return true;
+    },
+
+    // YENİ: Takımdan ayrılma isteği gönder (Member ve Modlar için)
+    sendLeaveRequest: async (teamId, userId) => {
+        console.log(`[API POST] Leave Request Created | User ID: ${userId} | Team ID: ${teamId}`);
+        // return await api.post('/notifications/leave-request', { teamId, userId });
         return true;
     }
 };

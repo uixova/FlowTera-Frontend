@@ -8,6 +8,9 @@ import TeamLogModal from '../modals/TeamActivityLog';
 import { teamsService } from '../services/teamsService'; 
 import { useAuth } from '../../../context/AuthContext';
 
+// Yeni eklenen servis
+import { notificationService } from '../../../services/notificationService';
+
 // Modalları ve Hook'u ekledik
 import { useModal } from '../../../hooks/useModal';
 import Confirm from '../../../components/modals/Confirm';
@@ -120,6 +123,65 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
     );
   };
 
+  // AYRILMA VE YETKİ DEVRİ MANTIĞI 
+  const handleLeaveTeam = () => {
+    const myRole = roleNameForTeam(teamId);
+    // Diğer aktif adminleri bul
+    const otherAdmins = members.filter(m => m.roleName === 'Admin' && String(m.id) !== String(currentUserId));
+    const hasOtherAdmins = otherAdmins.length > 0;
+
+    // KURAL: Eğer tek adminsem ve başkaları varsa çıkamam
+    if (myRole === 'Admin' && !hasOtherAdmins) {
+      if (members.length > 1) {
+        showAlert(
+          "Yetki Devri Gerekli",
+          "Takımın tek admini sizsiniz. Ayrılmadan önce başka bir üyeye Admin yetkisi devretmelisiniz.",
+          "warning"
+        );
+        return;
+      } else {
+        // Takımda sadece ben varsam takımı silme onayı iste
+        askConfirm(
+          "Takımı Kapat",
+          "Bu takımın tek üyesi sizsiniz. Ayrılırsanız takım kalıcı olarak silinecektir. Onaylıyor musunuz?",
+          async () => {
+            await teamsService.deleteTeam(teamId);
+            onBack();
+          },
+          "danger"
+        );
+        return;
+      }
+    }
+
+    // Normal ayrılma süreci
+    const confirmMessage = myRole === 'Admin' 
+      ? "Takımdan ayrılmak istediğinize emin misiniz? Admin yetkiniz sonlanacaktır."
+      : "Takımdan ayrılma isteğiniz yöneticilere iletilecektir. Onaylıyor musunuz?";
+
+    askConfirm(
+      "Takımdan Ayrıl",
+      confirmMessage,
+      async () => {
+        try {
+          if (myRole === 'Admin') {
+            await teamsService.removeMember(teamId, currentUserId);
+            showAlert("Ayrıldınız", "Takımdan başarıyla ayrıldınız.", "success");
+            onBack();
+          } else {
+            // Member ise istek gönderir
+            await notificationService.sendLeaveRequest(teamId, currentUserId);
+            showAlert("İstek Gönderildi", "Ayrılma isteğiniz adminlere iletildi.", "info");
+          }
+        } catch (err) {
+          console.log(err)
+          showAlert("Hata", "İşlem sırasında bir hata oluştu.", "error");
+        }
+      }
+    );
+  };
+  // --- AYRILMA VE YETKİ DEVRİ MANTIĞI BİTİŞ ---
+
   const canManageMembersSafe = canManageMembers;
 
   useEffect(() => {
@@ -155,60 +217,78 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
       <hr />
 
       <div className="team-grid-container">
-        {members.map(member => (
-          <div className="team-card" key={member.id}>
-            <div className="tm-card-header">
-              <span className={`tm-role-badge ${member.roleName?.toLowerCase()}`}>
-                {member.roleName}
-              </span>
-              
-              {canManageMembersSafe && member.roleName !== 'Admin' && (
-                <div className="tm-actions">
-                  <button 
-                    className="tm-action-btn" 
-                    onClick={() => handleEditClick(member)}
-                    disabled={member.isDeleted}
-                  >
-                    <i className="ti ti-edit"></i>
-                  </button>
-                  <button 
-                    className="tm-action-btn delete-btn"
-                    disabled={member.isDeleted}
-                    onClick={() => handleDeleteClick(member)}
-                  >
-                    <i className="ti ti-user-minus"></i>
-                  </button>
-                </div>
-              )}
-            </div>
-    
-            <div className="tm-user-body">
-              {member.isDeleted ? (
-                <div className="tm-user-avatar-deleted" aria-hidden="true"><i className="ti ti-trash"></i></div>
-              ) : (
-                <img src={member.avatar} alt={member.name} />
-              )}
-              <h3>{member.name}</h3>
-              {!member.isDeleted && (canManageMembersSafe || (currentUserId && String(currentUserId) === String(member.id))) && (
-                <p>{member.email}</p>
-              )}
-            </div>
-    
-            <div className="tm-user-footer">
-              <div className="tm-stat">
-                <span className="stat-label">Son Giriş</span>
-                <span className="stat-value">
-                    {member.lastLogin ? new Date(member.lastLogin).toLocaleDateString('tr-TR') : 'Never'}
+        {members.map(member => {
+          const isMe = String(member.id) === String(currentUserId);
+          
+          return (
+            <div className="team-card" key={member.id}>
+              <div className="tm-card-header">
+                <span className={`tm-role-badge ${member.roleName?.toLowerCase()}`}>
+                  {member.roleName}
                 </span>
+                
+                <div className="tm-actions">
+                  {/* Kendi kartımdaysam Ayrıl butonu (Admin olmasam da görünür) */}
+                  {isMe && (
+                    <button 
+                      className="tm-action-btn leave-btn" 
+                      onClick={handleLeaveTeam}
+                      title="Takımdan Ayrıl"
+                    >
+                      <i className="ti ti-logout"></i>
+                    </button>
+                  )}
+
+                  {/* Başkasını yönetme (Sadece Adminler için) */}
+                  {canManageMembersSafe && member.roleName !== 'Admin' && !isMe && (
+                    <>
+                      <button 
+                        className="tm-action-btn" 
+                        onClick={() => handleEditClick(member)}
+                        disabled={member.isDeleted}
+                      >
+                        <i className="ti ti-edit"></i>
+                      </button>
+                      <button 
+                        className="tm-action-btn delete-btn"
+                        disabled={member.isDeleted}
+                        onClick={() => handleDeleteClick(member)}
+                      >
+                        <i className="ti ti-user-minus"></i>
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
-              {canManageMembersSafe && (
-                <button className="view-full-logs-btn" onClick={() => handleLogClick(member)}>
-                  Tam Geçmiş Kaydı
-                </button>
-              )}
+      
+              <div className="tm-user-body">
+                {member.isDeleted ? (
+                  <div className="tm-user-avatar-deleted" aria-hidden="true"><i className="ti ti-trash"></i></div>
+                ) : (
+                  <img src={member.avatar} alt={member.name} />
+                )}
+                <h3>{member.name}</h3>
+                {!member.isDeleted && (canManageMembersSafe || isMe) && (
+                  <p>{member.email}</p>
+                )}
+              </div>
+      
+              <div className="tm-user-footer">
+                <div className="tm-stat">
+                  <span className="stat-label">Son Giriş</span>
+                  <span className="stat-value">
+                      {member.lastLogin ? new Date(member.lastLogin).toLocaleDateString('tr-TR') : 'Never'}
+                  </span>
+                </div>
+                {canManageMembersSafe && (
+                  <button className="view-full-logs-btn" onClick={() => handleLogClick(member)}>
+                    Tam Geçmiş Kaydı
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {canManageMembersSafe && (
           <div className="team-card add-member-card" onClick={() => setIsAddModalOpen(true)}>

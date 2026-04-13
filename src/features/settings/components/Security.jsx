@@ -5,18 +5,63 @@ import { useModal } from '../../../hooks/useModal';
 import Confirm from '../../../components/modals/Confirm';
 import Alert from '../../../components/modals/Alert';
 import { useAuth } from '../../../context/AuthContext';
+import { teamsService } from '../../teams/services/teamsService'; // teamsService dahil edildi
 
 const Security = () => {
   const [twoFA, setTwoFA] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, currentUser } = useAuth(); // Kontrol için currentUser eklendi
 
   // Modal Hook Entegrasyonu
   const { 
     alertConfig, showAlert, closeAlert,
     confirmConfig, askConfirm, closeConfirm 
   } = useModal();
+
+  //! Kullanıcının Tek Admin Olduğu Takımları Bulur
+  const checkAdminConstraints = async () => {
+    try {
+      setLoading(true);
+      
+      // 1. Kullanıcının "Admin" rolüne sahip olduğu takımları filtrele
+      const adminTeams = currentUser?.role
+        ?.filter(r => r.roleName === 'Admin')
+        .map(r => r.teamId) || [];
+
+      // Eğer hiçbir takımda admin değilse direkt geçebilir
+      if (adminTeams.length === 0) return { canDelete: true };
+
+      const problematicTeams = [];
+
+      // 2. Admin olduğu her takım için diğer üyelerin rollerini kontrol et
+      for (const teamId of adminTeams) {
+        const members = await teamsService.getTeamMembers(teamId);
+        
+        // Takımda kendisi dışında "Admin" var mı?
+        const otherAdmins = members.filter(m => 
+          m.roleName === 'Admin' && String(m.id) !== String(currentUser.id)
+        );
+
+        // Eğer başka admin yoksa, bu takım engellemeye takılır
+        if (otherAdmins.length === 0) {
+          const teamInfo = await teamsService.getTeamSettings(teamId);
+          problematicTeams.push(teamInfo?.name || `Takım ID: ${teamId}`);
+        }
+      }
+
+      if (problematicTeams.length > 0) {
+        return { canDelete: false, teams: problematicTeams };
+      }
+
+      return { canDelete: true };
+    } catch (err) {
+      console.error("Güvenlik kontrolü başarısız:", err);
+      return { canDelete: false, error: true };
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // HESAP SİLME LOGIC
   const executeDeleteAccount = async () => {
@@ -49,7 +94,25 @@ const Security = () => {
     }
   };
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = async () => {
+    // Önce Adminlik durumlarını kontrol et
+    const check = await checkAdminConstraints();
+
+    if (check.error) {
+      showAlert("Sistem Hatası", "Güvenlik kontrolleri şu an yapılamıyor.", "error");
+      return;
+    }
+
+    if (!check.canDelete) {
+      showAlert(
+        "Hesap Silme Engellendi",
+        `Şu takımların tek Admini sizsiniz: \n\n • ${check.teams.join('\n • ')} \n\n Devam etmek için bu takımları silmeli veya başka bir üyeye Admin yetkisi devretmelisiniz.`,
+        "warning"
+      );
+      return;
+    }
+
+    // Eğer engel yoksa son onayı sor
     askConfirm(
       "HESABINI SİLMEK İSTEDİĞİNDEN EMİN MİSİN?",
       "Bu işlem geri alınamaz. Hesabınız 14 gün süreyle dondurulacak ve ardından kalıcı olarak silinecektir.",
@@ -132,7 +195,7 @@ const Security = () => {
           onClick={handleDeleteClick}
           disabled={loading}
         >
-          {loading ? 'İşleniyor...' : 'Flowtera Hesabımı Sil'}
+          {loading ? 'Güvenlik Kontrolü...' : 'Flowtera Hesabımı Sil'}
         </button>
       </div>
 

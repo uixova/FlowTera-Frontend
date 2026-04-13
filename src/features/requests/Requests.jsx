@@ -44,7 +44,7 @@ const Requests = () => {
     // Veri Çekme 
     const fetchRequests = useCallback(async () => {
         if (!selectedTeamId) return;
-    setLoading(true);
+        setLoading(true);
         try {
             //İLGİLİ FONKSİYONU ÇAĞIRIYORUZ
             const result = await notificationService.getTeamRequests(selectedTeamId);
@@ -77,7 +77,9 @@ const Requests = () => {
     // Aksiyon Yönetimi (Onay/Red)
     const handleAction = async (id, status, reasonText = '') => {
         try {
-            // İleride buraya notificationService.respondToRequest eklenebilir
+            // Service entegrasyonu
+            await notificationService.respondToRequest(id, status, selectedTeamId);
+            
             setRequests(prev => prev.map(req => {
                 if (req.id === id) {
                     return { 
@@ -108,13 +110,13 @@ const Requests = () => {
 
             <div className="req-tabs">
                 <button className={activeTab === 'pending' ? 'active' : ''} onClick={() => setActiveTab('pending')}>
-                    Beklemede ({requests.filter(r => !r.status || r.status === 'pending').length})
+                    Beklemede <span className="tab-count">{requests.filter(r => !r.status || r.status === 'pending').length}</span>
                 </button>
                 <button className={activeTab === 'approved' ? 'active' : ''} onClick={() => setActiveTab('approved')}>
-                    Onaylandı ({requests.filter(r => r.status === 'approved').length})
+                    Onaylandı <span className="tab-count">{requests.filter(r => r.status === 'approved').length}</span>
                 </button>
                 <button className={activeTab === 'rejected' ? 'active' : ''} onClick={() => setActiveTab('rejected')}>
-                    Reddedildi ({requests.filter(r => r.status === 'rejected').length})
+                    Reddedildi <span className="tab-count">{requests.filter(r => r.status === 'rejected').length}</span>
                 </button>
             </div>
 
@@ -134,7 +136,8 @@ const Requests = () => {
                     ))
                 ) : (
                     <div className="no-req">
-                        {searchTerm ? `"${searchTerm}" aramasına uygun sonuç bulunamadı.` : "Henüz kriterlere uygun bir talep yok."}
+                        <i className="ti ti-box-off"></i>
+                        <p>{searchTerm ? `"${searchTerm}" aramasına uygun sonuç bulunamadı.` : "Henüz bir talep bulunmuyor."}</p>
                     </div>
                 )}
             </div>
@@ -147,55 +150,66 @@ const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReas
     const timeDisplay = useTimeAgo(req.date);
 
     return (
-        <div className={`req-main-card ${activeTab}`}>
-            <div className="req-card-header">
-                <span className={`req-badge ${req.category}`}>{req.category}</span>
-                <span className="req-time">{timeDisplay}</span>
-            </div>
+        <div className={`req-modern-card status-${req.status || 'pending'}`}>
+            <div className="req-accent-bar"></div>
             
-            <div className="req-card-body">
-                <h4>{req.user}</h4>
-                <p className="req-sub"><strong>{req.title}:</strong> {req.detail}</p>
-                {req.rejectionReason && (
-                    <div className="view-reason">
-                        <strong>Neden:</strong> {req.rejectionReason}
+            <div className="req-content">
+                <div className="req-left-side">
+                    <div className={`req-icon-box ${req.category}`}>
+                        <i className={`ti ti-${req.category === 'expense' ? 'receipt-2' : req.category === 'team' ? 'users-group' : 'plane-departure'}`}></i>
                     </div>
-                )}
+                    <div className="req-info">
+                        <div className="req-user-row">
+                            <span className="req-username">{req.user}</span>
+                            <span className="req-dot">•</span>
+                            <span className="req-time">{timeDisplay}</span>
+                        </div>
+                        <h4 className="req-title">{req.title}</h4>
+                        <p className="req-detail">{req.detail}</p>
+                    </div>
+                </div>
             </div>
 
-            {activeTab === 'pending' && (
-                <div className="req-card-footer">
-                    {rejectReason.id === req.id ? (
-                        <div className="reject-area">
-                            <textarea 
-                                placeholder="Neden reddedildiğini açıkla..."
+            <div className="req-right-side">
+                {activeTab === 'pending' ? (
+                    rejectReason.id === req.id ? (
+                        <div className="compact-reject-area">
+                            <input 
+                                type="text"
+                                placeholder="Red nedeni..."
                                 value={rejectReason.text}
                                 onChange={(e) => setRejectReason({...rejectReason, text: e.target.value})}
                                 autoFocus
                             />
-                            <div className="reject-btns">
-                                <button 
-                                    className="btn-confirm-reject" 
-                                    onClick={() => handleAction(req.id, 'rejected', rejectReason.text)}
-                                    disabled={!rejectReason.text.trim()}
-                                >
-                                    Reddi Onayla
+                            <div className="compact-reject-btns">
+                                <button className="confirm" onClick={() => handleAction(req.id, 'rejected', rejectReason.text)} disabled={!rejectReason.text.trim()}>
+                                    <i className="ti ti-check"></i> Onayla
                                 </button>
-                                <button className="btn-cancel" onClick={() => setRejectReason({ id: null, text: '' })}>
-                                    İptal et
+                                <button className="cancel" onClick={() => setRejectReason({ id: null, text: '' })}>
+                                    İptal
                                 </button>
                             </div>
                         </div>
                     ) : (
-                        <div className="action-btns">
-                            <button className="btn-approve" onClick={() => handleAction(req.id, 'approved')}>
-                                Onayla
+                        <div className="action-row">
+                            <button className="btn-icon approve" onClick={() => handleAction(req.id, 'approved')}>
+                                <i className="ti ti-circle-check"></i> Onayla
                             </button>
-                            <button className="btn-reject" onClick={() => setRejectReason({ id: req.id, text: '' })}>
-                                Reddet
+                            <button className="btn-icon reject" onClick={() => setRejectReason({ id: req.id, text: '' })}>
+                                <i className="ti ti-circle-x"></i> Reddet
                             </button>
                         </div>
-                    )}
+                    )
+                ) : (
+                    <div className={`final-status-badge ${activeTab}`}>
+                        {activeTab === 'approved' ? 'ONAYLANDI' : 'REDDEDİLDİ'}
+                    </div>
+                )}
+            </div>
+            
+            {req.rejectionReason && (
+                <div className="req-reason-footer">
+                    <i className="ti ti-info-circle"></i> <strong>Red Nedeni:</strong> {req.rejectionReason}
                 </div>
             )}
         </div>

@@ -12,6 +12,7 @@ const TeamSettings = ({ team, onBack }) => {
   const { roleNameForTeam, currentUser: authUser, loading: authLoading } = useAuth();
   const [planMaxMembers, setPlanMaxMembers] = useState(5);
   const [loading, setLoading] = useState(true);
+  const [teamMembersCount, setTeamMembersCount] = useState(0); // Üye sayısı
   const selectedTeamId = localStorage.getItem('tm_selected_id');
   const canManageMembers = !authLoading && !!authUser && String(authUser?.isDeleted) !== 'true' && roleNameForTeam(selectedTeamId) === 'Admin';
 
@@ -21,7 +22,7 @@ const TeamSettings = ({ team, onBack }) => {
     confirmConfig, askConfirm, closeConfirm 
   } = useModal();
 
-  // FormData State Güncellendi
+  // FormData State
   const [formData, setFormData] = useState({
     teamName: team?.name || '',
     category: 'Software Development',
@@ -32,7 +33,7 @@ const TeamSettings = ({ team, onBack }) => {
     memberLimit: 1,
     autoApproved: false, 
     autoApprovedLimit: 0, 
-    currency: 'USD' // Create panelindeki ile uyum için eklendi
+    currency: 'USD' 
   });
 
   const [preview, setPreview] = useState(team?.image || 'https://via.placeholder.com/160?text=LOGO');
@@ -45,16 +46,21 @@ const TeamSettings = ({ team, onBack }) => {
 
     try {
       setLoading(true);
-      const data = await teamsService.getTeamSettings(selectedTeamId);
+      // Paralel olarak hem ayarları hem de üye listesini çekiyoruz ki sayıyı bilelim
+      const [data, members] = await Promise.all([
+        teamsService.getTeamSettings(selectedTeamId),
+        teamsService.getTeamMembers(selectedTeamId)
+      ]);
 
       if (data) {
         const activeLimit = data.adminPlanLimit || authUser?.subscription?.maxMembersPerTeam || 5;
         setPlanMaxMembers(activeLimit);
+        setTeamMembersCount(members?.length || 0);
 
         // Servisten gelen veriyi yeni alanlarla eşleştiriyoruz
         setFormData({
           teamName: data.name || '', 
-          category: data.category || 'Software Development', // Veride yoksa default
+          category: data.category || 'Software Development', 
           workspaceType: data.settings?.workspaceType || 'Corporate',
           status: data.settings?.status || 'active',
           privacy: data.settings?.privacy || 'private', 
@@ -91,7 +97,7 @@ const TeamSettings = ({ team, onBack }) => {
   };
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     try {
       setLoading(true);
 
@@ -111,42 +117,41 @@ const TeamSettings = ({ team, onBack }) => {
         }
       };
 
-      // Yeni bir logo seçildiyse payload'a ekle 
-      if (logoFile) {
-        updatePayload.imageFile = logoFile;
-      }
+      if (logoFile) updatePayload.imageFile = logoFile;
 
       const result = await teamsService.updateTeamSettings(selectedTeamId, updatePayload);
     
       if (result.success) {
-        alert(formData.status === 'maintenance' 
-          ? "Takım Bakım Moduna Alındı!" 
-          : "Ayarlar ve Logo Güncellendi.");
-      
-        // İşlem başarılıysa seçili dosyayı sıfırla 
+        showAlert(
+          "Başarılı", 
+          formData.status === 'maintenance' ? "Takım Bakım Moduna Alındı!" : "Ayarlar ve Logo Güncellendi.",
+          "success"
+        );
         setLogoFile(null);
       }
     } catch (err) {
       console.error("Güncelleme hatası:", err);
-      alert("Güncelleme sırasında bir hata oluştu.");
+      showAlert("Hata", "Güncelleme sırasında bir hata oluştu.", "error");
     } finally {
       setLoading(false);
     }
   };
 
-  // SİLME İŞLEMİ (Confirm onaylandığında çalışacak olan asıl logic)
+  // SİLME İŞLEMİ LOGIC
   const executeDeleteTeam = async () => {
     try {
       setLoading(true);
       const result = await teamsService.deleteTeam(selectedTeamId);
       
       if (result.success) {
-        closeConfirm(); // Önce onay kutusunu kapat
+        closeConfirm();
         showAlert(
           "Silme İşlemi Başlatıldı",
           "Takımınız 14 gün içinde kalıcı olarak silinecektir. Bu süre zarfında takıma tekrar giriş yaparsanız silme işlemi iptal edilecektir.",
           "warning"
         );
+        // Silme işlemi başladıktan sonra kullanıcıyı ana sayfaya veya listeye atabiliriz
+        setTimeout(() => onBack(), 2000);
       }
     } catch (err) {
       console.error("Silme hatası:", err);
@@ -156,21 +161,53 @@ const TeamSettings = ({ team, onBack }) => {
     }
   };
 
-  // Silme Butonuna Tıklandığında Confirm'i tetikler
+  // TAKIMI SİLME KONTROLÜ
   const handleDeleteClick = () => {
+    // 1. Durum: Takımda Admin dışında üyeler var mı?
+    if (teamMembersCount > 1) {
+      showAlert(
+        "Organizasyon Dolu",
+        `Takımda şu an siz hariç ${teamMembersCount - 1} üye daha bulunuyor. Takımı silebilmek için önce tüm üyeleri çıkarmalı veya takımı 'Bakım' moduna almalısınız.`,
+        "warning"
+      );
+      return;
+    }
+
+    // 2. Durum: Takım aktif mi? (Opsiyonel: Silmeden önce bakım moduna zorlama)
+    if (formData.status !== 'maintenance') {
+      askConfirm(
+        "Güvenli Silme Gereksinimi",
+        "Takımı silmeden önce 'Bakım Modu'na almanız önerilir. Yine de devam etmek istiyor musunuz?",
+        () => {
+           // Onaylarsa direkt silmeye geç
+           askConfirm(
+            "Son Onay",
+            `"${formData.teamName}" organizasyonu kalıcı olarak silinecektir. Emin misiniz?`,
+            executeDeleteTeam,
+            "danger"
+          );
+        },
+        "warning"
+      );
+      return;
+    }
+
+    // 3. Durum: Her şey hazır (Admin tek ve bakım modunda)
     askConfirm(
       "Takımı Silmek İstediğinize Emin Misiniz?",
-      `"${formData.teamName}" organizasyonu ve tüm bağlı veriler silinecektir. Bu işlem geri alınamaz (14 günlük kurtarma süreci hariç).`,
-      executeDeleteTeam // Onaylanırsa çalışacak fonksiyon
+      `"${formData.teamName}" organizasyonu ve tüm bağlı veriler silinecektir. 14 günlük kurtarma süreci başlayacaktır.`,
+      executeDeleteTeam,
+      "danger"
     );
   };
+  // --- TAKIMI SİLME KONTROLÜ BİTİŞ ---
 
   const handleLogoSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setLogoError('Only JPG, PNG or WEBP images are allowed.');
+      setLogoError('Sadece JPG, PNG veya WEBP resimleri kabul edilir.');
       setLogoFile(null);
       e.target.value = '';
       return;
@@ -241,7 +278,6 @@ const TeamSettings = ({ team, onBack }) => {
             </aside>
 
             <main className="tm-setup-main">
-              {/* General Configuration */}
               <section className="tm-form-section">
                 <h3 className="section-title">Genel Konfigürasyon</h3>
                 <div className="tm-grid-row">
@@ -249,7 +285,6 @@ const TeamSettings = ({ team, onBack }) => {
                         <label>Organizasyon Adı</label>
                         <input type="text" name="teamName" value={formData.teamName} onChange={handleChange} required />
                     </div>
-                    {/* YENİ: Kategori Seçimi */}
                     <div className="tm-input-group">
                         <label>Kategori</label>
                         <select name="category" value={formData.category} onChange={handleChange}>
@@ -279,7 +314,6 @@ const TeamSettings = ({ team, onBack }) => {
                 </div>
               </section>
 
-              {/* Automation & Limits (YENİLENMİŞ BÖLÜM) */}
               <section className="tm-form-section limit-section-box">
                 <h3 className="section-title">Otomasyon ve Limitler</h3>
                 
@@ -294,7 +328,6 @@ const TeamSettings = ({ team, onBack }) => {
                   </div>
                 </div>
 
-                {/* Auto Approval Checkbox ve Limit */}
                 <div className="tm-automation-settings">
                     <div className="tm-checkbox-wrapper">
                         <label className="tm-custom-checkbox">
@@ -317,7 +350,6 @@ const TeamSettings = ({ team, onBack }) => {
                 </div>
               </section>
 
-              {/* Privacy Settings */}
               <section className="tm-form-section">
                 <h3 className="section-title">Gizlilik Ayarları</h3>
                 <div className="tm-radio-vertical">
@@ -353,7 +385,6 @@ const TeamSettings = ({ team, onBack }) => {
         </form>
       </div>
 
-      {/* Modalların Render Edildiği Yer */}
       <Alert {...alertConfig} onClose={closeAlert} />
       <Confirm {...confirmConfig} onClose={closeConfirm} />
     </div>

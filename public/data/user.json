@@ -148,7 +148,7 @@
     "role": [
       {
         "teamId": "team-2",
-        "roleName": "Member",
+        "roleName": "Moderator",
         "permissions": []
       }
     ],
