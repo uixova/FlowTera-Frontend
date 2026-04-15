@@ -87,12 +87,17 @@ const TeamSettings = ({ team, onBack }) => {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     let finalValue = type === 'checkbox' ? checked : value;
-    
-    // Sayısal alanları dönüştür
+  
+    // Sayısal alanlar için özel kontrol
     if (['maxExpenseLimit', 'memberLimit', 'autoApprovedLimit'].includes(name)) {
-      finalValue = Number(value);
+      if (value === '') {
+        finalValue = ''; // Boş bırakılmasına izin ver 
+      } else {
+        // Başındaki sıfırları temizle ve sayıya çevir
+        finalValue = Number(value);
+      }
     }
-    
+  
     setFormData(prev => ({ ...prev, [name]: finalValue }));
   };
 
@@ -200,7 +205,6 @@ const TeamSettings = ({ team, onBack }) => {
       "danger"
     );
   };
-  // --- TAKIMI SİLME KONTROLÜ BİTİŞ ---
 
   const handleLogoSelect = (e) => {
     const file = e.target.files?.[0];
@@ -324,7 +328,7 @@ const TeamSettings = ({ team, onBack }) => {
                   </div>
                   <div className="tm-input-group">
                     <label>Üye Kapasitesi (Max: {planMaxMembers})</label>
-                    <input type="number" name="memberLimit" value={formData.memberLimit} onChange={handleChange} max={planMaxMembers} min="1" />
+                    <input type="number" name="memberLimit" value={formData.memberLimit === 0 ? '' : formData.memberLimit} onChange={handleChange} max={planMaxMembers} min="1" />
                   </div>
                 </div>
 

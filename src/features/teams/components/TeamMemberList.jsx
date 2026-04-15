@@ -7,11 +7,7 @@ import AddMemberModal from '../modals/TeamAddMember';
 import TeamLogModal from '../modals/TeamActivityLog'; 
 import { teamsService } from '../services/teamsService'; 
 import { useAuth } from '../../../context/AuthContext';
-
-// Yeni eklenen servis
 import { notificationService } from '../../../services/notificationService';
-
-// Modalları ve Hook'u ekledik
 import { useModal } from '../../../hooks/useModal';
 import Confirm from '../../../components/modals/Confirm';
 import Alert from '../../../components/modals/Alert';
@@ -24,10 +20,7 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
   const teamName = team?.name || "Takım Detayları";
   const { currentUserId, roleNameForTeam, currentUser, loading: authLoading } = useAuth();
   
-  const { 
-    alertConfig, showAlert, closeAlert,
-    confirmConfig, askConfirm, closeConfirm 
-  } = useModal();
+  const { alertConfig, showAlert, closeAlert, confirmConfig, askConfirm, closeConfirm } = useModal();
 
   const canManageMembers = !authLoading && !!currentUser && String(currentUser?.isDeleted) !== 'true' && roleNameForTeam(teamId) === 'Admin';
 
@@ -52,21 +45,22 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
     if (!teamId) return;
     const normalizedTeamId = String(teamId);
     
+    // YENİ EKLENEN KISIM: Takım değiştiğinde listeyi anında boşaltıp loader'ı aç
+    if (!isCancelled) {
+      setMembers([]); 
+      if (!parentLoading) setLoading(true);
+    }
+
     const cachedMembers = teamMembersCache.get(normalizedTeamId);
     if (cachedMembers) {
       if (!isCancelled) {
         setMembers(cachedMembers);
-        setLoading(false); // Veri varsa loader'ı kapat
+        setLoading(false); 
       }
       return;
     }
 
     try {
-      if (!isCancelled) {
-        // Eğer parentLoading varsa, içerdeki loader'ı asla başlatma
-        if (!parentLoading) setLoading(true);
-      }
-      
       let pendingRequest = teamMembersRequestCache.get(normalizedTeamId);
       if (!pendingRequest) {
         pendingRequest = teamsService.getTeamMembers(teamId);
@@ -83,13 +77,13 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
       teamMembersRequestCache.delete(normalizedTeamId);
       if (!isCancelled) setLoading(false);
     }
-  }, [teamId, parentLoading]); // parentLoading bağımlılığını ekledik
+  }, [teamId, parentLoading]); 
 
   useEffect(() => {
     let isCancelled = false;
     fetchMembers(isCancelled);
     return () => { isCancelled = true; };
-  }, [fetchMembers]);
+  }, [teamId, fetchMembers]); 
 
   const handleEditClick = (user) => {
     setSelectedUser(user);
@@ -180,7 +174,6 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
       }
     );
   };
-  // --- AYRILMA VE YETKİ DEVRİ MANTIĞI BİTİŞ ---
 
   const canManageMembersSafe = canManageMembers;
 

@@ -30,7 +30,13 @@
       "memberLimit": 20,
       "status": "active",
       "autoApproved": false,
-      "autoApprovedLimit": 500
+      "autoApprovedLimit": 500,
+      "planContext":{
+        "planName": "professional",
+        "maxMembersAllowed": 50,
+        "features": ["advanced_reports", "unlimited_logs", "custom_roles"],
+        "isPlanFixed": true
+      }
     }
   },
   {
@@ -70,7 +76,13 @@
       "memberLimit": 20,
       "status": "active",
       "autoApproved": false,
-      "autoApprovedLimit": 500
+      "autoApprovedLimit": 500,
+      "planContext":{
+        "planName": "professional",
+        "maxMembersAllowed": 50,
+        "features": ["advanced_reports", "unlimited_logs", "custom_roles"],
+        "isPlanFixed": true
+      }
     }
   }
 ]

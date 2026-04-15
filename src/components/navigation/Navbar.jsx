@@ -29,6 +29,7 @@ const Navbar = () => {
 
     // authLoading devam ediyorsa veya takım seçili değilse false döner
     const isAdmin = !authLoading && selectedTeamId && roleNameForTeam(selectedTeamId) === 'Admin';
+    const isEnterprise = !authLoading && selectedTeamId && roleNameForTeam(selectedTeamId, 'plan') === 'enterprise';
 
     const protectedRoutes = useMemo(() => [
         '/expense', '/trips', '/analysis', '/history', '/requests'
@@ -139,7 +140,20 @@ const Navbar = () => {
                                 <li><NavLink to="/history"><i className="ti ti-history"></i> Geçmiş</NavLink></li>
                                 
                                 {isAdmin && (
-                                    <li><NavLink to="/requests"><i className="ti ti-pencil-question"></i> İstekler</NavLink></li>
+                                    <>
+                                        <li>
+                                            <NavLink to="/requests">
+                                                <i className="ti ti-pencil-question"></i> İstekler
+                                            </NavLink>
+                                        </li>
+                                        {isEnterprise && (
+                                            <li>
+                                                <NavLink to="/archive">
+                                                    <i className="ti ti-archive"></i> Arşiv
+                                                </NavLink>
+                                            </li>
+                                        )}
+                                    </>
                                 )}
                             </>
                         )}

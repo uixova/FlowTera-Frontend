@@ -11,18 +11,18 @@ export const AuthProvider = ({ children }) => {
         return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || "u1";
     });
     const [currentUser, setCurrentUser] = useState(null);
+    const [teams, setTeams] = useState([]); 
     const [loading, setLoading] = useState(true);
 
-    // logout fonksiyonunu fetchUser'dan önce tanımlıyoruz
     const logout = useCallback(() => {
         localStorage.removeItem(AUTH_USER_ID_KEY);
         sessionStorage.removeItem(AUTH_USER_ID_KEY);
         localStorage.removeItem('tm_selected_id'); 
         setCurrentUserId(null);
         setCurrentUser(null);
+        setTeams([]);
     }, []);
 
-    // Kullanıcı verilerini çekme
     const fetchUser = useCallback(async (userId) => {
         if (!userId) {
             setCurrentUser(null);
@@ -32,13 +32,18 @@ export const AuthProvider = ({ children }) => {
 
         setLoading(true);
         try {
-            const users = await api.users.getAll();
+            // Paralel fetch: Hem kullanıcıyı hem tüm takımları çekiyoruz
+            const [users, allTeams] = await Promise.all([
+                api.users.getAll(),
+                api.teams.getAll()
+            ]);
+
             const user = users.find(u => String(u.id) === String(userId));
             
             if (user) {
                 setCurrentUser(user);
+                setTeams(allTeams); // Takım listesini state'e bastık
             } else {
-                // logout artık bağımlılık dizisinde mevcut
                 logout();
             }
         } catch (error) {
@@ -53,7 +58,6 @@ export const AuthProvider = ({ children }) => {
         fetchUser(currentUserId);
     }, [currentUserId, fetchUser]);
 
-    // Giriş İşlemleri
     const login = useCallback((nextId, rememberMe = false) => {
         const stringId = String(nextId);
         localStorage.removeItem(AUTH_USER_ID_KEY);
@@ -67,11 +71,23 @@ export const AuthProvider = ({ children }) => {
         setCurrentUserId(stringId);
     }, []);
 
-    // Yetki Kontrolleri
-    const roleNameForTeam = useCallback((teamId) => {
+    // Yetki ve Plan Kontrolleri
+    // type: 'role' (varsayılan) veya 'plan' alabilir
+    const roleNameForTeam = useCallback((teamId, type = 'role') => {
         if (!currentUser || !teamId) return null;
-        return currentUser.role?.find(r => String(r.teamId) === String(teamId))?.roleName || null;
-    }, [currentUser]);
+
+        if (type === 'role') {
+            return currentUser.role?.find(r => String(r.teamId) === String(teamId))?.roleName || null;
+        }
+
+        if (type === 'plan') {
+            // State'teki takımlardan o ID'li takımı bulup planName'e bakıyoruz
+            const team = teams.find(t => String(t.id) === String(teamId));
+            return team?.settings?.planContext?.planName || null;
+        }
+
+        return null;
+    }, [currentUser, teams]);
 
     const value = useMemo(() => ({
         currentUser,

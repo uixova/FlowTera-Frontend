@@ -12,6 +12,7 @@ import Trips from './features/trips/Trips';
 import Analysis from './features/analysis/Analysis';
 import History from './features/history/History';
 import Requests from './features/requests/Requests';
+import Archive from './features/archive/Archive';
 import TeamSelection from './features/teams/Teams';
 import Settings from './features/settings/Settings';
 
@@ -53,6 +54,7 @@ function App() {
                 <Route path="/analysis" element={<ProtectedRoute><Analysis /></ProtectedRoute>} />
                 <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
                 <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} /> 
+                <Route path="/archive" element={<ProtectedRoute><Archive /></ProtectedRoute>} /> 
                 <Route path="/team" element={<ProtectedRoute><TeamSelection /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'; 
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
-import { expenseService } from '../services/expenseService'; // Servisi ekledik
+import { expenseService } from '../services/expenseService'; 
+import { archiveService } from '../../archive/services/archiveServices';
 import '../expenses.css/CreateExpense.css';
 
 const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
@@ -64,12 +65,11 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
                 await expenseService.createExpense(finalExpenseData);
             }
 
-            // Başarılıysa önce onSuccess'i çalıştır
-            if(onSuccess) {
-                onSuccess(); 
-            } else {
-                onClose(); 
-            }
+            // ARŞİV CACHE TEMİZLEME
+            archiveService.clearCache();
+
+            if(onSuccess) onSuccess(); 
+            onClose(); 
         } catch (error) {
             console.error("İşlem başarısız:", error);
             // Hata durumunda modal kapanmasın ki kullanıcı düzeltme yapabilsin

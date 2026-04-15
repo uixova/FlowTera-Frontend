@@ -12,7 +12,6 @@ const Teams = () => {
   const getRandomDelay = (min = 250, max = 700) =>
     Math.floor(Math.random() * (max - min + 1)) + min;
 
-  // Context'ten global auth bilgisini çekiyoruz
   const { currentUser, loading: authLoading } = useAuth(); 
 
   const [teams, setTeams] = useState([]); 
@@ -29,8 +28,22 @@ const Teams = () => {
   });
 
   useEffect(() => {
+    const handleTeamChange = (e) => {
+      if (e.detail && e.detail.teamId) {
+        setSelectedTeamId(String(e.detail.teamId));
+        setViewMode('main');
+      }
+    };
+
+    window.addEventListener('teamChanged', handleTeamChange);
+    return () => {
+      window.removeEventListener('teamChanged', handleTeamChange);
+    };
+  }, []);
+
+  // Takımları Çekme
+  useEffect(() => {
     const fetchTeams = async () => {
-      // Global auth loading bitmeden veya user gelmeden API'ye gitmiyoruz
       if (authLoading || !currentUser) return;
 
       try {
@@ -45,15 +58,15 @@ const Teams = () => {
     };
     
     fetchTeams();
-  }, [currentUser, authLoading]); // Context'teki değişimleri izle
+  }, [currentUser, authLoading]); 
 
-  // Seçili takımı bulma mantığı
+  // Seçili takımı bulma
   const activeTeam = useMemo(() => {
     if (!selectedTeamId || teams.length === 0) return null;
     return teams.find(t => String(t.id) === String(selectedTeamId)) || null;
   }, [teams, selectedTeamId]);
 
-  // LocalStorage ve Event senkronizasyonu
+  // Senkronizasyon (Custom Event ve LocalStorage)
   useEffect(() => {
     if (selectedTeamId) {
       localStorage.setItem('tm_selected_id', selectedTeamId);
@@ -67,6 +80,7 @@ const Teams = () => {
       localStorage.removeItem('tm_selected_name');
     }
 
+    // Modal dışından bir şey değişirse state'i global yaymak için
     window.dispatchEvent(
       new CustomEvent('teamChanged', {
         detail: { teamId: selectedTeamId ? String(selectedTeamId) : null, viewMode }
@@ -89,11 +103,15 @@ const Teams = () => {
       return;
     }
 
-    if (teamId) setSelectedTeamId(String(teamId));
+    if (page === 'selection') {
+      setSelectedTeamId(null);
+    } else if (teamId) {
+      setSelectedTeamId(String(teamId));
+    }
+    
     setViewMode(page);
   };
 
-  // Render Kararı
   if (authLoading || (loading && teams.length === 0) || switchingTeam) {
     return (
       <div className="full-screen-loader">
@@ -104,33 +122,42 @@ const Teams = () => {
 
   return (
     <div className="tm-feature-wrapper">
-      {(viewMode === 'selection' || !activeTeam) && (
+      {(viewMode === 'selection' || !activeTeam) ? (
         <TeamSelection 
           teams={teams} 
           loading={loading} 
           onNavigate={handleNavigate} 
         />
-      )}
-    
-      {viewMode === 'main' && activeTeam && (
-        <TeamMemberList 
-          team={activeTeam} 
-          parentLoading={loading} 
-          onBack={() => {
-            setSelectedTeamId(null);
-            setViewMode('selection');
-          }}
-          onNavigate={handleNavigate} 
-        />
-      )}
+      ) : (
+        <>
+          {viewMode === 'main' && (
+            <TeamMemberList 
+              team={activeTeam} 
+              parentLoading={loading} 
+              onBack={() => handleNavigate('selection')}
+              onNavigate={handleNavigate} 
+            />
+          )}
 
-      {viewMode === 'settings' && activeTeam && (
-        <TeamSettings team={activeTeam} onBack={() => setViewMode('main')} />
+          {viewMode === 'settings' && (
+            <TeamSettings 
+              team={activeTeam} 
+              onBack={() => setViewMode('main')} 
+            />
+          )}
+        </>
       )}
 
       <CreateTeamPanel 
         isOpen={isCreateOpen} 
         onClose={() => setIsCreateOpen(false)} 
+        onSuccess={() => {
+            setLoading(true);
+            teamsService.getTeams(currentUser).then(data => {
+                setTeams(data || []);
+                setLoading(false);
+            });
+        }}
       />
     </div>
   );

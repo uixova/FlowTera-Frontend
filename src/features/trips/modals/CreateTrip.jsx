@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { tripsService } from '../services/tripsService';
+import { archiveService } from '../../archive/services/archiveServices';
 import '../trips.css/CreateTrip.css'; 
 
 
@@ -90,13 +91,14 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
       } else {
         await tripsService.createTrip(finalTripData);
       }
-      
-      // ÖNCE listeyi yenile, SONRA kapat
+    
+      // ARŞİV CACHE TEMİZLEME
+      archiveService.clearCache(); 
+
       if (onSuccess) onSuccess(); 
       onClose(); 
-      
     } catch (error) {
-      console.error("İşlem patladı:", error);
+      console.error("Error:", error);
     } finally {
       setIsSubmitting(false);
     }

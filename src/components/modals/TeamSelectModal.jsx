@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { teamsService } from '../../features/teams/services/teamsService'; 
+import { useAuth } from '../../context/AuthContext'; 
 import '../components.css/TeamSelectModal.css'; 
 
 const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  
   const [teams, setTeams] = useState(() => {
     try {
       const raw = localStorage.getItem('tm_teams_cache');
@@ -14,37 +17,27 @@ const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
       return [];
     }
   });
-  const [isLoading, setIsLoading] = useState(false);
 
   // Modal her açıldığında veriyi servisten çek
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && currentUser) {
       let isCancelled = false;
       const fetchTeams = async () => {
-        if (teams.length === 0) {
-          setIsLoading(true);
-        }
         try {
-          const data = await teamsService.getTeams(); // Servis fonksiyonunu çağır
+          const data = await teamsService.getTeams(currentUser); 
           if (!isCancelled) {
             setTeams(data || []);
+            localStorage.setItem('tm_teams_cache', JSON.stringify(data || []));
           }
-          localStorage.setItem('tm_teams_cache', JSON.stringify(data || []));
         } catch (error) {
           console.error("Teams fetch error:", error);
-        } finally {
-          if (!isCancelled) {
-            setIsLoading(false);
-          }
         }
       };
-
+      
       fetchTeams();
-      return () => {
-        isCancelled = true;
-      };
+      return () => { isCancelled = true; };
     }
-  }, [isOpen, teams.length]);
+  }, [isOpen, currentUser]);
 
   if (!isOpen) return null;
 
@@ -55,16 +48,12 @@ const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
 
   const handleSelect = (teamId) => {
     const selectedTeam = teams.find((team) => String(team.id) === String(teamId));
-
-    localStorage.setItem('tm_selected_id', teamId);
+    localStorage.setItem('tm_selected_id', String(teamId));
     localStorage.setItem('tm_selected_name', selectedTeam?.name || '');
 
     window.dispatchEvent(
       new CustomEvent('teamChanged', {
-        detail: {
-          teamId: String(teamId),
-          teamName: selectedTeam?.name || ''
-        }
+        detail: { teamId: String(teamId), teamName: selectedTeam?.name || '' }
       })
     );
     
@@ -90,14 +79,24 @@ const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
                 onClick={() => handleSelect(team.id)}
               >
                 <div className="team-dropdown-icon">
-                  {team.logo ? <img src={team.logo} alt="" /> : (team.name ? team.name[0] : '?')}
+                  {(team.image || team.logo) ? (
+                    <img src={team.image || team.logo} alt={team.name} />
+                  ) : (
+                    <span>{team.name ? team.name[0].toUpperCase() : '?'}</span>
+                  )}
                 </div>
+
                 <span className="team-name-text">{team.name}</span>
-                {String(team.id) === String(currentTeamId) && <i className="ti ti-check check-active-icon"></i>}
+
+                {String(team.id) === String(currentTeamId) && (
+                  <i className="ti ti-check check-active-icon"></i>
+                )}
               </button>
             ))
-          ) : isLoading ? null : (
-            <div className="no-teams-info">Takım bulunmadı.</div>
+          ) : (
+            <div className="no-teams-info" style={{ padding: '10px', fontSize: '0.8rem', color: '#555' }}>
+              Takım bulunamadı.
+            </div>
           )}
         </div>
 

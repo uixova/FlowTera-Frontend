@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'; // useCallback ekledik
+import React, { useState, useEffect, useCallback } from 'react'; 
 import { createPortal } from 'react-dom';
 import '../components.css/ImageBox.css';
 

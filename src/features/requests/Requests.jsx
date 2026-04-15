@@ -46,11 +46,11 @@ const Requests = () => {
         if (!selectedTeamId) return;
         setLoading(true);
         try {
-            //İLGİLİ FONKSİYONU ÇAĞIRIYORUZ
+            // Servis direkt filtrelenmiş 'requests' array'ini dönüyor
             const result = await notificationService.getTeamRequests(selectedTeamId);
             setRequests(result); 
         } catch (error) {
-            console.error("Failed to load claims:", error);
+            console.error("Talepler yüklenemedi:", error);
         } finally {
             setLoading(false);
         }
@@ -67,10 +67,10 @@ const Requests = () => {
 
     // Sekme Filtrelemesi
     const finalDisplayData = useMemo(() => {
-        // filteredData zaten useFilter'dan süzülmüş olarak geliyor
         return filteredData.filter(req => {
-            if (activeTab === 'pending') return !req.status || req.status === 'pending';
-            return req.status === activeTab;
+            // Eğer status yoksa default 'pending' kabul et
+            const currentStatus = req.status || 'pending';
+            return currentStatus === activeTab;
         });
     }, [filteredData, activeTab]);
 
