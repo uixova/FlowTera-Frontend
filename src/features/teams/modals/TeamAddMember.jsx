@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useModal } from '../../../hooks/useModal'; 
+import { usePermissions } from '../../../hooks/usePermissions'; 
 import Confirm from '../../../components/modals/Confirm'; 
 import Alert from '../../../components/modals/Alert'; 
 import '../teams.css/AddMember.css';
@@ -8,39 +9,35 @@ import '../teams.css/AddMember.css';
 const AddMemberModal = ({ isOpen, onClose }) => {
   const [identifier, setIdentifier] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
-  const [restrictedPerms, setRestrictedPerms] = useState([]);
+  
+  // Yetki yönetimi için yazdığımız hook'u çağırıyoruz
+  const { 
+    getFilteredPermissions, // Filtreleme fonksiyonunu hook'tan alıyoruz
+    restrictedPerms,  
+    toggleRestriction,
+    resetRestrictions 
+  } = usePermissions([]);
 
   // Modal yönetimi 
   const { confirmConfig, askConfirm, closeConfirm, alertConfig, showAlert, closeAlert } = useModal();
 
-  const permissionsList = [
-    { id: 'trip_create', name: 'Create Trip', desc: 'Allows starting new trips' },
-    { id: 'exp_delete', name: 'Delete Expense', desc: 'Allows removing log entries' },
-    { id: 'team_manage', name: 'Manage Team', desc: 'Allows inviting/removing users' }
-  ];
-
+  // Sabit roller (Burada durabilir veya ileride hook içine de alınabilir)
   const roles = [
     { id: 'admin', name: 'Admin', desc: 'Full access, no restrictions.', color: 'admin' },
     { id: 'moderator', name: 'Moderator', desc: 'Management and monitoring.', color: 'moderator' },
     { id: 'member', name: 'Member', desc: 'Personal logs only.', color: 'member' }
   ];
 
-  const toggleRestriction = (id) => {
-    setRestrictedPerms(prev => 
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-    );
-  };
-
   const executeInvite = () => {
     console.log("Flowtera API Invitation:", {
       id: identifier,
       role: selectedRole,
-      blocked: restrictedPerms
+      blocked: restrictedPerms // Hook'tan gelen kısıtlı yetkiler
     });
     
     setIdentifier('');
     setSelectedRole('');
-    setRestrictedPerms([]);
+    resetRestrictions(); // State'i hook üzerinden sıfırlıyoruz
     onClose();
   };
 
@@ -109,7 +106,7 @@ const AddMemberModal = ({ isOpen, onClose }) => {
                       checked={selectedRole === role.id} 
                       onChange={() => {
                         setSelectedRole(role.id);
-                        setRestrictedPerms([]); 
+                        resetRestrictions(); 
                       }}
                     />
                     <div className="adm-role-content">
@@ -125,14 +122,14 @@ const AddMemberModal = ({ isOpen, onClose }) => {
 
                       <div className="adm-internal-perms">
                         {role.id !== 'admin' ? (
-                          permissionsList.map(perm => (
+                          getFilteredPermissions(role.id).map(perm => (
                             <div 
                               key={perm.id} 
                               className="adm-perm-row"
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                toggleRestriction(perm.id);
+                                toggleRestriction(perm.id); 
                               }}
                             >
                               <div className="adm-perm-text">

@@ -152,6 +152,16 @@
     background: rgba(14, 212, 90, 0.05);
 }
 
+.adm-role-card input[type="radio"]:checked + .adm-role-content .adm-internal-perms {
+    max-height: 260px; 
+    opacity: 1;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #252525;
+    overflow-y: auto; 
+    padding-right: 8px;
+}
+
 .adm-role-card:hover .adm-role-content {
     border-color: #444;
 }
@@ -284,4 +294,21 @@
     border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
+}
+
+.adm-internal-perms::-webkit-scrollbar {
+    width: 4px;
+}
+
+.adm-internal-perms::-webkit-scrollbar-track {
+    background: #111;
+}
+
+.adm-internal-perms::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 10px;
+}
+
+.adm-internal-perms::-webkit-scrollbar-thumb:hover {
+    background: #0ed45a;
 }

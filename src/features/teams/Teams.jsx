@@ -4,159 +4,129 @@ import TeamSelection from './components/TeamSelection';
 import CreateTeamPanel from './components/CreateTeamPanel';
 import TeamMemberList from './components/TeamMemberList';
 import TeamSettings from './components/TeamSettings';
-import { teamsService } from './services/teamsService'; 
+import { teamsService, teamMembersCache } from './services/teamsService'; 
 import { useAuth } from '../../context/AuthContext'; 
 import './teams.css/Team.css';
 
 const Teams = () => {
-  const getRandomDelay = (min = 250, max = 700) =>
-    Math.floor(Math.random() * (max - min + 1)) + min;
-
   const { currentUser, loading: authLoading } = useAuth(); 
-
+  
   const [teams, setTeams] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [switchingTeam, setSwitchingTeam] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedTeamId, setSelectedTeamId] = useState(() => localStorage.getItem('tm_selected_id') || null);
+  const [viewMode, setViewMode] = useState(() => localStorage.getItem('tm_selected_id') ? 'main' : 'selection');
 
-  const [selectedTeamId, setSelectedTeamId] = useState(() => {
-    return localStorage.getItem('tm_selected_id') || null;
-  });
-
-  const [viewMode, setViewMode] = useState(() => {
-    return localStorage.getItem('tm_selected_id') ? 'main' : 'selection';
-  });
-
-  useEffect(() => {
-    const handleTeamChange = (e) => {
-      if (e.detail && e.detail.teamId) {
-        setSelectedTeamId(String(e.detail.teamId));
-        setViewMode('main');
-      }
-    };
-
-    window.addEventListener('teamChanged', handleTeamChange);
-    return () => {
-      window.removeEventListener('teamChanged', handleTeamChange);
-    };
-  }, []);
-
-  // Takımları Çekme
+  // Takımları Çekme 
   useEffect(() => {
     const fetchTeams = async () => {
-      if (authLoading || !currentUser) return;
-
+      if (!currentUser) return;
       try {
         setLoading(true);
-        const data = await teamsService.getTeams(currentUser); 
+        const data = await teamsService.getTeams(currentUser);
         setTeams(data || []);
-      } catch (error) {
-        console.error("Takımlar çekilemedi:", error);
       } finally {
         setLoading(false);
       }
     };
-    
     fetchTeams();
-  }, [currentUser, authLoading]); 
+  }, [currentUser]); 
 
-  // Seçili takımı bulma
+  // Takım Değişimi Dinleyicisi
+  useEffect(() => {
+    const handleTeamChange = (e) => {
+      const newTeamId = String(e.detail.teamId);
+      if (newTeamId !== String(selectedTeamId)) {
+        setSwitchingTeam(true); 
+        setSelectedTeamId(newTeamId);
+        setViewMode('main');
+        setTimeout(() => setSwitchingTeam(false), 800); 
+      }
+    };
+    window.addEventListener('teamChanged', handleTeamChange);
+    return () => window.removeEventListener('teamChanged', handleTeamChange);
+  }, [selectedTeamId]);
+
   const activeTeam = useMemo(() => {
     if (!selectedTeamId || teams.length === 0) return null;
     return teams.find(t => String(t.id) === String(selectedTeamId)) || null;
   }, [teams, selectedTeamId]);
 
-  // Senkronizasyon (Custom Event ve LocalStorage)
   useEffect(() => {
     if (selectedTeamId) {
       localStorage.setItem('tm_selected_id', selectedTeamId);
       localStorage.setItem('tm_view_mode', viewMode);
-      if (activeTeam?.name) {
-        localStorage.setItem('tm_selected_name', activeTeam.name);
-      }
     } else {
       localStorage.removeItem('tm_selected_id');
       localStorage.setItem('tm_view_mode', 'selection');
-      localStorage.removeItem('tm_selected_name');
     }
+  }, [selectedTeamId, viewMode]);
 
-    // Modal dışından bir şey değişirse state'i global yaymak için
-    window.dispatchEvent(
-      new CustomEvent('teamChanged', {
-        detail: { teamId: selectedTeamId ? String(selectedTeamId) : null, viewMode }
-      })
-    );
-  }, [activeTeam?.name, selectedTeamId, viewMode]);
-
-  const handleNavigate = async (page, teamId = null) => {
+  const handleNavigate = (page, teamId = null) => {
     if (page === 'CreateTeamPanel') {
       setIsCreateOpen(true);
       return;
     }
-
-    if (page === 'main' && teamId) {
-      setSwitchingTeam(true);
-      await new Promise(resolve => setTimeout(resolve, getRandomDelay()));
-      setSelectedTeamId(String(teamId));
-      setViewMode('main');
-      setSwitchingTeam(false);
-      return;
-    }
-
-    if (page === 'selection') {
-      setSelectedTeamId(null);
-    } else if (teamId) {
-      setSelectedTeamId(String(teamId));
-    }
     
-    setViewMode(page);
+    if (teamId) {
+      const normalizedId = String(teamId);
+      // Eğer geçilecek takım zaten cache'de varsa loader'ı HİÇ açma
+      const isCached = teamMembersCache.has(normalizedId);
+      
+      if (!isCached) {
+        setSwitchingTeam(true);
+      }
+      
+      setSelectedTeamId(normalizedId);
+      setViewMode(page);
+      
+      // Loader açıksa kapat
+      if (!isCached) {
+        setTimeout(() => setSwitchingTeam(false), 500);
+      }
+    } else {
+      if (page === 'selection') setSelectedTeamId(null);
+      setViewMode(page);
+    }
   };
 
-  if (authLoading || (loading && teams.length === 0) || switchingTeam) {
-    return (
-      <div className="full-screen-loader">
-        <Loader type="butterfly" />
-      </div>
-    );
+  if (authLoading || (loading && teams.length === 0)) {
+    return <div className="full-screen-loader"><Loader type="butterfly" /></div>;
   }
 
   return (
     <div className="tm-feature-wrapper">
       {(viewMode === 'selection' || !activeTeam) ? (
-        <TeamSelection 
-          teams={teams} 
-          loading={loading} 
-          onNavigate={handleNavigate} 
-        />
+        <TeamSelection teams={teams} loading={loading} onNavigate={handleNavigate} />
       ) : (
         <>
           {viewMode === 'main' && (
             <TeamMemberList 
               team={activeTeam} 
-              parentLoading={loading} 
               onBack={() => handleNavigate('selection')}
               onNavigate={handleNavigate} 
+              parentLoading={switchingTeam}
             />
           )}
-
-          {viewMode === 'settings' && (
-            <TeamSettings 
-              team={activeTeam} 
-              onBack={() => setViewMode('main')} 
-            />
-          )}
+          {viewMode === 'settings' && (() => {
+            const roleObj = currentUser?.role?.find(r => String(r.teamId) === String(selectedTeamId));
+            const isDenied = Array.isArray(roleObj?.permissions) && roleObj.permissions.includes('team_settings');
+            if (isDenied) {
+                setTimeout(() => handleNavigate('main'), 0);
+                return null;
+            }
+            return <TeamSettings team={activeTeam} onBack={() => setViewMode('main')} />;
+          })()}
         </>
       )}
 
       <CreateTeamPanel 
         isOpen={isCreateOpen} 
         onClose={() => setIsCreateOpen(false)} 
-        onSuccess={() => {
-            setLoading(true);
-            teamsService.getTeams(currentUser).then(data => {
-                setTeams(data || []);
-                setLoading(false);
-            });
+        onSuccess={async () => {
+          const data = await teamsService.getTeams(currentUser);
+          setTeams(data || []);
         }}
       />
     </div>

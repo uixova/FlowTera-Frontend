@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom'; 
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import '../components.css/Navbar.css';
-import UserImage from '../../assets/images/user-profile.png'
+import UserImage from '../../assets/images/user-profile.png';
 import ThemeModal from '../modals/ThemeModal';
 import Notification from '../modals/Notification';
 import UserDropdown from '../modals/UserDropdown';
@@ -11,51 +11,80 @@ import TeamSelectModal from '../modals/TeamSelectModal';
 import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
-    const { roleNameForTeam, loading: authLoading } = useAuth();
+    // DİKKAT: AuthContext'ten user değil, currentUser geliyor. 
+    const { roleNameForTeam, loading: authLoading, currentUser } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Modal Açma/Kapama State'leri
     const [isThemeOpen, setIsThemeOpen] = useState(false);
     const [isUserOpen, setIsUserOpen] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const [isLangOpen, setIsLangOpen] = useState(false);
     const [isTeamOpen, setIsTeamOpen] = useState(false);
-    
-    // Takım ID state'i (localStorage'dan başlatıyoruz)
+
     const [selectedTeamId, setSelectedTeamId] = useState(() => {
         return localStorage.getItem('tm_selected_id') || null;
     });
+    
+    const currentPlan = useMemo(() => selectedTeamId ? roleNameForTeam(selectedTeamId, 'plan') : null, [selectedTeamId, roleNameForTeam]);
 
-    // authLoading devam ediyorsa veya takım seçili değilse false döner
-    const isAdmin = !authLoading && selectedTeamId && roleNameForTeam(selectedTeamId) === 'Admin';
-    const isEnterprise = !authLoading && selectedTeamId && roleNameForTeam(selectedTeamId, 'plan') === 'enterprise';
+    // 1. KULLANICININ O TAKIMDAKİ ROLÜNÜ VE KISITLAMALARINI BULUYORUZ
+    const teamRoleData = useMemo(() => {
+        if (!currentUser || !selectedTeamId) return null;
+        return currentUser.role?.find(r => String(r.teamId) === String(selectedTeamId));
+    }, [currentUser, selectedTeamId]);
 
-    const protectedRoutes = useMemo(() => [
-        '/expense', '/trips', '/analysis', '/history', '/requests'
-    ], []);
+    // 2. ANA YETKİ KONTROL FONKSİYONU (İstediğin mantık burada)
+    const checkAccess = useCallback((restrictionId) => {
+        if (!teamRoleData) return false;
+        
+        // Adminse kısıtlamalara bakma, direkt true ver
+        if (teamRoleData.roleName?.toLowerCase() === 'admin') return true;
 
-    // State güncelleme işlemini asenkron hale getiriyoruz 
+        // Admin değilse, permissions (kısıtlamalar) dizisine bak. 
+        // Eğer o ID dizide VARSA (includes) -> Kısıtlanmış demektir, false dön.
+        // Eğer o ID dizide YOKSA -> Kısıtlanmamış demektir, true dön.
+        const isRestricted = teamRoleData.permissions?.includes(restrictionId);
+        return !isRestricted; 
+    }, [teamRoleData]);
+
+    // Sayfa bazlı kısıtlama kontrolleri
+    const canAccessAnalysis = checkAccess('view_analytics');
+    const canAccessRequests = checkAccess('manage_requests');
+    const canAccessArchive = checkAccess('view_archive');
+
+    // Admin ve Enterprise kontrolleri (Özel şartlar için)
+    const isAdmin = teamRoleData?.roleName?.toLowerCase() === 'admin';
+    const isEnterprise = !authLoading && selectedTeamId && currentPlan === 'enterprise';
+
+    const allProtectedRoutes = useMemo(() => ['/expense', '/trips', '/analysis', '/history', '/requests', '/archive'], []);
+
     const syncSelectedTeam = useCallback(() => {
         const updatedId = localStorage.getItem('tm_selected_id');
-        
+
         queueMicrotask(() => {
             setSelectedTeamId(updatedId);
-            
-            if (!updatedId && protectedRoutes.includes(location.pathname)) {
-                navigate('/team');
+
+            if (!updatedId) {
+                if (allProtectedRoutes.includes(location.pathname)) {
+                    navigate('/team');
+                }
+                return;
             }
+
+            const path = location.pathname;
+
+            // Rota Koruması: Adam linkten zorla girmeye çalışırsa kısıtlaması varsa anasayfaya at
+            if (path === '/analysis' && !canAccessAnalysis) navigate('/home');
+            if (path === '/requests' && !canAccessRequests) navigate('/home');
+            if (path === '/archive' && (!canAccessArchive || !isEnterprise)) navigate('/home');
         });
-    }, [location.pathname, navigate, protectedRoutes]);
+    }, [location.pathname, navigate, isEnterprise, canAccessAnalysis, canAccessRequests, canAccessArchive, allProtectedRoutes]);
 
     useEffect(() => {
         const handleTeamChanged = () => syncSelectedTeam();
-
-        // Hem 'storage' event'ini hem de özel 'teamChanged' event'ini dinleyerek takım değişikliklerini senkronize ediyoruz
         window.addEventListener('teamChanged', handleTeamChanged);
         window.addEventListener('storage', syncSelectedTeam);
-
-        // İlk render'da kontrolü çalıştır
         syncSelectedTeam();
 
         return () => {
@@ -64,13 +93,11 @@ const Navbar = () => {
         };
     }, [syncSelectedTeam]);
 
-    // Takım seçimi yapıldığında çağrılacak fonksiyon
     const handleTeamChange = (teamId) => {
         const stringId = String(teamId);
         localStorage.setItem('tm_selected_id', stringId);
         localStorage.setItem('tm_view_mode', 'main');
-        
-        // Dispatch öncesi state'i manuel güncelle (Görsel hız için)
+
         setSelectedTeamId(stringId);
 
         window.dispatchEvent(
@@ -91,7 +118,7 @@ const Navbar = () => {
                     <div className="head-lnk-btn">
                         <button className="github-source"><i className="ti ti-brand-github"></i> Source Code</button>
                         <button className="donate-lnk"><i className="ti ti-heart"></i> Donate</button>
-                        
+
                         <button 
                             className={`team-select-head github-source ${isTeamOpen ? 'active' : ''}`} 
                             onClick={() => setIsTeamOpen(!isTeamOpen)}>
@@ -102,7 +129,7 @@ const Navbar = () => {
                             onClick={() => setIsLangOpen(!isLangOpen)}>
                             <i className="ti ti-world"></i>
                         </button>
-                        
+
                         <button 
                             className={`notification-btn github-source ${isNotificationOpen ? 'active' : ''}`}
                             onClick={() => setIsNotificationOpen(!isNotificationOpen)}
@@ -113,10 +140,11 @@ const Navbar = () => {
 
                         <button className="light-dark-head github-source"><i className="ti ti-sun"></i></button>
                     </div>
-                    
+
                     <div className="head-user-profile" onClick={() => setIsUserOpen(!isUserOpen)}>
                         <div className="head-profile-img">
-                            <img src={UserImage} alt="Profile" />
+                            {/* currentUser avatarını alıyoruz */}
+                            <img src={currentUser?.avatar || UserImage} alt="Profile" />
                         </div>
                         <UserDropdown 
                             isOpen={isUserOpen} 
@@ -131,33 +159,39 @@ const Navbar = () => {
                 <div className="left-head">
                     <ul>
                         <li><NavLink to="/home"><i className="ti ti-home"></i> Anasayfa</NavLink></li>
-                        
+
                         {selectedTeamId && (
                             <>
                                 <li><NavLink to="/expense"><i className="ti ti-calendar-dollar"></i> Giderler</NavLink></li>
                                 <li><NavLink to="/trips"><i className="ti ti-plane-departure"></i> Geziler</NavLink></li>
-                                <li><NavLink to="/analysis"><i className="ti ti-chart-pie"></i> Analiz</NavLink></li>
+
+                                {/* KISITLAMA YOKSA (veya Adminse) GÖSTER */}
+                                {canAccessAnalysis && (
+                                    <li><NavLink to="/analysis"><i className="ti ti-chart-pie"></i> Analiz</NavLink></li>
+                                )}
+
                                 <li><NavLink to="/history"><i className="ti ti-history"></i> Geçmiş</NavLink></li>
-                                
-                                {isAdmin && (
-                                    <>
-                                        <li>
-                                            <NavLink to="/requests">
-                                                <i className="ti ti-pencil-question"></i> İstekler
-                                            </NavLink>
-                                        </li>
-                                        {isEnterprise && (
-                                            <li>
-                                                <NavLink to="/archive">
-                                                    <i className="ti ti-archive"></i> Arşiv
-                                                </NavLink>
-                                            </li>
-                                        )}
-                                    </>
+
+                                {/* KISITLAMA YOKSA (veya Adminse) GÖSTER */}
+                                {canAccessRequests && (
+                                    <li>
+                                        <NavLink to="/requests">
+                                            <i className="ti ti-pencil-question"></i> İstekler
+                                        </NavLink>
+                                    </li>
+                                )}
+
+                                {/* ARŞİV KISITLAMASI YOKSA VE PLAN ENTERPRISE İSE GÖSTER */}
+                                {canAccessArchive && isEnterprise && (
+                                    <li>
+                                        <NavLink to="/archive">
+                                            <i className="ti ti-archive"></i> Arşiv
+                                        </NavLink>
+                                    </li>
                                 )}
                             </>
                         )}
-                        
+
                         <li><NavLink to="/team"><i className="ti ti-users-group"></i> Takım</NavLink></li>
                         <li><NavLink to="/help"><i className="ti ti-help"></i> Yardım</NavLink></li>
                     </ul>
@@ -171,7 +205,7 @@ const Navbar = () => {
             </div>
 
             <ThemeModal isOpen={isThemeOpen} onClose={() => setIsThemeOpen(false)} />
-            
+
             <Notification 
                 isOpen={isNotificationOpen} 
                 onClose={() => setIsNotificationOpen(false)} 

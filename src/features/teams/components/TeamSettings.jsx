@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'; 
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import Loader from '../../../components/common/Loader';
 import '../teams.css/Settings.css';
 import { teamsService } from '../services/teamsService';
@@ -9,20 +9,26 @@ import Confirm from '../../../components/modals/Confirm';
 
 const TeamSettings = ({ team, onBack }) => {
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-  const { roleNameForTeam, currentUser: authUser, loading: authLoading } = useAuth();
+  const { currentUser: authUser, loading: authLoading } = useAuth();
   const [planMaxMembers, setPlanMaxMembers] = useState(5);
-  const [loading, setLoading] = useState(true);
-  const [teamMembersCount, setTeamMembersCount] = useState(0); // Üye sayısı
+  const [loading, setLoading] = useState(true); 
+  const [teamMembersCount, setTeamMembersCount] = useState(0);
   const selectedTeamId = localStorage.getItem('tm_selected_id');
-  const canManageMembers = !authLoading && !!authUser && String(authUser?.isDeleted) !== 'true' && roleNameForTeam(selectedTeamId) === 'Admin';
 
-  // Modal Hook Entegrasyonu
+  const canManageMembers = useMemo(() => {
+    if (authLoading || !authUser || String(authUser?.isDeleted) === 'true') return false;
+    const roleObj = authUser?.role?.find(r => String(r.teamId) === String(selectedTeamId));
+    if (!roleObj) return false;
+    // team_settings deny-list'te varsa → erişim kapalı (rol ne olursa olsun)
+    if (Array.isArray(roleObj.permissions) && roleObj.permissions.includes('team_settings')) return false;
+    return true;
+  } , [authLoading, authUser, selectedTeamId]);
+
   const { 
     alertConfig, showAlert, closeAlert,
     confirmConfig, askConfirm, closeConfirm 
   } = useModal();
 
-  // FormData State
   const [formData, setFormData] = useState({
     teamName: team?.name || '',
     category: 'Software Development',
@@ -43,10 +49,8 @@ const TeamSettings = ({ team, onBack }) => {
 
   const loadTeamData = useCallback(async () => {
     if (!selectedTeamId) return;
-
     try {
       setLoading(true);
-      // Paralel olarak hem ayarları hem de üye listesini çekiyoruz ki sayıyı bilelim
       const [data, members] = await Promise.all([
         teamsService.getTeamSettings(selectedTeamId),
         teamsService.getTeamMembers(selectedTeamId)
@@ -56,8 +60,6 @@ const TeamSettings = ({ team, onBack }) => {
         const activeLimit = data.adminPlanLimit || authUser?.subscription?.maxMembersPerTeam || 5;
         setPlanMaxMembers(activeLimit);
         setTeamMembersCount(members?.length || 0);
-
-        // Servisten gelen veriyi yeni alanlarla eşleştiriyoruz
         setFormData({
           teamName: data.name || '', 
           category: data.category || 'Software Development', 
@@ -70,7 +72,6 @@ const TeamSettings = ({ team, onBack }) => {
           autoApprovedLimit: data.settings?.autoApprovedLimit || 0,
           currency: data.settings?.currency || 'USD'
         });
-        
         setPreview(data.image || 'https://via.placeholder.com/160?text=LOGO');
       }
     } catch (err) {
@@ -78,26 +79,24 @@ const TeamSettings = ({ team, onBack }) => {
     } finally {
       setLoading(false);
     }
-  }, [selectedTeamId, authUser]); 
+  }, [selectedTeamId, authUser]);
 
+  // authLoading bekleniyor, yetki yoksa loading kapatılıyor
   useEffect(() => {
-    if (canManageMembers) loadTeamData();
-  }, [loadTeamData, canManageMembers]);
+    if (authLoading) return;
+    if (canManageMembers) {
+      loadTeamData();
+    } else {
+      setLoading(false); // Yetki yoksa sonsuz loader engellendi
+    }
+  }, [loadTeamData, canManageMembers, authLoading]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     let finalValue = type === 'checkbox' ? checked : value;
-  
-    // Sayısal alanlar için özel kontrol
     if (['maxExpenseLimit', 'memberLimit', 'autoApprovedLimit'].includes(name)) {
-      if (value === '') {
-        finalValue = ''; // Boş bırakılmasına izin ver 
-      } else {
-        // Başındaki sıfırları temizle ve sayıya çevir
-        finalValue = Number(value);
-      }
+      finalValue = value === '' ? '' : Number(value);
     }
-  
     setFormData(prev => ({ ...prev, [name]: finalValue }));
   };
 
@@ -105,8 +104,6 @@ const TeamSettings = ({ team, onBack }) => {
     if (e) e.preventDefault();
     try {
       setLoading(true);
-
-      // Temel gönderilen ayarlar
       const updatePayload = {
         name: formData.teamName,
         category: formData.category,
@@ -121,11 +118,8 @@ const TeamSettings = ({ team, onBack }) => {
           currency: formData.currency
         }
       };
-
       if (logoFile) updatePayload.imageFile = logoFile;
-
       const result = await teamsService.updateTeamSettings(selectedTeamId, updatePayload);
-    
       if (result.success) {
         showAlert(
           "Başarılı", 
@@ -142,20 +136,17 @@ const TeamSettings = ({ team, onBack }) => {
     }
   };
 
-  // SİLME İŞLEMİ LOGIC
   const executeDeleteTeam = async () => {
     try {
       setLoading(true);
       const result = await teamsService.deleteTeam(selectedTeamId);
-      
       if (result.success) {
         closeConfirm();
         showAlert(
           "Silme İşlemi Başlatıldı",
-          "Takımınız 14 gün içinde kalıcı olarak silinecektir. Bu süre zarfında takıma tekrar giriş yaparsanız silme işlemi iptal edilecektir.",
+          "Takımınız 14 gün içinde kalıcı olarak silinecektir.",
           "warning"
         );
-        // Silme işlemi başladıktan sonra kullanıcıyı ana sayfaya veya listeye atabiliriz
         setTimeout(() => onBack(), 2000);
       }
     } catch (err) {
@@ -166,41 +157,32 @@ const TeamSettings = ({ team, onBack }) => {
     }
   };
 
-  // TAKIMI SİLME KONTROLÜ
   const handleDeleteClick = () => {
-    // 1. Durum: Takımda Admin dışında üyeler var mı?
     if (teamMembersCount > 1) {
       showAlert(
         "Organizasyon Dolu",
-        `Takımda şu an siz hariç ${teamMembersCount - 1} üye daha bulunuyor. Takımı silebilmek için önce tüm üyeleri çıkarmalı veya takımı 'Bakım' moduna almalısınız.`,
+        `Takımda şu an siz hariç ${teamMembersCount - 1} üye daha bulunuyor. Önce tüm üyeleri çıkarmalısınız.`,
         "warning"
       );
       return;
     }
-
-    // 2. Durum: Takım aktif mi? (Opsiyonel: Silmeden önce bakım moduna zorlama)
     if (formData.status !== 'maintenance') {
       askConfirm(
         "Güvenli Silme Gereksinimi",
         "Takımı silmeden önce 'Bakım Modu'na almanız önerilir. Yine de devam etmek istiyor musunuz?",
-        () => {
-           // Onaylarsa direkt silmeye geç
-           askConfirm(
-            "Son Onay",
-            `"${formData.teamName}" organizasyonu kalıcı olarak silinecektir. Emin misiniz?`,
-            executeDeleteTeam,
-            "danger"
-          );
-        },
+        () => askConfirm(
+          "Son Onay",
+          `"${formData.teamName}" organizasyonu kalıcı olarak silinecektir. Emin misiniz?`,
+          executeDeleteTeam,
+          "danger"
+        ),
         "warning"
       );
       return;
     }
-
-    // 3. Durum: Her şey hazır (Admin tek ve bakım modunda)
     askConfirm(
       "Takımı Silmek İstediğinize Emin Misiniz?",
-      `"${formData.teamName}" organizasyonu ve tüm bağlı veriler silinecektir. 14 günlük kurtarma süreci başlayacaktır.`,
+      `"${formData.teamName}" organizasyonu ve tüm bağlı veriler silinecektir.`,
       executeDeleteTeam,
       "danger"
     );
@@ -209,19 +191,18 @@ const TeamSettings = ({ team, onBack }) => {
   const handleLogoSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
       setLogoError('Sadece JPG, PNG veya WEBP resimleri kabul edilir.');
       setLogoFile(null);
       e.target.value = '';
       return;
     }
-
     setLogoError('');
     setLogoFile(file);
     setPreview(URL.createObjectURL(file));
   };
 
+  // Auth veya data yükleniyorsa loader göster
   if (authLoading || loading) {
     return (
       <div className="full-screen-loader">
@@ -230,6 +211,7 @@ const TeamSettings = ({ team, onBack }) => {
     );
   }
 
+  // Yetki yoksa erişim engeli (loader olmadan, anında göster)
   if (!canManageMembers) {
     return (
       <div className="tm-page-layout">
@@ -285,21 +267,20 @@ const TeamSettings = ({ team, onBack }) => {
               <section className="tm-form-section">
                 <h3 className="section-title">Genel Konfigürasyon</h3>
                 <div className="tm-grid-row">
-                    <div className="tm-input-group">
-                        <label>Organizasyon Adı</label>
-                        <input type="text" name="teamName" value={formData.teamName} onChange={handleChange} required />
-                    </div>
-                    <div className="tm-input-group">
-                        <label>Kategori</label>
-                        <select name="category" value={formData.category} onChange={handleChange}>
-                            <option value="Software Development">Yazılım Geliştirme</option>
-                            <option value="Marketing & Ads">Pazarlama & Ads</option>
-                            <option value="Logistics">Lojistik</option>
-                            <option value="Finance">Finans</option>
-                        </select>
-                    </div>
+                  <div className="tm-input-group">
+                    <label>Organizasyon Adı</label>
+                    <input type="text" name="teamName" value={formData.teamName} onChange={handleChange} required />
+                  </div>
+                  <div className="tm-input-group">
+                    <label>Kategori</label>
+                    <select name="category" value={formData.category} onChange={handleChange}>
+                      <option value="Software Development">Yazılım Geliştirme</option>
+                      <option value="Marketing & Ads">Pazarlama & Ads</option>
+                      <option value="Logistics">Lojistik</option>
+                      <option value="Finance">Finans</option>
+                    </select>
+                  </div>
                 </div>
-                
                 <div className="tm-grid-row">
                   <div className="tm-input-group">
                     <label>Takım Türü</label>
@@ -320,7 +301,6 @@ const TeamSettings = ({ team, onBack }) => {
 
               <section className="tm-form-section limit-section-box">
                 <h3 className="section-title">Otomasyon ve Limitler</h3>
-                
                 <div className="tm-grid-row">
                   <div className="tm-input-group">
                     <label>Aylık Harcama Limiti ({formData.currency})</label>
@@ -331,26 +311,20 @@ const TeamSettings = ({ team, onBack }) => {
                     <input type="number" name="memberLimit" value={formData.memberLimit === 0 ? '' : formData.memberLimit} onChange={handleChange} max={planMaxMembers} min="1" />
                   </div>
                 </div>
-
                 <div className="tm-automation-settings">
-                    <div className="tm-checkbox-wrapper">
-                        <label className="tm-custom-checkbox">
-                            <input type="checkbox" name="autoApproved" checked={formData.autoApproved} onChange={handleChange} />
-                            <span className="checkmark"></span>
-                            <span className="checkbox-text">Otomatik Onayı Etkinleştir</span>
-                        </label>
+                  <div className="tm-checkbox-wrapper">
+                    <label className="tm-custom-checkbox">
+                      <input type="checkbox" name="autoApproved" checked={formData.autoApproved} onChange={handleChange} />
+                      <span className="checkmark"></span>
+                      <span className="checkbox-text">Otomatik Onayı Etkinleştir</span>
+                    </label>
+                  </div>
+                  {formData.autoApproved && (
+                    <div className="tm-input-group animate-in">
+                      <label>Otomatik Onay Limiti ({formData.currency})</label>
+                      <input type="number" name="autoApprovedLimit" value={formData.autoApprovedLimit} onChange={handleChange} placeholder="Otomatik onay limiti" />
                     </div>
-
-                    {formData.autoApproved && (
-                        <div className="tm-input-group animate-in">
-                            <label>Otomatik Onay Limiti ({formData.currency})</label>
-                            <input 
-                                type="number" name="autoApprovedLimit" 
-                                value={formData.autoApprovedLimit} onChange={handleChange} 
-                                placeholder="Otomatik onay limiti"
-                            />
-                        </div>
-                    )}
+                  )}
                 </div>
               </section>
 
@@ -359,18 +333,17 @@ const TeamSettings = ({ team, onBack }) => {
                 <div className="tm-radio-vertical">
                   <label className={`tm-radio-option ${formData.privacy === 'private' ? 'selected' : ''}`}>
                     <input type="radio" name="privacy" value="private" checked={formData.privacy === 'private'} onChange={handleChange} />
-                    <i className="ti ti-lock option-icon"></i> 
+                    <i className="ti ti-lock option-icon"></i>
                     <div className="option-text">
                       <strong>Özel Organizasyon</strong>
                       <span>Sadece davetli üyeler verilere erişebilir.</span>
                     </div>
                   </label>
-
                   <label className={`tm-radio-option ${formData.privacy === 'internal' ? 'selected' : ''}`}>
                     <input type="radio" name="privacy" value="internal" checked={formData.privacy === 'internal'} onChange={handleChange} />
-                    <i className="ti ti-world option-icon"></i> 
+                    <i className="ti ti-world option-icon"></i>
                     <div className="option-text">
-                      <strong>Takım İçi (Sadece Alan Alanı)</strong>
+                      <strong>Takım İçi (Sadece Alan Adı)</strong>
                       <span>Doğrulanmış e-posta alan adları katılabilir.</span>
                     </div>
                   </label>

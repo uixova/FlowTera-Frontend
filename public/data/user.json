@@ -1,9 +1,9 @@
 [
   {
     "id": "u1",
-    "name": "Ahmet Yılmaz",
-    "username": "ahmetyilmaz",
-    "email": "ahmet.yilmaz@example.com",
+    "name": "UIXOVA",
+    "username": "uixova",
+    "email": "uixova@flowtera.in",
     "avatar": "/src/assets/images/user-profile.png",
     "phone": "+90 555 123 4567",
     "address": "123 Main St, Istanbul, Turkey",
@@ -26,7 +26,7 @@
       {
         "teamId": "team-2",
         "roleName": "Moderator",
-        "permissions": []
+        "permissions": ["manage_requests", "team_settings", "trip_create", "create_report"]
       }
     ],
     "status": "active",
@@ -73,7 +73,7 @@
       {
         "teamId": "team-1",
         "roleName": "Member",
-        "permissions": []
+        "permissions": ["member_add"]
       }
     ],
     "status": "active",

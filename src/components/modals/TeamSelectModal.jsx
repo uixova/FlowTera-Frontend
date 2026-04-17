@@ -7,53 +7,51 @@ import '../components.css/TeamSelectModal.css';
 const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  
-  const [teams, setTeams] = useState(() => {
-    try {
-      const raw = localStorage.getItem('tm_teams_cache');
-      const parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  });
+  const [teams, setTeams] = useState([]);
 
-  // Modal her açıldığında veriyi servisten çek
   useEffect(() => {
     if (isOpen && currentUser) {
-      let isCancelled = false;
       const fetchTeams = async () => {
         try {
           const data = await teamsService.getTeams(currentUser); 
-          if (!isCancelled) {
-            setTeams(data || []);
-            localStorage.setItem('tm_teams_cache', JSON.stringify(data || []));
-          }
+          setTeams(data || []);
         } catch (error) {
           console.error("Teams fetch error:", error);
         }
       };
-      
       fetchTeams();
-      return () => { isCancelled = true; };
     }
   }, [isOpen, currentUser]);
 
   if (!isOpen) return null;
 
-  const handleCreateNew = () => {
-    onClose();
-    navigate('/team');
-  };
-
   const handleSelect = (teamId) => {
-    const selectedTeam = teams.find((team) => String(team.id) === String(teamId));
-    localStorage.setItem('tm_selected_id', String(teamId));
+    const stringId = String(teamId);
+    const selectedTeam = teams.find(t => String(t.id) === stringId);
+    
+    // AuthContext'teki rol dizisinden bu takımın rolünü bul
+    const userRoleInfo = currentUser?.role?.find(r => String(r.teamId) === stringId);
+    const nextRole = userRoleInfo?.roleName;
+    const nextPlan = selectedTeam?.plan; // Takım objesinden gelen plan
+
+    // LocalStorage güncellemeleri
+    localStorage.setItem('tm_selected_id', stringId);
     localStorage.setItem('tm_selected_name', selectedTeam?.name || '');
 
+    // ANLIK ROTA KORUMASI
+    const path = window.location.pathname;
+    const adminRoutes = ['/analysis', '/requests'];
+    
+    if (adminRoutes.includes(path) && nextRole !== 'Admin') {
+      navigate('/home');
+    } else if (path === '/archive' && nextPlan !== 'enterprise') {
+      navigate('/home');
+    }
+
+    // Event ve State tetikleme
     window.dispatchEvent(
       new CustomEvent('teamChanged', {
-        detail: { teamId: String(teamId), teamName: selectedTeam?.name || '' }
+        detail: { teamId: stringId, teamName: selectedTeam?.name || '' }
       })
     );
     
@@ -101,7 +99,7 @@ const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
         </div>
 
         <div className="team-dropdown-footer">
-          <button className="add-team-small-btn" onClick={handleCreateNew}>
+          <button className="add-team-small-btn" onClick={() => { onClose(); navigate('/team'); }}>
             <i className="ti ti-plus"></i>
             Yeni Takım Oluştur
           </button>

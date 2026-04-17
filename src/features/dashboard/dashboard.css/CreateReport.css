@@ -1,26 +1,294 @@
-.report-container { display: flex; flex-direction: column; gap: 20px; }
-.report-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-.report-options {
-    background: #141414;
-    padding: 15px;
-    border-radius: 12px;
+.report-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 20px;
+    padding: 10px 5px;
 }
 
-.st-checkbox-group {
+.mail-info-banner {
+    background: rgba(14, 212, 90, 0.05);
+    border: 1px dashed rgba(14, 212, 90, 0.3);
+    padding: 14px;
+    border-radius: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.banner-icon {
+    background: rgba(14, 212, 90, 0.1);
+    color: #0ed45a;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: #888;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-.st-checkbox-group input {
-    width: 18px;
-    height: 18px;
-    accent-color: #0ed45a;
+.mail-info-banner p {
+    font-size: 0.82rem;
+    color: #999;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.mail-info-banner strong {
+    color: #0ed45a;
+    font-weight: 600;
+}
+
+.report-info-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+    border: 1px solid #333;
+    padding: 15px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.info-icon {
+    width: 42px;
+    height: 42px;
+    background: rgba(14, 212, 90, 0.1);
+    color: #0ed45a;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.info-text span {
+    display: block;
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 2px;
+}
+
+.info-text strong {
+    color: #fff;
+    font-size: 1.05rem;
+}
+
+.report-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.section-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quick-dates {
+    display: flex;
+    gap: 6px;
+}
+
+.quick-dates span {
+    font-size: 0.65rem;
+    background: #222;
+    padding: 3px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #777;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.quick-dates span:hover {
+    background: #333;
+    color: #0ed45a;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 14px;
+    color: #555;
+    font-size: 1.1rem;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding: 14px 14px 14px 45px;
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    color: #fff;
+    outline: none;
+    font-size: 0.9rem;
+    transition: border 0.3s;
+}
+
+.input-with-icon input:focus {
+    border-color: #444;
+}
+
+.report-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.date-input-box {
+    background: #111;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #222;
+    transition: border 0.3s;
+}
+
+.date-input-box:focus-within {
+    border-color: #444;
+}
+
+.date-input-box small {
+    display: block;
+    font-size: 0.65rem;
+    color: #555;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.date-input-box input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 100%;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.option-item {
+    background: #111;
+    border: 1px solid #222;
+    padding: 14px 18px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-item:hover {
+    background: #161616;
+    border-color: #333;
+}
+
+.option-item.active {
+    border-color: rgba(14, 212, 90, 0.4);
+    background: rgba(14, 212, 90, 0.02);
+}
+
+.option-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.option-info i {
+    font-size: 1.4rem;
+    color: #444;
+    transition: 0.3s;
+}
+
+.option-item.active i {
+    color: #0ed45a;
+}
+
+.option-info p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #eee;
+    font-weight: 500;
+}
+
+.option-info small {
+    display: block;
+    color: #666;
+    font-size: 0.75rem;
+    margin-top: 2px;
+}
+
+.custom-switch {
+    width: 40px;
+    height: 22px;
+    background: #2a2a2a;
+    border-radius: 20px;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-switch::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #666;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.option-item.active .custom-switch {
+    background: #0ed45a;
+}
+
+.option-item.active .custom-switch::after {
+    left: 21px;
+    background: #000;
+}
+
+.generate-report-btn {
+    width: 100%;
+    background: #0ed45a;
+    color: #000;
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.generate-report-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(14, 212, 90, 0.3);
+    background: #0dbd51;
+}
+
+.generate-report-btn i {
+    font-size: 1.4rem;
+}
+
+@media (max-width: 480px) {
+    .report-grid-2 {
+        grid-template-columns: 1fr;
+    }
 }

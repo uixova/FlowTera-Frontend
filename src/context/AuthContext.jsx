@@ -25,34 +25,26 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = useCallback(async (userId) => {
         if (!userId) {
-            setCurrentUser(null);
             setLoading(false);
             return;
         }
 
         setLoading(true);
-        try {
-            // Paralel fetch: Hem kullanıcıyı hem tüm takımları çekiyoruz
-            const [users, allTeams] = await Promise.all([
-                api.users.getAll(),
-                api.teams.getAll()
-            ]);
-
-            const user = users.find(u => String(u.id) === String(userId));
-            
-            if (user) {
-                setCurrentUser(user);
-                setTeams(allTeams); // Takım listesini state'e bastık
-            } else {
-                logout();
+            try {
+                const users = await api.users.getAll();
+                const user = users.find(u => String(u.id) === String(userId));
+        
+                if (user) {
+                    setCurrentUser(user);
+                } else {
+                    logout();
+                }
+            } catch (error) {
+                console.error("Auth Error:", error);
+            } finally {
+                setLoading(false);
             }
-        } catch (error) {
-            console.error("Auth Error:", error);
-            setCurrentUser(null);
-        } finally {
-            setLoading(false);
-        }
-    }, [logout]); 
+        }, [logout]);
 
     useEffect(() => {
         fetchUser(currentUserId);

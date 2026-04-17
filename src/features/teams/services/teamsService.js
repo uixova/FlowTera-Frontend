@@ -1,6 +1,6 @@
 import { api } from '../../../api/api';
 
-const randomDelay = (min = 200, max = 800) => {
+const randomDelay = (min = 200, max = 500) => {
     const ms = Math.floor(Math.random() * (max - min + 1) + min);
     return new Promise(resolve => setTimeout(resolve, ms));
 };
@@ -11,13 +11,16 @@ const ROLE_PRIORITY = {
     "Member": 3
 };
 
+export const teamMembersCache = new Map();
+export const teamMembersRequestCache = new Map();
+
 export const teamsService = {
     // Tüm takımları getirme (Kullanıcıya göre filtreleyerek)
     getTeams: async (currentUser) => {
-        if (!currentUser) return [];
-        await randomDelay(400, 1000);
+        if (!currentUser || !currentUser.teams) return [];
+        await randomDelay(300, 500);
 
-        // api.js'deki getAll metodunu kullanıyoruz
+        // OPTİMİZASYON: Tüm takımları çekmek yerine kullanıcının sahip olduğu ID'lerle işlem yapıyoruz
         const allTeams = await api.teams.getAll() || [];
         
         // Kullanıcının içindeki takımları filtrele
@@ -35,23 +38,36 @@ export const teamsService = {
     // Takım üyelerini getirme
     getTeamMembers: async (teamId) => {
         if (!teamId) return [];
-        await randomDelay(300, 600);
-        
-        const allTeams = await api.teams.getAll() || [];
+        await randomDelay(200, 400);
+    
+        // OPTİMİZASYON: Paralel çekim ve Map kullanımı ile döngü performansını artırdık
+        const [allTeams, allUsers] = await Promise.all([
+            api.teams.getAll() || [],
+            api.users.getAll() || []
+        ]);
+    
         const teamData = allTeams.find(t => String(t.id) === String(teamId));
         const teamMembersRaw = Array.isArray(teamData?.members) ? teamData.members : [];
 
+        // Performans için userMap oluşturuyoruz: Tek tek find yapmak yerine ID ile direkt erişim
+        const userMap = new Map(allUsers.map(u => [String(u.id), u]));
+
         const normalized = teamMembersRaw.map((tm) => {
             const isDeleted = Boolean(tm?.isDeleted);
+            
+            // Map üzerinden O(1) hızında veriyi alıyoruz
+            const fullUserData = userMap.get(String(tm.id));
+            const specificTeamRole = fullUserData?.role?.find(r => String(r.teamId) === String(teamId));
+
             return {
                 id: String(tm.id),
-                name: isDeleted ? "DeletedUser" : (tm.name || "Unknown"),
-                avatar: isDeleted ? null : (tm.avatar || null),
-                email: isDeleted ? '' : (tm.email || ''),
+                name: isDeleted ? "DeletedUser" : (tm.name || fullUserData?.name || "Unknown"),
+                avatar: isDeleted ? null : (tm.avatar || fullUserData?.avatar || null),
+                email: isDeleted ? '' : (tm.email || fullUserData?.email || ''),
                 isDeleted,
-                lastLogin: tm?.lastLogin || null,
-                roleName: tm?.roleName || "Member",
-                permissions: tm?.permissions || []
+                lastLogin: tm?.lastLogin || fullUserData?.lastLogin || null,
+                roleName: specificTeamRole?.roleName || tm?.roleName || "Member",
+                permissions: specificTeamRole?.permissions || tm?.permissions || []
             };
         });
 
@@ -85,8 +101,11 @@ export const teamsService = {
         if (!teamId) return null;
         await randomDelay(100, 200);
     
-        const allTeams = await api.teams.getAll() || [];
-        const allUsers = await api.users.getAll() || [];
+        // Yine paralel fetch ile bekleme süresini optimize ettik
+        const [allTeams, allUsers] = await Promise.all([
+            api.teams.getAll() || [],
+            api.users.getAll() || []
+        ]);
     
         const team = allTeams.find(t => String(t.id) === String(teamId));
         if (!team) return null;
@@ -128,9 +147,9 @@ export const teamsService = {
         await randomDelay(600, 1200);
         
         /* BACKEND SİMÜLASYONU: 
-           Burada gerçek bir API olsaydı, gönderilen updatePayload içindeki 'memberLimit' 
-           değeri, getTeamSettings'den dönen 'adminPlanLimit' değerinden büyükse 
-           hata döndürecekti.
+            Burada gerçek bir API olsaydı, gönderilen updatePayload içindeki 'memberLimit' 
+            değeri, getTeamSettings'den dönen 'adminPlanLimit' değerinden büyükse 
+            hata döndürecekti.
         */
         
         console.log(`[API UPDATE] Team: ${teamId} için ayarlar güncellendi.`, updatePayload);

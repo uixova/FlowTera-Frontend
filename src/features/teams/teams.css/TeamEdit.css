@@ -114,14 +114,16 @@
 }
 
 .role-option-label.active .role-internal-perms {
-    max-height: 400px; 
+    max-height: 280px; 
     opacity: 1;
     padding-bottom: 20px;
     margin-top: 5px;
     border-top: 1px solid #333;
     padding-top: 15px;
+    overflow-y: auto; 
+    overflow-x: hidden;
+    padding-right: 10px; 
 }
-
 .tm-perm-row {
     display: flex;
     align-items: center;
@@ -219,4 +221,22 @@
     display: flex;
     align-items: center;
     gap: 6px;
+}
+
+.role-internal-perms::-webkit-scrollbar {
+    width: 5px;
+}
+
+.role-internal-perms::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 10px;
+}
+
+.role-internal-perms::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+.role-internal-perms::-webkit-scrollbar-thumb:hover {
+    background: #0ed45a; 
 }

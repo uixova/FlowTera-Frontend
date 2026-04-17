@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Loader from '../../../components/common/Loader';
 import TeamCard from './TeamCard';
 import SubNavbar from '../../../components/navigation/SubNavbar';
 import { useAuth } from '../../../context/AuthContext';
@@ -10,10 +9,7 @@ const TeamSelection = ({ onNavigate, teams, loading }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const { roleNameForTeam } = useAuth();
     
-    // Modal yönetimi için config ve showAlert fonksiyonlarını çekiyoruz
     const { alertConfig, showAlert, closeAlert } = useModal();
-
-    if (loading && teams.length === 0) return null;
 
     const filteredTeams = teams.filter(team => 
         team.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -25,7 +21,6 @@ const TeamSelection = ({ onNavigate, teams, loading }) => {
         const isMaintenance = team.settings?.status === 'maintenance';
 
         if (isMaintenance && userRole !== 'Admin') {
-            // Tarayıcı alerti yerine senin modalı tetikliyoruz
             showAlert(
                 "Erişim Engeli",
                 `"${team.name.toUpperCase()}" şu anda teknik bir bakım çalışması nedeniyle erişime kapatılmıştır. Lütfen daha sonra tekrar deneyiniz.`,
@@ -37,10 +32,8 @@ const TeamSelection = ({ onNavigate, teams, loading }) => {
         onNavigate('main', team.id);
     };
 
-    if (loading) return <Loader type="butterfly" />;
-
     return (
-        <div className="tm-selection-page">
+        <div className={`tm-selection-page ${loading ? 'updating-data' : ''}`}>
             <SubNavbar 
                 title="Select Organization"
                 searchPlaceholder="Takım ara..."
@@ -63,11 +56,12 @@ const TeamSelection = ({ onNavigate, teams, loading }) => {
                         />
                     ))
                 ) : (
-                    <div className="no-results">Aramanızla eşleşen takım bulunamadı.</div>
+                    <div className="no-results">
+                        {loading ? 'Yükleniyor...' : 'Aramanızla eşleşen takım bulunamadı.'}
+                    </div>
                 )}
             </div>
 
-            {/* Senin hazırladığın Alert Modal buraya eklendi */}
             <Alert {...alertConfig} onClose={closeAlert} />
         </div>
     );

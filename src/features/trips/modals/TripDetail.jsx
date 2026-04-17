@@ -1,15 +1,9 @@
 import React, { memo } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
-import ImageBox from '../../../components/modals/ImageBox';
-import { useImageBox } from '../../../hooks/useLightbox';
 import '../trips.css/TripDetail.css';
 
-const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
-  const { handleImageToggle, wrapSidebarClose } = useImageBox();
-
+const TripDetail = ({ isOpen, onClose, data }) => {
   if (!data) return null;
-
-  const protectedClose = wrapSidebarClose(onClose);
 
   const sidebarFooter = (
     <div className="tr-panel-footer" style={{ width: '100%', borderTop: 'none', padding: 0 }}>
@@ -22,29 +16,11 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
   return (
     <ActionSidebar
       isOpen={isOpen}
-      onClose={protectedClose}
+      onClose={onClose} 
       title={null}
       footer={sidebarFooter}
       width="480px"
     >
-      {/* Header Image Area */}
-      <div className="tr-panel-header-image">
-        <ImageBox 
-          src={data.image || "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=2070&auto=format&fit=crop"} 
-          alt={data.title}
-          onToggle={(state) => {
-            handleImageToggle(state);
-            if (state) onClose();
-            else if (onReopen) onReopen();
-          }}
-        >
-          <img 
-            src={data.image || "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=2070&auto=format&fit=crop"} 
-            alt="Varış noktası" 
-          />
-          <div className="tr-header-overlay"></div>
-        </ImageBox>
-      </div>
 
       <div className="tr-panel-content-internal">
         <div className="tr-panel-title-section">
@@ -81,7 +57,7 @@ const TripDetail = ({ isOpen, onClose, data, onReopen }) => {
           </div>
         </div>
 
-        {/* SABİT KUR BİLGİSİ - ARTIK DİNAMİK OBJEDEN ÇEKİYORUZ */}
+        {/* SABİT KUR BİLGİSİ */}
         <div className="tr-rate-info">
           <i className="ti ti-history"></i>
           <span>

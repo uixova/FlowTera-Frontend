@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState, useMemo } from 'react';
 import Loader from '../../components/common/Loader';
 import './trips.css/Trips.css';
-import SubNavbar from '../../components/navigation/SubNavbar'; 
+import SubNavbar from '../../components/navigation/SubNavbar';
 import CreateTrip from './modals/CreateTrip';
 import TripDetail from './modals/TripDetail';
 import CurrencyModal from '../../components/modals/CurrencyModal';
 import PaginationFooter from '../../components/common/PaginationFooter';
 import ActionSidebar from '../../components/navigation/ActionSidebar';
 import TripFilter from './modals/TripFilter';
-import TripList from './components/TripList'; 
+import TripList from './components/TripList';
 import Alert from '../../components/modals/Alert';
 
 // Servis ve Hook importları
-import { tripsService } from './services/tripsService'; 
+import { tripsService } from './services/tripsService';
 import { usePagination } from '../../hooks/usePagination';
 import { useFilter } from '../../hooks/useFilter';
 import { useCurrency } from '../../context/CurrencyContext';
 import { useModal } from '../../hooks/useModal';
+import { useAuth } from '../../context/AuthContext';
+import { usePermissions } from '../../hooks/usePermissions';
 
 const Trips = () => {
     // UI STATELERİ
@@ -32,19 +34,29 @@ const Trips = () => {
     const [activeTeamId, setActiveTeamId] = useState(() => localStorage.getItem('tm_selected_id'));
     const [teamDefaultCurrency, setTeamDefaultCurrency] = useState('');
 
-    // TAKIM VE KUR SENKRONİZASYONU (BUG FIXED)
+    const { currentUser } = useAuth();
+    const { hasPermission } = usePermissions();
+
+    // Aktif takımın rol objesini bul
+    const currentUserRoleObj = useMemo(() => {
+        if (!currentUser || !activeTeamId) return null;
+        return currentUser.role?.find(r => String(r.teamId) === String(activeTeamId));
+    }, [currentUser, activeTeamId]);
+
+    // Yetki Kontrolleri
+    const canCreateTrip = hasPermission(currentUserRoleObj, 'trip_create');
+
+    // TAKIM VE KUR SENKRONİZASYONU
     useEffect(() => {
         const syncSelectedTeam = () => {
             const nextTeamId = localStorage.getItem('tm_selected_id');
             
-            // Eğer takım ID'si aynıysa, efekti durdur (Seçilen kuru ezmemek için)
             if (String(nextTeamId) === String(activeTeamId) && teamDefaultCurrency !== '') {
                 return;
             }
 
             setActiveTeamId(nextTeamId);
 
-            // Takım değiştiyse, o takımın default para birimini ayarla
             const rawCache = localStorage.getItem('tm_teams_cache');
             if (rawCache && nextTeamId) {
                 try {
@@ -52,7 +64,6 @@ const Trips = () => {
                     const currentTeam = teams.find(t => String(t.id) === String(nextTeamId));
                     if (currentTeam?.settings?.currency) {
                         setTeamDefaultCurrency(currentTeam.settings.currency);
-                        // Sadece takım değiştiğinde (ilk yükleme dahil) context'i güncelle
                         updateCurrency(currentTeam.settings.currency);
                     }
                 } catch (e) { console.error("Cache parse error:", e); }
@@ -67,7 +78,7 @@ const Trips = () => {
             window.removeEventListener('teamChanged', syncSelectedTeam);
             window.removeEventListener('storage', syncSelectedTeam);
         };
-    }, [activeTeamId, teamDefaultCurrency, updateCurrency]); 
+    }, [activeTeamId, teamDefaultCurrency, updateCurrency]);
 
     // Veri Çekme
     const { 
@@ -102,12 +113,10 @@ const Trips = () => {
     };
 
     const handleSuccess = () => {
-        // Önce modalı kapat ki kullanıcı kurtulsun, sonra arkada veriyi yenile
         setIsCreateOpen(false);
         setIsEditMode(false);
         setSelectedTrip(null);
         
-        // Listeyi yenilemeyi bir sonraki tick'e atalım
         setTimeout(() => {
             refreshData();
         }, 0);
@@ -136,6 +145,7 @@ const Trips = () => {
                     searchPlaceholder="Gezi ara..."
                     searchValue={searchTerm}
                     showCurrency={true}
+                    showCreate={canCreateTrip}
                     createLabel="Gezi Oluştur"
                     onSearch={(val) => setSearchTerm(val)} 
                     onCreate={() => {

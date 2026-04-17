@@ -1,36 +1,3 @@
-.tr-panel-header-image {
-    width: 100%;
-    height: 220px;
-    position: relative;
-    background: #000;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-.tr-panel-header-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.5;
-    transition: transform 0.5s ease;
-}
-
-.tr-panel-header-image:hover img {
-    transform: scale(1.05);
-}
-
-.tr-panel-header-image .image-box-trigger {
-    width: 100%;
-    height: 100%;
-    display: block;
-}
-
-.tr-panel-header-image .image-box-trigger img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 .tr-header-overlay {
     position: absolute;
     inset: 0;
@@ -39,7 +6,6 @@
 }
 
 .tr-panel-content-internal {
-    padding: 25px;
     flex: 1;
     overflow-y: auto;
 }

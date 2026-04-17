@@ -3,7 +3,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { CurrencyProvider } from './context/CurrencyContext';
-import { AuthProvider, useAuth } from './context/AuthContext'; // Bunu ekliyoruz
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 import Navbar from './components/navigation/Navbar';
 import Dashboard from './features/dashboard/Dashboard';

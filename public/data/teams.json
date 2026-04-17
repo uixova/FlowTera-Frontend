@@ -63,6 +63,12 @@
         "name": "Ece Naz",
         "avatar": "/src/assets/images/user-profile.png",
         "email": "ece.naz@example.com"
+      },
+      {
+        "id": "u1",
+        "name": "UIXOVA",
+        "avatar": "/src/assets/images/user-profile.png",
+        "email": "uixova@flowtera.in"
       }
     ],
     "isDeleted": false,

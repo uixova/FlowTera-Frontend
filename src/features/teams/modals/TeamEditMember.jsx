@@ -1,48 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import '../teams.css/TeamEdit.css';
 import { teamsService } from '../services/teamsService'; 
 import { useModal } from '../../../hooks/useModal'; 
+import { usePermissions } from '../../../hooks/usePermissions'; // Hook'u dahil ettik
 import Confirm from '../../../components/modals/Confirm'; 
 
 const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
     const [selectedRole, setSelectedRole] = useState('member');
-    const [restrictedPerms, setRestrictedPerms] = useState([]); 
     const [isUpdating, setIsUpdating] = useState(false);
+
+    // Yetki yönetimi için yazdığımız hook'u çağırıyoruz
+    const { 
+        getFilteredPermissions, 
+        restrictedPerms, 
+        setRestrictedPerms, 
+        toggleRestriction, 
+        resetRestrictions 
+    } = usePermissions([]);
 
     // Confirm modal yönetimi için hook'u çağırıyoruz
     const { confirmConfig, askConfirm, closeConfirm } = useModal();
 
-    const permissionsList = [
-        { id: 'trip_create', name: 'Create Trip', desc: 'Allows starting new trips' },
-        { id: 'exp_delete', name: 'Delete Expense', desc: 'Allows removing log entries' },
-        { id: 'team_manage', name: 'Manage Team', desc: 'Allows inviting/removing users' }
-    ];
-
     // Modal açıldığında mevcut rol ve kısıtlamaları yükle
     useEffect(() => {
         if (isOpen && user) {
-            setSelectedRole(user.roleName?.toLowerCase() || 'member');
-            setRestrictedPerms(user.restrictions || []); 
-        }
-    }, [user, isOpen]);
+            const currentRole = user.roleName?.toLowerCase() || 'member';
+            const currentRestrictions = user.permissions || [];
 
-    // Kısıtlama toggle fonksiyonu
-    const toggleRestriction = (id) => {
-        setRestrictedPerms(prev => 
-            prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-        );
-    };
+            setSelectedRole(currentRole);
+            setRestrictedPerms(currentRestrictions); 
+        }
+    }, [user, isOpen, setRestrictedPerms]);
 
     // Asıl güncelleme işlemini yapan fonksiyonu ayırdık
-    const executeUpdate = async () => {
+    const executeUpdate = useCallback(async () => {
         if (!user?.id || !teamId) return;
         try {
-            // API çağrısı yaparak rol ve kısıtlamaları güncelleyoruz
             setIsUpdating(true);
             await teamsService.updateUserRole(user.id, teamId, {
                 role: selectedRole,
-                restrictions: restrictedPerms
+                restrictions: restrictedPerms 
             });
             onClose(); 
         } catch (error) {
@@ -50,7 +48,7 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
         } finally {
             setIsUpdating(false);
         }
-    };
+    }, [user?.id, teamId, selectedRole, restrictedPerms, onClose]);
 
     // Güncelleme butonuna basıldığında çalışan kontrol mekanizması
     const handleUpdateAttempt = () => {
@@ -110,7 +108,8 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
                                         checked={selectedRole === role.id}
                                         onChange={(e) => {
                                             setSelectedRole(e.target.value);
-                                            if(e.target.value === 'admin') setRestrictedPerms([]);
+                                            // Rol admin seçilirse kısıtlamaları otomatik temizle
+                                            if(e.target.value === 'admin') resetRestrictions();
                                         }}
                                         hidden
                                     />
@@ -127,18 +126,19 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
 
                                         <div className="role-internal-perms">
                                             {role.id !== 'admin' ? (
-                                                permissionsList.map(perm => (
+                                                getFilteredPermissions(role.id).map(perm => (
                                                     <div 
                                                         key={perm.id} className="tm-perm-row"
                                                         onClick={(e) => {
                                                             e.preventDefault(); e.stopPropagation();
-                                                            toggleRestriction(perm.id);
+                                                            toggleRestriction(perm.id); 
                                                         }}
                                                     >
                                                         <div className="tm-perm-text">
                                                             <span>{perm.name}</span>
                                                             <small>{perm.desc}</small>
                                                         </div>
+                                                        {/* restrictedPerms dizisi içindeki ID'yi kontrol edip X işaretini koyuyoruz */}
                                                         <div className={`tm-custom-check ${restrictedPerms.includes(perm.id) ? 'checked' : ''}`}>
                                                             {restrictedPerms.includes(perm.id) && <i className="ti ti-x"></i>}
                                                         </div>
@@ -158,7 +158,6 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
                 </div>
             </ActionSidebar>
 
-            {/* Confirm Modalı buraya ekliyoruz */}
             <Confirm {...confirmConfig} onClose={closeConfirm} />
         </>
     );

@@ -1,28 +1,38 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Loader from '../../../components/common/Loader';
 import '../teams.css/MemberList.css'
 import SubNavbar from '../../../components/navigation/SubNavbar';
 import EditRoleModal from '../modals/TeamEditMember';
 import AddMemberModal from '../modals/TeamAddMember';
 import TeamLogModal from '../modals/TeamActivityLog'; 
-import { teamsService } from '../services/teamsService'; 
+import { teamsService, teamMembersCache, teamMembersRequestCache } from '../services/teamsService';
 import { useAuth } from '../../../context/AuthContext';
 import { notificationService } from '../../../services/notificationService';
 import { useModal } from '../../../hooks/useModal';
+import { usePermissions } from '../../../hooks/usePermissions'; 
 import Confirm from '../../../components/modals/Confirm';
 import Alert from '../../../components/modals/Alert';
-
-const teamMembersCache = new Map();
-const teamMembersRequestCache = new Map();
 
 const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
   const teamId = team?.id;
   const teamName = team?.name || "Takım Detayları";
-  const { currentUserId, roleNameForTeam, currentUser, loading: authLoading } = useAuth();
+  const { currentUserId, currentUser } = useAuth();
+  const { hasPermission } = usePermissions();
   
   const { alertConfig, showAlert, closeAlert, confirmConfig, askConfirm, closeConfirm } = useModal();
 
-  const canManageMembers = !authLoading && !!currentUser && String(currentUser?.isDeleted) !== 'true' && roleNameForTeam(teamId) === 'Admin';
+  const currentUserRoleObj = useMemo(() => {
+    if (!currentUser || !teamId) return null;
+    return currentUser.role?.find(r => String(r.teamId) === String(teamId));
+  }, [currentUser, teamId]);
+
+  const canAddMember = useMemo(() => hasPermission(currentUserRoleObj, 'member_add'), [hasPermission, currentUserRoleObj]);
+  const canRemoveMember = useMemo(() => hasPermission(currentUserRoleObj, 'member_remove'), [hasPermission, currentUserRoleObj]);
+  const canManageSettings = useMemo(() => hasPermission(currentUserRoleObj, 'team_settings'), [hasPermission, currentUserRoleObj]);
+  const canViewLogs = useMemo(() => hasPermission(currentUserRoleObj, 'view_user_log'), [hasPermission, currentUserRoleObj]);
+  const canFreeExit = useMemo(() => hasPermission(currentUserRoleObj, 'free_exit'), [hasPermission, currentUserRoleObj]);
+  
+  const isAdmin = currentUserRoleObj?.roleName?.toLowerCase() === 'admin';
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -30,60 +40,41 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   
   const [members, setMembers] = useState(() => {
-    if (!teamId) return [];
-    return teamMembersCache.get(String(teamId)) || [];
+    if (!teamId) return null;
+    return teamMembersCache.get(String(teamId)) ?? null;
   });
-
-  // LOADER FIX: Eğer parent zaten yüklüyorsa veya cache'de veri varsa loading true başlamasın
-  const [loading, setLoading] = useState(() => {
-    if (parentLoading) return false; 
-    const cached = teamMembersCache.get(String(teamId));
-    return !cached; 
-  });
-
-  const fetchMembers = useCallback(async (isCancelled) => {
-    if (!teamId) return;
-    const normalizedTeamId = String(teamId);
-    
-    // YENİ EKLENEN KISIM: Takım değiştiğinde listeyi anında boşaltıp loader'ı aç
-    if (!isCancelled) {
-      setMembers([]); 
-      if (!parentLoading) setLoading(true);
-    }
-
-    const cachedMembers = teamMembersCache.get(normalizedTeamId);
-    if (cachedMembers) {
-      if (!isCancelled) {
-        setMembers(cachedMembers);
-        setLoading(false); 
-      }
-      return;
-    }
-
-    try {
-      let pendingRequest = teamMembersRequestCache.get(normalizedTeamId);
-      if (!pendingRequest) {
-        pendingRequest = teamsService.getTeamMembers(teamId);
-        teamMembersRequestCache.set(normalizedTeamId, pendingRequest);
-      }
-      
-      const data = await pendingRequest;
-      teamMembersCache.set(normalizedTeamId, data);
-      
-      if (!isCancelled) setMembers(data || []);
-    } catch (error) {
-      console.error("Error loading members:", error);
-    } finally {
-      teamMembersRequestCache.delete(normalizedTeamId);
-      if (!isCancelled) setLoading(false);
-    }
-  }, [teamId, parentLoading]); 
 
   useEffect(() => {
+    if (!teamId) return;
     let isCancelled = false;
-    fetchMembers(isCancelled);
+
+    const loadMembers = async () => {
+      const normalizedId = String(teamId);
+      
+      try {
+        let pendingRequest = teamMembersRequestCache.get(normalizedId);
+        if (!pendingRequest) {
+          pendingRequest = teamsService.getTeamMembers(teamId);
+          teamMembersRequestCache.set(normalizedId, pendingRequest);
+        }
+        
+        const data = await pendingRequest;
+        
+        if (!isCancelled) {
+          teamMembersCache.set(normalizedId, data);
+          setMembers(data || []);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        if (!isCancelled) setMembers([]);
+      } finally {
+        teamMembersRequestCache.delete(normalizedId);
+      }
+    };
+
+    loadMembers();
     return () => { isCancelled = true; };
-  }, [teamId, fetchMembers]); 
+  }, [teamId]);
 
   const handleEditClick = (user) => {
     setSelectedUser(user);
@@ -102,8 +93,8 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
       teamMembersCache.set(String(teamId), updatedMembers);
       closeConfirm();
       showAlert("Başarılı", `${user.name} takımdan başarıyla çıkarıldı.`, "success");
-    } catch (err) {
-      console.error("Silme hatası:", err);
+    } catch (error) {
+      console.error("Silme hatası:", error);
       showAlert("Hata", "Üye çıkarılırken bir sorun oluştu.", "error");
     }
   };
@@ -117,78 +108,48 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
     );
   };
 
-  // AYRILMA VE YETKİ DEVRİ MANTIĞI 
   const handleLeaveTeam = () => {
-    const myRole = roleNameForTeam(teamId);
-    // Diğer aktif adminleri bul
+    const myRole = currentUserRoleObj?.roleName;
     const otherAdmins = members.filter(m => m.roleName === 'Admin' && String(m.id) !== String(currentUserId));
     const hasOtherAdmins = otherAdmins.length > 0;
 
-    // KURAL: Eğer tek adminsem ve başkaları varsa çıkamam
     if (myRole === 'Admin' && !hasOtherAdmins) {
       if (members.length > 1) {
-        showAlert(
-          "Yetki Devri Gerekli",
-          "Takımın tek admini sizsiniz. Ayrılmadan önce başka bir üyeye Admin yetkisi devretmelisiniz.",
-          "warning"
-        );
+        showAlert("Yetki Devri Gerekli", "Takımın tek admini sizsiniz. Ayrılmadan önce başka bir üyeye Admin yetkisi devretmelisiniz.", "warning");
         return;
       } else {
-        // Takımda sadece ben varsam takımı silme onayı iste
-        askConfirm(
-          "Takımı Kapat",
-          "Bu takımın tek üyesi sizsiniz. Ayrılırsanız takım kalıcı olarak silinecektir. Onaylıyor musunuz?",
-          async () => {
-            await teamsService.deleteTeam(teamId);
-            onBack();
-          },
-          "danger"
-        );
+        askConfirm("Takımı Kapat", "Bu takımın tek üyesi sizsiniz. Ayrılırsanız takım kalıcı olarak silinecektir.", async () => {
+          await teamsService.deleteTeam(teamId);
+          onBack();
+        }, "danger");
         return;
       }
     }
 
-    // Normal ayrılma süreci
     const confirmMessage = myRole === 'Admin' 
       ? "Takımdan ayrılmak istediğinize emin misiniz? Admin yetkiniz sonlanacaktır."
-      : "Takımdan ayrılma isteğiniz yöneticilere iletilecektir. Onaylıyor musunuz?";
+      : "Takımdan ayrılmak istediğinize emin misiniz?";
 
-    askConfirm(
-      "Takımdan Ayrıl",
-      confirmMessage,
-      async () => {
+    askConfirm("Takımdan Ayrıl", confirmMessage, async () => {
         try {
-          if (myRole === 'Admin') {
+          if (canFreeExit) {
             await teamsService.removeMember(teamId, currentUserId);
             showAlert("Ayrıldınız", "Takımdan başarıyla ayrıldınız.", "success");
             onBack();
           } else {
-            // Member ise istek gönderir
             await notificationService.sendLeaveRequest(teamId, currentUserId);
             showAlert("İstek Gönderildi", "Ayrılma isteğiniz adminlere iletildi.", "info");
           }
-        } catch (err) {
-          console.log(err)
+        } catch {
           showAlert("Hata", "İşlem sırasında bir hata oluştu.", "error");
         }
       }
     );
   };
 
-  const canManageMembersSafe = canManageMembers;
-
-  useEffect(() => {
-    if (!canManageMembersSafe) {
-      setIsEditModalOpen(false);
-      setIsAddModalOpen(false);
-      setIsLogModalOpen(false);
-      setSelectedUser(null);
-    }
-  }, [canManageMembersSafe]);
-
-  // RENDER KONTROLÜ: Eğer parent yüklüyorsa veya cache'de zaten veri varsa loader gösterme mk
-  if (!parentLoading && loading && members.length === 0) {
-    return <Loader type="butterfly" />;
+  // Bu koşul artık kusursuz çalışacak
+  if (parentLoading || members === null) {
+    return <div className="full-screen-loader"><Loader type="butterfly" /></div>;
   }
 
   return (
@@ -198,12 +159,12 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
         searchPlaceholder="Üye ara..."
         createLabel="Hızlı Ekleme"
         showSearch={true}
-        showCreate={canManageMembersSafe}
+        showCreate={canAddMember} 
         onCreate={() => setIsAddModalOpen(true)}
         onSearch={(val) => console.log("Member search:", val)}
         buttons={[
           { icon: 'ti ti-list', tooltip: 'Takımım', onClick: onBack },
-          ...(canManageMembersSafe ? [{ icon: 'ti ti-settings', tooltip: 'Ayarlar', onClick: () => onNavigate('settings') }] : [])
+          ...(canManageSettings ? [{ icon: 'ti ti-settings', tooltip: 'Ayarlar', onClick: () => onNavigate('settings') }] : [])
         ]}
       />
 
@@ -212,48 +173,34 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
       <div className="team-grid-container">
         {members.map(member => {
           const isMe = String(member.id) === String(currentUserId);
-          
           return (
             <div className="team-card" key={member.id}>
               <div className="tm-card-header">
                 <span className={`tm-role-badge ${member.roleName?.toLowerCase()}`}>
                   {member.roleName}
                 </span>
-                
                 <div className="tm-actions">
-                  {/* Kendi kartımdaysam Ayrıl butonu (Admin olmasam da görünür) */}
                   {isMe && (
-                    <button 
-                      className="tm-action-btn leave-btn" 
-                      onClick={handleLeaveTeam}
-                      title="Takımdan Ayrıl"
-                    >
+                    <button className="tm-action-btn leave-btn" onClick={handleLeaveTeam} title="Takımdan Ayrıl">
                       <i className="ti ti-logout"></i>
                     </button>
                   )}
-
-                  {/* Başkasını yönetme (Sadece Adminler için) */}
-                  {canManageMembersSafe && member.roleName !== 'Admin' && !isMe && (
+                  {!isMe && member.roleName !== 'Admin' && (
                     <>
-                      <button 
-                        className="tm-action-btn" 
-                        onClick={() => handleEditClick(member)}
-                        disabled={member.isDeleted}
-                      >
-                        <i className="ti ti-edit"></i>
-                      </button>
-                      <button 
-                        className="tm-action-btn delete-btn"
-                        disabled={member.isDeleted}
-                        onClick={() => handleDeleteClick(member)}
-                      >
-                        <i className="ti ti-user-minus"></i>
-                      </button>
+                      {isAdmin && (
+                         <button className="tm-action-btn" onClick={() => handleEditClick(member)} disabled={member.isDeleted}>
+                            <i className="ti ti-edit"></i>
+                         </button>
+                      )}
+                      {canRemoveMember && (
+                        <button className="tm-action-btn delete-btn" disabled={member.isDeleted} onClick={() => handleDeleteClick(member)}>
+                          <i className="ti ti-user-minus"></i>
+                        </button>
+                      )}
                     </>
                   )}
                 </div>
               </div>
-      
               <div className="tm-user-body">
                 {member.isDeleted ? (
                   <div className="tm-user-avatar-deleted" aria-hidden="true"><i className="ti ti-trash"></i></div>
@@ -261,11 +208,10 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
                   <img src={member.avatar} alt={member.name} />
                 )}
                 <h3>{member.name}</h3>
-                {!member.isDeleted && (canManageMembersSafe || isMe) && (
+                {!member.isDeleted && (isAdmin || isMe) && (
                   <p>{member.email}</p>
                 )}
               </div>
-      
               <div className="tm-user-footer">
                 <div className="tm-stat">
                   <span className="stat-label">Son Giriş</span>
@@ -273,7 +219,7 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
                       {member.lastLogin ? new Date(member.lastLogin).toLocaleDateString('tr-TR') : 'Never'}
                   </span>
                 </div>
-                {canManageMembersSafe && (
+                {canViewLogs && !member.isDeleted && (
                   <button className="view-full-logs-btn" onClick={() => handleLogClick(member)}>
                     Tam Geçmiş Kaydı
                   </button>
@@ -282,8 +228,7 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
             </div>
           );
         })}
-
-        {canManageMembersSafe && (
+        {canAddMember && (
           <div className="team-card add-member-card" onClick={() => setIsAddModalOpen(true)}>
             <div className="add-icon-wrapper"><i className="ti ti-plus"></i></div>
             <span>Yeni Üye</span>
@@ -306,7 +251,6 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
         user={selectedUser} 
         teamId={teamId}
       />
-
       <Confirm {...confirmConfig} onClose={closeConfirm} />
       <Alert {...alertConfig} onClose={closeAlert} />
     </div>
