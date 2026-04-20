@@ -74,17 +74,15 @@ const Settings = () => {
       "Hesabınızdan çıkış yapmak istediğinize emin misiniz?",
       async () => {
         try {
-          // Eğer serviste logout işlemi varsa önce onu bekle
           if (logout) {
             await logout();
-            // Redirect genelde useAuth içinde yapılır ama burada da kontrol edilebilir
           }
           closeConfirm();
         } catch (err) {
           console.error("Çıkış yapılırken hata:", err);
         }
       },
-      "info" // Logout tehlikeli bir işlem olmadığı için 'info' veya 'warning' tipinde olabilir
+      "info" 
     );
   };
 

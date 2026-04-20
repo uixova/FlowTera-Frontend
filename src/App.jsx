@@ -1,10 +1,11 @@
 // src/App.jsx
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
+import NotFound from './features/error/NotFound';
 import Navbar from './components/navigation/Navbar';
 import Dashboard from './features/dashboard/Dashboard';
 import Expenses from './features/expenses/Expenses';
@@ -33,36 +34,42 @@ const ProtectedRoute = ({ children }) => {
     return children;
 };
 
+// Uygulama Ana Düzeni: Navbar ve Container yapısını tek yerden yönetir
+const AppLayout = () => (
+    <div className="app-wrapper">
+        <Navbar />
+        <main className="app-container">
+            <Outlet /> {/* Alt rotalar buraya render edilir */}
+        </main>
+    </div>
+);
+
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <CurrencyProvider> 
-          <div className="app-wrapper">
-            <Navbar />
-            
-            <main className="app-container">
-              <Routes>
-                {/* Herkese Açık Rotalar (Gelecekteki Vitrin/Login buraya gelecek) */}
-                <Route path="/" element={<div>Vitrin Sayfası (Yakında)</div>} />
+          <Routes>
+            {/* Herkese Açık Rotalar (Gelecekteki Vitrin/Login buraya gelecek) */}
+            <Route path="/" element={<div>Vitrin Sayfası (Yakında)</div>} />
 
-                {/* Korumalı Rotalar */}
-                <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/home" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/expense" element={<ProtectedRoute><Expenses /></ProtectedRoute>} />
-                <Route path="/trips" element={<ProtectedRoute><Trips /></ProtectedRoute>} />
-                <Route path="/analysis" element={<ProtectedRoute><Analysis /></ProtectedRoute>} />
-                <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
-                <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} /> 
-                <Route path="/archive" element={<ProtectedRoute><Archive /></ProtectedRoute>} /> 
-                <Route path="/team" element={<ProtectedRoute><TeamSelection /></ProtectedRoute>} />
-                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                
-                {/* 404 Sayfası */}
-                <Route path="*" element={<h2>404 - Sayfa Bulunamadı!</h2>} />
-              </Routes>
-            </main>
-          </div>
+            {/* Korumalı Rotalar Grubu */}
+            <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/home" element={<Dashboard />} />
+                <Route path="/expense" element={<Expenses />} />
+                <Route path="/trips" element={<Trips />} />
+                <Route path="/analysis" element={<Analysis />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/requests" element={<Requests />} /> 
+                <Route path="/archive" element={<Archive />} /> 
+                <Route path="/team" element={<TeamSelection />} />
+                <Route path="/settings" element={<Settings />} />
+            </Route>
+            
+            {/* 404 Sayfası - Layout dışında olduğu için full-screen açılır */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </CurrencyProvider>
       </AuthProvider>
     </ThemeProvider>
