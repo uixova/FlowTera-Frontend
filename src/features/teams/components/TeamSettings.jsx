@@ -10,6 +10,7 @@ import Confirm from '../../../components/modals/Confirm';
 const TeamSettings = ({ team, onBack }) => {
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
   const { currentUser: authUser, loading: authLoading } = useAuth();
+  const [availableFeatures, setAvailableFeatures] = useState([]);
   const [planMaxMembers, setPlanMaxMembers] = useState(5);
   const [loading, setLoading] = useState(true); 
   const [teamMembersCount, setTeamMembersCount] = useState(0);
@@ -19,7 +20,7 @@ const TeamSettings = ({ team, onBack }) => {
     if (authLoading || !authUser || String(authUser?.isDeleted) === 'true') return false;
     const roleObj = authUser?.role?.find(r => String(r.teamId) === String(selectedTeamId));
     if (!roleObj) return false;
-    // team_settings deny-list'te varsa → erişim kapalı (rol ne olursa olsun)
+    // team_settings deny-list'te varsa erişim kapalı 
     if (Array.isArray(roleObj.permissions) && roleObj.permissions.includes('team_settings')) return false;
     return true;
   } , [authLoading, authUser, selectedTeamId]);
@@ -57,9 +58,11 @@ const TeamSettings = ({ team, onBack }) => {
       ]);
 
       if (data) {
-        const activeLimit = data.adminPlanLimit || authUser?.subscription?.maxMembersPerTeam || 5;
+        const activeLimit = data.adminPlanLimit || 5;
+        setAvailableFeatures(data.availableFeatures || []);
         setPlanMaxMembers(activeLimit);
         setTeamMembersCount(members?.length || 0);
+        
         setFormData({
           teamName: data.name || '', 
           category: data.category || 'Software Development', 
@@ -79,7 +82,10 @@ const TeamSettings = ({ team, onBack }) => {
     } finally {
       setLoading(false);
     }
-  }, [selectedTeamId, authUser]);
+  }, [selectedTeamId]);
+
+  // Özellik kontrolü için yardımcı fonksiyon
+  const hasFeature = (featureKey) => availableFeatures.includes(featureKey);
 
   // authLoading bekleniyor, yetki yoksa loading kapatılıyor
   useEffect(() => {
@@ -312,17 +318,37 @@ const TeamSettings = ({ team, onBack }) => {
                   </div>
                 </div>
                 <div className="tm-automation-settings">
-                  <div className="tm-checkbox-wrapper">
+                  <div className={`tm-checkbox-wrapper ${!hasFeature('automation') ? 'feature-locked' : ''}`}>
                     <label className="tm-custom-checkbox">
-                      <input type="checkbox" name="autoApproved" checked={formData.autoApproved} onChange={handleChange} />
+                      <input 
+                        type="checkbox" 
+                        name="autoApproved" 
+                        checked={formData.autoApproved} 
+                        onChange={handleChange}
+                        disabled={!hasFeature('automation')} 
+                      />
                       <span className="checkmark"></span>
-                      <span className="checkbox-text">Otomatik Onayı Etkinleştir</span>
+                      <span className="checkbox-text">
+                        Otomatik Onayı Etkinleştir
+                        {!hasFeature('automation') && <span className="lock-badge">Premium</span>}
+                      </span>
                     </label>
+
+                    {!hasFeature('automation') && (
+                      <div className="upgrade-notice">
+                        Bu özelliği kullanmak için planınızı yükseltmeniz gerekir.
+                      </div>
+                    )}
                   </div>
-                  {formData.autoApproved && (
+                  {formData.autoApproved && hasFeature('automation') && (
                     <div className="tm-input-group animate-in">
                       <label>Otomatik Onay Limiti ({formData.currency})</label>
-                      <input type="number" name="autoApprovedLimit" value={formData.autoApprovedLimit} onChange={handleChange} placeholder="Otomatik onay limiti" />
+                      <input 
+                        type="number" 
+                        name="autoApprovedLimit" 
+                        value={formData.autoApprovedLimit} 
+                        onChange={handleChange} 
+                      />
                     </div>
                   )}
                 </div>

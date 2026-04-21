@@ -100,38 +100,57 @@ export const teamsService = {
     getTeamSettings: async (teamId) => {
         if (!teamId) return null;
         await randomDelay(100, 200);
-    
-        // Yine paralel fetch ile bekleme süresini optimize ettik
-        const [allTeams, allUsers] = await Promise.all([
+
+        // Paralel fetch: Takımlar, Kullanıcılar ve Planlar 
+        const [allTeams, allUsers, allPlans] = await Promise.all([
             api.teams.getAll() || [],
-            api.users.getAll() || []
+            api.users.getAll() || [],
+            api.plans.getAll() || [] 
         ]);
-    
+
         const team = allTeams.find(t => String(t.id) === String(teamId));
         if (!team) return null;
 
-        // Anlık owner verisi (Plan yükseltmesi yapmış mı kontrolü için)
+        // 1. Takımın içine gömülü planId'yi alıyoruz
+        const teamPlanContext = team.settings?.planContext || {};
+        const teamPlanId = teamPlanContext.planId;
+    
+        // 2. Bu ID ile plan.json içinden ilgili planı buluyoruz
+        const linkedPlan = allPlans.find(p => String(p.id) === String(teamPlanId));
+
+        // 3. Owner (Kurucu) verisini hala çekiyoruz ama sadece "Upgrade" kontrolü için
         const ownerUser = allUsers.find(u => String(u.id) === String(team.ownerId));
 
         // MANTIK: 
-        // 1. Eğer takımın içinde planContext varsa onu al.
-        // 2. Eğer owner'ın anlık planı, takımdaki plandan daha yüksekse (Upgrade durumu), yeni limiti kullan.
-        // 3. Eğer owner hesabını sildiyse (ownerUser undefined), takımdaki eski context ile devam et.
-        
-        const currentContext = team.settings?.planContext || {};
-        const ownerPlanLimit = ownerUser?.subscription?.maxMembersPerTeam || 0;
+        // Öncelik: plan.json'daki feature_keys (Id eşleşirse)
+        // Yedek: Takım verisindeki statik özellikler (plan.json bulunamazsa)
+        // Upgrade: Eğer owner hala varsa ve paketi takımdan daha üstünse özellikleri birleştirir.
+    
+        let baseFeatures = linkedPlan?.feature_keys || [];
+        let baseMaxLimit = linkedPlan?.Promise?.TeamMemberLimit 
+            ? parseInt(linkedPlan.Promise.TeamMemberLimit) 
+            : (teamPlanContext.maxMembersAllowed || 5);
 
-        // Dinamik Limit Belirleme
-        const finalMaxLimit = Math.max(
-            currentContext.maxMembersAllowed || 5, // Mevcut takımdaki sabit limit
-            ownerPlanLimit // Owner yükseltme yaptıysa yeni limit
-        );
+        // Owner hala sistemdeyse ve aboneliği takımdaki plandan yüksekse limitleri güncelle
+        const ownerFeatures = ownerUser?.subscription?.feature_keys || [];
+        const ownerMaxLimit = ownerUser?.subscription?.maxMembersPerTeam || 0;
+
+        // Set kullanarak duplicate (çakışan) yetenekleri temizliyoruz
+        const finalFeatures = Array.from(new Set([
+            ...baseFeatures,
+            ...ownerFeatures
+        ]));
+
+        const finalMaxLimit = Math.max(baseMaxLimit, ownerMaxLimit);
 
         return {
             ...team,
-            // UI'da inputun çıkabileceği maksimum sınır
-            adminPlanLimit: finalMaxLimit, 
-            ownerPlanType: ownerUser?.subscription?.plan || currentContext.planName || 'Free'
+            adminPlanLimit: finalMaxLimit,
+            ownerPlanType: linkedPlan?.name || teamPlanContext.planName || 'Free',
+            // Frontend tarafında hasFeature('ocr_scan') gibi kontrol etmek için
+            availableFeatures: finalFeatures, 
+            // İhtiyaç duyulursa planın tam objesi
+            planDetails: linkedPlan || null 
         };
     },
 

@@ -4,7 +4,8 @@ const DATA_PATHS = {
     NOTIFICATIONS: '/data/notification.json',
     EXPENSES: '/data/expenses.json',
     TRIPS: '/data/trips.json',
-    LOGS: '/data/logs.json'
+    LOGS: '/data/logs.json',
+    PLANS: '/data/plan.json'
 };
 
 export const api = {
@@ -41,5 +42,9 @@ export const api = {
 
     trips: {
         getAll: () => api.get(DATA_PATHS.TRIPS),
+    },
+     
+    plans: {
+        getAll: () => api.get(DATA_PATHS.PLANS),
     }
 };

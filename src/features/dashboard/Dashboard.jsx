@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/common/Loader';
 import { useAuth } from '../../context/AuthContext';
+import { useSubscription } from '../../context/SubscriptionContext';
+import { useTeam } from '../../context/TeamContext'; 
 import './dashboard.css/Dashboard.css';
 import MonthlyReport from './components/Graphics';
 import { dashboardService } from './services/dashboardService';
@@ -19,26 +21,27 @@ import Alert from '../../components/modals/Alert';
 const Dashboard = () => {
     const { alertConfig, showAlert, closeAlert } = useModal();
     const navigate = useNavigate();
+
+    // Context verileri
+    const { hasFeature, loading: subLoading } = useSubscription();
+    const { selectedTeamId } = useTeam(); 
+    const { currentUser, currentUserId, loading: authLoading } = useAuth();
+    const { hasPermission } = usePermissions();
+    
     const [stats, setStats] = useState({ pendingCount: 0, activeTrips: 0, totalExpenses: 0, rejectedCount: 0 });
     const [myActivities, setMyActivities] = useState([]);
     const [chartData, setChartData] = useState({ trend: [], distribution: [] });
     const [loading, setLoading] = useState(true);
     const [userTeams, setUserTeams] = useState([]);
-    const { currentUser, currentUserId, loading: authLoading } = useAuth();
-    const { hasPermission } = usePermissions();
 
     const [isExpenseOpen, setIsExpenseOpen] = useState(false);
     const [isTripOpen, setIsTripOpen] = useState(false);
     const [isOCROpen, setIsOCROpen] = useState(false);
     const [isReportOpen, setIsReportOpen] = useState(false);
 
-    // handleQuickAction içinde her seferinde güncel ID'yi çekeceğiz.
+    // handleQuickAction için context'teki selectedTeamId'yi kullanıyoruz.
     const handleQuickAction = (openModalCallback, type) => {
-        // Butona tıklandığı an seçili takımı al
-        const currentSelectedTeamId = localStorage.getItem('tm_selected_id');
-        const userPlan = currentUser?.subscription?.plan;
-
-        if (!currentSelectedTeamId) {
+        if (!selectedTeamId) {
             showAlert(
                 "Takım Seçilmedi", 
                 "İşlem yapabilmek için aktif bir takım seçmiş olmanız gerekiyor.", 
@@ -48,12 +51,11 @@ const Dashboard = () => {
             return;
         }
 
-        // Tıklanan andaki takıma göre kullanıcının rolünü bul
         const currentRoleInThisTeam = currentUser?.role?.find(
-            r => String(r.teamId) === String(currentSelectedTeamId)
+            r => String(r.teamId) === String(selectedTeamId)
         );
 
-        // YETKİ KONTROLLERİ (En güncel role objesine göre)
+        // YETKİ KONTROLLERİ (Rol Bazlı)
         if (type === 'trip' && !hasPermission(currentRoleInThisTeam, 'trip_create')) {
             showAlert("Yetki Kısıtlı", "Bu takımda yeni gezi oluşturma yetkiniz bulunmuyor.", "error");
             return;
@@ -64,14 +66,14 @@ const Dashboard = () => {
             return;
         }
 
+        // Artık metin aramıyoruz, JSON'daki teknik anahtara bakıyoruz.
         if (type === 'ocr') {
-            const allowedPlans = ['professional', 'enterprise'];
-            if (!allowedPlans.includes(userPlan)) {
+            if (!hasFeature('ocr_scan') && !hasFeature('bulk_ocr')) {
                 showAlert(
                     "Planınız Yetersiz", 
                     "Akıllı OCR Fatura Tarama özelliği üst paketlerimize özeldir.", 
                     "info",
-                    () => navigate('/subscription')
+                    () => navigate('/subscription') 
                 );
                 return;
             }
@@ -80,6 +82,7 @@ const Dashboard = () => {
         openModalCallback(true);
     };
 
+    // Veri çekme fonksiyonu 
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
@@ -103,12 +106,13 @@ const Dashboard = () => {
             }
         };
         if (!authLoading) fetchDashboardData();
-    }, [currentUserId, authLoading]);
+    }, [currentUserId, authLoading]); 
 
-    if (loading || authLoading) return <Loader type="butterfly" />;
+    // Bütün loading süreçlerini burada bekliyoruz
+    if (loading || authLoading || subLoading) return <Loader type="butterfly" />;
 
-    // Render anında ID'yi okuyalım ki modallara en güncel hali gitsin
-    const latestTeamId = localStorage.getItem('tm_selected_id');
+    // UI'da kilit simgesini göstermek için feature key kontrolü
+    const isOCRLocked = !hasFeature('ocr_scan') && !hasFeature('bulk_ocr');
 
     return (
         <div className="home">
@@ -129,9 +133,9 @@ const Dashboard = () => {
                     <div className="create-box" onClick={() => handleQuickAction(setIsOCROpen, 'ocr')}>
                         <i className="ti ti-news"></i>
                         <span>Fatura Ekle</span>
-                        {!(['professional', 'enterprise'].includes(currentUser?.subscription?.plan)) && 
-                            <i className="ti ti-lock lock-badge"></i>
-                        }
+                        {isOCRLocked && (
+                            <i className="ti ti-lock lock-icon"></i>
+                        )}
                     </div>
 
                     <div className="create-box" onClick={() => handleQuickAction(setIsReportOpen, 'report')}>
@@ -155,11 +159,12 @@ const Dashboard = () => {
                 />
             </div>
 
+            {/* Modallar */}
             <CreateExpense 
                 isOpen={isExpenseOpen} 
                 onClose={() => setIsExpenseOpen(false)} 
                 isDashboard={true} 
-                selectedTeamId={latestTeamId} 
+                selectedTeamId={selectedTeamId} 
                 teams={userTeams}
             />
 
@@ -167,21 +172,21 @@ const Dashboard = () => {
                 isOpen={isTripOpen} 
                 onClose={() => setIsTripOpen(false)} 
                 isDashboard={true}
-                selectedTeamId={latestTeamId}
+                selectedTeamId={selectedTeamId}
                 teams={userTeams}
             />
 
             <OCRSidebar 
                 isOpen={isOCROpen} 
                 onClose={() => setIsOCROpen(false)} 
-                selectedTeamId={latestTeamId}
+                selectedTeamId={selectedTeamId}
             />
             
             <CreateReport 
                 isOpen={isReportOpen} 
                 onClose={() => setIsReportOpen(false)} 
                 teams={userTeams} 
-                selectedTeamId={latestTeamId}
+                selectedTeamId={selectedTeamId}
             />
 
             <Alert {...alertConfig} onClose={closeAlert} />

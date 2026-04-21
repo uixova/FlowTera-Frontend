@@ -76,6 +76,23 @@
     margin-bottom: 20px;
 }
 
+.plan-badge.pro, .plan-badge.premium { 
+    background: #0ed45a; 
+    color: #000; 
+}
+
+.plan-badge.enterprise { 
+    background: #6c5ce7; 
+    color: #fff; 
+    box-shadow: 0 0 10px rgba(108, 92, 231, 0.3);
+}
+
+.plan-badge.free { 
+    background: #333; 
+    color: #aaa; 
+    border: 1px solid #444; 
+}
+
 .tm-preview-wrapper.large {
     width: 100px;
     height: 100px;
@@ -146,6 +163,24 @@
     color: #fff;
     outline: none;
     font-size: 0.95rem;
+}
+
+.tm-input-group input:focus {
+    border-color: #0ed45a;
+    background: #1c1c1c;
+    box-shadow: 0 0 0 2px rgba(14, 212, 90, 0.1);
+}
+
+.tm-input-group input[type="number"] {
+    font-family: 'Inter', sans-serif; 
+}
+
+.lock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
 }
 
 .tm-input-group select {

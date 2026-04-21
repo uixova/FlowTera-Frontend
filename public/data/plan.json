@@ -13,6 +13,7 @@
             { "text": "AI Finansal Analiz", "included": false },
             { "text": "Otomasyon", "included": false }
         ],
+        "feature_keys": ["daily_tracking", "community_forum", "limited_history"],
         "Promise": { "teamLimit": "2 takım", "TeamMemberLimit": "5 üye" },
         "description": "Bireysel takip için temel araçlar.",
         "cta": "Ücretsiz Başlayın",
@@ -36,6 +37,7 @@
             { "text": "AI Finansal Analiz", "included": false },
             { "text": "Otomasyon", "included": true }
         ],
+        "feature_keys": ["daily_tracking", "community_forum", "priority_support", "unlimited_history", "automation"],
         "Promise": { "teamLimit": "5 takım", "TeamMemberLimit": "20 üye" },
         "description": "Daha disiplinli bir bütçe yönetimi.",
         "cta": "Premium'a Yükselt",
@@ -59,6 +61,8 @@
             { "text": "Gelişmiş Fatura Arşivi", "included": true },
             { "text": "AI Finansal Analiz", "included": false }
         ],
+        "feature_keys": ["daily_tracking", "priority_support", "unlimited_history", "automation", "ocr_scan", "theme_management", "advanced_archive"],
+        "ocrLimit": 100,
         "Promise": { "teamLimit": "15 takım", "TeamMemberLimit": "50 üye" },
         "description": "Ekipler ve profesyoneller için.",
         "cta": "Pro'ya Geç",
@@ -82,7 +86,10 @@
             { "text": "AI Destekli Analiz", "included": true },
             { "text": "Tüm Özellikler", "included": true }
         ],
-        "Promise": { "teamLimit": "Sınırsız", "TeamMemberLimit": "Sınırsız" },
+        "feature_keys": ["daily_tracking", "priority_support", "24_7_support", "unlimited_history", "automation", "ocr_scan",  "bulk_ocr", "theme_management", "team_panel", "ai_analysis", "all_features"
+        ],
+        "ocrLimit": 250,
+        "Promise": { "teamLimit": "50 takım", "TeamMemberLimit": "150 üye" },
         "description": "Tam otomasyon ve kurumsal çözümler.",
         "cta": "Satışla Görüşün",
         "icon": "ti-building-skyscraper",

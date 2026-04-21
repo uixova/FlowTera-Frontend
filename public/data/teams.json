@@ -32,9 +32,9 @@
       "autoApproved": false,
       "autoApprovedLimit": 500,
       "planContext":{
+        "planId": "13433988-d39c-43f0-a731-51f2bb4749ec",
         "planName": "professional",
         "maxMembersAllowed": 50,
-        "features": ["advanced_reports", "unlimited_logs", "custom_roles"],
         "isPlanFixed": true
       }
     }
@@ -84,9 +84,9 @@
       "autoApproved": false,
       "autoApprovedLimit": 500,
       "planContext":{
+        "planId": "13433988-d39c-43f0-a731-51f2bb4749ec",
         "planName": "professional",
         "maxMembersAllowed": 50,
-        "features": ["advanced_reports", "unlimited_logs", "custom_roles"],
         "isPlanFixed": true
       }
     }

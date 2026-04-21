@@ -6,19 +6,22 @@ import TeamMemberList from './components/TeamMemberList';
 import TeamSettings from './components/TeamSettings';
 import { teamsService, teamMembersCache } from './services/teamsService'; 
 import { useAuth } from '../../context/AuthContext'; 
+import { useTeam } from '../../context/TeamContext';
 import './teams.css/Team.css';
 
 const Teams = () => {
   const { currentUser, loading: authLoading } = useAuth(); 
+  const { selectedTeamId, selectTeam, clearTeam } = useTeam(); 
   
   const [teams, setTeams] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [switchingTeam, setSwitchingTeam] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [selectedTeamId, setSelectedTeamId] = useState(() => localStorage.getItem('tm_selected_id') || null);
-  const [viewMode, setViewMode] = useState(() => localStorage.getItem('tm_selected_id') ? 'main' : 'selection');
+  
+  // viewMode artık localStorage'dan değil, selectedTeamId varsa 'main' yoksa 'selection' olarak başlıyor
+  const [viewMode, setViewMode] = useState(selectedTeamId ? 'main' : 'selection');
 
-  // Takımları Çekme 
+  // Takımları Çekme
   useEffect(() => {
     const fetchTeams = async () => {
       if (!currentUser) return;
@@ -31,21 +34,15 @@ const Teams = () => {
       }
     };
     fetchTeams();
-  }, [currentUser]); 
+  }, [currentUser]);
 
-  // Takım Değişimi Dinleyicisi
+  // Takım Değişimi Takibi (Context ID'si değişirse viewMode'u güncelle)
   useEffect(() => {
-    const handleTeamChange = (e) => {
-      const newTeamId = String(e.detail.teamId);
-      if (newTeamId !== String(selectedTeamId)) {
-        setSwitchingTeam(true); 
-        setSelectedTeamId(newTeamId);
-        setViewMode('main');
-        setTimeout(() => setSwitchingTeam(false), 800); 
-      }
-    };
-    window.addEventListener('teamChanged', handleTeamChange);
-    return () => window.removeEventListener('teamChanged', handleTeamChange);
+    if (selectedTeamId) {
+      setViewMode('main');
+    } else {
+      setViewMode('selection');
+    }
   }, [selectedTeamId]);
 
   const activeTeam = useMemo(() => {
@@ -53,16 +50,7 @@ const Teams = () => {
     return teams.find(t => String(t.id) === String(selectedTeamId)) || null;
   }, [teams, selectedTeamId]);
 
-  useEffect(() => {
-    if (selectedTeamId) {
-      localStorage.setItem('tm_selected_id', selectedTeamId);
-      localStorage.setItem('tm_view_mode', viewMode);
-    } else {
-      localStorage.removeItem('tm_selected_id');
-      localStorage.setItem('tm_view_mode', 'selection');
-    }
-  }, [selectedTeamId, viewMode]);
-
+  // Yönlendirme ve Takım Seçme Mantığı
   const handleNavigate = (page, teamId = null) => {
     if (page === 'CreateTeamPanel') {
       setIsCreateOpen(true);
@@ -71,22 +59,20 @@ const Teams = () => {
     
     if (teamId) {
       const normalizedId = String(teamId);
-      // Eğer geçilecek takım zaten cache'de varsa loader'ı HİÇ açma
       const isCached = teamMembersCache.has(normalizedId);
       
-      if (!isCached) {
-        setSwitchingTeam(true);
-      }
+      if (!isCached) setSwitchingTeam(true);
       
-      setSelectedTeamId(normalizedId);
+      selectTeam(normalizedId); // Context üzerinden seçiyoruz
       setViewMode(page);
       
-      // Loader açıksa kapat
       if (!isCached) {
         setTimeout(() => setSwitchingTeam(false), 500);
       }
     } else {
-      if (page === 'selection') setSelectedTeamId(null);
+      if (page === 'selection') {
+        clearTeam(); // Context üzerinden temizliyoruz
+      }
       setViewMode(page);
     }
   };
@@ -97,10 +83,16 @@ const Teams = () => {
 
   return (
     <div className="tm-feature-wrapper">
+      {/* SEÇİM EKRANI: Takım seçilmemişse veya viewMode 'selection' ise */}
       {(viewMode === 'selection' || !activeTeam) ? (
-        <TeamSelection teams={teams} loading={loading} onNavigate={handleNavigate} />
+        <TeamSelection 
+          teams={teams} 
+          loading={loading} 
+          onNavigate={handleNavigate} 
+        />
       ) : (
         <>
+          {/* TAKIM İÇİ: Üye Listesi (Main) */}
           {viewMode === 'main' && (
             <TeamMemberList 
               team={activeTeam} 
@@ -109,11 +101,15 @@ const Teams = () => {
               parentLoading={switchingTeam}
             />
           )}
+
+          {/* TAKIM İÇİ: Ayarlar */}
           {viewMode === 'settings' && (() => {
             const roleObj = currentUser?.role?.find(r => String(r.teamId) === String(selectedTeamId));
             const isDenied = Array.isArray(roleObj?.permissions) && roleObj.permissions.includes('team_settings');
+            
             if (isDenied) {
-                setTimeout(() => handleNavigate('main'), 0);
+                // Yetki yoksa main'e salla
+                setTimeout(() => setViewMode('main'), 0);
                 return null;
             }
             return <TeamSettings team={activeTeam} onBack={() => setViewMode('main')} />;

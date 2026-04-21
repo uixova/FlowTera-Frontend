@@ -4,6 +4,8 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { SubscriptionProvider } from './context/SubscriptionContext';
+import { TeamProvider } from './context/TeamContext'
 
 import NotFound from './features/error/NotFound';
 import Navbar from './components/navigation/Navbar';
@@ -16,6 +18,7 @@ import Requests from './features/requests/Requests';
 import Archive from './features/archive/Archive';
 import TeamSelection from './features/teams/Teams';
 import Settings from './features/settings/Settings';
+import Subscription from './features/subscription/Subscription';
 
 import './components/components.css/GlobalFilter.css'; 
 
@@ -48,29 +51,31 @@ function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <CurrencyProvider> 
-          <Routes>
-            {/* Herkese Açık Rotalar (Gelecekteki Vitrin/Login buraya gelecek) */}
-            <Route path="/" element={<div>Vitrin Sayfası (Yakında)</div>} />
+        <TeamProvider>
+          <SubscriptionProvider> 
+            <CurrencyProvider> 
+              <Routes>
+                <Route path="/" element={<div>Vitrin Sayfası (Yakında)</div>} />
 
-            {/* Korumalı Rotalar Grubu */}
-            <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/home" element={<Dashboard />} />
-                <Route path="/expense" element={<Expenses />} />
-                <Route path="/trips" element={<Trips />} />
-                <Route path="/analysis" element={<Analysis />} />
-                <Route path="/history" element={<History />} />
-                <Route path="/requests" element={<Requests />} /> 
-                <Route path="/archive" element={<Archive />} /> 
-                <Route path="/team" element={<TeamSelection />} />
-                <Route path="/settings" element={<Settings />} />
-            </Route>
-            
-            {/* 404 Sayfası - Layout dışında olduğu için full-screen açılır */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </CurrencyProvider>
+                <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                    <Route path="/home" element={<Dashboard />} />
+                    <Route path="/expense" element={<Expenses />} />
+                    <Route path="/trips" element={<Trips />} />
+                    <Route path="/analysis" element={<Analysis />} />
+                    <Route path="/history" element={<History />} />
+                    <Route path="/requests" element={<Requests />} /> 
+                    <Route path="/archive" element={<Archive />} /> 
+                    <Route path="/team" element={<TeamSelection />} />
+                    <Route path="/settings" element={<Settings />} />
+                  
+                    <Route path="/subscription" element={<Subscription />} /> 
+                </Route>
+              
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </CurrencyProvider>
+          </SubscriptionProvider>
+        </TeamProvider>
       </AuthProvider>
     </ThemeProvider>
   );
