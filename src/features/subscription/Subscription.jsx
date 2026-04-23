@@ -1,26 +1,51 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useSubscription } from '../../context/SubscriptionContext';
 import Loader from '../../components/common/Loader';
 import './css/Subscription.css';
 
+const MotionDiv = motion.div;
+
 const Subscription = () => {
     const { plans, currentPlan, loading } = useSubscription();
 
-    if (loading) return <Loader />;
+    // Loader aktifse diğer işlemlere gerek yok
+    if (loading) return <Loader type="butterfly" />;
+
+    const handlePlanSelect = (planId, isCurrent) => {
+        if (isCurrent) return;
+    
+        // Yeni sekme için URL oluşturma (Origin + path + query)
+        const url = `${window.location.origin}/checkout?plan=${planId}`;
+    
+        // Güvenli bir şekilde yeni sekmede açar
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
 
     return (
-        <div className="subscription-container">
+        <MotionDiv 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="subscription-container"
+        >
             <header className="sub-header">
                 <h1>FlowTera Planları</h1>
                 <p>İhtiyaçlarınıza en uygun planı seçin, ekibinizi uçuşa geçirin.</p>
             </header>
 
             <div className="plans-grid">
-                {plans.map((plan) => {
+                {plans.map((plan, index) => {
                     const isCurrent = plan.id === currentPlan?.id;
 
                     return (
-                        <div key={plan.id} className={`plan-card ${plan.popular ? 'popular' : ''} ${isCurrent ? 'active' : ''}`}>
+                        <MotionDiv
+                            key={plan.id}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: index * 0.1 }}
+                            className={`plan-card ${plan.popular ? 'popular' : ''} ${isCurrent ? 'active' : ''}`}
+                        >
                             {plan.popular && <div className="popular-badge">En Popüler</div>}
                             {isCurrent && <div className="current-badge">Mevcut Planın</div>}
 
@@ -39,27 +64,30 @@ const Subscription = () => {
                             </div>
 
                             <ul className="feature-list">
-                                {plan.features.map((feat, index) => (
-                                    <li key={index} className={!feat.included ? 'disabled' : ''}>
+                                {plan.features.map((feat, idx) => (
+                                    <li key={idx} className={!feat.included ? 'disabled' : ''}>
                                         <i className={`ti ${feat.included ? 'ti-check check' : 'ti-x xmark'}`}></i>
                                         <span className="feature-text">{feat.text}</span>
                                     </li>
                                 ))}
-                                {/* Promise kısmını özelliklerin altına vurgulu ekliyoruz */}
                                 <li className="promise-item">
                                     <i className="ti ti-users check"></i>
-                                    <span>{plan.Promise.teamLimit} / {plan.Promise.TeamMemberLimit}</span>
+                                    <span>{plan.Promise?.teamLimit} Takım / {plan.Promise?.TeamMemberLimit} Üye</span>
                                 </li>
                             </ul>
 
-                            <button className={`plan-btn ${isCurrent ? 'current-btn' : ''}`}>
+                            <button 
+                                onClick={() => handlePlanSelect(plan.id, isCurrent)}
+                                className={`plan-btn ${isCurrent ? 'current-btn' : ''}`}
+                                disabled={isCurrent}
+                            >
                                 {isCurrent ? "Kullanılıyor" : plan.cta}
                             </button>
-                        </div>
+                        </MotionDiv>
                     );
                 })}
             </div>
-        </div>
+        </MotionDiv>
     );
 };
 

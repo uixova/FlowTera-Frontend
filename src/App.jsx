@@ -19,6 +19,7 @@ import Archive from './features/archive/Archive';
 import TeamSelection from './features/teams/Teams';
 import Settings from './features/settings/Settings';
 import Subscription from './features/subscription/Subscription';
+import PaymentPanel from './features/payment/PaymentPanel'
 
 import './components/components.css/GlobalFilter.css'; 
 
@@ -71,6 +72,7 @@ function App() {
                     <Route path="/subscription" element={<Subscription />} /> 
                 </Route>
               
+                <Route path="/checkout" element={<PaymentPanel />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </CurrencyProvider>

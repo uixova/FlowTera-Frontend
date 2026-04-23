@@ -5,6 +5,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-bottom: 50px;
 }
 
 .sub-header {
@@ -155,4 +156,20 @@
     color: #555;
     cursor: default;
     border: 1px solid #333;
+}
+
+.login-hint {
+    margin-top: 40px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.login-hint span {
+    color: var(--primary-color, #3b82f6);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.login-hint span:hover {
+    text-decoration: underline;
 }
