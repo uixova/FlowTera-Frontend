@@ -1,38 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './css/Archive.css';
 import Galery from './components/Galery';
 import { archiveService } from './services/archiveServices';
 import Loader from '../../components/common/Loader';
+import { useTeam } from '../../context/TeamContext'; 
 
 const Archive = () => {
     const [data, setData] = useState({ expenses: [], trips: [] });
     const [loading, setLoading] = useState(true);
-    const selectedTeamId = localStorage.getItem('tm_selected_id');
+    
+    const { selectedTeamId } = useTeam();
 
-    useEffect(() => {
-        const loadData = async () => {
-            setLoading(true);
-            try {
-                const result = await archiveService.getArchiveData(selectedTeamId);
-                setData(result);
-            } catch (err) { 
-                console.error("Veri yükleme hatası:", err); 
-            } finally { 
-                setLoading(false); 
-            }
-        };
-        loadData();
+    const loadData = useCallback(async () => {
+        if (!selectedTeamId) return;
+
+        setLoading(true);
+        try {
+            const result = await archiveService.getArchiveData(selectedTeamId);
+            setData(result || { expenses: [], trips: [] });
+        } catch (err) { 
+            console.error("Veri yükleme hatası:", err); 
+        } finally { 
+            setLoading(false); 
+        }
     }, [selectedTeamId]);
+
+    // ID değiştikçe veriyi yeniden yükle
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
     if (loading) return <div className="archive-loader"><Loader /></div>;
 
+    // Faturası olan tüm kalemleri birleştir
     const allInvoices = [
         ...(data.expenses || []),
         ...(data.trips || [])
     ].filter(item => item.image);
 
     return (
-        <div className="archive-container">
+        /* key={selectedTeamId} ekleyerek takım değişiminde tüm sayfa state'inin 
+           temizlenmesini ve sıfırdan render edilmesini sağlıyoruz ki doğru veri gösterilsin! */
+        <div className="archive-container" key={selectedTeamId}>
             <aside className="archive-sidebar">
                 <div className="sidebar-brand">
                     <div className="brand-dot"></div>
@@ -53,7 +62,11 @@ const Archive = () => {
                     </div>
                 </header>
                 <div className="archive-scroll-area">
-                    <Galery data={allInvoices} />
+                    {allInvoices.length > 0 ? (
+                        <Galery data={allInvoices} />
+                    ) : (
+                        <div className="no-data-info">Bu takıma ait görsel arşiv bulunamadı.</div>
+                    )}
                 </div>
             </main>
         </div>

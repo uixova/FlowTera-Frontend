@@ -6,36 +6,26 @@ import { notificationService } from '../../services/notificationService';
 import { useAuth } from '../../context/AuthContext';
 import { useFilter } from '../../hooks/useFilter'; 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
+import { useTeam } from '../../context/TeamContext'; 
 import './css/Requests.css';
 
 const Requests = () => {
     const navigate = useNavigate();
     const { roleNameForTeam, loading: authLoading } = useAuth();
+    const { selectedTeamId } = useTeam(); 
     
     const [loading, setLoading] = useState(false);
     const [requests, setRequests] = useState([]);
     const [activeTab, setActiveTab] = useState('pending');
     const [rejectReason, setRejectReason] = useState({ id: null, text: '' });
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedTeamId, setSelectedTeamId] = useState(localStorage.getItem('tm_selected_id'));
 
-    // Takım değiştirme kontrolü
-    useEffect(() => {
-        const handleTeamChange = () => {
-            const newId = localStorage.getItem('tm_selected_id');
-            setSelectedTeamId(newId); 
-        };
-
-        window.addEventListener('teamChanged', handleTeamChange);
-        return () => window.removeEventListener('teamChanged', handleTeamChange);
-    }, []);
-
-    // Güvenlik kontrolü
+    // Güvenlik Kontrolü: Admin değilse sayfadan at
     useEffect(() => {
         if (!authLoading && selectedTeamId) {
             const role = roleNameForTeam(selectedTeamId);
             if (role !== 'Admin') {
-                console.warn("Yetkisiz erişim: Admin değilsiniz.");
+                console.warn("Yetkisiz erişim: Admin yetkisi gerekiyor.");
                 navigate('/team'); 
             }
         }
@@ -46,9 +36,8 @@ const Requests = () => {
         if (!selectedTeamId) return;
         setLoading(true);
         try {
-            // Servis direkt filtrelenmiş 'requests' array'ini dönüyor
             const result = await notificationService.getTeamRequests(selectedTeamId);
-            setRequests(result); 
+            setRequests(result || []); 
         } catch (error) {
             console.error("Talepler yüklenemedi:", error);
         } finally {
@@ -56,19 +45,19 @@ const Requests = () => {
         }
     }, [selectedTeamId]);
 
+    // Takım veya Auth durumu değişince veriyi tazele
     useEffect(() => { 
-        if (!authLoading) {
+        if (!authLoading && selectedTeamId) {
             fetchRequests();
         }
-    }, [fetchRequests, authLoading]);
+    }, [fetchRequests, authLoading, selectedTeamId]);
 
-    // Arama Filtrelemesi (useFilter)
+    // Arama Filtrelemesi
     const { filteredData } = useFilter(requests, {}, ['user', 'title', 'detail'], searchTerm);
 
-    // Sekme Filtrelemesi
+    // Sekme (Status) Filtrelemesi
     const finalDisplayData = useMemo(() => {
         return filteredData.filter(req => {
-            // Eğer status yoksa default 'pending' kabul et
             const currentStatus = req.status || 'pending';
             return currentStatus === activeTab;
         });
@@ -77,9 +66,9 @@ const Requests = () => {
     // Aksiyon Yönetimi (Onay/Red)
     const handleAction = async (id, status, reasonText = '') => {
         try {
-            // Service entegrasyonu
             await notificationService.respondToRequest(id, status, selectedTeamId);
             
+            // State'i local olarak güncelle 
             setRequests(prev => prev.map(req => {
                 if (req.id === id) {
                     return { 
@@ -92,14 +81,14 @@ const Requests = () => {
             }));
             setRejectReason({ id: null, text: '' });
         } catch (error) {
-            console.error("Operation error:", error);
+            console.error("İşlem hatası:", error);
         }
     };
 
     if (authLoading) return <Loader type="dots" />;
 
     return (
-        <div className="requests-page">
+        <div className="requests-page" key={selectedTeamId}>
             <SubNavbar 
                 pageName="Talep Yönetimi" 
                 showSearch={true}
@@ -145,7 +134,7 @@ const Requests = () => {
     );
 };
 
-// Alt Bileşen
+// Alt Bileşen (Memory leak olmaması için dışarıda veya memo ile tanımlanabilir)
 const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReason }) => {
     const timeDisplay = useTimeAgo(req.date);
 

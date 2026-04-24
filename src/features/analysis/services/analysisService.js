@@ -11,73 +11,152 @@ export const analysisService = {
         const currentTeam = teams.find(t => String(t.id) === String(teamId));
         const teamCurrency = currentTeam?.settings?.currency || 'USD';
 
-        // Filtreleme
-        const teamExpenses = expenses.filter(e => String(e.teamId).trim() === String(teamId).trim());
-        const teamTrips = trips.filter(t => String(t.teamId).trim() === String(teamId).trim());
+        // FILTER
+        const teamExpenses = expenses.filter(e => String(e.teamId) === String(teamId));
+        const teamTrips = trips.filter(t => String(t.teamId) === String(teamId));
 
-        let targetData = [];
-        if (viewMode === 'expenses') targetData = teamExpenses;
-        else if (viewMode === 'trips') targetData = teamTrips;
-        else targetData = [...teamExpenses, ...teamTrips];
+        let targetData =
+            viewMode === 'expenses'
+                ? teamExpenses
+                : viewMode === 'trips'
+                    ? teamTrips
+                    : [...teamExpenses, ...teamTrips];
 
-        // Tarih Hesaplamaları
+        const getValue = (item) => convertFn(item, teamCurrency);
+
+        // SAFE DATE PARSER
+        const parseDate = (str) => {
+            if (!str) return null;
+            const [d, m, y] = str.split('/').map(Number);
+            if (!d || !m || !y) return null;
+            return { day: d, month: m - 1, year: y };
+        };
+
+        const getDate = (item) => parseDate(item.date || item.startDate);
+
+        // MONTH KEY
+        const monthKey = (d) =>
+            `${d.year}-${String(d.month).padStart(2, '0')}`;
+
         const now = new Date();
-        const thisMonth = (now.getMonth() + 1).toString().padStart(2, '0');
-        const lastMonth = now.getMonth() === 0 ? "12" : now.getMonth().toString().padStart(2, '0');
+        const currentKey = `${now.getFullYear()}-${String(now.getMonth()).padStart(2, '0')}`;
 
-        // TOPLAM HESAPLAMALARI
-        const totalSpendingVal = targetData.reduce((sum, item) => sum + convertFn(item, teamCurrency), 0);
+        const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const prevKey = `${prevDate.getFullYear()}-${String(prevDate.getMonth()).padStart(2, '0')}`;
 
-        const currentMonthTotal = targetData
-            .filter(item => (item.date || item.startDate)?.split('/')[1] === thisMonth)
-            .reduce((sum, item) => sum + convertFn(item, teamCurrency), 0);
+        // MONTHLY AGGREGATION
+        const monthlyMap = {};
 
-        const lastMonthTotal = targetData
-            .filter(item => (item.date || item.startDate)?.split('/')[1] === lastMonth)
-            .reduce((sum, item) => sum + convertFn(item, teamCurrency), 0);
+        targetData.forEach(item => {
+            const d = getDate(item);
+            if (!d) return;
 
-        let growth = lastMonthTotal > 0 ? ((currentMonthTotal - lastMonthTotal) / lastMonthTotal) * 100 : (currentMonthTotal > 0 ? 100 : 0);
+            const key = monthKey(d);
+            const val = getValue(item);
 
-        // GRAFİK VERİLERİ
+            monthlyMap[key] = (monthlyMap[key] || 0) + val;
+        });
+
+        const currentMonthTotal = monthlyMap[currentKey] || 0;
+        const lastMonthTotal = monthlyMap[prevKey] || 0;
+
+        // TOTAL
+        const totalSpending = targetData.reduce(
+            (sum, item) => sum + getValue(item),
+            0
+        );
+
+        // GROWTH 
+        const spendingGrowth =
+            lastMonthTotal > 0
+                ? Number((((totalSpending - lastMonthTotal) / lastMonthTotal) * 100).toFixed(1))
+                : totalSpending > 0
+                    ? 100        
+                    : null;
+
+        const currentYear = now.getFullYear();
+        const yearlyTotal = targetData.reduce((sum, item) => {
+            const d = getDate(item);
+            if (!d || d.year !== currentYear) return sum;
+            return sum + getValue(item);
+        }, 0);
+
+        // CATEGORY
         const categoryData = targetData.reduce((acc, item) => {
-            const name = viewMode === 'trips' ? (item.destination || 'Other') : (item.category || 'General');
-            const val = convertFn(item, teamCurrency);
-            const existing = acc.find(i => i.name === name);
-            if (existing) existing.value += val;
+            const name = item.category || item.destination || 'Diğer';
+            const val = getValue(item);
+
+            const found = acc.find(i => i.name === name);
+            if (found) found.value += val;
             else acc.push({ name, value: val });
+
             return acc;
         }, []);
 
-        const cashFlowData = targetData.reduce((acc, item) => {
-            const dateParts = (item.date || item.startDate)?.split('/');
-            if (dateParts) {
-                const mName = new Date(2026, parseInt(dateParts[1]) - 1).toLocaleString('en-US', { month: 'short' });
-                const val = convertFn(item, teamCurrency);
-                const existing = acc.find(i => i.month === mName);
-                if (existing) existing.amount += val;
-                else acc.push({ month: mName, amount: val });
+        // CASH FLOW
+        const cashFlowMap = {};
+
+        targetData.forEach(item => {
+            const d = getDate(item);
+            if (!d) return;
+
+            const key = monthKey(d);
+            const val = getValue(item);
+
+            if (!cashFlowMap[key]) {
+                cashFlowMap[key] = {
+                    month: new Date(d.year, d.month)
+                        .toLocaleString('tr-TR', { month: 'short' }),
+                    amount: 0,
+                    order: d.year * 12 + d.month
+                };
             }
-            return acc;
-        }, []).sort((a, b) => {
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            return months.indexOf(a.month) - months.indexOf(b.month);
+
+            cashFlowMap[key].amount += val;
         });
 
+        const cashFlowData = Object.values(cashFlowMap)
+            .sort((a, b) => a.order - b.order)
+            .map(({ month, amount }) => ({ month, amount }));
+
+        // STATUS
+        const normalize = (s) => s?.toLowerCase().replace(/\s/g, '');
+
+        const statusCount = targetData.reduce((acc, item) => {
+            const s = normalize(item.statusClass || item.status);
+
+            if (s === 'approved') acc.approved++;
+            else if (s === 'pending') acc.pending++;
+            else if (s === 'rejected') acc.rejected++;
+
+            return acc;
+        }, { approved: 0, pending: 0, rejected: 0 });
+
         const statusData = [
-            { name: 'Approved', value: targetData.filter(i => i.status?.toLowerCase() === 'approved').length },
-            { name: 'Pending', value: targetData.filter(i => i.status?.toLowerCase() === 'pending').length },
-            { name: 'Rejected', value: targetData.filter(i => i.status?.toLowerCase() === 'rejected').length }
+            { name: 'Onaylı', value: statusCount.approved },
+            { name: 'Bekleyen', value: statusCount.pending },
+            { name: 'Reddedilen', value: statusCount.rejected }
         ];
 
         return {
             summary: {
-                totalSpending: totalSpendingVal, // Ham değer, formatlama UI'da yapılacak
+                totalSpending,
                 currentMonthSpending: currentMonthTotal,
-                spendingGrowth: growth.toFixed(1),
-                pendingReports: teamExpenses.filter(e => e.status?.toLowerCase() === 'pending').length,
-                activeTrips: teamTrips.filter(t => t.status?.toLowerCase() === 'on road').length,
+                lastMonthSpending: lastMonthTotal,
+                spendingGrowth,
+                yearlyTotal,
+
+                pendingReports: teamExpenses.filter(
+                    e => normalize(e.statusClass || e.status) === 'pending'
+                ).length,
+
+                activeTrips: teamTrips.filter(
+                    t => normalize(t.statusClass || t.status) === 'onroad'
+                ).length,
+
                 teamCurrency
             },
+
             categoryData,
             cashFlowData,
             statusData

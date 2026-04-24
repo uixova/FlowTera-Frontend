@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Loader from '../../components/common/Loader';
 import './history.css/History.css';
 import './history.css/HistoryItem.css';
@@ -12,27 +12,14 @@ import HistoryFilter from './modals/HistoryFilter';
 import { historyService } from './services/historyService';
 import { usePagination } from '../../hooks/usePagination';
 import { useFilter } from '../../hooks/useFilter';
+import { useTeam } from '../../context/TeamContext'; 
 
 const History = () => {
-    const [teamId, setTeamId] = useState(() => localStorage.getItem('tm_selected_id'));
+    const { selectedTeamId } = useTeam();
     const [activeLog, setActiveLog] = useState(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    // Takım Senkronizasyonu
-    useEffect(() => {
-        const handleTeamUpdate = () => {
-            const currentId = localStorage.getItem('tm_selected_id');
-            setTeamId(prevId => String(prevId || '') === String(currentId || '') ? prevId : currentId);
-        };
-        window.addEventListener('teamChanged', handleTeamUpdate);
-        window.addEventListener('storage', handleTeamUpdate);
-        return () => {
-            window.removeEventListener('teamChanged', handleTeamUpdate);
-            window.removeEventListener('storage', handleTeamUpdate);
-        };
-    }, []);
-
-    // Veri Çekme
+    // Veri Çekme 
     const { 
         data: historyData, 
         loading, 
@@ -40,9 +27,9 @@ const History = () => {
         hasMore, 
         loadMore,
         totalCount
-    } = usePagination(historyService.getHistoryByTeam, teamId, 20);
+    } = usePagination(historyService.getHistoryByTeam, selectedTeamId, 20);
 
-    // Filtreleme işlemi için özel hook kullanımı
+    // Filtreleme işlemi
     const {
         searchTerm, setSearchTerm,
         tempFilters, setTempFilters,
@@ -64,12 +51,9 @@ const History = () => {
         setActiveLog(activeLog === id ? null : id);
     };
 
-    // Filtre Alt Butonları
     const filterFooter = (
         <div className="as-filter-footer">
-            <button className="btn-clear" onClick={clearFilters}>
-                Tümünü Temizle
-            </button>
+            <button className="btn-clear" onClick={clearFilters}>Tümünü Temizle</button>
             <button className="btn-apply" onClick={() => { applyFilters(); setIsFilterOpen(false); }}>
                 Filtreleri Uygula
             </button>
@@ -79,7 +63,8 @@ const History = () => {
     if (loading) return <Loader type="butterfly" />;
 
     return (
-        <div className="history-page" key={teamId}>
+        // key={selectedTeamId} sayesinde takım değişince tüm liste componenti sıfırlanır
+        <div className="history-page" key={selectedTeamId}>
             <SubNavbar 
                 pageName="Aktif Geçmiş"
                 searchValue={searchTerm}
@@ -127,14 +112,12 @@ const History = () => {
                 )}
             </div>
 
-            {/* FİLTRE SİDEBARI */}
             <ActionSidebar 
                 isOpen={isFilterOpen} 
                 onClose={() => setIsFilterOpen(false)} 
                 title="İşlemleri Filtrele"
                 footer={filterFooter}
             >
-                {/* BURADA tempFilters KULLANIYORUZ - ANLIK DEĞİŞİM SADECE BURADA GÖRÜNÜR */}
                 <HistoryFilter filters={tempFilters} setFilters={setTempFilters} />
             </ActionSidebar>
         </div>

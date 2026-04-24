@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'; 
+import React, { useEffect, useState } from 'react'; 
 import Loader from '../../components/common/Loader';
 import './expenses.css/Expenses.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
@@ -16,54 +16,29 @@ import { usePagination } from '../../hooks/usePagination';
 import { useFilter } from '../../hooks/useFilter'; 
 import { useCurrency } from '../../context/CurrencyContext';
 import { useModal } from '../../hooks/useModal';
+import { useTeam } from '../../context/TeamContext';
 
 const Expenses = () => {
     const { alertConfig, showAlert, closeAlert } = useModal();
-    
+    const { selectedCurrency, updateCurrency } = useCurrency();
+    const { activeTeam, selectedTeamId } = useTeam();
+
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
     const [isCurrencyOpen, setIsCurrencyOpen] = useState(false); 
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    
     const [selectedExpense, setSelectedExpense] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false); 
-    
-    const { selectedCurrency, updateCurrency } = useCurrency();
-    const [activeTeamId, setActiveTeamId] = useState(() => localStorage.getItem('tm_selected_id'));
-    const [teamDefaultCurrency, setTeamDefaultCurrency] = useState('');
-
-    const syncSelectedTeam = useCallback(() => {
-        const nextTeamId = localStorage.getItem('tm_selected_id');
-        const rawCache = localStorage.getItem('tm_teams_cache');
-
-        if (String(nextTeamId) === String(activeTeamId) && teamDefaultCurrency !== '') return;
-
-        if (rawCache && nextTeamId) {
-            try {
-                const teams = JSON.parse(rawCache);
-                const currentTeam = teams.find(t => String(t.id) === String(nextTeamId));
-                
-                if (currentTeam?.settings?.currency) {
-                    setActiveTeamId(nextTeamId);
-                    setTeamDefaultCurrency(currentTeam.settings.currency);
-                    updateCurrency(currentTeam.settings.currency);
-                }
-            } catch (e) { console.error(e); }
-        }
-    }, [activeTeamId, teamDefaultCurrency, updateCurrency]); 
 
     useEffect(() => {
-        window.addEventListener('teamChanged', syncSelectedTeam);
-        window.addEventListener('storage', syncSelectedTeam);
-        return () => {
-            window.removeEventListener('teamChanged', syncSelectedTeam);
-            window.removeEventListener('storage', syncSelectedTeam);
-        };
-    }, [syncSelectedTeam]);
-    
+        if (activeTeam?.settings?.currency) {
+            updateCurrency(activeTeam.settings.currency);
+        }
+    }, [selectedTeamId, activeTeam, updateCurrency]);
+
     const { 
         data: expenses, loading, loadingMore, hasMore, loadMore, totalCount, refreshData
-    } = usePagination(expenseService.getExpensesByTeam, activeTeamId, 20);
+    } = usePagination(expenseService.getExpensesByTeam, selectedTeamId, 20);
 
     const {
         searchTerm, setSearchTerm,
@@ -196,7 +171,7 @@ const Expenses = () => {
                 isOpen={isCurrencyOpen} 
                 onClose={() => setIsCurrencyOpen(false)} 
                 currentCurrency={selectedCurrency}
-                teamDefaultCurrency={teamDefaultCurrency}
+                teamDefaultCurrency={activeTeam?.settings?.currency || ''}
                 onSelect={(curr) => updateCurrency(curr)}
             />
 

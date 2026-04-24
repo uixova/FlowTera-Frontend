@@ -19,6 +19,7 @@ import { useCurrency } from '../../context/CurrencyContext';
 import { useModal } from '../../hooks/useModal';
 import { useAuth } from '../../context/AuthContext';
 import { usePermissions } from '../../hooks/usePermissions';
+import { useTeam } from '../../context/TeamContext';
 
 const Trips = () => {
     // UI STATELERİ
@@ -31,59 +32,31 @@ const Trips = () => {
     const [isEditMode, setIsEditMode] = useState(false);
 
     const { selectedCurrency, updateCurrency } = useCurrency();
-    const [activeTeamId, setActiveTeamId] = useState(() => localStorage.getItem('tm_selected_id'));
-    const [teamDefaultCurrency, setTeamDefaultCurrency] = useState('');
+    const { activeTeam, selectedTeamId } = useTeam();
 
     const { currentUser } = useAuth();
     const { hasPermission } = usePermissions();
 
     // Aktif takımın rol objesini bul
     const currentUserRoleObj = useMemo(() => {
-        if (!currentUser || !activeTeamId) return null;
-        return currentUser.role?.find(r => String(r.teamId) === String(activeTeamId));
-    }, [currentUser, activeTeamId]);
+        if (!currentUser || !selectedTeamId) return null;
+        return currentUser.role?.find(r => String(r.teamId) === String(selectedTeamId));
+    }, [currentUser, selectedTeamId]);
 
     // Yetki Kontrolleri
     const canCreateTrip = hasPermission(currentUserRoleObj, 'trip_create');
 
     // TAKIM VE KUR SENKRONİZASYONU
     useEffect(() => {
-        const syncSelectedTeam = () => {
-            const nextTeamId = localStorage.getItem('tm_selected_id');
-            
-            if (String(nextTeamId) === String(activeTeamId) && teamDefaultCurrency !== '') {
-                return;
-            }
-
-            setActiveTeamId(nextTeamId);
-
-            const rawCache = localStorage.getItem('tm_teams_cache');
-            if (rawCache && nextTeamId) {
-                try {
-                    const teams = JSON.parse(rawCache);
-                    const currentTeam = teams.find(t => String(t.id) === String(nextTeamId));
-                    if (currentTeam?.settings?.currency) {
-                        setTeamDefaultCurrency(currentTeam.settings.currency);
-                        updateCurrency(currentTeam.settings.currency);
-                    }
-                } catch (e) { console.error("Cache parse error:", e); }
-            }
-        };
-
-        syncSelectedTeam();
-        
-        window.addEventListener('teamChanged', syncSelectedTeam);
-        window.addEventListener('storage', syncSelectedTeam);
-        return () => {
-            window.removeEventListener('teamChanged', syncSelectedTeam);
-            window.removeEventListener('storage', syncSelectedTeam);
-        };
-    }, [activeTeamId, teamDefaultCurrency, updateCurrency]);
+        if (activeTeam?.settings?.currency) {
+            updateCurrency(activeTeam.settings.currency);
+        }
+    }, [selectedTeamId, activeTeam, updateCurrency]);
 
     // Veri Çekme
     const { 
         data: trips, loading, loadingMore, hasMore, loadMore, totalCount, refreshData 
-    } = usePagination(tripsService.getTripsByTeam, activeTeamId, 20);
+    } = usePagination(tripsService.getTripsByTeam, selectedTeamId, 20);
 
     // Filtreleme
     const {
@@ -236,7 +209,7 @@ const Trips = () => {
                 isOpen={isCurrencyOpen} 
                 onClose={() => setIsCurrencyOpen(false)} 
                 currentCurrency={selectedCurrency} 
-                teamDefaultCurrency={teamDefaultCurrency}
+                teamDefaultCurrency={activeTeam?.settings?.currency || ''}
                 onSelect={handleCurrencySelect} 
             />
 
