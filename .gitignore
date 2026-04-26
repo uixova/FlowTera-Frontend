@@ -29,7 +29,6 @@ node_modules/
 .npm
 .eslintcache
 .stylelintcache
-package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
@@ -53,12 +52,6 @@ lerna-debug.log*
 *.cert
 server.key
 server.crt
-
-# PROJEYE ÖZEL VERİ GİZLEME
-public/data/*.json
-
-# public/data/user.json
-# public/data/logs.json
 
 # TEST VE COVERAGE 
 /coverage
