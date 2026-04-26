@@ -9,7 +9,7 @@
     top: 75px;
     right: 20px;
     width: 360px;
-    max-height: 85vh;
+    max-height: 80vh;
     background: #0f0f0f;
     border: 1px solid #222;
     border-radius: 20px;
@@ -20,11 +20,17 @@
 }
 
 .nt-header {
-    padding: 16px 20px;
+    padding: 12px 20px;
     border-bottom: 1px solid #1a1a1a;
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.nt-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .nt-header-title {
@@ -41,8 +47,25 @@
 }
 
 .nt-content {
+    flex: 1;
     overflow-y: auto;
     padding: 15px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+}
+
+.nt-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.nt-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.nt-content::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
 }
 
 .nt-section {
@@ -61,16 +84,28 @@
 }
 
 .nt-invite-card {
-    background: #161616;
-    border: 1px solid #2a2a2a;
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 18px;
     padding: 16px;
     margin-bottom: 12px;
-    transition: 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.nt-invite-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+    background: #0ed45a;
+    opacity: 0.7;
 }
 
 .nt-invite-card:hover {
-    background: #1a1a1a;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
 .invite-card-header {
@@ -80,18 +115,34 @@
     margin-bottom: 14px;
 }
 
+.clear-all-btn {
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.clear-all-btn:hover {
+    color: #ff4757;
+}
+
 .team-avatar {
-    width: 38px;
-    height: 38px;
-    background: linear-gradient(135deg, #0ed45a 0%, #05a042 100%);
-    color: #000;
-    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+    color: #0ed45a; 
+    border: 1px solid rgba(14, 212, 90, 0.3);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 .invite-info {
@@ -99,49 +150,74 @@
 }
 
 .invite-main-text {
-    font-size: 0.8rem;
-    color: #fff;
+    font-size: 0.85rem;
+    color: #efefef;
     margin: 0;
+    line-height: 1.2;
+}
+
+.invite-main-text strong {
+    color: #fff;
+    font-weight: 800;
 }
 
 .invite-sub-text {
-    font-size: 0.7rem;
-    color: #777;
-    margin: 2px 0 0 0;
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.invite-sub-text::before {
+    content: '@';
+    opacity: 0.5;
 }
 
 .invite-card-actions {
     display: flex;
-    gap: 8px;
+    gap: 10px;
+    margin-top: 5px;
 }
 
 .btn-invite-accept {
-    flex: 2;
+    flex: 1;
     background: #0ed45a;
     color: #000;
     border: none;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 10px;
+    border-radius: 12px;
     font-weight: 800;
     font-size: 0.75rem;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(14, 212, 90, 0.2);
+}
+
+.btn-invite-accept:hover {
+    background: #11f368;
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(14, 212, 90, 0.3);
 }
 
 .btn-invite-reject {
-    flex: 1;
-    background: #222;
-    color: #eee;
-    border: 1px solid #333;
-    padding: 8px;
-    border-radius: 8px;
-    font-weight: 700;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #888;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-weight: 600;
     font-size: 0.75rem;
     cursor: pointer;
+    transition: all 0.2s;
 }
 
-.btn-invite-accept:hover { background: #0bbd50; }
-.btn-invite-reject:hover { background: #2a2a2a; color: #ff4757; }
+.btn-invite-reject:hover {
+    background: rgba(255, 71, 87, 0.1);
+    color: #ff4757;
+    border-color: rgba(255, 71, 87, 0.2);
+}
 
 .nt-item {
     display: flex;
@@ -210,12 +286,16 @@
 .nt-close-btn:hover { background: rgba(255, 71, 87, 0.1); color: #ff4757; }
 
 .count-badge {
-    background: #ff9800;
+    background: #0ed45a;
     color: #000;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 900;
-    padding: 2px 7px;
-    border-radius: 20px;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
 }
 
 .no-data {

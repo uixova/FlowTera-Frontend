@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
 import { TeamProvider } from './context/TeamContext'
 
+import Landing from './features/auth/Landing';
 import NotFound from './features/error/NotFound';
 import Navbar from './components/navigation/Navbar';
 import Dashboard from './features/dashboard/Dashboard';
@@ -56,7 +57,7 @@ function App() {
           <SubscriptionProvider> 
             <CurrencyProvider> 
               <Routes>
-                <Route path="/" element={<div>Vitrin Sayfası (Yakında)</div>} />
+                <Route path="/" element={<Landing />} />
 
                 <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                     <Route path="/home" element={<Dashboard />} />

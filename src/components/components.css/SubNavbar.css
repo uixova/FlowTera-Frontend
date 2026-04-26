@@ -55,7 +55,6 @@
     color: #fff; 
 }
 
-/* Ortak Buton Stili */
 .sub-nav-buttons button {
     padding: 8px 12px;
     font-size: 15px;
@@ -76,7 +75,6 @@
     border-color: #0ed45a;
 }
 
-/* Gradient'li Create Butonu */
 .sub-create-btn {
     background: linear-gradient(140deg, #8cbed1 0%, #0ed45a 66%) !important;
     color: #000 !important;
@@ -90,7 +88,6 @@
     transform: translateY(-2px);
 }
 
-/* Search Wrapper */
 .search-wrapper {
     position: relative;
     display: flex;

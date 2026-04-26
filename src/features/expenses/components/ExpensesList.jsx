@@ -6,8 +6,8 @@ import Confirm from '../../../components/modals/Confirm';
 
 const ExpenseRow = ({ expense, onOpenDetail, onEdit, onDeleteClick }) => {
     const { canEdit, canDelete } = useActionPermissions(expense);
-    const { convertAmount, selectedCurrency, symbol } = useCurrency();
-    const displayAmount = convertAmount(expense);
+    const { convert, selectedCurrency, symbol } = useCurrency();
+    const displayAmount = convert(expense, selectedCurrency);
 
     return (
         <div className="expense-block" onClick={() => onOpenDetail(expense)}>
@@ -25,7 +25,9 @@ const ExpenseRow = ({ expense, onOpenDetail, onEdit, onDeleteClick }) => {
             <span className="ex-method-text">{expense.paymentMethod}</span>
             <div className="ex-list-amount-wrapper">
                 <span className="ex-list-symbol">{symbol}</span>
-                <span className="ex-list-amount-val">{(Number(displayAmount) || 0).toFixed(2)}</span>
+                <span className="ex-list-amount-val">
+                    {(Number(displayAmount) || 0).toFixed(2)}
+                </span>
                 <span className="ex-list-currency">{selectedCurrency}</span>
             </div>
             <span className="ex-report-name">{expense.report || 'General'}</span>

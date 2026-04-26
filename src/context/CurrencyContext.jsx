@@ -1,59 +1,64 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useCallback } from 'react';
 
 const CurrencyContext = createContext();
 
 export const CurrencyProvider = ({ children }) => {
-    // Session veya Local storage'dan kullanıcı tercihini al
     const [selectedCurrency, setSelectedCurrency] = useState(() => {
         return sessionStorage.getItem('selectedCurrency') || 'USD';
     });
 
-    // Sembolleri merkezi yönetelim
-    const symbols = {
-        USD: '$',
-        TRY: '₺',
-        EUR: '€',
-        GBP: '£'
-    };
+    const symbols = { USD: '$', TRY: '₺', EUR: '€', GBP: '£' };
 
-    // KRİTİK HESAPLAMA MOTORU
-    const convertAmount = (expense) => {
-        const { localAmount, localCurrency, exchangeRates, amount} = expense;
-        
-        // Eğer seçilen kur, harcamanın yapıldığı orijinal kur (localCurrency) ile aynıysa 
-        // Direkt orijinal rakamı döndür 
-        if (selectedCurrency === localCurrency) {
-            return localAmount;
-        }
-
-        // Eğer harcama objesinde exchangeRates yoksa (eski veriler için fallback)
-        if (!exchangeRates) return amount;
-
-        // Matematik: (Orijinal Miktar / Orijinal Birimin Kuru) * Seçilen Birimin Kuru
-        // Not: exchangeRates içindeki değerler 1 USD bazlıdır.
-        const baseInUSD = localAmount / exchangeRates[localCurrency];
-        const targetValue = baseInUSD * exchangeRates[selectedCurrency];
-
-        return targetValue;
-    };
-
-    const updateCurrency = (code) => {
+    // Para birimi güncelleme
+    const updateCurrency = useCallback((code) => {
         setSelectedCurrency(code);
         sessionStorage.setItem('selectedCurrency', code);
-    };
+    }, []);
+
+    // MERKEZİ DÖNÜŞTÜRME (Analysis ve Listeler için)
+    const convert = useCallback((item, targetCurrency) => {
+        const amount = parseFloat(item.amount) || 0;
+        const itemCurrency = item.currency || 'USD';
+
+        if (itemCurrency === targetCurrency) return amount;
+
+        // Kayıt içindeki kurları kullan 
+        const recordRates = item.exchangeRates;
+        if (recordRates && recordRates[itemCurrency] && recordRates[targetCurrency]) {
+            return (amount / recordRates[itemCurrency]) * recordRates[targetCurrency];
+        }
+
+        // Fallback: LocalStorage'daki genel kurları kullan
+        const rawRates = localStorage.getItem('tm_saved_rates');
+        if (rawRates) {
+            const rates = JSON.parse(rawRates);
+            const amountInBase = amount / (rates[itemCurrency] || 1);
+            return amountInBase * (rates[targetCurrency] || 1);
+        }
+
+        return amount;
+    }, []);
+
+    // MERKEZİ FORMATLAMA
+    const format = useCallback((value, currency) => {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: currency || selectedCurrency,
+        }).format(value || 0);
+    }, [selectedCurrency]);
 
     return (
         <CurrencyContext.Provider value={{ 
             selectedCurrency, 
             updateCurrency, 
-            convertAmount, 
+            convert, 
+            format,
             symbol: symbols[selectedCurrency] || selectedCurrency 
         }}>
             {children}
         </CurrencyContext.Provider>
     );
 };
-
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useCurrency = () => useContext(CurrencyContext);

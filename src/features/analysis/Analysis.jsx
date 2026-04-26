@@ -5,7 +5,7 @@ import ExportModal from './components/ExportData';
 import AnalysisCharts from './components/Charts'; 
 import Loader from '../../components/common/Loader'; 
 import { analysisService } from './services/analysisService';
-import { useCurrency } from '../../hooks/useCurrency';
+import { useCurrency } from '../../context/CurrencyContext';
 import { useTeam } from '../../context/TeamContext'; 
 
 const Analysis = () => {

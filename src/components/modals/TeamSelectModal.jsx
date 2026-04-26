@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { teamsService } from '../../features/teams/services/teamsService'; 
 import { useAuth } from '../../context/AuthContext'; 
+import { useTeam } from '../../context/TeamContext';
 import '../components.css/TeamSelectModal.css'; 
 
-const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
+const TeamSelectModal = ({ isOpen, onClose, currentTeamId }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { selectTeam } = useTeam();
   const [teams, setTeams] = useState([]);
 
   useEffect(() => {
@@ -25,37 +27,25 @@ const TeamSelectModal = ({ isOpen, onClose, onSelectTeam, currentTeamId }) => {
 
   if (!isOpen) return null;
 
-  const handleSelect = (teamId) => {
+  const handleSelect = async (teamId) => {
     const stringId = String(teamId);
     const selectedTeam = teams.find(t => String(t.id) === stringId);
     
-    // AuthContext'teki rol dizisinden bu takımın rolünü bul
     const userRoleInfo = currentUser?.role?.find(r => String(r.teamId) === stringId);
     const nextRole = userRoleInfo?.roleName;
-    const nextPlan = selectedTeam?.plan; // Takım objesinden gelen plan
+    const nextPlan = selectedTeam?.plan;
 
-    // LocalStorage güncellemeleri
-    localStorage.setItem('tm_selected_id', stringId);
-    localStorage.setItem('tm_selected_name', selectedTeam?.name || '');
-
-    // ANLIK ROTA KORUMASI
+    // ROTA KORUMASI
     const path = window.location.pathname;
-    const adminRoutes = ['/analysis', '/requests'];
-    
-    if (adminRoutes.includes(path) && nextRole !== 'Admin') {
+    if (['/analysis', '/requests'].includes(path) && nextRole !== 'Admin') {
       navigate('/home');
     } else if (path === '/archive' && nextPlan !== 'enterprise') {
       navigate('/home');
     }
 
-    // Event ve State tetikleme
-    window.dispatchEvent(
-      new CustomEvent('teamChanged', {
-        detail: { teamId: stringId, teamName: selectedTeam?.name || '' }
-      })
-    );
+    // MERKEZİ GÜNCELLEME 
+    selectTeam(stringId); 
     
-    onSelectTeam(teamId);
     onClose();
   };
 

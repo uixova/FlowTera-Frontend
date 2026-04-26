@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState, useRef } from 'react'; 
 import Loader from '../../components/common/Loader';
 import './expenses.css/Expenses.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
@@ -30,11 +30,29 @@ const Expenses = () => {
     const [selectedExpense, setSelectedExpense] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false); 
 
+    const prevTeamIdRef = useRef(selectedTeamId);
+
+    // Takım değiştiğinde, o takımın varsayılan kurunu başlangıç olarak ayarla
     useEffect(() => {
-        if (activeTeam?.settings?.currency) {
+        // Takım gerçekten değişti mi? (Sol menüden tıklandı)
+        const teamChanged = prevTeamIdRef.current !== selectedTeamId;
+        const savedSelection = sessionStorage.getItem('selectedCurrency');
+
+        if (teamChanged) {
+            // Takım değiştiyse, eski manuel seçimi temizle ve takımın varsayılanına geç
+            if (activeTeam?.settings?.currency) {
+                updateCurrency(activeTeam.settings.currency);
+                // Yeni takıma geçtiğimiz için eski tercihi siliyoruz
+                sessionStorage.removeItem('selectedCurrency'); 
+            }
+            // Referansı güncelle
+            prevTeamIdRef.current = selectedTeamId;
+        } 
+        // Sayfa ilk kez yükleniyor ve henüz hiç seçim yapılmamış
+        else if (!savedSelection && activeTeam?.settings?.currency) {
             updateCurrency(activeTeam.settings.currency);
         }
-    }, [selectedTeamId, activeTeam, updateCurrency]);
+    }, [selectedTeamId, activeTeam?.settings?.currency, updateCurrency]);
 
     const { 
         data: expenses, loading, loadingMore, hasMore, loadMore, totalCount, refreshData

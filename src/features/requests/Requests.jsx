@@ -91,6 +91,7 @@ const Requests = () => {
         <div className="requests-page" key={selectedTeamId}>
             <SubNavbar 
                 pageName="Talep Yönetimi" 
+                searchPlaceholder="İstek ara..."
                 showSearch={true}
                 searchValue={searchTerm}
                 onSearch={(val) => setSearchTerm(val)}

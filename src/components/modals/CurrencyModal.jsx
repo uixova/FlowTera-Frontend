@@ -1,7 +1,10 @@
 import React from 'react';
 import '../components.css/CurrencyModal.css';
+import { useCurrency } from '../../context/CurrencyContext'; 
 
-const CurrencyModal = ({ isOpen, onClose, onSelect, currentCurrency, teamDefaultCurrency }) => {
+const CurrencyModal = ({ isOpen, onClose, teamDefaultCurrency }) => {
+  const { selectedCurrency, updateCurrency } = useCurrency();
+
   if (!isOpen) return null;
 
   const currencies = [
@@ -21,32 +24,23 @@ const CurrencyModal = ({ isOpen, onClose, onSelect, currentCurrency, teamDefault
         <div className="currency-list">
           {currencies.map((curr) => {
             const isTeamDefault = curr.code === teamDefaultCurrency;
-            const isActive = currentCurrency === curr.code;
+            const isActive = selectedCurrency === curr.code;
 
             return (
               <button 
                 key={curr.code} 
                 className={`currency-option ${isActive ? 'active' : ''} ${isTeamDefault ? 'team-default-opt' : ''}`}
                 onClick={() => {
-                  onSelect(curr.code);
-                  // Seçim yapınca bir CustomEvent fırlatıp Navbar'ı uyandırabilirsin
-                  window.dispatchEvent(new CustomEvent('currencyChanged'));
+                  updateCurrency(curr.code); 
                   onClose();
                 }}
               >
                 <div className="currency-symbol-box">{curr.symbol}</div>
                 <div className="curr-info">
-                  <span className="curr-name">
-                    ({curr.code})
-                  </span>
-                  {isTeamDefault && 
-                  <span className="team-default-badge">
-                    Varsayılan
-                  </span>}
+                  <span className="curr-name">({curr.code})</span>
+                  {isTeamDefault && <span className="team-default-badge">Varsayılan</span>}
                 </div>
-                {isActive && 
-                <i className="ti ti-check check-icon">
-                </i>}
+                {isActive && <i className="ti ti-check check-icon"></i>}
               </button>
             );
           })}

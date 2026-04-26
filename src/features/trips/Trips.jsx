@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import Loader from '../../components/common/Loader';
 import './trips.css/Trips.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
@@ -34,6 +34,8 @@ const Trips = () => {
     const { selectedCurrency, updateCurrency } = useCurrency();
     const { activeTeam, selectedTeamId } = useTeam();
 
+    const prevTeamIdRef = useRef(selectedTeamId);
+
     const { currentUser } = useAuth();
     const { hasPermission } = usePermissions();
 
@@ -48,10 +50,21 @@ const Trips = () => {
 
     // TAKIM VE KUR SENKRONİZASYONU
     useEffect(() => {
-        if (activeTeam?.settings?.currency) {
+        const teamChanged = prevTeamIdRef.current !== selectedTeamId;
+        const savedSelection = sessionStorage.getItem('selectedCurrency');
+
+        if (teamChanged) {
+            if (activeTeam?.settings?.currency) {
+                updateCurrency(activeTeam.settings.currency);
+                sessionStorage.removeItem('selectedCurrency'); 
+            }
+            prevTeamIdRef.current = selectedTeamId;
+        } 
+        else if (!savedSelection && activeTeam?.settings?.currency) {
             updateCurrency(activeTeam.settings.currency);
         }
-    }, [selectedTeamId, activeTeam, updateCurrency]);
+        
+    }, [selectedTeamId, activeTeam?.settings?.currency, updateCurrency]);
 
     // Veri Çekme
     const { 
@@ -203,7 +216,12 @@ const Trips = () => {
                 onSuccess={handleSuccess}
             />
 
-            <TripDetail isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} data={selectedTrip} />
+            <TripDetail 
+            isOpen={isDetailOpen} 
+            onClose={() => setIsDetailOpen(false)} 
+            data={selectedTrip}
+            onSuccess={handleSuccess}
+            />
 
             <CurrencyModal 
                 isOpen={isCurrencyOpen} 

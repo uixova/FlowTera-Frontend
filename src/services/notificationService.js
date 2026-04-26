@@ -34,6 +34,17 @@ export const notificationService = {
         return true;
     },
 
+    // Kullanıcının tüm bilgilendirme bildirimlerini siler
+    clearAllInfos: async (currentUserId) => {
+        console.log(`[API DELETE ALL INFOS] User ID: ${currentUserId}`);
+        /** * Backend endpoint
+         * return await api.notifications.clearInfos(currentUserId);
+         * veya
+         * return await api.delete(`/notifications/clear-infos/${currentUserId}`);
+         */
+        return true; 
+    },
+
     // Takım davetine veya harcama talebine cevap (Requests içindeki veriyi günceller)
     respondToRequest: async (id, action, teamId) => {
         console.log(`[API POST] Request ID: ${id} | Action: ${action} | Team ID: ${teamId}`);

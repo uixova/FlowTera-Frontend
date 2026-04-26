@@ -7,9 +7,8 @@ import Confirm from '../../../components/modals/Confirm';
 // onDeleteClick prop'unu buraya eklemeyi unutmuşuz!
 const TripRow = ({ trip, onOpenDetail, onEdit, onDeleteClick }) => {
     const { canEdit, canDelete } = useActionPermissions(trip);
-    const { convertAmount, selectedCurrency, symbol } = useCurrency();
-    
-    const displayAmount = convertAmount(trip);
+    const { convert, selectedCurrency, symbol } = useCurrency();
+        const displayAmount = convert(trip, selectedCurrency);
 
     return (
         <div className="trip-block" onClick={() => onOpenDetail(trip)}>

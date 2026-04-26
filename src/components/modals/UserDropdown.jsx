@@ -10,7 +10,6 @@ const UserDropdown = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const { currentUser, loading } = useAuth();
   
-  // Tek hook, tam kontrol
   const { 
     alertConfig, 
     confirmConfig, 
@@ -31,7 +30,6 @@ const UserDropdown = ({ isOpen, onClose }) => {
       "Oturumu Kapat", 
       "Hesabınızdan çıkış yapmak istediğinize emin misiniz?", 
       () => {
-        // Buraya gerçek logout fonksiyonunu bağlayabilirsin
         console.log("Oturum sonlandırıldı.");
         navigate('/login');
         onClose();

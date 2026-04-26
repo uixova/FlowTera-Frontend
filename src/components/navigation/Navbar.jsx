@@ -31,7 +31,7 @@ const Navbar = () => {
     const [isLangOpen, setIsLangOpen] = useState(false);
     const [isTeamOpen, setIsTeamOpen] = useState(false);
 
-    //  Plan ve Yetki Hesaplamaları 
+    // Plan ve Yetki Hesaplamaları 
     const currentPlan = useMemo(() => 
         selectedTeamId ? roleNameForTeam(selectedTeamId, 'plan') : null, 
     [selectedTeamId, roleNameForTeam]);
@@ -53,21 +53,17 @@ const Navbar = () => {
     const isAdmin = teamRoleData?.roleName?.toLowerCase() === 'admin';
     const isEnterprise = !authLoading && selectedTeamId && currentPlan === 'enterprise';
 
-    // 2. Rota Koruması (Artık syncSelectedTeam yerine sadece yönlendirme mantığı kaldı)
+    // Rota Koruması
     useEffect(() => {
         const allProtectedRoutes = ['/expense', '/trips', '/analysis', '/history', '/requests', '/archive'];
         const path = location.pathname;
-
         if (!selectedTeamId) {
             if (allProtectedRoutes.includes(path)) navigate('/team');
             return;
         }
-
-        // Yetki bazlı yönlendirme
         if (path === '/analysis' && !canAccessAnalysis) navigate('/home');
         if (path === '/requests' && !canAccessRequests) navigate('/home');
         if (path === '/archive' && (!canAccessArchive || !isEnterprise)) navigate('/home');
-        
     }, [selectedTeamId, location.pathname, navigate, canAccessAnalysis, canAccessRequests, canAccessArchive, isEnterprise]);
 
     const handleThemeClick = () => {
@@ -79,46 +75,23 @@ const Navbar = () => {
     };
 
     const handleTeamChange = (teamId) => {
-        selectTeam(teamId); // Context'i günceller, Navbar render olur.
+        selectTeam(teamId);
         setIsTeamOpen(false);
     };
 
     return (
-        <header>
-            <div className="top-head">
-                <div className="app-logo"><h1>Flowtera</h1></div>
-                <div className="head-project-manager">
-                    <div className="head-lnk-btn">
-                        <button className="github-source"><i className="ti ti-brand-github"></i> Source Code</button>
-                        <button className="donate-lnk"><i className="ti ti-heart"></i> Donate</button>
-                        
-                        <button className={`team-select-head github-source ${isTeamOpen ? 'active' : ''}`} onClick={() => setIsTeamOpen(!isTeamOpen)}>
-                            <i className="ti ti-users-group"></i>
-                        </button>
-
-                        <button className={`light-dark-head github-source ${isLangOpen ? 'active' : ''}`} onClick={() => setIsLangOpen(!isLangOpen)}>
-                            <i className="ti ti-world"></i>
-                        </button>
-
-                        <button className={`notification-btn github-source ${isNotificationOpen ? 'active' : ''}`} onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
-                            <i className="ti ti-bell"></i>
-                            <span className="nt-dot"></span>
-                        </button>
-                        <button className="light-dark-head github-source"><i className="ti ti-sun"></i></button>
+        <header className="navbar-header">
+            <div className="nav-container">
+                {/* SOL: Logo */}
+                <div className="app-logo" onClick={() => navigate('/home')}>
+                    <div className="logo-icon-wrapper">
+                        <img src="/Logo.png" alt="FlowTera" className="logo-img" />
                     </div>
-
-                    <div className="head-user-profile" onClick={() => setIsUserOpen(!isUserOpen)}>
-                        <div className="head-profile-img">
-                            <img src={currentUser?.avatar || UserImage} alt="Profile" />
-                        </div>
-                        <UserDropdown isOpen={isUserOpen} onClose={() => setIsUserOpen(false)} />
-                    </div>
+                    <h1>Flowtera</h1>
                 </div>
-            </div>
-            <hr />
 
-            <div className="bottom-head">
-                <div className="left-head">
+                {/* ORTA: Navigasyon Linkleri */}
+                <nav className="nav-links-center">
                     <ul>
                         <li><NavLink to="/home"><i className="ti ti-home"></i> Anasayfa</NavLink></li>
                         {selectedTeamId && (
@@ -140,16 +113,38 @@ const Navbar = () => {
                         <li><NavLink to="/team"><i className="ti ti-users-group"></i> Takım</NavLink></li>
                         <li><NavLink to="/help"><i className="ti ti-help"></i> Yardım</NavLink></li>
                     </ul>
-                </div>
-                <div className="right-head">
-                    <ul>
-                        <li><button onClick={() => navigate('/settings')} className="nav-settings-btn">Ayarlar</button></li>
-                        <li>
-                            <button className="nav-theme-btn" onClick={handleThemeClick}>
-                                Tema {!hasFeature('theme_management') && <i className="ti ti-lock" style={{marginLeft: '5px', fontSize: '12px'}}></i>}
-                            </button>
-                        </li>
-                    </ul>
+                </nav>
+
+                {/* SAĞ: Aksiyon Butonları ve Profil */}
+                <div className="nav-actions-right">
+                    <div className="head-lnk-btn">
+                        <button className={`team-select-head btn-dark ${isTeamOpen ? 'active' : ''}`} onClick={() => setIsTeamOpen(!isTeamOpen)}>
+                            <i className="ti ti-users-group"></i>
+                        </button>
+
+                        <button className={`light-dark-head btn-dark ${isLangOpen ? 'active' : ''}`} onClick={() => setIsLangOpen(!isLangOpen)}>
+                            <i className="ti ti-world"></i>
+                        </button>
+
+                        <button className={`notification-btn btn-dark ${isNotificationOpen ? 'active' : ''}`} onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
+                            <i className="ti ti-bell"></i>
+                            <span className="nt-dot"></span>
+                        </button>
+                        
+                        <button className="btn-dark" onClick={handleThemeClick}>
+                            <i className="ti ti-brush"></i> 
+                            {!hasFeature('theme_management') && <i className="ti ti-lock" style={{marginLeft: '5px', fontSize: '10px'}}></i>}
+                        </button>
+
+                        <button className="light-dark-head btn-dark"><i className="ti ti-sun"></i></button>
+                    </div>
+
+                    <div className="head-user-profile" onClick={() => setIsUserOpen(!isUserOpen)}>
+                        <div className="head-profile-img">
+                            <img src={currentUser?.avatar || UserImage} alt="Profile" />
+                        </div>
+                        <UserDropdown isOpen={isUserOpen} onClose={() => setIsUserOpen(false)} />
+                    </div>
                 </div>
             </div>
 

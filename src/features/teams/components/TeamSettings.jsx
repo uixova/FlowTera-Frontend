@@ -3,6 +3,7 @@ import Loader from '../../../components/common/Loader';
 import '../teams.css/Settings.css';
 import { teamsService } from '../services/teamsService';
 import { useAuth } from '../../../context/AuthContext';
+import { useTeam } from '../../../context/TeamContext';
 import { useModal } from '../../../hooks/useModal';
 import Alert from '../../../components/modals/Alert';
 import Confirm from '../../../components/modals/Confirm';
@@ -10,17 +11,18 @@ import Confirm from '../../../components/modals/Confirm';
 const TeamSettings = ({ team, onBack }) => {
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
   const { currentUser: authUser, loading: authLoading } = useAuth();
+  const { selectedTeamId } = useTeam();
   const [availableFeatures, setAvailableFeatures] = useState([]);
   const [planMaxMembers, setPlanMaxMembers] = useState(5);
   const [loading, setLoading] = useState(true); 
   const [teamMembersCount, setTeamMembersCount] = useState(0);
-  const selectedTeamId = localStorage.getItem('tm_selected_id');
 
   const canManageMembers = useMemo(() => {
     if (authLoading || !authUser || String(authUser?.isDeleted) === 'true') return false;
+    // Context'ten gelen anlık ID ile kontrol yapıyoruz
     const roleObj = authUser?.role?.find(r => String(r.teamId) === String(selectedTeamId));
+    
     if (!roleObj) return false;
-    // team_settings deny-list'te varsa erişim kapalı 
     if (Array.isArray(roleObj.permissions) && roleObj.permissions.includes('team_settings')) return false;
     return true;
   } , [authLoading, authUser, selectedTeamId]);

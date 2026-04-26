@@ -3,14 +3,14 @@ import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import '../teams.css/TeamEdit.css';
 import { teamsService } from '../services/teamsService'; 
 import { useModal } from '../../../hooks/useModal'; 
-import { usePermissions } from '../../../hooks/usePermissions'; // Hook'u dahil ettik
+import { usePermissions } from '../../../hooks/usePermissions'; 
 import Confirm from '../../../components/modals/Confirm'; 
 
 const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
     const [selectedRole, setSelectedRole] = useState('member');
     const [isUpdating, setIsUpdating] = useState(false);
 
-    // Yetki yönetimi için yazdığımız hook'u çağırıyoruz
+    // Yetki yönetimi için yazdığım hook
     const { 
         getFilteredPermissions, 
         restrictedPerms, 
@@ -19,7 +19,7 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
         resetRestrictions 
     } = usePermissions([]);
 
-    // Confirm modal yönetimi için hook'u çağırıyoruz
+    // Confirm modal yönetimi için hook'u çağır
     const { confirmConfig, askConfirm, closeConfirm } = useModal();
 
     // Modal açıldığında mevcut rol ve kısıtlamaları yükle

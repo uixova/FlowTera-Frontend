@@ -17,11 +17,9 @@ const Notification = ({ isOpen, onClose }) => {
 
         setLoading(true);
         try {
-            // Servis { invites: [], infos: [] } objesi dönüyor
             const result = await notificationService.getUserNotifications(currentUserId);
-            
-            setInfos(result.infos);
-            setRequests(result.invites); // Davetler üst kısma
+            setInfos(result.infos || []);
+            setRequests(result.invites || []);
         } catch (error) {
             console.error("Bildirimler çekilemedi:", error);
         } finally {
@@ -35,13 +33,23 @@ const Notification = ({ isOpen, onClose }) => {
         }
     }, [isOpen, fetchNotifications]);
 
-    // Davet aksiyonu (teamId parametresini de gönderiyoruz)
     const handleAction = async (id, action, teamId) => {
         try {
             await notificationService.respondToRequest(id, action, teamId);
             setRequests(prev => prev.filter(r => r.id !== id));
         } catch (error) {
             console.error("İşlem başarısız:", error);
+        }
+    };
+
+    // SADECE bilgilendirmeleri (infos) temizler
+    const handleClearInfos = async () => {
+        if (infos.length === 0) return;
+        try {
+            await notificationService.clearAllInfos(currentUserId); 
+            setInfos([]);
+        } catch (error) {
+            console.error("Bildirimler temizlenirken hata:", error);
         }
     };
 
@@ -66,17 +74,24 @@ const Notification = ({ isOpen, onClose }) => {
                             {loading ? "..." : (requests.length + infos.length)}
                         </span>
                     </div>
-                    <button className="nt-close-btn" onClick={onClose}>
-                        <i className="ti ti-x"></i>
-                    </button>
+                    <div className="nt-header-actions">
+                        {infos.length > 0 && (
+                            <button className="clear-all-btn" onClick={handleClearInfos}>
+                                Temizle
+                            </button>
+                        )}
+                        <button className="nt-close-btn" onClick={onClose}>
+                            <i className="ti ti-x"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div className="nt-content">
                     {loading || authLoading ? (
-                        <Loader type="dots"/>
+                        <div className="nt-loader-wrapper"><Loader type="dots"/></div>
                     ) : (
                         <>
-                            {/* TAKIM DAVETLERİ (REQUESTS) - ÖZEL TASARIM */}
+                            {/* TAKIM DAVETLERİ (REQUESTS) */}
                             {requests.length > 0 && (
                                 <section className="nt-section">
                                     <div className="section-title"><span>Bekleyen Davetler</span></div>
@@ -85,7 +100,11 @@ const Notification = ({ isOpen, onClose }) => {
                                             <div key={req.id} className="nt-invite-card">
                                                 <div className="invite-card-header">
                                                     <div className="team-avatar">
-                                                        {req.teamName?.charAt(0) || "T"}
+                                                        {req.teamLogo ? (
+                                                            <img src={req.teamLogo} alt="" />
+                                                        ) : (
+                                                            req.teamName?.charAt(0).toUpperCase() || "T"
+                                                        )}
                                                     </div>
                                                     <div className="invite-info">
                                                         <p className="invite-main-text">

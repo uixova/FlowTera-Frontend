@@ -67,6 +67,7 @@ const History = () => {
         <div className="history-page" key={selectedTeamId}>
             <SubNavbar 
                 pageName="Aktif Geçmiş"
+                searchPlaceholder="Geçmiş Kayıtlar..."
                 searchValue={searchTerm}
                 onSearch={(val) => setSearchTerm(val)} 
                 showSearch={true}      
