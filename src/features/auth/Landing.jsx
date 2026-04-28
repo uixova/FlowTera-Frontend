@@ -427,7 +427,7 @@ const Landing = () => {
             <div className="footer-social">
               <a href="#"><i className="ti ti-brand-twitter"></i></a>
               <a href="#"><i className="ti ti-brand-linkedin"></i></a>
-              <a href="#"><i className="ti ti-brand-github"></i></a>
+              <a href="https://github.com/uixova"><i className="ti ti-brand-github"></i></a>
             </div>
           </div>
           <div className="footer-links">
