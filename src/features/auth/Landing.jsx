@@ -3,25 +3,8 @@ import { Link } from 'react-router-dom';
 import FAQ from './components/FAQ';
 import Features from './components/Features';
 import Subs from './components/Subs';
+import useCounter from './hook/useCounter';
 import './auth.css/Landing.css';
-
-// Animated Counter Hook
-const useCounter = (end, duration = 2000, start = false) => {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!start) return;
-    let startTime = null;
-    const step = (timestamp) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(eased * end));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [end, duration, start]);
-  return count;
-};
 
 // Mini Sparkline Component
 const Sparkline = ({ data, color }) => {
@@ -60,28 +43,6 @@ const FeedItem = ({ icon, text, amount, time, type, delay }) => (
   </div>
 );
 
-// Pricing Card
-const PricingCard = ({ plan, price, features, highlighted, badge }) => (
-  <div className={`pricing-card ${highlighted ? 'highlighted' : ''}`}>
-    {badge && <div className="pricing-badge">{badge}</div>}
-    <div className="pricing-plan">{plan}</div>
-    <div className="pricing-price">
-      <span className="price-currency">₺</span>
-      <span className="price-amount">{price}</span>
-      <span className="price-period">/ay</span>
-    </div>
-    <ul className="pricing-features">
-      {features.map((f, i) => (
-        <li key={i}>
-          <i className="ti ti-check"></i> {f}
-        </li>
-      ))}
-    </ul>
-    <button className={`pricing-btn ${highlighted ? 'primary-btn' : 'secondary-btn'}`}>
-      {highlighted ? 'Hemen Başla' : 'Planı Seç'}
-    </button>
-  </div>
-);
 
 const Landing = () => {
   const statsRef = useRef(null);

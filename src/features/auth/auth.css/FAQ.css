@@ -31,7 +31,6 @@
   line-height: 1.6;
 }
 
-/* Category Tabs */
 .faq-tabs {
   display: flex;
   gap: 8px;
@@ -72,7 +71,6 @@
   box-shadow: 0 0 20px rgba(14, 212, 90, 0.12);
 }
 
-/* Search Bar*/
 .faq-search-wrap {
   position: relative;
   margin-bottom: 28px;
@@ -105,14 +103,12 @@
   box-shadow: 0 0 0 3px rgba(14, 212, 90, 0.06);
 }
 
-/* Question List*/
 .faq-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-/* Accordion Item */
 .faq-item {
   background: rgba(255, 255, 255, 0.022);
   border: 1px solid rgba(255, 255, 255, 0.07);
@@ -133,7 +129,6 @@
   box-shadow: 0 4px 24px rgba(14, 212, 90, 0.07);
 }
 
-/* Question Row */
 .faq-question {
   display: flex;
   align-items: center;
@@ -189,7 +184,6 @@
   transform: rotate(180deg);
 }
 
-/* Answer Panel */
 .faq-answer {
   display: grid;
   grid-template-rows: 0fr;
@@ -213,13 +207,11 @@
   padding-top: 18px;
 }
 
-/* Highlight keywords */
 .faq-answer-content strong {
   color: #c0c0c8;
   font-weight: 600;
 }
 
-/* Empty / No Results */
 .faq-empty {
   text-align: center;
   padding: 48px 24px;
@@ -228,7 +220,6 @@
 }
 .faq-empty i { font-size: 32px; display: block; margin-bottom: 12px; color: #333; }
 
-/* Bottom CTA */
 .faq-cta {
   margin-top: 48px;
   display: flex;
@@ -267,7 +258,6 @@
   transform: translateY(-2px);
 }
 
-/* Responsive */
 @media (max-width: 640px) {
   .faq-tabs { gap: 6px; }
   .faq-tab  { padding: 7px 14px; font-size: 0.78rem; }

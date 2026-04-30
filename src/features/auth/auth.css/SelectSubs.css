@@ -1,0 +1,120 @@
+.select-subs-frame {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  background: rgba(9, 11, 14, 0.78);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: min(72vh, 840px);
+  overflow: hidden;
+}
+
+.select-subs-header h3 {
+  margin: 0;
+  color: #f1f2f4;
+  font-size: 1.06rem;
+}
+
+.select-subs-header p {
+  margin: 4px 0 0;
+  color: #8b939e;
+  font-size: 0.83rem;
+}
+
+.select-subs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.select-subs-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #d7dce3;
+  padding: 14px;
+  text-align: left;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.select-subs-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(14, 212, 90, 0.4);
+}
+
+.select-subs-card.selected {
+  border-color: #0ed45a;
+  background: rgba(14, 212, 90, 0.08);
+}
+
+.select-subs-card.popular::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(14, 212, 90, 0.25);
+}
+
+.select-subs-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(14, 212, 90, 0.2);
+  color: #93f8bb;
+  font-size: 0.66rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 4px 8px;
+}
+
+.select-subs-icon {
+  font-size: 1.15rem;
+  color: #0ed45a;
+}
+
+.select-subs-plan {
+  margin-top: 7px;
+  font-weight: 700;
+  color: #f1f2f3;
+}
+
+.select-subs-desc {
+  margin: 6px 0;
+  min-height: 34px;
+  color: #9ca2ac;
+  font-size: 0.78rem;
+}
+
+.select-subs-price {
+  color: #ecf6ef;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.select-subs-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.76rem;
+}
+
+.select-subs-features li.disabled {
+  opacity: 0.42;
+}
+
+.select-subs-features li i {
+  margin-right: 6px;
+}
+
+.select-subs-actions {
+  padding-top: 2px;
+}

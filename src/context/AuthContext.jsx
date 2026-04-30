@@ -1,14 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { api } from '../api/api';
+import { authService, VERIFIED_SIGNUP_KEY } from '../features/auth/services/authService';
 import Loader from '../components/common/Loader';
 
 const AuthContext = createContext(null);
-
 const AUTH_USER_ID_KEY = 'auth_user_id';
 
 export const AuthProvider = ({ children }) => {
     const [currentUserId, setCurrentUserId] = useState(() => {
-        return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || "u1";
+        // "u1"
+        return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || null;
     });
     const [currentUser, setCurrentUser] = useState(null);
     const [teams, setTeams] = useState([]); 
@@ -30,21 +31,35 @@ export const AuthProvider = ({ children }) => {
         }
 
         setLoading(true);
-            try {
-                const users = await api.users.getAll();
-                const user = users.find(u => String(u.id) === String(userId));
-        
-                if (user) {
-                    setCurrentUser(user);
-                } else {
-                    logout();
+        try {
+            const users = await api.users.getAll();
+            const user = users.find(u => String(u.id) === String(userId));
+    
+            if (user) {
+                setCurrentUser(user);
+            } else {
+                const rawLocalUser = localStorage.getItem(VERIFIED_SIGNUP_KEY);
+                if (rawLocalUser) {
+                    try {
+                        const localUser = JSON.parse(rawLocalUser);
+                        if (String(localUser?.id) === String(userId)) {
+                            setCurrentUser(localUser);
+                            setLoading(false);
+                            return;
+                        }
+                    } catch {
+                        // no-op
+                    }
                 }
-            } catch (error) {
-                console.error("Auth Error:", error);
-            } finally {
-                setLoading(false);
+                logout();
             }
-        }, [logout]);
+        } catch (error) {
+            console.error("Auth Error:", error);
+            logout();
+        } finally {
+            setLoading(false);
+        }
+    }, [logout]);
 
     useEffect(() => {
         fetchUser(currentUserId);
@@ -63,8 +78,14 @@ export const AuthProvider = ({ children }) => {
         setCurrentUserId(stringId);
     }, []);
 
-    // Yetki ve Plan Kontrolleri
-    // type: 'role' (varsayılan) veya 'plan' alabilir
+    const loginWithCredentials = useCallback(async (email, password, rememberMe = false) => {
+        const result = await authService.loginWithEmail(email, password);
+        if (!result.success) return result;
+
+        login(result.user.id, rememberMe);
+        return result;
+    }, [login]);
+
     const roleNameForTeam = useCallback((teamId, type = 'role') => {
         if (!currentUser || !teamId) return null;
 
@@ -73,7 +94,6 @@ export const AuthProvider = ({ children }) => {
         }
 
         if (type === 'plan') {
-            // State'teki takımlardan o ID'li takımı bulup planName'e bakıyoruz
             const team = teams.find(t => String(t.id) === String(teamId));
             return team?.settings?.planContext?.planName || null;
         }
@@ -87,10 +107,11 @@ export const AuthProvider = ({ children }) => {
         loading,
         isAuthenticated: !!currentUser,
         login,
+        loginWithCredentials,
         logout,
         roleNameForTeam,
         isAdmin: (teamId) => roleNameForTeam(teamId) === 'Admin'
-    }), [currentUser, currentUserId, loading, login, logout, roleNameForTeam]);
+    }), [currentUser, currentUserId, loading, login, loginWithCredentials, logout, roleNameForTeam]);
 
     if (loading) return <Loader type="butterfly" />;
 

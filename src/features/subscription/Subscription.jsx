@@ -16,7 +16,7 @@ const Subscription = () => {
         if (isCurrent) return;
     
         // Yeni sekme için URL oluşturma (Origin + path + query)
-        const url = `${window.location.origin}/checkout?plan=${planId}`;
+        const url = `${window.location.origin}/payment?plan=${planId}`;
     
         // Güvenli bir şekilde yeni sekmede açar
         window.open(url, '_blank', 'noopener,noreferrer');

@@ -6,13 +6,14 @@ import { useModal } from '../../hooks/useModal';
 import { useSubscription } from '../../context/SubscriptionContext'; 
 import Alert from '../../components/modals/Alert'; 
 import { paymentService } from './services/paymentServices'; 
+import { authService } from '../auth/services/authService';
 import './css/PaymentPanel.css';
 
 const MotionDiv = motion.div;
 
 const PaymentPanel = () => {
     const [searchParams] = useSearchParams();
-    const { currentUser } = useAuth();
+    const { currentUser, login } = useAuth();
     const { plans } = useSubscription();
     const { alertConfig, showAlert, closeAlert } = useModal(); 
     
@@ -61,12 +62,19 @@ const PaymentPanel = () => {
         );
 
         if (result.success) {
+            const paidSignup = authService.finalizePaidRegistrationAfterPayment();
+            if (paidSignup.success && paidSignup.userDraft?.id) {
+                login(paidSignup.userDraft.id, true);
+            }
+
             // Başarılı olduğunda uyarıyı göster ve kullanıcı OK dediğinde sekmeyi kapat
             showAlert(
                 "Başarılı", 
-                "Paketiniz aktif edildi! Ana sayfanıza dönmek için bu sekmeyi kapatabilirsiniz.", 
+                "Paketiniz aktif edildi! Ana sayfaniza yonlendiriliyorsunuz.", 
                 "success", 
-                () => window.close()
+                () => {
+                    window.location.href = '/home';
+                }
             );
         } else {
             showAlert("Hata", result.message, "error");
