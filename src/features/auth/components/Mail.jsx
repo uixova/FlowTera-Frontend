@@ -34,7 +34,7 @@ const Mail = ({
           maxLength={6}
           value={code}
           onChange={handleChange}
-          placeholder="000000"
+          placeholder="* * * * * *"
           aria-label="Dogrulama kodu"
         />
         <button type="button" onClick={onConfirm} disabled={loading || code.length !== 6}>

@@ -15,6 +15,11 @@ const initialForm = {
   password: ''
 };
 
+const initialCheckboxes = {
+  termsAccepted: false,
+  kvkkAccepted: false
+};
+
 function SignupPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState('form');
@@ -26,6 +31,7 @@ function SignupPage() {
   const [statusMessage, setStatusMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [checkboxes, setCheckboxes] = useState(initialCheckboxes);
 
   useEffect(() => {
     authService.getPlans().then(setPlans);
@@ -34,6 +40,13 @@ function SignupPage() {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleCheckboxChange = (name) => {
+    setCheckboxes((prev) => ({ ...prev, [name]: !prev[name] }));
     if (formErrors[name]) {
       setFormErrors((prev) => ({ ...prev, [name]: '' }));
     }
@@ -52,6 +65,9 @@ function SignupPage() {
 
     const duplicateCheck = await authService.validateSignupAgainstUsers(validation.normalized);
     if (!duplicateCheck.valid) {
+      if (duplicateCheck.fields) {
+        setFormErrors((prev) => ({ ...prev, ...duplicateCheck.fields }));
+      }
       setErrorMessage(duplicateCheck.message);
       return;
     }
@@ -138,6 +154,11 @@ function SignupPage() {
         </Link>
 
         <div className="auth-card signup-card">
+          <div className="auth-top-nav">
+            <Link to="/" className="auth-back-home">
+              <i className="ti ti-home"></i>
+            </Link>
+          </div>
           <div className="auth-card-header">
             <h1>
               {step === 'form'
@@ -243,7 +264,44 @@ function SignupPage() {
                 {formErrors.password && <small className="field-error">{formErrors.password}</small>}
               </div>
 
-              <button className="auth-submit-btn" type="submit">Next <i className="ti ti-arrow-right"></i></button>
+              {/* SÖZLEŞME VE KVKK ONAY CHECKBOX'LARI */}
+              <div className="auth-checkboxes">
+                <label className={`auth-checkbox-label ${checkboxes.termsAccepted ? 'checked' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={checkboxes.termsAccepted}
+                    onChange={() => handleCheckboxChange('termsAccepted')}
+                    required
+                  />
+                  <span className="checkbox-custom"></span>
+                  <span className="checkbox-text">
+                    <Link to="/terms" target="_blank" className="auth-link">Mesafeli Satış Sözleşmesi</Link>'ni okudum ve onaylıyorum.
+                  </span>
+                </label>
+                {formErrors.termsAccepted && <small className="field-error">{formErrors.termsAccepted}</small>}
+
+                <label className={`auth-checkbox-label ${checkboxes.kvkkAccepted ? 'checked' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={checkboxes.kvkkAccepted}
+                    onChange={() => handleCheckboxChange('kvkkAccepted')}
+                    required
+                  />
+                  <span className="checkbox-custom"></span>
+                  <span className="checkbox-text">
+                    <Link to="/kvkk" target="_blank" className="auth-link">KVKK Aydınlatma Metni</Link>'ni okudum, kişisel verilerimin işlenmesine onay veriyorum.
+                  </span>
+                </label>
+                {formErrors.kvkkAccepted && <small className="field-error">{formErrors.kvkkAccepted}</small>}
+              </div>
+
+              <button
+                className="auth-submit-btn"
+                type="submit"
+                disabled={!checkboxes.termsAccepted || !checkboxes.kvkkAccepted}
+              >
+                Next <i className="ti ti-arrow-right"></i>
+              </button>
             </form>
           ) : null}
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useModal } from '../../hooks/useModal';
@@ -8,7 +9,7 @@ import '../../components/components.css/UserDropdown.css';
 
 const UserDropdown = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const { currentUser, loading } = useAuth();
+  const { currentUser, loading, logout } = useAuth();
   
   const { 
     alertConfig, 
@@ -30,8 +31,8 @@ const UserDropdown = ({ isOpen, onClose }) => {
       "Oturumu Kapat", 
       "Hesabınızdan çıkış yapmak istediğinize emin misiniz?", 
       () => {
-        console.log("Oturum sonlandırıldı.");
-        navigate('/login');
+        logout();
+        navigate('/');
         onClose();
       },
       "danger"
@@ -68,11 +69,11 @@ const UserDropdown = ({ isOpen, onClose }) => {
         <button className="dropdown-item logout" onClick={handleLogoutClick}>
           <i className="ti ti-logout"></i> Hesaptan Çık
         </button>
-
-        {/* Global Modallar - Sadece ihtiyaç duyulduğunda tetiklenirler */}
-        <Confirm {...confirmConfig} onClose={closeConfirm} />
-        <Alert {...alertConfig} onClose={closeAlert} />
       </div>
+
+      {/* Global Modallar - createPortal ile document.body'ye render edilir */}
+      {createPortal(<Confirm {...confirmConfig} onClose={closeConfirm} />, document.body)}
+      {createPortal(<Alert {...alertConfig} onClose={closeAlert} />, document.body)}
     </>
   );
 };

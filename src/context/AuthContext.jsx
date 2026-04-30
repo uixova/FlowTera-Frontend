@@ -38,12 +38,12 @@ export const AuthProvider = ({ children }) => {
             if (user) {
                 setCurrentUser(user);
             } else {
-                const rawLocalUser = localStorage.getItem(VERIFIED_SIGNUP_KEY);
-                if (rawLocalUser) {
+                const rawSessionUser = sessionStorage.getItem(VERIFIED_SIGNUP_KEY);
+                if (rawSessionUser) {
                     try {
-                        const localUser = JSON.parse(rawLocalUser);
-                        if (String(localUser?.id) === String(userId)) {
-                            setCurrentUser(localUser);
+                        const sessionUser = JSON.parse(rawSessionUser);
+                        if (String(sessionUser?.id) === String(userId)) {
+                            setCurrentUser(sessionUser);
                             setLoading(false);
                             return;
                         }
@@ -78,13 +78,10 @@ export const AuthProvider = ({ children }) => {
         setCurrentUserId(stringId);
     }, []);
 
-    const loginWithCredentials = useCallback(async (email, password, rememberMe = false) => {
+    const loginWithCredentials = useCallback(async (email, password) => {
         const result = await authService.loginWithEmail(email, password);
-        if (!result.success) return result;
-
-        login(result.user.id, rememberMe);
         return result;
-    }, [login]);
+    }, []);
 
     const roleNameForTeam = useCallback((teamId, type = 'role') => {
         if (!currentUser || !teamId) return null;

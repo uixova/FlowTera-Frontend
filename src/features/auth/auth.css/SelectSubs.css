@@ -28,6 +28,14 @@
   gap: 12px;
   overflow: auto;
   padding-right: 2px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.select-subs-grid::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .select-subs-card {
@@ -39,12 +47,12 @@
   text-align: left;
   position: relative;
   cursor: pointer;
-  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .select-subs-card:hover {
-  transform: translateY(-2px);
   border-color: rgba(14, 212, 90, 0.4);
+  box-shadow: 0 0 0 1px rgba(14, 212, 90, 0.2);
 }
 
 .select-subs-card.selected {

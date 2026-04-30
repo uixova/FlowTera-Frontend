@@ -45,9 +45,7 @@
 }
 
 .signup-step-two {
-  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 22px;
-  background: rgba(8, 10, 13, 0.72);
   padding: 18px;
   display: flex;
   flex-direction: column;
@@ -67,6 +65,90 @@
 .signup-back-btn:hover {
   border-color: rgba(255, 255, 255, 0.2);
   color: #e2e2e6;
+}
+
+/* SÖZLEŞME VE KVKK CHECKBOX STILLERI */
+.auth-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 8px 0 4px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.auth-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: #aaa;
+  line-height: 1.4;
+  transition: color 0.2s ease;
+}
+
+.auth-checkbox-label:hover {
+  color: #ccc;
+}
+
+.auth-checkbox-label.checked {
+  color: #fff;
+}
+
+.auth-checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-custom {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  border: 2px solid #555;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-top: 1px;
+}
+
+.auth-checkbox-label:hover .checkbox-custom {
+  border-color: #777;
+}
+
+.auth-checkbox-label.checked .checkbox-custom {
+  background: #4361ee;
+  border-color: #4361ee;
+}
+
+.auth-checkbox-label.checked .checkbox-custom::after {
+  content: '\2713';
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.checkbox-text {
+  flex: 1;
+}
+
+.auth-link {
+  color: #4cc9f0;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.auth-link:hover {
+  color: #7dd3fc;
+  text-decoration: underline;
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 @media (max-width: 900px) {

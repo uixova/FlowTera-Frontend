@@ -47,12 +47,19 @@ export const CurrencyProvider = ({ children }) => {
         }).format(value || 0);
     }, [selectedCurrency]);
 
+    // AY ve YIL formatlama (Analysis sayfası için)
+    const formatMonthYear = useCallback((date) => {
+        const d = date || new Date();
+        return d.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
+    }, []);
+
     return (
         <CurrencyContext.Provider value={{ 
             selectedCurrency, 
             updateCurrency, 
             convert, 
             format,
+            formatMonthYear,
             symbol: symbols[selectedCurrency] || selectedCurrency 
         }}>
             {children}

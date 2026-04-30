@@ -7,7 +7,6 @@
   --accent-green:  #0ed45a;
   --accent-cyan:   #00d2ff;
   --accent-violet: #a78bfa;
-  --accent-amber:  #f59e0b;
   --glass-white:   rgba(255, 255, 255, 0.03);
   --border-white:  rgba(255, 255, 255, 0.07);
   --border-hover:  rgba(255, 255, 255, 0.14);
@@ -405,20 +404,16 @@ footer { position: relative; z-index: 1; }
   font-size: 12px;
   flex-shrink: 0;
 }
-.feed-icon.expense { background: rgba(245, 158, 11, 0.12); color: var(--accent-amber); }
-.feed-icon.trip    { background: rgba(0, 210, 255, 0.10); color: var(--accent-cyan); }
-.feed-icon.report  { background: rgba(14, 212, 90, 0.10); color: var(--accent-green); }
-.feed-icon.approve { background: rgba(167, 139, 250, 0.10); color: var(--accent-violet); }
+.feed-icon.pending  { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+.feed-icon.approved { background: rgba(14, 212, 90, 0.10); color: var(--accent-green); }
 
 .feed-meta { flex: 1; }
 .feed-text  { display: block; font-size: 0.6rem; font-weight: 600; color: var(--text-primary); }
 .feed-time  { display: block; font-size: 0.55rem; color: var(--text-faint); margin-top: 1px; }
 
 .feed-amount { font-size: 0.65rem; font-weight: 700; white-space: nowrap; }
-.feed-amount.expense { color: var(--accent-amber); }
-.feed-amount.trip    { color: var(--accent-cyan); }
-.feed-amount.report  { color: var(--accent-green); }
-.feed-amount.approve { color: var(--accent-violet); }
+.feed-amount.pending { color: #f59e0b; }
+.feed-amount.approved { color: var(--accent-green); }
 
 /* Floating Cards */
 .floating-card {
@@ -758,7 +753,7 @@ footer { position: relative; z-index: 1; }
 
 .pricing-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   align-items: start;
 }

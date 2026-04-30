@@ -3,6 +3,7 @@ import { api } from '../../../api/api';
 const PENDING_SIGNUP_KEY = 'auth_pending_signup';
 export const VERIFIED_SIGNUP_KEY = 'auth_verified_signup';
 const PENDING_PAYMENT_SIGNUP_KEY = 'auth_pending_payment_signup';
+const PENDING_LOGIN_KEY = 'auth_pending_login';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^[\d+\s()-]{10,20}$/;
@@ -118,7 +119,14 @@ export const authService = {
         );
 
         if (duplicate) {
-            return { valid: false, message: 'Bu e-posta veya telefon zaten kayitli.' };
+            return {
+                valid: false,
+                message: 'Bu e-posta veya telefon zaten kayitli.',
+                fields: {
+                    email: duplicate?.email?.trim().toLowerCase() === formData.email ? 'Bu e-posta zaten kayitli.' : '',
+                    phone: (duplicate?.phone || '').replace(/[^\d+]/g, '') === formData.phone ? 'Bu telefon zaten kayitli.' : ''
+                }
+            };
         }
 
         return { valid: true };
@@ -139,6 +147,42 @@ export const authService = {
             message: `Dogrulama kodu ${payload.email} adresine gonderildi (simulasyon).`,
             codeHint: verificationCode
         };
+    },
+
+    startLoginVerification(payload) {
+        const verificationCode = '000000';
+        const data = {
+            ...payload,
+            verificationCode,
+            requestedAt: new Date().toISOString()
+        };
+        sessionStorage.setItem(PENDING_LOGIN_KEY, JSON.stringify(data));
+
+        return {
+            success: true,
+            message: `Giris kodu ${payload.email} adresine gonderildi (simulasyon).`,
+            codeHint: verificationCode
+        };
+    },
+
+    verifyLoginCode(code) {
+        const pendingRaw = sessionStorage.getItem(PENDING_LOGIN_KEY);
+        if (!pendingRaw) {
+            return { success: false, message: 'Giris dogrulama oturumu bulunamadi.' };
+        }
+
+        const pending = JSON.parse(pendingRaw);
+        const safeCode = sanitizeCode(String(code || ''));
+        if (safeCode.length !== 6) {
+            return { success: false, message: 'Kod 6 haneli olmali.' };
+        }
+
+        if (safeCode !== pending.verificationCode) {
+            return { success: false, message: 'Dogrulama kodu hatali.' };
+        }
+
+        sessionStorage.removeItem(PENDING_LOGIN_KEY);
+        return { success: true, userId: pending.userId, rememberMe: pending.rememberMe };
     },
 
     async requestPasswordResetLink({ email, phone, channel }) {
@@ -218,21 +262,16 @@ export const authService = {
         sessionStorage.removeItem(PENDING_SIGNUP_KEY);
 
         if (pending.flow === 'paid') {
-            localStorage.setItem(PENDING_PAYMENT_SIGNUP_KEY, JSON.stringify(userDraft));
+            sessionStorage.setItem(PENDING_PAYMENT_SIGNUP_KEY, JSON.stringify(userDraft));
             return { success: true, userDraft, requiresPayment: true };
         }
 
-        localStorage.setItem(VERIFIED_SIGNUP_KEY, JSON.stringify(userDraft));
+        sessionStorage.setItem(VERIFIED_SIGNUP_KEY, JSON.stringify(userDraft));
         return { success: true, userDraft, requiresPayment: false };
     },
 
-    completePaidRegistration(payload) {
-        localStorage.setItem(VERIFIED_SIGNUP_KEY, JSON.stringify(payload));
-        return { success: true };
-    },
-
     getPendingPaymentSignup() {
-        const raw = localStorage.getItem(PENDING_PAYMENT_SIGNUP_KEY);
+        const raw = sessionStorage.getItem(PENDING_PAYMENT_SIGNUP_KEY);
         if (!raw) return null;
         try {
             return JSON.parse(raw);
@@ -245,8 +284,8 @@ export const authService = {
         const pending = this.getPendingPaymentSignup();
         if (!pending) return { success: false, message: 'Bekleyen odeme kaydi bulunamadi.' };
 
-        localStorage.setItem(VERIFIED_SIGNUP_KEY, JSON.stringify(pending));
-        localStorage.removeItem(PENDING_PAYMENT_SIGNUP_KEY);
+        sessionStorage.setItem(VERIFIED_SIGNUP_KEY, JSON.stringify(pending));
+        sessionStorage.removeItem(PENDING_PAYMENT_SIGNUP_KEY);
         return { success: true, userDraft: pending };
     },
 

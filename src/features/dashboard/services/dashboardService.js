@@ -10,7 +10,7 @@ export const dashboardService = {
                 api.expenses.getAll(),
                 api.trips.getAll(),
                 api.teams.getAll(),
-                api.users.getAll() // Kullanıcı datasına erişmek için eklendi
+                api.users.getAll() 
             ]);
 
             if (!expenses || !trips || !allTeams) return null;

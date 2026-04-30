@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './settings.css/Settings.css'; 
 import { settingsService } from './services/settingService';
 import Loader from '../../components/common/Loader';
@@ -16,6 +17,7 @@ import { useModal } from '../../hooks/useModal';
 import Confirm from '../../components/modals/Confirm'; 
 
 const Settings = () => {
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('st-profile');
   const [user, setUser] = useState(null);
   const [logs, setLogs] = useState([]);
@@ -77,6 +79,7 @@ const Settings = () => {
           if (logout) {
             await logout();
           }
+          navigate('/');
           closeConfirm();
         } catch (err) {
           console.error("Çıkış yapılırken hata:", err);
