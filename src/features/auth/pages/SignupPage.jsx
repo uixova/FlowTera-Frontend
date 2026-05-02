@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import Mail from '../components/Mail';
 import SelectSubscription from '../section/SelectSubscription';
+import PhoneNumber from '../components/PhoneNumber'; 
 import '../auth.css/Signup.css';
 
 const initialForm = {
@@ -45,6 +46,14 @@ function SignupPage() {
     }
   };
 
+  // PhoneNumber bileşeni için
+  const handlePhoneChange = (formattedValue) => {
+    setFormData((prev) => ({ ...prev, phone: formattedValue }));
+    if (formErrors.phone) {
+      setFormErrors((prev) => ({ ...prev, phone: '' }));
+    }
+  };
+
   const handleCheckboxChange = (name) => {
     setCheckboxes((prev) => ({ ...prev, [name]: !prev[name] }));
     if (formErrors[name]) {
@@ -79,7 +88,7 @@ function SignupPage() {
 
   const handleStartVerification = async () => {
     if (!selectedPlan) {
-      setErrorMessage('Lutfen bir plan sec.');
+      setErrorMessage('Lütfen bir plan seç.');
       return;
     }
 
@@ -116,12 +125,12 @@ function SignupPage() {
     }
 
     if (verify.requiresPayment) {
-      setStatusMessage('E-posta dogrulandi. Odeme adimina yonlendiriliyorsun.');
+      setStatusMessage('E-posta doğrulandı. Ödeme adımına yönlendiriliyorsun.');
       setTimeout(() => navigate(`/payment?plan=${selectedPlan.id}`), 500);
       return;
     }
 
-    setStatusMessage('Hesabin hazir. Giris ekranina yonlendiriliyorsun.');
+    setStatusMessage('Hesabın hazır. Giriş ekranına yönlendiriliyorsun.');
     setTimeout(() => navigate('/login'), 800);
   };
 
@@ -164,15 +173,15 @@ function SignupPage() {
               {step === 'form'
                 ? 'Hesap Olustur'
                 : step === 'plan'
-                ? 'Plan Secimi'
-                : 'E-posta Dogrulamasi'}
+                ? 'Plan Seçimi'
+                : 'E-posta Doğrulaması'}
             </h1>
             <p>
               {step === 'form'
-                ? 'Bilgilerini gir, hesabini hazirla ve devam et.'
+                ? 'Bilgilerini gir, hesabını hazırla ve devam et.'
                 : step === 'plan'
-                ? 'Plan secimini tamamla, sonra dogrulama ile ilerle.'
-                : 'Kayit guvenligi icin kod dogrulamasini tamamla.'}
+                ? 'Plan seçimini tamamla, sonra doğrulama ile ilerle.'
+                : 'Kayıt güvenligi için kod doğrulamasını tamamla.'}
             </p>
           </div>
 
@@ -202,7 +211,7 @@ function SignupPage() {
                   <label htmlFor="firstName">AD</label>
                   <div className="auth-input-wrap">
                     <i className="ti ti-user auth-input-icon"></i>
-                    <input id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="Adin" />
+                    <input id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="Adın" />
                   </div>
                   {formErrors.firstName && <small className="field-error">{formErrors.firstName}</small>}
                 </div>
@@ -211,7 +220,7 @@ function SignupPage() {
                   <label htmlFor="lastName">SOYAD</label>
                   <div className="auth-input-wrap">
                     <i className="ti ti-user auth-input-icon"></i>
-                    <input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Soyadin" />
+                    <input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Soyadın" />
                   </div>
                   {formErrors.lastName && <small className="field-error">{formErrors.lastName}</small>}
                 </div>
@@ -226,31 +235,29 @@ function SignupPage() {
                 {formErrors.email && <small className="field-error">{formErrors.email}</small>}
               </div>
 
-              <div className="signup-grid">
-                <div className="auth-field">
-                  <label htmlFor="phone">TELEFON</label>
-                  <div className="auth-input-wrap">
-                    <i className="ti ti-phone auth-input-icon"></i>
-                    <input id="phone" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="+90 5xx xxx xx xx" />
-                  </div>
-                  {formErrors.phone && <small className="field-error">{formErrors.phone}</small>}
-                </div>
+              <div className="auth-field">
+                <label htmlFor="phone">TELEFON</label>
+                <PhoneNumber 
+                  value={formData.phone} 
+                  onChange={handlePhoneChange} 
+                  error={formErrors.phone} 
+                />
+              </div>
 
-                <div className="auth-field">
-                  <label htmlFor="birthDate">DOGUM TARIHI</label>
-                  <div className="auth-input-wrap">
-                    <i className="ti ti-calendar-user auth-input-icon"></i>
-                    <input id="birthDate" name="birthDate" type="date" value={formData.birthDate} onChange={handleInputChange} />
-                  </div>
-                  {formErrors.birthDate && <small className="field-error">{formErrors.birthDate}</small>}
+              <div className="auth-field">
+                <label htmlFor="birthDate">DOğUM TARİHİ</label>
+                <div className="auth-input-wrap">
+                  <i className="ti ti-calendar-user auth-input-icon"></i>
+                  <input id="birthDate" name="birthDate" type="date" value={formData.birthDate} onChange={handleInputChange} />
                 </div>
+                {formErrors.birthDate && <small className="field-error">{formErrors.birthDate}</small>}
               </div>
 
               <div className="auth-field">
                 <label htmlFor="address">ADRES</label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-map-pin auth-input-icon"></i>
-                  <input id="address" name="address" value={formData.address} onChange={handleInputChange} placeholder="Acik adres bilgisi" />
+                  <input id="address" name="address" value={formData.address} onChange={handleInputChange} placeholder="Açık adres bilgisi" />
                 </div>
                 {formErrors.address && <small className="field-error">{formErrors.address}</small>}
               </div>
@@ -316,7 +323,7 @@ function SignupPage() {
               />
 
               <button type="button" className="signup-back-btn" onClick={() => setStep('form')}>
-                <i className="ti ti-arrow-left"></i> Bilgilere Don
+                <i className="ti ti-arrow-left"></i> Bilgilere dön
               </button>
             </div>
           ) : null}
@@ -333,13 +340,13 @@ function SignupPage() {
                 hintVisible
               />
               <button type="button" className="signup-back-btn" onClick={() => setStep('plan')}>
-                <i className="ti ti-arrow-left"></i> Plana Don
+                <i className="ti ti-arrow-left"></i> Plana Dön
               </button>
             </div>
           ) : null}
 
           <div className="auth-switch">
-            Zaten hesabin var mi? <Link to="/login">Giris Yap</Link>
+            Zaten hesabın var mi? <Link to="/login">Giriş Yap</Link>
           </div>
         </div>
       </div>

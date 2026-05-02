@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "country-flag-icons": "^1.6.17",
     "framer-motion": "^12.38.0",
     "i18next": "^25.8.14",
     "path": "^0.12.7",

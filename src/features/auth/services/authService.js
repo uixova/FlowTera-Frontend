@@ -28,7 +28,7 @@ export const authService = {
     async loginWithEmail(email, password) {
         const users = await api.users.getAll(true);
         if (!Array.isArray(users)) {
-            throw new Error('Kullanici verisi alinamadi.');
+            throw new Error('Kullanıcı verisi alınamadı.');
         }
 
         const normalizedEmail = email.trim().toLowerCase();
@@ -39,7 +39,7 @@ export const authService = {
         );
 
         if (!user) {
-            return { success: false, message: 'E-posta veya sifre hatali.' };
+            return { success: false, message: 'E-posta veya şifre hatalı.' };
         }
 
         return { success: true, user };
@@ -58,29 +58,29 @@ export const authService = {
         const phone = sanitizePhone(formData.phone || '');
 
         if (!nameRegex.test(formData.firstName || '')) {
-            errors.firstName = 'Ad en az 2 karakter olmali.';
+            errors.firstName = 'Ad en az 2 karakter olmalı.';
         }
 
         if (!nameRegex.test(formData.lastName || '')) {
-            errors.lastName = 'Soyad en az 2 karakter olmali.';
+            errors.lastName = 'Soyad en az 2 karakter olmalı.';
         }
 
         if (!emailRegex.test(email)) {
-            errors.email = 'Gecerli bir e-posta adresi gir.';
+            errors.email = 'Gecerli bir e-posta adresi gır.';
         }
 
         if (!phoneRegex.test(phone)) {
-            errors.phone = 'Telefon numarasi 10-20 karakter araliginda olmali.';
+            errors.phone = 'Telefon numarası 10-20 karakter aralığında olmalı.';
         }
 
         const birthDate = (formData.birthDate || '').trim();
         const age = calculateAge(birthDate);
         if (!dateRegex.test(birthDate) || Number.isNaN(age) || age < 18 || age > 100) {
-            errors.birthDate = 'Dogum tarihi 18-100 yas araliginda olmali.';
+            errors.birthDate = 'Doğum tarihi 18-100 yaş aralığında olmalı.';
         }
 
         if (!formData.address || sanitizeText(formData.address).length < 10) {
-            errors.address = 'Adres en az 10 karakter olmali.';
+            errors.address = 'Adres en az 10 karakter olmalı.';
         }
 
         const password = formData.password || '';
@@ -88,7 +88,7 @@ export const authService = {
         const hasLower = /[a-z]/.test(password);
         const hasDigit = /\d/.test(password);
         if (password.length < 8 || !hasUpper || !hasLower || !hasDigit) {
-            errors.password = 'Sifre en az 8 karakter, buyuk-kucuk harf ve rakam icermeli.';
+            errors.password = 'Şifre en az 8 karakter, büyük-küçük harf ve rakam içermeli.';
         }
 
         return {
@@ -109,7 +109,7 @@ export const authService = {
     async validateSignupAgainstUsers(formData) {
         const users = await api.users.getAll(true);
         if (!Array.isArray(users)) {
-            return { valid: false, message: 'Kullanici kaynagi okunamadi.' };
+            return { valid: false, message: 'Kullanıcı kaynağı okunamadı.' };
         }
 
         const duplicate = users.find(
@@ -121,10 +121,10 @@ export const authService = {
         if (duplicate) {
             return {
                 valid: false,
-                message: 'Bu e-posta veya telefon zaten kayitli.',
+                message: 'Bu e-posta veya telefon zaten kayıtlı.',
                 fields: {
-                    email: duplicate?.email?.trim().toLowerCase() === formData.email ? 'Bu e-posta zaten kayitli.' : '',
-                    phone: (duplicate?.phone || '').replace(/[^\d+]/g, '') === formData.phone ? 'Bu telefon zaten kayitli.' : ''
+                    email: duplicate?.email?.trim().toLowerCase() === formData.email ? 'Bu e-posta zaten kayıtlı.' : '',
+                    phone: (duplicate?.phone || '').replace(/[^\d+]/g, '') === formData.phone ? 'Bu telefon zaten kayıtlı.' : ''
                 }
             };
         }
@@ -144,7 +144,7 @@ export const authService = {
 
         return {
             success: true,
-            message: `Dogrulama kodu ${payload.email} adresine gonderildi (simulasyon).`,
+            message: `Doğrulama kodu ${payload.email} adresine gönderildi (simulasyon).`,
             codeHint: verificationCode
         };
     },
@@ -160,7 +160,7 @@ export const authService = {
 
         return {
             success: true,
-            message: `Giris kodu ${payload.email} adresine gonderildi (simulasyon).`,
+            message: `Giriş kodu ${payload.email} adresine gönderildi (simulasyon).`,
             codeHint: verificationCode
         };
     },
@@ -168,17 +168,17 @@ export const authService = {
     verifyLoginCode(code) {
         const pendingRaw = sessionStorage.getItem(PENDING_LOGIN_KEY);
         if (!pendingRaw) {
-            return { success: false, message: 'Giris dogrulama oturumu bulunamadi.' };
+            return { success: false, message: 'Giriş doğrulama oturumu bulunamadı.' };
         }
 
         const pending = JSON.parse(pendingRaw);
         const safeCode = sanitizeCode(String(code || ''));
         if (safeCode.length !== 6) {
-            return { success: false, message: 'Kod 6 haneli olmali.' };
+            return { success: false, message: 'Kod 6 haneli olmalı.' };
         }
 
         if (safeCode !== pending.verificationCode) {
-            return { success: false, message: 'Dogrulama kodu hatali.' };
+            return { success: false, message: 'Doğrulama kodu hatalı.' };
         }
 
         sessionStorage.removeItem(PENDING_LOGIN_KEY);
@@ -188,7 +188,7 @@ export const authService = {
     async requestPasswordResetLink({ email, phone, channel }) {
         const users = await api.users.getAll(true);
         if (!Array.isArray(users)) {
-            return { success: false, message: 'Kullanici kaynagi okunamadi.' };
+            return { success: false, message: 'Kullanıcı kaynağı okunamadı.' };
         }
 
         const normalizedEmail = (email || '').trim().toLowerCase();
@@ -198,18 +198,18 @@ export const authService = {
         let foundUser = null;
         if (method === 'email') {
             if (!emailRegex.test(normalizedEmail)) {
-                return { success: false, message: 'Gecerli e-posta gir.' };
+                return { success: false, message: 'Geçerli e-posta gir.' };
             }
             foundUser = users.find((item) => item?.email?.trim().toLowerCase() === normalizedEmail);
         } else {
             if (!phoneRegex.test(normalizedPhone)) {
-                return { success: false, message: 'Gecerli telefon gir.' };
+                return { success: false, message: 'Geçerli telefon gir.' };
             }
             foundUser = users.find((item) => sanitizePhone(item?.phone || '') === normalizedPhone);
         }
 
         if (!foundUser) {
-            return { success: false, message: 'Bu bilgiyle eslesen kullanici bulunamadi.' };
+            return { success: false, message: 'Bu bilgiyle eşleşen kullanıcı bulunamadı.' };
         }
 
         const token = `reset-${Date.now()}`;
@@ -218,7 +218,7 @@ export const authService = {
 
         return {
             success: true,
-            message: `${method === 'sms' ? 'SMS' : 'E-posta'} ile sifre sifirlama baglantisi gonderildi (simulasyon).`,
+            message: `${method === 'sms' ? 'SMS' : 'E-posta'} ile şifre sıfırlama bağlantısı gönderildi (simülasyon).`,
             destination,
             link: fakeLink
         };
@@ -227,17 +227,17 @@ export const authService = {
     verifyEmailCode(code) {
         const pendingRaw = sessionStorage.getItem(PENDING_SIGNUP_KEY);
         if (!pendingRaw) {
-            return { success: false, message: 'Dogrulama oturumu bulunamadi.' };
+            return { success: false, message: 'Doğrulama oturumu bulunamadı.' };
         }
 
         const pending = JSON.parse(pendingRaw);
         const safeCode = sanitizeCode(String(code || ''));
         if (safeCode.length !== 6) {
-            return { success: false, message: 'Kod 6 haneli olmali.' };
+            return { success: false, message: 'Kod 6 haneli olmalı.' };
         }
 
         if (safeCode !== pending.verificationCode) {
-            return { success: false, message: 'Dogrulama kodu hatali.' };
+            return { success: false, message: 'Doğrulama kodu hatalı.' };
         }
 
         const userDraft = {
@@ -253,8 +253,8 @@ export const authService = {
             subscription: {
                 planId: pending.plan.id,
                 plan: pending.plan.name.toLowerCase(),
-                maxTeams: pending.plan?.Promise?.teamLimit || '2 takim',
-                maxMembersPerTeam: pending.plan?.Promise?.TeamMemberLimit || '5 uye',
+                maxTeams: pending.plan?.Promise?.teamLimit || '2 takım',
+                maxMembersPerTeam: pending.plan?.Promise?.TeamMemberLimit || '5 üye',
                 usage: { ocr: 0, aiAnaliz: 0 }
             }
         };
@@ -282,7 +282,7 @@ export const authService = {
 
     finalizePaidRegistrationAfterPayment() {
         const pending = this.getPendingPaymentSignup();
-        if (!pending) return { success: false, message: 'Bekleyen odeme kaydi bulunamadi.' };
+        if (!pending) return { success: false, message: 'Bekleyen ödeme kaydı bulunamadı.' };
 
         sessionStorage.setItem(VERIFIED_SIGNUP_KEY, JSON.stringify(pending));
         sessionStorage.removeItem(PENDING_PAYMENT_SIGNUP_KEY);

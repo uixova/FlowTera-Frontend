@@ -8,12 +8,15 @@ const AUTH_USER_ID_KEY = 'auth_user_id';
 
 export const AuthProvider = ({ children }) => {
     const [currentUserId, setCurrentUserId] = useState(() => {
-        // "u1"
         return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || null;
     });
     const [currentUser, setCurrentUser] = useState(null);
     const [teams, setTeams] = useState([]); 
     const [loading, setLoading] = useState(true);
+
+    const [authStep, setAuthStep] = useState('credentials'); // 'credentials' | 'verify'
+    const [authError, setAuthError] = useState(null);
+    const [pendingUser, setPendingUser] = useState(null);
 
     const logout = useCallback(() => {
         localStorage.removeItem(AUTH_USER_ID_KEY);
@@ -22,6 +25,7 @@ export const AuthProvider = ({ children }) => {
         setCurrentUserId(null);
         setCurrentUser(null);
         setTeams([]);
+        setAuthStep('credentials'); // Çıkışta başa dön
     }, []);
 
     const fetchUser = useCallback(async (userId) => {
@@ -78,9 +82,27 @@ export const AuthProvider = ({ children }) => {
         setCurrentUserId(stringId);
     }, []);
 
-    const loginWithCredentials = useCallback(async (email, password) => {
-        const result = await authService.loginWithEmail(email, password);
-        return result;
+    // Merkezi Login İşlemi 
+    const loginWithCredentials = useCallback(async (email, password, rememberMe) => {
+        setAuthError(null);
+        try {
+            const result = await authService.loginWithEmail(email, password);
+            if (result.success) {
+                setPendingUser({ ...result.user, rememberMe });
+                await authService.startLoginVerification({
+                    email: result.user.email,
+                    userId: result.user.id,
+                    rememberMe
+                });
+                setAuthStep('verify');
+                return { success: true };
+            }
+            setAuthError(result.message || "E-posta veya şifre hatalı.");
+            return { success: false };
+        } catch {
+            setAuthError("Sistem bağlantı hatası.");
+            return { success: false };
+        }
     }, []);
 
     const roleNameForTeam = useCallback((teamId, type = 'role') => {
@@ -107,10 +129,13 @@ export const AuthProvider = ({ children }) => {
         loginWithCredentials,
         logout,
         roleNameForTeam,
-        isAdmin: (teamId) => roleNameForTeam(teamId) === 'Admin'
-    }), [currentUser, currentUserId, loading, login, loginWithCredentials, logout, roleNameForTeam]);
-
-    if (loading) return <Loader type="butterfly" />;
+        isAdmin: (teamId) => roleNameForTeam(teamId) === 'Admin',
+        authStep,
+        setAuthStep,
+        authError,
+        setAuthError,
+        pendingUser
+    }), [currentUser, currentUserId, loading, login, loginWithCredentials, logout, roleNameForTeam, authStep, authError, pendingUser]);
 
     return (
         <AuthContext.Provider value={value}>

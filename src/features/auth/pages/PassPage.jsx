@@ -29,7 +29,7 @@ const PassPage = () => {
       }
 
       showAlert(
-        'Baglanti Gonderildi',
+        'Bağlantı Gönderildi',
         `${result.message} Hedef: ${result.destination}`,
         'success',
         () => {
@@ -55,8 +55,8 @@ const PassPage = () => {
 
         <div className="auth-card pass-card">
           <div className="auth-card-header">
-            <h1>Sifre Sifirlama</h1>
-            <p>E-posta ve telefon bilgini dogrula, sifirlama linkini gonderelim.</p>
+            <h1>Şifre Sıfırlama</h1>
+            <p>E-posta ve telefon bilgini doğrula, sıfırlama linkini gonderelim.</p>
           </div>
 
           {error ? (
@@ -73,20 +73,20 @@ const PassPage = () => {
                 className={form.channel === 'email' ? 'active' : ''}
                 onClick={() => setForm((prev) => ({ ...prev, channel: 'email' }))}
               >
-                E-posta ile Gonder
+                E-posta ile Gönder
               </button>
               <button
                 type="button"
                 className={form.channel === 'sms' ? 'active' : ''}
                 onClick={() => setForm((prev) => ({ ...prev, channel: 'sms' }))}
               >
-                SMS ile Gonder
+                SMS ile Gönder
               </button>
             </div>
 
             {form.channel === 'email' ? (
               <div className="auth-field">
-                <label htmlFor="email">E-POSTA ADRESI</label>
+                <label htmlFor="email">E-POSTA ADRESİ</label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-mail auth-input-icon"></i>
                   <input
@@ -123,7 +123,7 @@ const PassPage = () => {
           </form>
 
           <div className="auth-switch">
-            Hesabini hatirladin mi? <Link to="/login">Giris ekranina don</Link>
+            Hesabını hatırladın mı? <Link to="/login">Giriş ekranına dön</Link>
           </div>
         </div>
       </div>

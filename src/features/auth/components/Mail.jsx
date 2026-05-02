@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
 import '../auth.css/Mail.css';
 
@@ -11,8 +11,25 @@ const Mail = ({
   loading,
   hintVisible = true
 }) => {
+  const [countdown, setCountdown] = useState(0);
+
+  useEffect(() => {
+    let timer;
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
+
   const handleChange = (event) => {
     onCodeChange(authService.sanitizeVerificationCodeInput(event.target.value));
+  };
+
+  const handleResendClick = () => {
+    if (countdown === 0 && !loading) {
+      onResend();
+      setCountdown(60);
+    }
   };
 
   return (
@@ -44,8 +61,12 @@ const Mail = ({
 
       <div className="mail-verify-footer">
         <span>{email}</span>
-        <button type="button" onClick={onResend} disabled={loading}>
-          Kodu Tekrar Gonder
+        <button 
+          type="button" 
+          onClick={handleResendClick} 
+          disabled={loading || countdown > 0}
+        >
+          {countdown > 0 ? `Tekrar Gonder (${countdown}s)` : 'Kodu Tekrar Gonder'}
         </button>
       </div>
     </section>

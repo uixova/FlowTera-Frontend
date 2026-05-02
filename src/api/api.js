@@ -11,7 +11,7 @@ const DATA_PATHS = {
     PLANS: `${BASE_URL}/plan.json`
 };
 
-// Bellek içi Cache (Dosyaları her seferinde fetch etmemek için)
+// Bellek içi Cache 
 const apiCache = new Map();
 
 export const api = {

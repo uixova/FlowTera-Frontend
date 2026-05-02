@@ -1,0 +1,195 @@
+.pn-root {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.pn-input-row {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  overflow: visible;
+  transition: all 0.25s;
+  position: relative;
+}
+
+.pn-input-row:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.pn-input-row.pn-focused {
+  border-color: rgba(14, 212, 90, 0.45);
+  background: rgba(14, 212, 90, 0.03);
+  box-shadow: 0 0 0 3px rgba(14, 212, 90, 0.08);
+}
+
+.pn-has-error .pn-input-row {
+  border-color: rgba(255, 80, 80, 0.45);
+}
+
+.pn-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 12px 0 14px;
+  height: 46px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 12px 0 0 12px;
+  outline: none;
+}
+
+.pn-flag-container {
+  width: 22px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.pn-svg-flag, .pn-opt-svg-flag {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.pn-dial {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #c8c8d0;
+  letter-spacing: 0.2px;
+}
+
+.pn-chevron {
+  color: #555;
+  transition: transform 0.25s;
+}
+
+.pn-chevron-open {
+  transform: rotate(180deg);
+  color: #0ed45a;
+}
+
+.pn-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pn-number-input {
+  flex: 1;
+  height: 46px;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0 14px;
+  color: #f0f0f2;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+}
+
+.pn-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 9999;
+  width: 300px;
+  max-width: 94vw;
+  background: #0f0f12;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  animation: pnDropIn 0.2s ease-out;
+}
+
+@keyframes pnDropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pn-search-wrap {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pn-search {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #f0f0f2;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.pn-list {
+  list-style: none;
+  overflow-y: auto;
+  max-height: 250px;
+  padding: 5px 0;
+}
+
+.pn-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.pn-option:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pn-option-active {
+  background: rgba(14, 212, 90, 0.08);
+}
+
+.pn-opt-svg-flag {
+  width: 22px;
+  height: 15px;
+  border-radius: 2px;
+}
+
+.pn-opt-name {
+  flex: 1;
+  font-size: 0.85rem;
+  color: #c8c8d0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pn-opt-dial {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.pn-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ff8d8d;
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+
+@media (max-width: 480px) {
+  .pn-dropdown {
+    width: 50vw;
+  }
+}
