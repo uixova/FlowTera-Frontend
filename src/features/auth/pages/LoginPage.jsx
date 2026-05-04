@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext'; 
 import { authService } from '../services/authService'; 
 import Mail from '../components/Mail';
-import '../auth.css/Login.css'; 
+import './Login.css'; 
 
 const LoginPage = () => {
   const { 

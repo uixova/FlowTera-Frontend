@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './settings.css/Settings.css'; 
+import './Settings.css'; 
 import { settingsService } from './services/settingService';
 import Loader from '../../components/common/Loader';
 

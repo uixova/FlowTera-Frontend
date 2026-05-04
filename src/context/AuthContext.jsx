@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { api } from '../api/api';
 import { authService, VERIFIED_SIGNUP_KEY } from '../features/auth/services/authService';
-import Loader from '../components/common/Loader';
 
 const AuthContext = createContext(null);
 const AUTH_USER_ID_KEY = 'auth_user_id';
@@ -11,21 +10,26 @@ export const AuthProvider = ({ children }) => {
         return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || null;
     });
     const [currentUser, setCurrentUser] = useState(null);
-    const [teams, setTeams] = useState([]); 
+    const [teams, setTeams] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const [authStep, setAuthStep] = useState('credentials'); // 'credentials' | 'verify'
+    const [authStep, setAuthStep] = useState('credentials');
     const [authError, setAuthError] = useState(null);
     const [pendingUser, setPendingUser] = useState(null);
 
+    const isLoggingOut = useRef(false);
+
     const logout = useCallback(() => {
+        isLoggingOut.current = true;
         localStorage.removeItem(AUTH_USER_ID_KEY);
         sessionStorage.removeItem(AUTH_USER_ID_KEY);
-        localStorage.removeItem('tm_selected_id'); 
+        localStorage.removeItem('tm_selected_id');
         setCurrentUserId(null);
         setCurrentUser(null);
         setTeams([]);
-        setAuthStep('credentials'); // Çıkışta başa dön
+        setAuthStep('credentials');
+        setLoading(false);
+        isLoggingOut.current = false;
     }, []);
 
     const fetchUser = useCallback(async (userId) => {
@@ -34,14 +38,30 @@ export const AuthProvider = ({ children }) => {
             return;
         }
 
+        if (isLoggingOut.current) return;
+
         setLoading(true);
         try {
-            const users = await api.users.getAll();
-            const user = users.find(u => String(u.id) === String(userId));
-    
+            const [usersResult, teamsResult] = await Promise.all([
+                api.users.getAll({ pageSize: 1000 }),
+                api.teams.getAll({ pageSize: 500 }),
+            ]);
+
+            const usersArray = Array.isArray(usersResult) ? usersResult : (usersResult?.data ?? []);
+            const teamsArray = Array.isArray(teamsResult) ? teamsResult : (teamsResult?.data ?? []);
+
+            const user = usersArray.find(u => String(u.id) === String(userId));
+
             if (user) {
                 setCurrentUser(user);
+                const userTeamIds = new Set([
+                    ...(user.role?.map(r => String(r.teamId)) || []),
+                    ...(user.teams?.map(id => String(id)) || [])
+                ]);
+                const userTeams = teamsArray.filter(t => userTeamIds.has(String(t.id)));
+                setTeams(userTeams);
             } else {
+                // Signup akışından gelen geçici session kullanıcısı
                 const rawSessionUser = sessionStorage.getItem(VERIFIED_SIGNUP_KEY);
                 if (rawSessionUser) {
                     try {
@@ -52,14 +72,19 @@ export const AuthProvider = ({ children }) => {
                             return;
                         }
                     } catch {
-                        // no-op
+                        // Bozuk JSON — yoksay
                     }
                 }
                 logout();
+                return; 
             }
         } catch (error) {
-            console.error("Auth Error:", error);
-            logout();
+            console.error('[AuthContext] fetchUser hatası:', error);
+            setCurrentUser(null);
+            setTeams([]);
+            localStorage.removeItem(AUTH_USER_ID_KEY);
+            sessionStorage.removeItem(AUTH_USER_ID_KEY);
+            setCurrentUserId(null);
         } finally {
             setLoading(false);
         }
@@ -82,7 +107,6 @@ export const AuthProvider = ({ children }) => {
         setCurrentUserId(stringId);
     }, []);
 
-    // Merkezi Login İşlemi 
     const loginWithCredentials = useCallback(async (email, password, rememberMe) => {
         setAuthError(null);
         try {
@@ -92,15 +116,16 @@ export const AuthProvider = ({ children }) => {
                 await authService.startLoginVerification({
                     email: result.user.email,
                     userId: result.user.id,
-                    rememberMe
+                    rememberMe,
                 });
                 setAuthStep('verify');
                 return { success: true };
             }
-            setAuthError(result.message || "E-posta veya şifre hatalı.");
+            setAuthError(result.message || 'E-posta veya şifre hatalı.');
             return { success: false };
-        } catch {
-            setAuthError("Sistem bağlantı hatası.");
+        } catch (error) {
+            console.error('[AuthContext] loginWithCredentials hatası:', error);
+            setAuthError('Sistem bağlantı hatası.');
             return { success: false };
         }
     }, []);
@@ -120,6 +145,11 @@ export const AuthProvider = ({ children }) => {
         return null;
     }, [currentUser, teams]);
 
+    const isAdmin = useCallback(
+        (teamId) => roleNameForTeam(teamId) === 'Admin',
+        [roleNameForTeam]
+    );
+
     const value = useMemo(() => ({
         currentUser,
         currentUserId,
@@ -129,13 +159,18 @@ export const AuthProvider = ({ children }) => {
         loginWithCredentials,
         logout,
         roleNameForTeam,
-        isAdmin: (teamId) => roleNameForTeam(teamId) === 'Admin',
+        isAdmin,
         authStep,
         setAuthStep,
         authError,
         setAuthError,
-        pendingUser
-    }), [currentUser, currentUserId, loading, login, loginWithCredentials, logout, roleNameForTeam, authStep, authError, pendingUser]);
+        pendingUser,
+    }), [
+        currentUser, currentUserId, loading,
+        login, loginWithCredentials, logout,
+        roleNameForTeam, isAdmin,
+        authStep, authError, pendingUser,
+    ]);
 
     return (
         <AuthContext.Provider value={value}>

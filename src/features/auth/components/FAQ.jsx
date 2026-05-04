@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import '../auth.css/FAQ.css';
+import './FAQ.css';
 
 const CATEGORIES = [
   { id: 'all',          label: 'Tümü',           icon: 'ti-layout-grid' },

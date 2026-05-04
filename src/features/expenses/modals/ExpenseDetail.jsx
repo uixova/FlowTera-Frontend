@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
-import ImageBox from '../../../components/modals/ImageBox'; 
+import ImageBox from '../../../components/modals/imageBox/ImageBox'; 
 import { useImageBox } from '../../../hooks/useLightbox'; 
-import '../expenses.css/ExpenseDetail.css'; 
+import './ExpenseDetail.css'; 
 
 const ExpenseDetail = ({ isOpen, onClose, data, onReopen }) => {
   const { wrapSidebarClose } = useImageBox();

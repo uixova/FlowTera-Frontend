@@ -1,4 +1,5 @@
 import React from 'react';
+import './HistoryItem.css';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 
 const HistoryItem = ({ item, isActive, onToggle }) => {

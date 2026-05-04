@@ -1,5 +1,5 @@
 import React from 'react';
-import '../settings.css/Notifications.css';
+import './Notifications.css';
 
 const Notification = ({ notifConfig, setNotifConfig }) => {
   if (!notifConfig) return null;

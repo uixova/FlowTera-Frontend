@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSubscription } from '../../../context/SubscriptionContext'; 
-import '../settings.css/UserPlan.css';
+import './UserPlan.css';
 
 const UserPlan = ({ user }) => {
     // Merkezi context'ten verileri çekiyoruz

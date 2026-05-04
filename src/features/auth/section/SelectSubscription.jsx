@@ -1,5 +1,5 @@
 import React from 'react';
-import '../auth.css/SelectSubs.css';
+import './SelectSubscription.css';
 
 const SelectSubscription = ({ plans, selectedPlanId, onSelectPlan, onContinue, loading }) => {
   return (

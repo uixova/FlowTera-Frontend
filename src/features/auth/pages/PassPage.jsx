@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { useModal } from '../../../hooks/useModal';
 import Alert from '../../../components/modals/Alert';
-import '../auth.css/Pass.css';
+import './Pass.css';
 
 const PassPage = () => {
   const [form, setForm] = useState({ email: '', phone: '', channel: 'email' });

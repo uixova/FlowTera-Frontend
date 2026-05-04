@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import '../settings.css/Profile.css';
+import './Profile.css';
 
 const Profile = ({ user }) => {
   const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];

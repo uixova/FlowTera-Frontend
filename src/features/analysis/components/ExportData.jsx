@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../analysis.css/ExportData.css'
+import './ExportData.css';
 
 const ExportModal = ({ isOpen, onClose }) => {
   const [format, setFormat] = useState('pdf');

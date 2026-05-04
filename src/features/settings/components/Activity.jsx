@@ -1,5 +1,5 @@
 import React from 'react';
-import '../settings.css/Activity.css';
+import './Activity.css';
 
 const Activity = ({ logs }) => {
   return (

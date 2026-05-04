@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { usePhoneCountry } from '../hook/usePhoneCountry';
 import Flags from 'country-flag-icons/react/3x2';
-import '../auth.css/PhoneNumber.css';
+import './PhoneNumber.css';
 
 const FlagIcon = ({ code, className }) => {
   const Component = Flags[code];

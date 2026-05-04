@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import Loader from '../../components/common/Loader';
-import './trips.css/Trips.css';
+import './Trips.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import CreateTrip from './modals/CreateTrip';
 import TripDetail from './modals/TripDetail';
-import CurrencyModal from '../../components/modals/CurrencyModal';
+import CurrencyModal from '../../components/modals/currency/CurrencyModal';
 import PaginationFooter from '../../components/common/PaginationFooter';
 import ActionSidebar from '../../components/navigation/ActionSidebar';
 import TripFilter from './modals/TripFilter';

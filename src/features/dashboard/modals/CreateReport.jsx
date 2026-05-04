@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
-import '../dashboard.css/CreateReport.css';
-import { useAuth } from '../../../context/AuthContext'; // Kullanıcı mailini göstermek için
+import './CreateReport.css';
+import { useAuth } from '../../../context/AuthContext'; 
 
 const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
-    const { currentUser } = useAuth(); // Mevcut kullanıcının bilgileri
+    const { currentUser } = useAuth();
     
     const activeTeamName = useMemo(() => {
         const team = teams.find(t => String(t.id) === String(selectedTeamId));

@@ -1,79 +1,89 @@
 import { api } from '../../../api/api';
 
+const extractList = (response) => {
+    if (!response) return [];
+    if (Array.isArray(response)) return response;
+    if (Array.isArray(response.data)) return response.data;
+    return [];
+};
+
 export const analysisService = {
+
     getTeamAnalysis: async (teamId, viewMode = 'all', convertFn) => {
-        const [expenses, trips, teams] = await Promise.all([
-            api.expenses.getAll(),
-            api.trips.getAll(),
-            api.teams.getAll()
+
+        const [expensesRes, tripsRes, teamsRes] = await Promise.all([
+            api.expenses.getAll({ pageSize: 2000 }),
+            api.trips.getAll({ pageSize: 2000 }),
+            api.teams.getAll({ pageSize: 500 })
         ]);
+
+        const expenses = extractList(expensesRes);
+        const trips    = extractList(tripsRes);
+        const teams    = extractList(teamsRes);
 
         const currentTeam = teams.find(t => String(t.id) === String(teamId));
         const teamCurrency = currentTeam?.settings?.currency || 'USD';
 
-        // FILTER
+        // Takıma ait verileri filtrele
         const teamExpenses = expenses.filter(e => String(e.teamId) === String(teamId));
-        const teamTrips = trips.filter(t => String(t.teamId) === String(teamId));
+        const teamTrips    = trips.filter(t => String(t.teamId) === String(teamId));
 
-        let targetData =
-            viewMode === 'expenses'
-                ? teamExpenses
-                : viewMode === 'trips'
-                    ? teamTrips
-                    : [...teamExpenses, ...teamTrips];
+        const targetData =
+            viewMode === 'expenses' ? teamExpenses :
+            viewMode === 'trips'    ? teamTrips    :
+                                     [...teamExpenses, ...teamTrips];
 
         const getValue = (item) => convertFn(item, teamCurrency);
 
-        // SAFE DATE PARSER
+        // Güvenli tarih parse 
         const parseDate = (str) => {
             if (!str) return null;
-            const [d, m, y] = str.split('/').map(Number);
+            const parts = str.split('/').map(Number);
+            if (parts.length !== 3) return null;
+            const [d, m, y] = parts;
             if (!d || !m || !y) return null;
             return { day: d, month: m - 1, year: y };
         };
 
         const getDate = (item) => parseDate(item.date || item.startDate);
 
-        // MONTH KEY
+        // "YYYY-MM" formatında ay anahtarı
         const monthKey = (d) =>
             `${d.year}-${String(d.month).padStart(2, '0')}`;
 
         const now = new Date();
+
         const currentKey = `${now.getFullYear()}-${String(now.getMonth()).padStart(2, '0')}`;
 
         const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const prevKey = `${prevDate.getFullYear()}-${String(prevDate.getMonth()).padStart(2, '0')}`;
+        const prevKey  = `${prevDate.getFullYear()}-${String(prevDate.getMonth()).padStart(2, '0')}`;
 
-        // MONTHLY AGGREGATION
+        // Aylık toplamlar
         const monthlyMap = {};
 
         targetData.forEach(item => {
             const d = getDate(item);
             if (!d) return;
-
             const key = monthKey(d);
             const val = getValue(item);
-
             monthlyMap[key] = (monthlyMap[key] || 0) + val;
         });
 
         const currentMonthTotal = monthlyMap[currentKey] || 0;
-        const lastMonthTotal = monthlyMap[prevKey] || 0;
+        const lastMonthTotal    = monthlyMap[prevKey]    || 0;
 
-        // TOTAL
+        // Genel toplam 
         const totalSpending = targetData.reduce(
-            (sum, item) => sum + getValue(item),
-            0
+            (sum, item) => sum + getValue(item), 0
         );
 
-        // GROWTH 
+        // Büyüme oranı
         const spendingGrowth =
             lastMonthTotal > 0
                 ? Number((((totalSpending - lastMonthTotal) / lastMonthTotal) * 100).toFixed(1))
-                : totalSpending > 0
-                    ? 100        
-                    : null;
+                : totalSpending > 0 ? 100 : null;
 
+        // Yıllık toplam
         const currentYear = now.getFullYear();
         const yearlyTotal = targetData.reduce((sum, item) => {
             const d = getDate(item);
@@ -81,25 +91,22 @@ export const analysisService = {
             return sum + getValue(item);
         }, 0);
 
-        // CATEGORY
+        // Kategori dağılımı 
         const categoryData = targetData.reduce((acc, item) => {
             const name = item.category || item.destination || 'Diğer';
-            const val = getValue(item);
-
+            const val  = getValue(item);
             const found = acc.find(i => i.name === name);
             if (found) found.value += val;
             else acc.push({ name, value: val });
-
             return acc;
         }, []);
 
-        // CASH FLOW
+        // Cash flow (aylık) 
         const cashFlowMap = {};
 
         targetData.forEach(item => {
             const d = getDate(item);
             if (!d) return;
-
             const key = monthKey(d);
             const val = getValue(item);
 
@@ -111,7 +118,6 @@ export const analysisService = {
                     order: d.year * 12 + d.month
                 };
             }
-
             cashFlowMap[key].amount += val;
         });
 
@@ -119,30 +125,31 @@ export const analysisService = {
             .sort((a, b) => a.order - b.order)
             .map(({ month, amount }) => ({ month, amount }));
 
-        // STATUS
+        // Durum dağılımı
         const normalize = (s) => s?.toLowerCase().replace(/\s/g, '');
 
-        const statusCount = targetData.reduce((acc, item) => {
-            const s = normalize(item.statusClass || item.status);
-
-            if (s === 'approved') acc.approved++;
-            else if (s === 'pending') acc.pending++;
-            else if (s === 'rejected') acc.rejected++;
-
-            return acc;
-        }, { approved: 0, pending: 0, rejected: 0 });
+        const statusCount = targetData.reduce(
+            (acc, item) => {
+                const s = normalize(item.statusClass || item.status);
+                if (s === 'approved') acc.approved++;
+                else if (s === 'pending') acc.pending++;
+                else if (s === 'rejected') acc.rejected++;
+                return acc;
+            },
+            { approved: 0, pending: 0, rejected: 0 }
+        );
 
         const statusData = [
-            { name: 'Onaylı', value: statusCount.approved },
-            { name: 'Bekleyen', value: statusCount.pending },
-            { name: 'Reddedilen', value: statusCount.rejected }
+            { name: 'Onaylı',    value: statusCount.approved  },
+            { name: 'Bekleyen',  value: statusCount.pending   },
+            { name: 'Reddedilen',value: statusCount.rejected  }
         ];
 
         return {
             summary: {
                 totalSpending,
                 currentMonthSpending: currentMonthTotal,
-                lastMonthSpending: lastMonthTotal,
+                lastMonthSpending:    lastMonthTotal,
                 spendingGrowth,
                 yearlyTotal,
 

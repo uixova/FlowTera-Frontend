@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../auth.css/Features.css';
+import './Features.css';
 
 const Features = () => {
   const [features, setFeatures] = useState([]);

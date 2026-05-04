@@ -14,7 +14,7 @@ import PassPage from './features/auth/pages/PassPage';
 
 // Diğer Bileşenler
 import NotFound from './features/error/NotFound';
-import Navbar from './components/navigation/Navbar';
+import Navbar from './components/navigation/navbar/Navbar';
 import Dashboard from './features/dashboard/Dashboard';
 import Expenses from './features/expenses/Expenses';
 import Trips from './features/trips/Trips';
@@ -27,7 +27,7 @@ import Settings from './features/settings/Settings';
 import Subscription from './features/subscription/Subscription';
 import PaymentPanel from './features/payment/PaymentPanel';
 
-import './components/components.css/GlobalFilter.css'; 
+import './styles/GlobalFilter.css'; 
 
 const ProtectedRoute = () => {
     const { currentUser, loading } = useAuth(); 

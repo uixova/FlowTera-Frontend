@@ -1,5 +1,5 @@
 import React from 'react';
-import '../dashboard.css/Activities.css';
+import './MyActivities.css';
 
 // SOL: Status Overview Bileşeni
 export const StatusOverview = ({ stats }) => {

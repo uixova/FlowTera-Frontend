@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
-import '../trips.css/TripDetail.css';
+import './TripDetail.css';
 
 const TripDetail = ({ isOpen, onClose, data }) => {
   if (!data) return null;

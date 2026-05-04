@@ -1,21 +1,40 @@
-import { api } from '../../../api/api'; 
+import { api } from '../../../api/api';
+
+const extractList = (response) => {
+    if (!response) return [];
+    if (Array.isArray(response)) return response;
+    if (Array.isArray(response.data)) return response.data;
+    return [];
+};
 
 export const paymentService = {
-    // Ödemeyi işle
+
+    // Ödemeyi işle 
     processPayment: async (paymentData, userId, planId) => {
         try {
-            console.log(`${userId} için ${planId} ödemesi alınıyor...`);
-            
-            // Simüle bir istek atıyoruz
-            const response = await api.plans.getAll(); 
-            
-            if (!response) throw new Error("Plan verileri doğrulanamadı.");
+            if (!userId) throw new Error("Kullanıcı kimliği eksik.");
+            if (!planId) throw new Error("Plan kimliği eksik.");
 
-            // Backend simülasyonu
-            return { 
-                success: true, 
+            console.log(`${userId} için ${planId} ödemesi alınıyor...`);
+
+            const response = await api.plans.getAll();
+            const plans = extractList(response);
+
+            if (!plans.length) throw new Error("Plan verileri doğrulanamadı.");
+
+            const targetPlan = plans.find(p => String(p.id) === String(planId));
+            if (!targetPlan) throw new Error(`"${planId}" planı bulunamadı.`);
+
+            const lastFour = paymentData?.number
+                ? String(paymentData.number).slice(-4)
+                : '****';
+
+            // gerçek API gelince buraya api.fetch() çağrısı eklenecek
+            return {
+                success: true,
                 message: "Abonelik aktif edildi!",
-                details: paymentData.number.slice(-4) // Güvenlik için son 4 haneyi döndür
+                planName: targetPlan.name,
+                details: lastFour
             };
         } catch (error) {
             console.error("Ödeme İşlem Hatası:", error.message);
@@ -23,14 +42,12 @@ export const paymentService = {
         }
     },
 
-    // Yeni kullanıcı için ön kayıt doğrulaması
+    // Yeni kullanıcı için ön kayıt doğrulaması 
     validateRegistrationPayment: async (tempId) => {
         try {
+            if (!tempId) throw new Error("Geçici kayıt ID eksik.");
             console.log(`Geçici kayıt ID doğrulanıyor: ${tempId}`);
-            
-            // Burada api çağrısı yapılabilir
-            // const check = await api.get(`/validate/${tempId}`);
-            
+            // Gelecekte: const check = await api.fetch('VALIDATE', { tempId });
             return { valid: true };
         } catch (error) {
             console.error("Doğrulama hatası:", error);

@@ -1,0 +1,311 @@
+.nt-panel-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+}
+
+.nt-panel-container {
+    position: absolute;
+    top: 75px;
+    right: 20px;
+    width: 360px;
+    max-height: 80vh;
+    background: #0f0f0f;
+    border: 1px solid #222;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    animation: slideDown 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nt-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid #1a1a1a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nt-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nt-header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nt-header h3 {
+    font-size: 0.9rem;
+    font-weight: 850;
+    color: #fff;
+    margin: 0;
+}
+
+.nt-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
+}
+
+.nt-content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.nt-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.nt-content::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+.nt-section {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #444;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.nt-invite-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    padding: 10px;
+    margin-bottom: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.nt-invite-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+    background: #0ed45a;
+    opacity: 0.7;
+}
+
+.nt-invite-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.invite-card-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.clear-all-btn {
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.clear-all-btn:hover {
+    color: #ff4757;
+}
+
+.team-avatar {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+    color: #0ed45a; 
+    border: 1px solid rgba(14, 212, 90, 0.3);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.invite-info {
+    flex: 1;
+}
+
+.invite-main-text {
+    font-size: 0.78rem;
+    color: #efefef;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.invite-main-text strong {
+    color: #fff;
+    font-weight: 800;
+}
+
+.invite-sub-text {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.invite-sub-text::before {
+    content: '@';
+    opacity: 0.5;
+}
+
+.invite-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.btn-invite-accept {
+    flex: 1;
+    background: #0ed45a;
+    color: #000;
+    border: none;
+    padding: 6px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(14, 212, 90, 0.2);
+}
+
+.btn-invite-accept:hover {
+    background: #11f368;
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(14, 212, 90, 0.3);
+}
+
+.btn-invite-reject {
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #888;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-invite-reject:hover {
+    background: rgba(255, 71, 87, 0.1);
+    color: #ff4757;
+    border-color: rgba(255, 71, 87, 0.2);
+}
+
+.nt-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    position: relative;
+    align-items: center;
+    background: #141414;
+    border: 1px solid transparent;
+    transition: 0.2s;
+}
+
+.nt-item:hover {
+    border-color: #222;
+    background: #1a1a1a;
+}
+
+.nt-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nt-item.success .nt-icon { color: #0ed45a; }
+.nt-item.warning .nt-icon { color: #ff9800; }
+
+.nt-text { flex: 1; }
+.nt-text p { font-size: 0.8rem; color: #ccc; margin: 0; line-height: 1.4; }
+.nt-time-text { font-size: 10px; color: #555; margin-top: 4px; display: block; }
+
+.nt-del-btn {
+    background: transparent;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0;
+    transition: 0.2s;
+}
+
+.nt-item:hover .nt-del-btn {
+    opacity: 1;
+    color: #ff4757;
+}
+
+.nt-close-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: #888;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.nt-close-btn:hover { background: rgba(255, 71, 87, 0.1); color: #ff4757; }
+
+.count-badge {
+    background: #0ed45a;
+    color: #000;
+    font-size: 10px;
+    font-weight: 900;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+}
+
+.no-data {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #444;
+    padding: 20px;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}

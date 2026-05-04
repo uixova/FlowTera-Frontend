@@ -4,7 +4,7 @@ import FAQ from './components/FAQ';
 import Features from './components/Features';
 import Subs from './components/Subs';
 import useCounter from './hook/useCounter';
-import './auth.css/Landing.css';
+import './Landing.css';
 
 // Mini Sparkline Component
 const Sparkline = ({ data, color }) => {

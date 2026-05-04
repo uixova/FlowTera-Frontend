@@ -4,7 +4,7 @@ import Loader from '../../components/common/Loader';
 import { useAuth } from '../../context/AuthContext';
 import { useSubscription } from '../../context/SubscriptionContext';
 import { useTeam } from '../../context/TeamContext'; 
-import './dashboard.css/Dashboard.css';
+import './Dashboard.css';
 import MonthlyReport from './components/Graphics';
 import { dashboardService } from './services/dashboardService';
 import { StatusOverview, RecentActivities } from './components/MyActivities';

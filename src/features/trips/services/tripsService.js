@@ -5,38 +5,65 @@ const randomDelay = (min = 200, max = 800) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+// Paginated veya düz array'den veriyi güvenle çıkar
+const extractList = (response) => {
+    if (!response) return [];
+    if (Array.isArray(response)) return response;
+    if (Array.isArray(response.data)) return response.data;
+    return [];
+};
+
 export const tripsService = {
-    // Yardımcı Fonksiyon: Seyahatleri kullanıcı verileriyle eşleştirir
+
+    // Seyahatleri kullanıcı verileriyle zenginleştir
     enrichTripsWithUserData: async (trips) => {
-        const users = await api.users.getAll();
-        if (!users || !trips) return trips;
+        if (!trips?.length) return trips ?? [];
+
+        const usersResponse = await api.users.getAll({ pageSize: 1000 });
+        const users = extractList(usersResponse);
 
         return trips.map(trip => {
-            const ownerId = trip.createdBy?.id ?? trip.userId ?? trip.ownerId ?? trip.createdById ?? null;
-            const owner = ownerId ? users.find(u => String(u.id) === String(ownerId)) : null;
+            const ownerId =
+                trip.createdBy?.id ??
+                trip.userId ??
+                trip.ownerId ??
+                trip.createdById ??
+                null;
+
+            const owner = ownerId
+                ? users.find(u => String(u.id) === String(ownerId))
+                : null;
+
             const isDeleted = Boolean(owner?.isDeleted);
-            
+
             return {
                 ...trip,
-                userName: isDeleted ? "DeletedUser" : (trip.createdBy?.name || owner?.name || "Unknown Traveller"),
-                userAvatar: isDeleted ? null : (owner?.avatar || null),
-                userPlan: isDeleted ? 'free' : (owner?.subscription?.plan || 'free')
+                userName: isDeleted
+                    ? "DeletedUser"
+                    : (trip.createdBy?.name || owner?.name || "Unknown Traveller"),
+                userAvatar: isDeleted ? null : (owner?.avatar ?? null),
+                userPlan: isDeleted ? 'free' : (owner?.subscription?.plan ?? 'free')
             };
         });
     },
 
-    // Takım ID'sine göre seyahatleri getir
+    // Takım ID'sine göre seyahatleri getir 
     getTripsByTeam: async (teamId, page = 1, limit = 20) => {
         await randomDelay(400, 1000);
-        if (!teamId) return { data: [], hasMore: false };
+        if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
 
-        const allTrips = await api.trips.getAll(); 
-        if (!allTrips) return { data: [], hasMore: false };
+        // Backend hazır olduğunda teamId filtresi
+        // sunucu tarafına taşınacak: api.trips.getAll({ teamId, page, pageSize: limit })
+        const response = await api.trips.getAll({ pageSize: 2000 });
+        const allTrips = extractList(response);
 
-        const filtered = allTrips.filter(trip => 
-            String(trip.teamId).trim() === String(teamId).trim()
+        if (!allTrips.length) return { data: [], hasMore: false, totalCount: 0 };
+
+        const filtered = allTrips.filter(
+            trip => String(trip.teamId).trim() === String(teamId).trim()
         );
 
+        // Servis katmanında sayfalama - Mock için tabiki
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
         const paginatedData = filtered.slice(startIndex, endIndex);
@@ -50,31 +77,32 @@ export const tripsService = {
         };
     },
 
-    // Seyahat ID'sine göre tek bir seyahati getir
+    // Seyahat ID'sine göre tek seyahati getir
     getTripById: async (tripId) => {
         await randomDelay(200, 500);
-        const allTrips = await api.trips.getAll();
-        const trip = allTrips?.find(t => String(t.id) === String(tripId));
-        
+
+        const response = await api.trips.getAll({ pageSize: 2000 });
+        const allTrips = extractList(response);
+
+        const trip = allTrips.find(t => String(t.id) === String(tripId));
         if (!trip) return null;
 
-        // Tek bir seyahat için de kullanıcı verisini ekle
         const enriched = await tripsService.enrichTripsWithUserData([trip]);
-        return enriched[0];
+        return enriched[0] ?? null;
     },
 
-    // Yeni bir seyahat oluşturma
+    // Yeni seyahat oluşturma (simülasyon)
     createTrip: async (tripData) => {
         await randomDelay(600, 1200);
-        
-        // Gelecekte api.trips.post(tripData) buraya gelecek
+        // Gelecekte: return await api.fetch('TRIPS', {}, { method: 'POST', body: tripData });
         console.log("[API CREATE] New Trip Payload:", tripData);
         return { success: true, data: tripData };
     },
 
-    // Güncelleme fonksiyonu 
+    // Seyahat güncelleme (simülasyon)
     updateTrip: async (id, tripData) => {
         await randomDelay(400, 800);
+        // Gelecekte: return await api.fetch('TRIPS', {}, { method: 'PUT', body: tripData });
         console.log(`[API UPDATE] Trip ID: ${id}`, tripData);
         return { success: true };
     }

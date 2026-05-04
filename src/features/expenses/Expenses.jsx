@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react'; 
 import Loader from '../../components/common/Loader';
-import './expenses.css/Expenses.css';
+import './Expenses.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import CreateExpense from './modals/CreateExpense';
 import ExpenseDetail from './modals/ExpenseDetail';
-import CurrencyModal from '../../components/modals/CurrencyModal';
+import CurrencyModal from '../../components/modals/currency/CurrencyModal';
 import PaginationFooter from '../../components/common/PaginationFooter';
 import ActionSidebar from '../../components/navigation/ActionSidebar'; 
 import ExpenseFilter from './modals/ExpenseFilter';

@@ -1,48 +1,64 @@
-import { api } from '../../../api/api';
+import { api } from '../../../api/api'; 
 
-// Basit bir memory-cache nesnesi
-const cache = {
-    expenses: null,
-    trips: null,
-    lastFetched: null
+// Varsayılan sayfa boyutları
+const ARCHIVE_PAGE_SIZE = 30; 
+
+// mock modda client-side teamId filtresi
+const filterByTeam = (items, teamId) => {
+  if (!teamId) return items;
+  return items.filter((item) => String(item.teamId) === String(teamId));
 };
 
 export const archiveService = {
-    getArchiveData: async (teamId, forceRefresh = false) => {
-        // Eğer veri varsa ve zorunlu yenileme istenmediyse cache'den dön
-        if (!forceRefresh && cache.expenses && cache.trips) {
-            console.log("Archive: Veriler cache'den getirildi.");
-            return { expenses: cache.expenses, trips: cache.trips };
-        }
-
-        try {
-            console.log("Archive: API isteği atılıyor...");
-            // Paralel isteklerle veriyi çek
-            const [expenses, trips] = await Promise.all([
-                api.expenses.getAll(),
-                api.trips.getAll()
-            ]);
-
-            // Takıma göre filtrele
-            const teamExpenses = expenses.filter(e => String(e.teamId) === String(teamId));
-            const teamTrips = trips.filter(t => String(t.teamId) === String(teamId));
-
-            // Cache'e yaz
-            cache.expenses = teamExpenses;
-            cache.trips = teamTrips;
-            cache.lastFetched = new Date();
-
-            return { expenses: teamExpenses, trips: teamTrips };
-        } catch (error) {
-            console.error("Arşiv verisi çekilirken hata:", error);
-            throw error;
-        }
-    },
-
-    // Yeni veri eklendiğinde cache'i temizlemek için kullanacağız
-    clearCache: () => {
-        cache.expenses = null;
-        cache.trips = null;
-        cache.lastFetched = null;
+  getArchiveData: async ({
+    teamId,
+    page        = 1,
+    pageSize    = ARCHIVE_PAGE_SIZE,
+    forceRefresh = false,
+  } = {}) => {
+    // forceRefresh istendiyse ilgili cache leri temizle
+    if (forceRefresh) {
+      api.cache.invalidate('ARCHIVE');
+      api.cache.invalidate('TRIPS');
     }
+
+    // Paralel istek — her biri kendi TTL cache ini kullanır
+    const [expenseResult, tripResult] = await Promise.all([
+      api.archive.getAll({ page, pageSize }, { forceRefresh }),
+      api.trips.getAll(  { page, pageSize }, { forceRefresh }),
+    ]);
+
+    // Mock modda client-side filtre
+    const expenses = {
+      ...expenseResult,
+      data: filterByTeam(expenseResult?.data ?? [], teamId),
+    };
+
+    const trips = {
+      ...tripResult,
+      data: filterByTeam(tripResult?.data ?? [], teamId),
+    };
+
+    return { expenses, trips };
+  },
+
+  // Sadece harcamaları getirir
+  getExpenses: ({ teamId, page = 1, pageSize = ARCHIVE_PAGE_SIZE, forceRefresh = false } = {}) =>
+    api.archive.getAll({ page, pageSize }, { forceRefresh }).then((result) => ({
+      ...result,
+      data: filterByTeam(result?.data ?? [], teamId),
+    })),
+
+  // Sadece seyahatleri getirir
+  getTrips: ({ teamId, page = 1, pageSize = ARCHIVE_PAGE_SIZE, forceRefresh = false } = {}) =>
+    api.trips.getAll({ page, pageSize }, { forceRefresh }).then((result) => ({
+      ...result,
+      data: filterByTeam(result?.data ?? [], teamId),
+    })),
+
+  // Cache'i temizler
+  invalidate: () => {
+    api.cache.invalidate('ARCHIVE');
+    api.cache.invalidate('TRIPS');
+  },
 };

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import Loader from '../../../components/common/Loader';
-import '../teams.css/Settings.css';
+import './TeamSettings.css';
 import { teamsService } from '../services/teamsService';
 import { useAuth } from '../../../context/AuthContext';
 import { useTeam } from '../../../context/TeamContext';

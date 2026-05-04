@@ -1,5 +1,5 @@
 import React from 'react';
-import '../components.css/Loader.css';
+import './Loader.css';
 
 const Loader = ({ type = 'butterfly', text = 'Yukleniyor...' }) => {
   if (type === 'butterfly') {

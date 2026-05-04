@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './analysis.css/Analysis.css';
+import './Analysis.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import ExportModal from './components/ExportData';
 import AnalysisCharts from './components/Charts'; 

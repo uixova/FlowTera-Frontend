@@ -1,5 +1,5 @@
 import React from 'react';
-import '../teams.css/TeamCard.css'
+import './TeamCard.css'
 
 const TeamCard = ({ team, onSelect }) => {
   // Bakım modunda olup olmadığını kontrol et

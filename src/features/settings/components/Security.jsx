@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../settings.css/Security.css';
+import './Security.css';
 import { useModal } from '../../../hooks/useModal';
 import Confirm from '../../../components/modals/Confirm';
 import Alert from '../../../components/modals/Alert';

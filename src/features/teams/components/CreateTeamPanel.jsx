@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import './CreateTeamPanel.css';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useSubscription } from '../../../context/SubscriptionContext';
 import { useAuth } from '../../../context/AuthContext';
-import '../teams.css/CreateTeam.css';
 import { useModal } from '../../../hooks/useModal';
 import Alert from '../../../components/modals/Alert';
 

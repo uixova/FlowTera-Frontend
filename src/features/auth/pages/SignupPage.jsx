@@ -4,7 +4,7 @@ import { authService } from '../services/authService';
 import Mail from '../components/Mail';
 import SelectSubscription from '../section/SelectSubscription';
 import PhoneNumber from '../components/PhoneNumber'; 
-import '../auth.css/Signup.css';
+import './Signup.css';
 
 const initialForm = {
   firstName: '',

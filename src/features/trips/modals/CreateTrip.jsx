@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'; 
+import './CreateTrip.css'; 
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { tripsService } from '../services/tripsService';
 import { archiveService } from '../../archive/services/archiveServices';
-import '../trips.css/CreateTrip.css'; 
 
 
 const formatDateForInput = (dateStr) => {

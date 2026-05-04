@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
-import '../teams.css/TeamEdit.css';
+import './TeamEditMember.css';
 import { teamsService } from '../services/teamsService'; 
 import { useModal } from '../../../hooks/useModal'; 
 import { usePermissions } from '../../../hooks/usePermissions'; 

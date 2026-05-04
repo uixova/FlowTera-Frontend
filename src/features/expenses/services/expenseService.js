@@ -5,45 +5,63 @@ const randomDelay = (min = 300, max = 1000) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+// Paginated veya düz array'den veriyi güvenle çıkar
+const extractList = (response) => {
+    if (!response) return [];
+    if (Array.isArray(response)) return response;
+    if (Array.isArray(response.data)) return response.data;
+    return [];
+};
+
 export const expenseService = {
-    // Yardımcı fonksiyon: Giderleri kullanıcı verileriyle birleştirir
+
+    // Giderleri kullanıcı verileriyle zenginleştir
     enrichExpensesWithUserData: async (expenses) => {
-        const users = await api.users.getAll();
-        if (!users || !expenses) return expenses;
+        if (!expenses?.length) return expenses ?? [];
+
+        const usersResponse = await api.users.getAll({ pageSize: 1000 });
+        const users = extractList(usersResponse);
 
         return expenses.map(expense => {
-            const submitterId = expense.createdBy?.id ?? expense.userId ?? expense.submitterId ?? null;
+            const submitterId =
+                expense.createdBy?.id ??
+                expense.userId ??
+                expense.submitterId ??
+                null;
+
             const userDetail = users.find(u => String(u.id) === String(submitterId));
             const isDeleted = Boolean(userDetail?.isDeleted);
-            
+
             return {
                 ...expense,
-                user: isDeleted ? "DeletedUser" : (expense.createdBy?.name || userDetail?.name || "Unknown"),
-                userAvatar: isDeleted ? null : (userDetail?.avatar || null),
-                userRole: isDeleted ? 'free' : (userDetail?.subscription?.plan || 'free')
+                user: isDeleted
+                    ? "DeletedUser"
+                    : (expense.createdBy?.name || userDetail?.name || "Unknown"),
+                userAvatar: isDeleted ? null : (userDetail?.avatar ?? null),
+                userRole: isDeleted ? 'free' : (userDetail?.subscription?.plan ?? 'free')
             };
         });
     },
 
-    // Takım bazında giderleri getirme fonksiyonu
+    // Takım bazında giderleri getir
     getExpensesByTeam: async (teamId, page = 1, limit = 20) => {
         await randomDelay(400, 800);
         if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
 
-        const allExpenses = await api.expenses.getAll();
-        if (!allExpenses) return { data: [], hasMore: false, totalCount: 0 };
+        // Backend hazır olduğunda api.expenses.getAll({ teamId, page, pageSize: limit })
+        const response = await api.expenses.getAll({ pageSize: 2000 });
+        const allExpenses = extractList(response);
 
-        // Takım Filtrelemesi
-        const filtered = allExpenses.filter(exp => 
-            String(exp.teamId).trim() === String(teamId).trim()
+        if (!allExpenses.length) return { data: [], hasMore: false, totalCount: 0 };
+
+        const filtered = allExpenses.filter(
+            exp => String(exp.teamId).trim() === String(teamId).trim()
         );
 
-        // Sayfalama Hesaplaması
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
         const paginatedData = filtered.slice(startIndex, endIndex);
 
-        // Veriyi Zenginleştir
         const enrichedData = await expenseService.enrichExpensesWithUserData(paginatedData);
 
         return {
@@ -53,11 +71,10 @@ export const expenseService = {
         };
     },
 
-    // Yeni gider oluşturma fonksiyonu
+    // Yeni gider oluşturma
     createExpense: async (payload) => {
         await randomDelay(500, 1000);
 
-        // Backend dosya bekliyorsa FormData hazır
         const body = new FormData();
         Object.keys(payload).forEach(key => {
             if (key === 'receipt' && payload[key] instanceof File) {
@@ -67,20 +84,15 @@ export const expenseService = {
             }
         });
 
-        // Gerçek API Call - backend endpoint hazır olduğunda burayı aç
-        // return await api.expenses.create(body); 
-        
+        // Gelecekte: return await api.fetch('EXPENSES', {}, { method: 'POST', body: payload });
         console.log("API'ye gönderilmeye hazır veri:", payload);
         return { success: true };
     },
 
-    // Gider Güncelleme
+    // Gider güncelleme (simülasyon)
     updateExpense: async (id, payload) => {
         await randomDelay(400, 800);
-        
-        // Gerçek API Call
-        // return await api.expenses.update(id, payload);
-        
+        // Gelecekte: return await api.fetch('EXPENSES', {}, { method: 'PUT', body: payload });
         console.log(`${id} ID'li kayıt güncelleniyor:`, payload);
         return { success: true };
     },
@@ -88,7 +100,8 @@ export const expenseService = {
     // Takım bilgisini getir
     getTeamInfo: async (teamId) => {
         await randomDelay(100, 300);
-        const allTeams = await api.teams.getAll();
-        return allTeams?.find(t => String(t.id) === String(teamId));
+        const response = await api.teams.getAll({ pageSize: 500 });
+        const allTeams = extractList(response);
+        return allTeams.find(t => String(t.id) === String(teamId)) ?? null;
     }
 };

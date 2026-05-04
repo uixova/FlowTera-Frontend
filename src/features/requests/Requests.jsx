@@ -7,7 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useFilter } from '../../hooks/useFilter'; 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useTeam } from '../../context/TeamContext'; 
-import './css/Requests.css';
+import './Requests.css';
 
 const Requests = () => {
     const navigate = useNavigate();

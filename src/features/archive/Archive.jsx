@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import './css/Archive.css';
+import './Archive.css';
 import Galery from './components/Galery';
 import { archiveService } from './services/archiveServices';
 import Loader from '../../components/common/Loader';

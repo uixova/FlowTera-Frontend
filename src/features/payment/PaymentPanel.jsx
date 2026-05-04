@@ -7,7 +7,7 @@ import { useSubscription } from '../../context/SubscriptionContext';
 import Alert from '../../components/modals/Alert'; 
 import { paymentService } from './services/paymentServices'; 
 import { authService } from '../auth/services/authService';
-import './css/PaymentPanel.css';
+import './PaymentPanel.css';
 
 const MotionDiv = motion.div;
 

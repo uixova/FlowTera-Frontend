@@ -4,7 +4,7 @@ import { useModal } from '../../../hooks/useModal';
 import { usePermissions } from '../../../hooks/usePermissions'; 
 import Confirm from '../../../components/modals/Confirm'; 
 import Alert from '../../../components/modals/Alert'; 
-import '../teams.css/AddMember.css';
+import './TeamAddMember.css';
 
 const AddMemberModal = ({ isOpen, onClose }) => {
   const [identifier, setIdentifier] = useState('');

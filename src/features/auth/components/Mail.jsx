@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
-import '../auth.css/Mail.css';
+import './Mail.css';
 
 const Mail = ({
   email,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
-import '../dashboard.css/OCR.css';
+import './OCR.css';
 
 const OCRSidebar = ({ isOpen, onClose }) => {
     const [selectedImage, setSelectedImage] = useState(null);

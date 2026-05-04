@@ -1,5 +1,5 @@
 import React from 'react';
-import '../components.css/Modal.css';
+import './Modal.css';
 
 const Alert = ({ isOpen, onClose, title, message, type = 'info' }) => {
     if (!isOpen) return null;

@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import Input from '../common/Input';
-import '../components.css/SubNavbar.css';
+import './SubNavbar.css';
 import { useTeam } from '../../context/TeamContext'; 
 
 const SubNavbar = ({ 

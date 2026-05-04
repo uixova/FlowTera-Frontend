@@ -1,7 +1,7 @@
 import React from 'react';
-import ImageBox from '../../../components/modals/ImageBox';
+import ImageBox from '../../../components/modals/imageBox/ImageBox';
 import { useCurrency } from '../../../context/CurrencyContext';
-import '../css/Galery.css'; 
+import './Galery.css'; 
 
 const Galery = ({ data }) => {
     const { symbol } = useCurrency();

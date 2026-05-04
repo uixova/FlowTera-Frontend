@@ -1,0 +1,14 @@
+{
+  "title": {
+    "tr": "Profil",
+    "en": "Profile"
+  },
+  "name": {
+    "tr": "Ad Soyad",
+    "en": "Full Name"
+  },
+  "email": {
+    "tr": "E-posta",
+    "en": "Email"
+  }
+}

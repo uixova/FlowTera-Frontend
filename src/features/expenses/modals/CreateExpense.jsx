@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { expenseService } from '../services/expenseService'; 
 import { archiveService } from '../../archive/services/archiveServices';
-import '../expenses.css/CreateExpense.css';
+import './CreateExpense.css';
 
 const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
     const isEdit = !!editData;

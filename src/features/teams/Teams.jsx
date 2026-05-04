@@ -7,7 +7,7 @@ import TeamSettings from './components/TeamSettings';
 import { teamsService, teamMembersCache } from './services/teamsService'; 
 import { useAuth } from '../../context/AuthContext'; 
 import { useTeam } from '../../context/TeamContext';
-import './teams.css/Team.css';
+import './Teams.css';
 
 const Teams = () => {
   const { currentUser, loading: authLoading } = useAuth(); 

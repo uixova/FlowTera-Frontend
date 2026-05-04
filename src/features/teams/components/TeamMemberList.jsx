@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Loader from '../../../components/common/Loader';
-import '../teams.css/MemberList.css'
+import './TeamMemberList.css'
 import SubNavbar from '../../../components/navigation/SubNavbar';
 import EditRoleModal from '../modals/TeamEditMember';
 import AddMemberModal from '../modals/TeamAddMember';

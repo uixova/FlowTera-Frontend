@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import { api } from '../api/api';
 
@@ -8,32 +8,40 @@ export const SubscriptionProvider = ({ children }) => {
     const { currentUser } = useAuth();
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Kullanıcıyı planId üzerinden eşleştiriyoruz (user.json'daki subscription.planId)
-    const currentPlan = plans.find(p => p.id === currentUser?.subscription?.planId);
+    const currentPlan = useMemo(
+        () => plans.find(p => p.id === currentUser?.subscription?.planId) ?? null,
+        [plans, currentUser?.subscription?.planId]
+    );
 
     useEffect(() => {
         const fetchPlanData = async () => {
-            const data = await api.plans.getAll();
-            if (data) setPlans(data.sort((a, b) => a.order - b.order));
-            setLoading(false);
+            try {
+                const data = await api.plans.getAll();
+                if (data) setPlans(data.sort((a, b) => a.order - b.order));
+            } catch (err) {
+                console.error('Plan fetch error:', err);
+                setError(err?.message || 'Plan verisi alınamadı.');
+            } finally {
+                setLoading(false);
+            }
         };
         fetchPlanData();
     }, []);
 
-    // MERKEZİ KONTROL FONKSİYONU
-    const hasFeature = (featureKey) => {
-        if (!currentPlan || !currentPlan.feature_keys) return false;
-        // Kullanıcının planındaki teknik anahtarlarda bu özellik var mı?
+    const hasFeature = useCallback((featureKey) => {
+        if (!currentPlan?.feature_keys) return false;
         return currentPlan.feature_keys.includes(featureKey);
-    };
+    }, [currentPlan]);
 
-    const value = {
+    const value = useMemo(() => ({
         plans,
         currentPlan,
-        hasFeature, 
-        loading
-    };
+        hasFeature,
+        loading,
+        error,
+    }), [plans, currentPlan, hasFeature, loading, error]);
 
     return (
         <SubscriptionContext.Provider value={value}>

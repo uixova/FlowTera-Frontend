@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import './css/NotFound.css';
+import './NotFound.css';
 
 import Bg404 from '../../assets/images/404-bg.jpg';
 import Obj404 from '../../assets/images/404-obj.png';
