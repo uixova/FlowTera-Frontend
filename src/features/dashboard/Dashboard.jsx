@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Loader from '../../components/common/Loader';
+import Loader from '../../components/ui/Loader';
 import { useAuth } from '../../context/AuthContext';
 import { useSubscription } from '../../context/SubscriptionContext';
 import { useTeam } from '../../context/TeamContext'; 
@@ -16,7 +16,7 @@ import CreateReport from './modals/CreateReport';
 import OCRSidebar from './modals/OCR';
 import { useModal } from '../../hooks/useModal';
 import { usePermissions } from '../../hooks/usePermissions';
-import Alert from '../../components/modals/Alert';
+import Alert from '../../components/overlays/Alert';
 
 const Dashboard = () => {
     const { alertConfig, showAlert, closeAlert } = useModal();

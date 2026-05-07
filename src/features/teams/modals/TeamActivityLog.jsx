@@ -1,7 +1,7 @@
 import React, { useState, useEffect, memo } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
-import Loader from '../../../components/common/Loader';
-import Input from '../../../components/common/Input';
+import Loader from '../../../components/ui/Loader';
+import Input from '../../../components/ui/Input';
 import './TeamActivityLog.css';
 // API servislerini içe aktar
 import { teamsService } from '../services/teamsService';

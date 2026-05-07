@@ -3,7 +3,7 @@ import TeamCard from './TeamCard';
 import SubNavbar from '../../../components/navigation/SubNavbar';
 import { useAuth } from '../../../context/AuthContext';
 import { useModal } from '../../../hooks/useModal'; 
-import Alert from '../../../components/modals/Alert'; 
+import Alert from '../../../components/overlays/Alert'; 
 
 const TeamSelection = ({ onNavigate, teams, loading }) => {
     const [searchTerm, setSearchTerm] = useState('');

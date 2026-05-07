@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext'; 
 import { useModal } from '../../hooks/useModal'; 
 import { useSubscription } from '../../context/SubscriptionContext'; 
-import Alert from '../../components/modals/Alert'; 
+import Alert from '../../components/overlays/Alert'; 
 import { paymentService } from './services/paymentServices'; 
 import { authService } from '../auth/services/authService';
 import './PaymentPanel.css';

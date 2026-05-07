@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Settings.css'; 
 import { settingsService } from './services/settingService';
-import Loader from '../../components/common/Loader';
+import Loader from '../../components/ui/Loader';
 
 // Alt Sayfalar
 import Profile from './components/Profile';
@@ -14,7 +14,7 @@ import Notification from './components/Notifications';
 // Hooks & Modals
 import { useAuth } from '../../context/AuthContext';
 import { useModal } from '../../hooks/useModal'; 
-import Confirm from '../../components/modals/Confirm'; 
+import Confirm from '../../components/overlays/Confirm'; 
 
 const Settings = () => {
   const navigate = useNavigate();

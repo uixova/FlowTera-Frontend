@@ -4,7 +4,7 @@ import './TeamEditMember.css';
 import { teamsService } from '../services/teamsService'; 
 import { useModal } from '../../../hooks/useModal'; 
 import { usePermissions } from '../../../hooks/usePermissions'; 
-import Confirm from '../../../components/modals/Confirm'; 
+import Confirm from '../../../components/overlays/Confirm'; 
 
 const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
     const [selectedRole, setSelectedRole] = useState('member');

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
-import Mail from '../components/Mail';
-import SelectSubscription from '../section/SelectSubscription';
-import PhoneNumber from '../components/PhoneNumber'; 
+import { authService } from '../../services/authService';
+import Mail from '../../components/Mail';
+import SelectSubscription from '../../section/SelectSubscription';
+import PhoneNumber from '../../components/PhoneNumber'; 
 import './Signup.css';
 
 const initialForm = {

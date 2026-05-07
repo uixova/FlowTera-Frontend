@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import Loader from '../../components/common/Loader';
+import Loader from '../../components/ui/Loader';
 import TeamSelection from './components/TeamSelection';
 import CreateTeamPanel from './components/CreateTeamPanel';
 import TeamMemberList from './components/TeamMemberList';

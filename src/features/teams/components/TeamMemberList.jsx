@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import Loader from '../../../components/common/Loader';
+import Loader from '../../../components/ui/Loader';
 import './TeamMemberList.css'
 import SubNavbar from '../../../components/navigation/SubNavbar';
 import EditRoleModal from '../modals/TeamEditMember';
@@ -10,8 +10,8 @@ import { useAuth } from '../../../context/AuthContext';
 import { notificationService } from '../../../services/notificationService';
 import { useModal } from '../../../hooks/useModal';
 import { usePermissions } from '../../../hooks/usePermissions'; 
-import Confirm from '../../../components/modals/Confirm';
-import Alert from '../../../components/modals/Alert';
+import Confirm from '../../../components/overlays/Confirm';
+import Alert from '../../../components/overlays/Alert';
 
 const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
   const teamId = team?.id;

@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
-import ImageBox from '../../../components/modals/imageBox/ImageBox'; 
+import ImageBox from '../../../components/overlays/imageBox/ImageBox'; 
 import { useImageBox } from '../../../hooks/useLightbox'; 
 import './ExpenseDetail.css'; 
 

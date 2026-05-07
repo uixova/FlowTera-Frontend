@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useSubscription } from '../../context/SubscriptionContext';
-import Loader from '../../components/common/Loader';
+import Loader from '../../components/ui/Loader';
 import './Subscription.css';
 
 const MotionDiv = motion.div;

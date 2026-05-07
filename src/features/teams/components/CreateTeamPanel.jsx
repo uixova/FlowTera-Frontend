@@ -4,7 +4,7 @@ import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useSubscription } from '../../../context/SubscriptionContext';
 import { useAuth } from '../../../context/AuthContext';
 import { useModal } from '../../../hooks/useModal';
-import Alert from '../../../components/modals/Alert';
+import Alert from '../../../components/overlays/Alert';
 
 const INITIAL_FORM_STATE = {
   teamName: '',

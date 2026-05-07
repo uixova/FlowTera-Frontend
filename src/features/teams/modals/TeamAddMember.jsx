@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useModal } from '../../../hooks/useModal'; 
 import { usePermissions } from '../../../hooks/usePermissions'; 
-import Confirm from '../../../components/modals/Confirm'; 
-import Alert from '../../../components/modals/Alert'; 
+import Confirm from '../../../components/overlays/Confirm'; 
+import Alert from '../../../components/overlays/Alert'; 
 import './TeamAddMember.css';
 
 const AddMemberModal = ({ isOpen, onClose }) => {

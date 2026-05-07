@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
-import Loader from '../../components/common/Loader';
+import Loader from '../../components/ui/Loader';
 import './Trips.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import CreateTrip from './modals/CreateTrip';
 import TripDetail from './modals/TripDetail';
-import CurrencyModal from '../../components/modals/currency/CurrencyModal';
-import PaginationFooter from '../../components/common/PaginationFooter';
+import CurrencyModal from '../../components/overlays/currency/CurrencyModal';
+import PaginationFooter from '../../components/ui/PaginationFooter';
 import ActionSidebar from '../../components/navigation/ActionSidebar';
 import TripFilter from './modals/TripFilter';
 import TripList from './components/TripList';
-import Alert from '../../components/modals/Alert';
+import Alert from '../../components/overlays/Alert';
 
 // Servis ve Hook importları
 import { tripsService } from './services/tripsService';

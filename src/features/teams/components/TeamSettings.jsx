@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import Loader from '../../../components/common/Loader';
+import Loader from '../../../components/ui/Loader';
 import './TeamSettings.css';
 import { teamsService } from '../services/teamsService';
 import { useAuth } from '../../../context/AuthContext';
 import { useTeam } from '../../../context/TeamContext';
 import { useModal } from '../../../hooks/useModal';
-import Alert from '../../../components/modals/Alert';
-import Confirm from '../../../components/modals/Confirm';
+import Alert from '../../../components/overlays/Alert';
+import Confirm from '../../../components/overlays/Confirm';
 
 const TeamSettings = ({ team, onBack }) => {
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];

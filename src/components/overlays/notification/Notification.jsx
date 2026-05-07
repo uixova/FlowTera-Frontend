@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Loader from '../../common/Loader';
+import Loader from '../../ui/Loader';
 import { notificationService } from '../../../services/notificationService';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useAuth } from '../../../context/AuthContext';

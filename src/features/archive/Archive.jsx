@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './Archive.css';
 import Galery from './components/Galery';
 import { archiveService } from './services/archiveServices';
-import Loader from '../../components/common/Loader';
+import Loader from '../../components/ui/Loader';
 import { useTeam } from '../../context/TeamContext'; 
 
 const Archive = () => {

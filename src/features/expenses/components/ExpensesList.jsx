@@ -2,7 +2,7 @@ import React from 'react';
 import { useActionPermissions } from '../../../hooks/useActionPermissions';
 import { useCurrency } from '../../../context/CurrencyContext';
 import { useModal } from '../../../hooks/useModal';
-import Confirm from '../../../components/modals/Confirm';
+import Confirm from '../../../components/overlays/Confirm';
 
 const ExpenseRow = ({ expense, onOpenDetail, onEdit, onDeleteClick }) => {
     const { canEdit, canDelete } = useActionPermissions(expense);

@@ -1,5 +1,5 @@
 import React from 'react';
-import ImageBox from '../../../components/modals/imageBox/ImageBox';
+import ImageBox from '../../../components/overlays/imageBox/ImageBox';
 import { useCurrency } from '../../../context/CurrencyContext';
 import './Galery.css'; 
 

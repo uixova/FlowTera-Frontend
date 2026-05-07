@@ -10,11 +10,11 @@ import { useSubscription } from '../../../context/SubscriptionContext';
 import { useModal } from '../../../hooks/useModal';
 
 // Modals
-import ThemeModal from '../../modals/themeModal/ThemeModal';
-import Notification from '../../modals/notification/Notification';
-import UserDropdown from '../../modals/userDropdown/UserDropdown';
-import Language from '../../modals/language/Language';
-import TeamSelectModal from '../../modals/teamSelectModal/TeamSelectModal';
+import ThemeModal from '../../overlays/themeModal/ThemeModal';
+import Notification from '../../overlays/notification/Notification';
+import UserDropdown from '../../overlays/userDropdown/UserDropdown';
+import Language from '../../overlays/language/Language';
+import TeamSelectModal from '../../overlays/teamSelectModal/TeamSelectModal';
 
 const Navbar = () => {
     const { roleNameForTeam, loading: authLoading, currentUser } = useAuth();

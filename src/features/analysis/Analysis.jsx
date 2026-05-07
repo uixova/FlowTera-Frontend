@@ -3,7 +3,7 @@ import './Analysis.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import ExportModal from './components/ExportData';
 import AnalysisCharts from './components/Charts'; 
-import Loader from '../../components/common/Loader'; 
+import Loader from '../../components/ui/Loader'; 
 import { analysisService } from './services/analysisService';
 import { useCurrency } from '../../context/CurrencyContext';
 import { useTeam } from '../../context/TeamContext'; 

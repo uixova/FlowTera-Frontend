@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import Input from '../common/Input';
+import Input from '../ui/Input';
 import './SubNavbar.css';
 import { useTeam } from '../../context/TeamContext'; 
 
@@ -35,7 +35,9 @@ const SubNavbar = ({
                 {/* Eğer aktif bir takım varsa ve sayfa ismi geldiyse breadcrumb göster */}
                 {displayTeamName && pageName ? (
                     <div className="sub-nav-breadcrumb">
-                        <span className="breadcrumb-team">{displayTeamName}</span>
+                        <span className="breadcrumb-team">
+                            <i className="ti ti-users-group"></i> {displayTeamName}
+                        </span>
                         <i className="ti ti-chevron-right breadcrumb-separator"></i>
                         <span className="breadcrumb-page">{pageName}</span>
                     </div>
@@ -45,34 +47,42 @@ const SubNavbar = ({
             </div>
             
             <div className="sub-nav-right">
-                {showCurrency && <div className="nav-currency-indicator" title="Multi-currency active"></div>}
+                {showCurrency && (
+                    <div className="nav-currency-indicator btn-dark-sub" title="Multi-currency active">
+                        <i className="ti ti-currency-dollar"></i> Aktif
+                    </div>
+                )}
                 
                 {showSearch && (
-                    <Input 
-                        placeholder={searchPlaceholder}
-                        icon="ti ti-search"
-                        value={searchValue}
-                        onChange={(e) => onSearch && onSearch(e.target.value)}
-                    />
+                    <div className="sub-search-wrapper">
+                        <i className="ti ti-search search-icon"></i>
+                        <input 
+                            type="text"
+                            placeholder={searchPlaceholder || "Ara..."}
+                            value={searchValue}
+                            onChange={(e) => onSearch && onSearch(e.target.value)}
+                        />
+                    </div>
                 )}
                 
-                {showCreate && createLabel && (
-                    <button className="nav-action-btn nav-create-btn" onClick={onCreate}>
-                        {createLabel}
-                    </button>
-                )}
-
                 {buttons.map((btn, index) => (
                     <button 
                         key={index} 
-                        className={`nav-action-btn ${btn.className || ''}`} 
+                        className={`btn-dark-sub ${btn.className || ''}`} 
                         onClick={btn.onClick}
                         title={btn.tooltip}
                     >
-                        {btn.label && <span className="btn-label-text">{btn.label}</span>}
                         <i className={btn.icon}></i>
+                        {btn.label && <span className="btn-label-text">{btn.label}</span>}
                     </button>
                 ))}
+
+                {showCreate && createLabel && (
+                    <button className="sub-create-btn" onClick={onCreate}>
+                        <i className="ti ti-plus"></i>
+                        {createLabel}
+                    </button>
+                )}
             </div>
         </div>
     );

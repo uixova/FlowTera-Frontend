@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { authService } from '../services/authService';
-import { useModal } from '../../../hooks/useModal';
-import Alert from '../../../components/modals/Alert';
+import { authService } from '../../services/authService';
+import { useModal } from '../../../../hooks/useModal';
+import Alert from '../../../../components/overlays/Alert';
 import './Pass.css';
 
 const PassPage = () => {

@@ -8,9 +8,9 @@ import { TeamProvider } from './context/TeamContext';
 
 // Auth Sayfaları
 import Landing from './features/auth/Landing';
-import LoginPage from './features/auth/pages/LoginPage'; 
-import SignupPage from './features/auth/pages/SignupPage'; 
-import PassPage from './features/auth/pages/PassPage';
+import LoginPage from './features/auth/pages/Login/LoginPage'; 
+import SignupPage from './features/auth/pages/Signup/SignupPage'; 
+import PassPage from './features/auth/pages/Password/PassPage';
 
 // Diğer Bileşenler
 import NotFound from './features/error/NotFound';

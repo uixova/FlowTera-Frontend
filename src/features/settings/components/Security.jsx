@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Security.css';
 import { useModal } from '../../../hooks/useModal';
-import Confirm from '../../../components/modals/Confirm';
-import Alert from '../../../components/modals/Alert';
+import Confirm from '../../../components/overlays/Confirm';
+import Alert from '../../../components/overlays/Alert';
 import { useAuth } from '../../../context/AuthContext';
-import { teamsService } from '../../teams/services/teamsService'; // teamsService dahil edildi
+import { teamsService } from '../../teams/services/teamsService'; 
 
 const Security = () => {
   const [twoFA, setTwoFA] = useState(false);

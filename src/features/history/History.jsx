@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import Loader from '../../components/common/Loader';
+import Loader from '../../components/ui/Loader';
 import './History.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
-import PaginationFooter from '../../components/common/PaginationFooter';
+import PaginationFooter from '../../components/ui/PaginationFooter';
 import HistoryItem from './components/HistoryItem';
 import ActionSidebar from '../../components/navigation/ActionSidebar';
 import HistoryFilter from './modals/HistoryFilter';

@@ -1,130 +1,92 @@
-import React, { useState, useEffect, useLayoutEffect, useCallback, useRef, memo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
 import { createPortal } from 'react-dom';
 import './ActionSidebar.css';
 
-const getPortalRoot = () => {
-  let el = document.getElementById('sidebar-portal');
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'sidebar-portal';
-    document.body.appendChild(el);
-  }
-  return el;
-};
-
 const ActionSidebar = memo(({
-  isOpen,
-  onClose,
-  title,
-  children,
-  footer,
-  width = '460px',
+    isOpen,
+    onClose,
+    title,
+    children,
+    footer,
+    width = '520px',
 }) => {
-  const rafRef   = useRef(null);
-  const timerRef = useRef(null);
-  const panelRef = useRef(null);
+    const [mounted, setMounted] = useState(isOpen);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const panelRef = useRef(null);
 
-  const [phase, setPhase] = useState(null);
-
-  // Açma / Kapama
-  useLayoutEffect(() => {
-    if (isOpen) {
-      rafRef.current = requestAnimationFrame(() => {
-        setPhase(false);
-
-        rafRef.current = requestAnimationFrame(() => {
-          setPhase(true);
-        });
-      });
-    } else {
-      cancelAnimationFrame(rafRef.current);
-
-      rafRef.current = requestAnimationFrame(() => {
-        setPhase(false);
-
-        timerRef.current = setTimeout(() => {
-          setPhase(null);
-        }, 380); 
-      });
+    if (isOpen && !mounted) {
+        setMounted(true);
     }
 
-    return () => {
-      cancelAnimationFrame(rafRef.current);
-      clearTimeout(timerRef.current);
-    };
-  }, [isOpen]);
+    const handleEsc = useCallback((e) => {
+        if (e.key === 'Escape' && isOpen) onClose();
+    }, [isOpen, onClose]);
 
-  // Esc tuşu
-  useEffect(() => {
-    if (!isOpen) return;
-    const handle = (e) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', handle);
-    return () => document.removeEventListener('keydown', handle);
-  }, [isOpen, onClose]);
+    useEffect(() => {
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [handleEsc]);
 
-  // Body scroll lock (layout shift sıfır)
-  useEffect(() => {
-    if (!isOpen) return;
-    const scrollY = window.scrollY;
-    const prev    = document.body.style.cssText;
-    document.body.style.cssText =
-      `overflow:hidden;position:fixed;top:-${scrollY}px;left:0;right:0;`;
-    return () => {
-      document.body.style.cssText = prev;
-      window.scrollTo(0, scrollY);
-    };
-  }, [isOpen]);
+    useEffect(() => {
+        let timer;
+        
+        if (isOpen) {
+            const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+            document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = `${scrollBarWidth}px`;
+            
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => setIsAnimating(true));
+            });
+        } else if (mounted) {
+            requestAnimationFrame(() => {
+                setIsAnimating(false);
+            });
+            
+            timer = setTimeout(() => {
+                setMounted(false);
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            }, 400);
+        }
 
-  // Overlay tıklaması 
-  const handleOverlayClick = useCallback(
-    (e) => { if (e.target === e.currentTarget) onClose(); },
-    [onClose]
-  );
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    }, [isOpen, mounted]);
 
-  if (phase === null) return null;
+    if (!mounted) return null;
 
-  return createPortal(
-    <>
-      <div
-        className={`as-overlay${phase ? ' is-active' : ''}`}
-        onClick={handleOverlayClick}
-        aria-hidden="true"
-      />
-
-      <div
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={typeof title === 'string' ? title : 'Panel'}
-        className={`as-panel${phase ? ' is-open' : ''}`}
-        style={{ '--sidebar-width': width }}
-      >
-        <div className="as-header">
-          <div className="as-header-content">{title}</div>
-          <button
-            className="as-close-btn"
-            onClick={onClose}
-            aria-label="Kapat"
-            type="button"
-          >
-            <i className="ti ti-x" aria-hidden="true" />
-          </button>
-        </div>
-
-        <div className="as-body custom-scroll">
-          {children}
-        </div>
-
-        {footer && (
-          <div className="as-footer">
-            {footer}
-          </div>
-        )}
-      </div>
-    </>,
-    getPortalRoot()
-  );
+    return createPortal(
+        <div className={`as-wrapper ${isAnimating ? 'is-active' : ''}`} role="dialog" aria-modal="true">
+            <div className="as-overlay" onClick={onClose} />
+            <div 
+                className="as-panel" 
+                ref={panelRef}
+                style={{ '--as-width': width }}
+            >
+                <div className="as-header">
+                    <div className="as-header-content">
+                        {typeof title === 'string' ? <h2>{title}</h2> : title}
+                    </div>
+                    <button className="as-close-circle" onClick={onClose} aria-label="Kapat">
+                        <i className="ti ti-x"></i>
+                    </button>
+                </div>
+                <div className="as-body custom-scroll">
+                    <div className="as-content-motion">
+                        {children}
+                    </div>
+                </div>
+                {footer && (
+                    <div className="as-footer">
+                        {footer}
+                    </div>
+                )}
+            </div>
+        </div>,
+        document.body
+    );
 });
 
-ActionSidebar.displayName = 'ActionSidebar';
 export default ActionSidebar;

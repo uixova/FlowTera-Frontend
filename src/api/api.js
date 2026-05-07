@@ -301,7 +301,7 @@ export const api = {
   plans: {
     getAll: (opts = {}) =>
       request('PLANS', {}, {
-        ttl: 60 * 60 * 1000,// 1 saat
+        ttl: 60 * 60 * 1000, // 1 saat
         ...opts,
       }),
   },

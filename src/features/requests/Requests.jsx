@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Loader from '../../components/common/Loader';
+import Loader from '../../components/ui/Loader';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import { notificationService } from '../../services/notificationService';
 import { useAuth } from '../../context/AuthContext';

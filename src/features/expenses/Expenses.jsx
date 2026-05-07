@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react'; 
-import Loader from '../../components/common/Loader';
+import Loader from '../../components/ui/Loader';
 import './Expenses.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import CreateExpense from './modals/CreateExpense';
 import ExpenseDetail from './modals/ExpenseDetail';
-import CurrencyModal from '../../components/modals/currency/CurrencyModal';
-import PaginationFooter from '../../components/common/PaginationFooter';
+import CurrencyModal from '../../components/overlays/currency/CurrencyModal';
+import PaginationFooter from '../../components/ui/PaginationFooter';
 import ActionSidebar from '../../components/navigation/ActionSidebar'; 
 import ExpenseFilter from './modals/ExpenseFilter';
 import ExpensesList from './components/ExpensesList'; 
-import Alert from '../../components/modals/Alert';
+import Alert from '../../components/overlays/Alert';
 
 import { expenseService } from './services/expenseService';
 import { usePagination } from '../../hooks/usePagination';
