@@ -13,7 +13,7 @@ export const usePagination = (serviceMethod, externalId, limit = 20) => {
             if (isFirstLoad) setLoading(true);
             else setLoadingMore(true);
 
-            // Servis metodunu çağırıyoruz (Örn: expenseService.getExpensesByTeam)
+            // Servis metodunu çağırıyoruz 
             const response = await serviceMethod(externalId, targetPage, limit);
             
             if (isFirstLoad) {
@@ -46,5 +46,10 @@ export const usePagination = (serviceMethod, externalId, limit = 20) => {
         }
     };
 
-    return { data, loading, loadingMore, hasMore, loadMore, setData, totalCount };
+    const refreshData = useCallback(() => {
+        setPage(1);
+        return loadData(1, true);
+    }, [loadData]);
+
+    return { data, loading, loadingMore, hasMore, loadMore, setData, totalCount, refreshData };
 };

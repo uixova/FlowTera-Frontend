@@ -19,9 +19,9 @@ import { useModal } from '../../hooks/useModal';
 import { useTeam } from '../../context/TeamContext';
 
 const Expenses = () => {
-    const { alertConfig, showAlert, closeAlert }  = useModal();
-    const { selectedCurrency, updateCurrency }    = useCurrency();
-    const { activeTeam, selectedTeamId }          = useTeam();
+    const { alertConfig, showAlert, closeAlert } = useModal();
+    const { selectedCurrency, updateCurrency } = useCurrency();
+    const { activeTeam, selectedTeamId } = useTeam();
 
     const [isCreateOpen,  setIsCreateOpen]  = useState(false);
     const [isDetailOpen,  setIsDetailOpen]  = useState(false);
@@ -70,8 +70,7 @@ const Expenses = () => {
             await expenseService.deleteExpense(id);
             refreshData();
             showAlert('Silindi', 'Harcama kaydı başarıyla silindi.', 'success');
-        } catch (err) {
-            console.error(err);
+        } catch {
             showAlert('Hata', 'Silme işlemi başarısız oldu.', 'error');
         }
     };

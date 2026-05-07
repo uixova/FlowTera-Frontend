@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
+import { useTeam } from '../../../context/TeamContext';
 import { expenseService } from '../services/expenseService';
 import { archiveService } from '../../archive/services/archiveServices';
 import './CreateExpense.css';
@@ -35,6 +36,7 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
         ? editData.date
         : new Date().toLocaleDateString('tr-TR');
 
+    const { selectedTeamId } = useTeam();
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl,   setPreviewUrl]   = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,11 +102,10 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        const activeTeamId = localStorage.getItem('tm_selected_id');
         const now = new Date();
         const payload = {
             ...form,
-            teamId:    activeTeamId,
+            teamId:    selectedTeamId,
             id:        isEdit ? editData.id : `exp-${Math.floor(Math.random() * 10000)}`,
             status:    isEdit ? editData.status : 'Pending',
             timestamp: isEdit ? editData.timestamp : now.toISOString(),
@@ -119,7 +120,11 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
             } else {
                 await expenseService.createExpense(payload);
             }
-            archiveService.clearCache();
+
+            if (archiveService && typeof archiveService.clearCache === 'function') {
+                archiveService.clearCache();
+            }
+
             if (onSuccess) onSuccess();
             onClose();
         } catch (err) {
