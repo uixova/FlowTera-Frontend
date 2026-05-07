@@ -1,97 +1,169 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect, useRef } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
-import { expenseService } from '../services/expenseService'; 
+import { expenseService } from '../services/expenseService';
 import { archiveService } from '../../archive/services/archiveServices';
 import './CreateExpense.css';
 
+const CATEGORIES = [
+    { value: 'Food',          label: 'Yiyecek & İçecek' },
+    { value: 'Transport',     label: 'Ulaşım'           },
+    { value: 'Accommodation', label: 'Konaklama'        },
+    { value: 'Health',        label: 'Sağlık'           },
+    { value: 'Entertainment', label: 'Eğlence'          },
+    { value: 'Office',        label: 'Ofis Malzemeleri' },
+    { value: 'Other',         label: 'Diğer'            },
+];
+
+const METHODS = [
+    { value: 'Cash',          label: 'Nakit'           },
+    { value: 'Credit Card',   label: 'Kredi Kartı'     },
+    { value: 'Bank Transfer', label: 'Banka Transferi' },
+];
+
+const CURRENCIES = [
+    { value: 'USD', label: 'USD  $' },
+    { value: 'EUR', label: 'EUR  €' },
+    { value: 'TRY', label: 'TRY  ₺' },
+    { value: 'GBP', label: 'GBP  £' },
+];
+
+const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', TRY: '₺', GBP: '£' };
+
 const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
-    const isEdit = !!editData;
-    const displayDate = editData ? editData.date : new Date().toLocaleDateString('tr-TR');
+    const isEdit     = !!editData;
+    const displayDate = editData
+        ? editData.date
+        : new Date().toLocaleDateString('tr-TR');
 
-    // Dosya ve Yükleme Durumu State'leri
     const [selectedFile, setSelectedFile] = useState(null);
-    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewUrl,   setPreviewUrl]   = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [currencyOpen, setCurrencyOpen] = useState(false);
+    const currencyRef = useRef(null);
 
-    // Modal her açıldığında veya editData değiştiğinde state'leri temizle/doldur
+    const [form, setForm] = useState({
+        title:         '',
+        category:      'Food',
+        merchant:      '',
+        paymentMethod: 'Cash',
+        amount:        '',
+        currency:      'USD',
+        isReported:    true,
+    });
+
+    // Form reset / fill on open
     useEffect(() => {
-        if (isOpen) {
-            setSelectedFile(null);
-            setPreviewUrl(isEdit && editData.receipt ? editData.receipt : null);
+        if (!isOpen) return;
+        if (isEdit && editData) {
+            setForm({
+                title:         editData.title         || '',
+                category:      editData.category      || 'Food',
+                merchant:      editData.merchant      || '',
+                paymentMethod: editData.paymentMethod || 'Cash',
+                amount:        editData.amount        || '',
+                currency:      editData.currency      || 'USD',
+                isReported:    editData.isReported    ?? true,
+            });
+            setPreviewUrl(editData.receipt || null);
+        } else {
+            setForm({ title: '', category: 'Food', merchant: '', paymentMethod: 'Cash', amount: '', currency: 'USD', isReported: true });
+            setPreviewUrl(null);
         }
+        setSelectedFile(null);
+        setCurrencyOpen(false);
     }, [isOpen, isEdit, editData]);
 
-    // Dosya Seçme Fonksiyonu 
+    // Dışarı tıklayınca currency popup'ı kapat
+    useEffect(() => {
+        if (!currencyOpen) return;
+        const handler = (e) => {
+            if (currencyRef.current && !currencyRef.current.contains(e.target)) {
+                setCurrencyOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [currencyOpen]);
+
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    };
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setSelectedFile(file);
-            setPreviewUrl(URL.createObjectURL(file));
-        }
+        if (!file) return;
+        setSelectedFile(file);
+        setPreviewUrl(URL.createObjectURL(file));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true); // Yükleme başladı
-
-        const formData = new FormData(e.target);
-        const now = new Date(); 
+        setIsSubmitting(true);
         const activeTeamId = localStorage.getItem('tm_selected_id');
-
-        const finalExpenseData = {
-            title: formData.get('exInpTitle'),
-            category: formData.get('exInpCategory'),
-            merchant: formData.get('exInpMerchant'),
-            paymentMethod: formData.get('exInpMethod'), 
-            amount: formData.get('exInpAmount'), 
-            currency: formData.get('exInpCurrency'),
-            isReported: e.target.exInpReport.checked,
-            teamId: activeTeamId, // Filtreleme için ekledik
-            
-            id: isEdit ? editData.id : `exp-${Math.floor(Math.random() * 10000)}`,
-            status: isEdit ? editData.status : "Pending",
+        const now = new Date();
+        const payload = {
+            ...form,
+            teamId:    activeTeamId,
+            id:        isEdit ? editData.id : `exp-${Math.floor(Math.random() * 10000)}`,
+            status:    isEdit ? editData.status : 'Pending',
             timestamp: isEdit ? editData.timestamp : now.toISOString(),
-            date: isEdit ? editData.date : now.toLocaleDateString('tr-TR'),
-            desc: isEdit ? editData.desc : "New expense entry via Flowtera UI",
-            icon: isEdit ? editData.icon : "ti-receipt",
-            // Dosya veya Önizleme
-            receipt: selectedFile || previewUrl 
+            date:      isEdit ? editData.date : now.toLocaleDateString('tr-TR'),
+            desc:      isEdit ? editData.desc : 'New expense entry via Flowtera UI',
+            icon:      isEdit ? editData.icon : 'ti-receipt',
+            receipt:   selectedFile || previewUrl,
         };
-
         try {
             if (isEdit) {
-                await expenseService.updateExpense(finalExpenseData.id, finalExpenseData);
+                await expenseService.updateExpense(payload.id, payload);
             } else {
-                await expenseService.createExpense(finalExpenseData);
+                await expenseService.createExpense(payload);
             }
-
-            // ARŞİV CACHE TEMİZLEME
             archiveService.clearCache();
-
-            if(onSuccess) onSuccess(); 
-            onClose(); 
-        } catch (error) {
-            console.error("İşlem başarısız:", error);
-            // Hata durumunda modal kapanmasın ki kullanıcı düzeltme yapabilsin
+            if (onSuccess) onSuccess();
+            onClose();
+        } catch (err) {
+            console.error('İşlem başarısız:', err);
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Sidebar başlığı dinamikleşti
+    const selectedCurrencySymbol = CURRENCY_SYMBOLS[form.currency] || '';
+
     const sidebarTitle = (
         <div className="ex-panel-title">
-            <i className={`ti ${isEdit ? 'ti-edit' : 'ti-plus'}`}></i>
-            <span>{isEdit ? 'Gideri Güncelle' : 'Yeni Harcama Ekle'}</span>
+            <div className="ex-panel-title-icon">
+                <i className={`ti ${isEdit ? 'ti-edit' : 'ti-plus'}`} />
+            </div>
+            <span className="ex-panel-title-text">
+                {isEdit ? 'Gideri Güncelle' : 'Yeni Harcama Ekle'}
+            </span>
         </div>
     );
 
-    // Footer buton yazısı dinamikleşti
     const sidebarFooter = (
-        <div className="ex-panel-footer-alt" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
-            <button type="button" className="ex-panel-btn cancel" onClick={onClose} disabled={isSubmitting}>İptal Et</button>
-            <button type="submit" form="newExpenseForm" className="ex-panel-btn save" disabled={isSubmitting}>
-                {isSubmitting ? 'Bekleyin...' : (isEdit ? 'Değişiklikleri Kaydet' : 'Gider Oluştur')}
+        <div className="ex-panel-footer-alt">
+            <button
+                type="button"
+                className="ex-panel-btn cancel"
+                onClick={onClose}
+                disabled={isSubmitting}
+            >
+                <i className="ti ti-x" />
+                İptal
+            </button>
+            <button
+                type="submit"
+                form="newExpenseForm"
+                className="ex-panel-btn save"
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? (
+                    <><i className="ti ti-loader-2 ex-spin" /> Kaydediliyor...</>
+                ) : (
+                    <><i className={`ti ${isEdit ? 'ti-device-floppy' : 'ti-check'}`} /> {isEdit ? 'Değişiklikleri Kaydet' : 'Gider Oluştur'}</>
+                )}
             </button>
         </div>
     );
@@ -105,126 +177,153 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
             width="460px"
         >
             <div className="ex-panel-body-internal">
+
                 <div className="ex-modal-info-bar">
                     <div className="info-item">
-                        <i className="ti ti-calendar-event"></i>
+                        <i className="ti ti-calendar-event" />
                         <span>{displayDate}</span>
                     </div>
                     <div className="info-item">
-                        <i className="ti ti-shield-check"></i>
-                        <span>Durum: {isEdit ? editData.status : 'Beklemede'}</span>
+                        <i className="ti ti-shield-check" />
+                        <span>{isEdit ? editData.status : 'Beklemede'}</span>
                     </div>
                 </div>
 
                 <form id="newExpenseForm" onSubmit={handleSubmit} className="ex-panel-form">
-                    <div className="ex-input-group full">
-                        <label htmlFor="exInpTitle">Detay / Başlık</label>
-                        <input 
-                            name="exInpTitle" 
-                            type="text" 
-                            id="exInpTitle" 
-                            placeholder="Sunucu Bakımı" 
-                            defaultValue={isEdit ? editData.title : ''} 
-                            required 
+
+                    <div className="ex-input-group">
+                        <label>Detay / Başlık</label>
+                        <input
+                            className="ex-field-input"
+                            name="title"
+                            type="text"
+                            placeholder="Sunucu bakımı, müşteri yemeği..."
+                            value={form.title}
+                            onChange={handleChange}
+                            required
                         />
                     </div>
 
                     <div className="ex-input-row">
                         <div className="ex-input-group">
-                            <label htmlFor="exInpCategory">Kategori</label>
-                            <select name="exInpCategory" id="exInpCategory" defaultValue={isEdit ? editData.category : 'Food'}>
-                                <option value="Food">Yiyecek ve İçecek</option>
-                                <option value="Transport">Ulaşım</option>
-                                <option value="Accommodation">Konaklama</option>
-                                <option value="Health">Sağlık</option>
-                                <option value="Entertainment">Eğlence</option>
+                            <label>Kategori</label>
+                            <select
+                                className="ex-field-input"
+                                name="category"
+                                value={form.category}
+                                onChange={handleChange}
+                            >
+                                <option value="" disabled>Kategori seç</option>
+                                {CATEGORIES.map(cat => (
+                                    <option key={cat.value} value={cat.value}>{cat.label}</option>
+                                ))}
                             </select>
                         </div>
                         <div className="ex-input-group">
-                            <label htmlFor="exInpMerchant">İşletme</label>
-                            <input 
-                                name="exInpMerchant" 
-                                type="text" 
-                                id="exInpMerchant" 
-                                placeholder="Amazon, Starbucks" 
-                                defaultValue={isEdit ? editData.merchant : ''}
+                            <label>İşletme</label>
+                            <input
+                                className="ex-field-input"
+                                name="merchant"
+                                type="text"
+                                placeholder="Amazon, Starbucks..."
+                                value={form.merchant}
+                                onChange={handleChange}
                             />
                         </div>
                     </div>
 
-                    <div className="ex-input-group full">
-                        <label htmlFor="exInpMethod">Ödeme Yöntemi</label>
-                        <select 
-                            name="exInpMethod" 
-                            id="exInpMethod" 
-                            key={editData?.id} 
-                            defaultValue={isEdit ? editData.paymentMethod : 'Cash'}
+                    <div className="ex-input-group">
+                        <label>Ödeme Yöntemi</label>
+                        <select
+                            className="ex-field-input"
+                            name="paymentMethod"
+                            value={form.paymentMethod}
+                            onChange={handleChange}
                         >
-                            <option value="Cash">Nakit</option>
-                            <option value="Credit Card">Kredi Kartı</option>
-                            <option value="Bank Transfer">Banka Transferi</option>
+                            <option value="" disabled>Yöntem seç</option>
+                            {METHODS.map(m => (
+                                <option key={m.value} value={m.value}>{m.label}</option>
+                            ))}
                         </select>
                     </div>
 
-                    <div className="ex-input-group full">
+                    <div className="ex-input-group">
+                        <label>Miktar ve Para Birimi</label>
+
+                        <div className="ex-amount-wrapper">
+                            <input
+                                className="ex-amount-input"
+                                name="amount"
+                                type="number"
+                                placeholder={`${selectedCurrencySymbol} 0.00`}
+                                step="0.01"
+                                value={form.amount}
+                                onChange={handleChange}
+                                required
+                            />
+
+                            <div className="ex-currency-wrap">
+                                <select
+                                    name="currency"
+                                    value={form.currency}
+                                    onChange={handleChange}
+                                    className="ex-field-input"
+                                >
+                                    {CURRENCIES.map(c => (
+                                        <option key={c.value} value={c.value}>
+                                            {c.label}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <i className="ti ti-chevron-down ex-currency-arrow" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="ex-input-group">
                         <label>Fatura / Belge</label>
-                        <div 
-                            className={`ex-simple-upload ${previewUrl ? 'has-preview' : ''}`} 
+                        <div
+                            className="ex-upload-zone"
                             onClick={() => document.getElementById('exInpReceipt').click()}
                         >
                             {previewUrl ? (
-                                <div className="receipt-preview-box" style={{ width: '100%', height: '100px', overflow: 'hidden', borderRadius: '8px' }}>
-                                    <img src={previewUrl} alt="Fatura" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                    <div className="preview-overlay">Değiştir</div>
-                                </div>
+                                <img src={previewUrl} alt="Fatura" className="ex-upload-preview" />
                             ) : (
-                                <div className="upload-placeholder">
-                                    <i className="ti ti-file-upload"></i>
-                                    <span>{isEdit && editData.receipt ? 'Dosyayı Değiştir' : 'Fatura Ekle'}</span>
-                                </div>
+                                <>
+                                    <i className="ti ti-file-upload ex-upload-icon" />
+                                    <span className="ex-upload-text">
+                                        {isEdit && editData?.receipt ? 'Dosyayı Değiştir' : 'Fatura ekle veya sürükle'}
+                                    </span>
+                                    <span className="ex-upload-hint">PDF, JPG, PNG · Maks 5MB</span>
+                                </>
                             )}
-                            <input 
-                                type="file" 
-                                id="exInpReceipt" 
-                                hidden 
-                                accept=".pdf, .jpg, .jpeg, .png, .webp" 
-                                onChange={handleFileChange} 
+                            <input
+                                type="file"
+                                id="exInpReceipt"
+                                hidden
+                                accept=".pdf,.jpg,.jpeg,.png,.webp"
+                                onChange={handleFileChange}
                             />
                         </div>
                     </div>
 
-                    <div className="ex-input-group full">
-                        <label htmlFor="exInpAmount">Miktar ve Para Birimi</label>
-                        <div className="ex-amount-wrapper">
-                            <input 
-                                name="exInpAmount" 
-                                type="number" 
-                                id="exInpAmount" 
-                                placeholder="0.00" 
-                                step="0.01" 
-                                defaultValue={isEdit ? editData.amount : ''}
-                                required 
-                            />
-                            <select name="exInpCurrency" id="exInpCurrency" className="ex-currency-select" defaultValue={isEdit ? editData.currency : 'USD'}>
-                                <option value="USD">USD ($)</option>
-                                <option value="EUR">EUR (€)</option>
-                                <option value="TRY">TRY (₺)</option>
-                            </select>
+                    <div className="ex-toggle-row">
+                        <div className="ex-toggle-text">
+                            <span className="ex-toggle-title">Aylık rapora eklensin mi?</span>
+                            <span className="ex-toggle-sub">Aktif edilirse bu gider raporlara yansır</span>
                         </div>
-                    </div>
-
-                    <div className="report-toggle-wrapper">
-                        <span>Aylık rapor eklensin mi?</span>
                         <label className="switch">
-                            <input 
-                                type="checkbox" 
-                                name="exInpReport" 
-                                id="exInpReport" 
-                                defaultChecked={isEdit ? editData.isReported : true} 
+                            <input
+                                type="checkbox"
+                                name="isReported"
+                                checked={form.isReported}
+                                onChange={handleChange}
                             />
-                            <span className="slider round"></span>
+                            <span className="slider round" />
                         </label>
                     </div>
+
                 </form>
             </div>
         </ActionSidebar>

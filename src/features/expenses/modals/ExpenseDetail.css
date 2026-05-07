@@ -1,22 +1,24 @@
 .ex-panel-header-image {
     width: 100%;
-    height: 220px;
+    height: 210px;
     position: relative;
-    background: #000;
+    background: #080808;
     overflow: hidden;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .ex-panel-header-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.5;
-    transition: transform 0.5s ease;
+    opacity: 0.45;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.35s ease;
 }
 
 .ex-panel-header-image:hover img {
-    transform: scale(1.05); 
+    transform: scale(1.04);
+    opacity: 0.55;
 }
 
 .ex-panel-header-image .image-box-trigger {
@@ -27,246 +29,256 @@
 .ex-header-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, rgba(18,18,18,0.2) 0%, rgba(18,18,18,1) 100%);
+    background: linear-gradient(
+        to bottom,
+        rgba(5, 5, 7, 0.1) 0%,
+        rgba(5, 5, 7, 0.95) 100%
+    );
+    pointer-events: none;
 }
 
 .ex-panel-content-internal {
-    padding: 25px;
+    padding: 22px 24px 28px;
     flex: 1;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .ex-panel-title-section {
     display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
+    align-items: flex-start;
+    gap: 14px;
 }
 
 .ex-type-icon {
-    width: 48px;
-    height: 48px;
-    background: rgba(14, 212, 90, 0.1);
+    width: 46px;
+    height: 46px;
+    background: rgba(14, 212, 90, 0.08);
     color: #0ed45a;
-    border-radius: 14px;
+    border-radius: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    border: 1px solid rgba(14, 212, 90, 0.2);
+    font-size: 1.4rem;
+    border: 1px solid rgba(14, 212, 90, 0.15);
+    flex-shrink: 0;
 }
 
 .ex-panel-title-section h3 {
-    margin: 0;
-    color: #fff;
-    font-size: 1.4rem;
+    margin: 0 0 4px;
+    color: #f0f0f2;
+    font-size: 1.25rem;
     font-weight: 700;
+    letter-spacing: -0.4px;
+    font-family: 'Syne', sans-serif;
+    line-height: 1.3;
 }
 
 .ex-panel-category {
-    color: #666;
-    font-size: 0.85rem;
+    color: #444;
+    font-size: 0.8rem;
     font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
 }
 
 .ex-financial-card {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
+    background: rgba(14, 212, 90, 0.04);
+    border: 1px solid rgba(14, 212, 90, 0.12);
     border-radius: 16px;
-    padding: 20px;
+    padding: 18px 20px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+    align-items: flex-end;
 }
 
 .ex-financial-card label {
     display: block;
-    color: #555;
-    font-size: 0.7rem;
+    color: #444;
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     letter-spacing: 1px;
+    font-family: 'DM Sans', sans-serif;
 }
 
 .ex-main-price {
     display: flex;
     align-items: baseline;
-    gap: 6px;
+    gap: 5px;
 }
 
 .ex-price-symbol {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: #0ed45a;
-    margin-right: 2px;
 }
 
 .ex-price-val {
-    font-size: 2.2rem;
+    font-size: 2rem;
     font-weight: 800;
     color: #0ed45a;
-    letter-spacing: -1px;
+    letter-spacing: -1.5px;
+    font-family: 'Syne', sans-serif;
 }
 
 .ex-price-cur {
-    font-size: 1rem;
-    color: #888;
+    font-size: 0.9rem;
+    color: #555;
     font-weight: 600;
 }
 
 .ex-local-conv {
-    font-size: 0.85rem;
-    color: #666;
-    margin-top: 4px;
+    font-size: 0.75rem;
+    color: #444;
+    margin-top: 6px;
     font-family: 'JetBrains Mono', monospace;
 }
 
-.ex-rate-banner {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 10px 15px;
-    border-radius: 10px;
-    font-size: 0.75rem;
-    color: #777;
+.ex-status-group {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
 }
 
-.ex-rate-banner i {
-    color: #0ed45a;
+.ex-status-badge {
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.ex-status-badge.approved { background: rgba(14, 212, 90, 0.1);  color: #0ed45a; border: 1px solid rgba(14, 212, 90, 0.2);  }
+.ex-status-badge.pending  { background: rgba(255, 171, 0, 0.1);  color: #ffab00; border: 1px solid rgba(255, 171, 0, 0.2);  }
+.ex-status-badge.rejected { background: rgba(255, 86, 48, 0.1);  color: #ff5630; border: 1px solid rgba(255, 86, 48, 0.2);  }
+
+.ex-rate-banner {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.ex-rate-banner i { color: #0ed45a; font-size: 0.9rem; }
+
+.ex-rejection-box {
+    background: rgba(255, 86, 48, 0.04);
+    border: 1px solid rgba(255, 86, 48, 0.18);
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+
+.ex-rej-header {
+    color: #ff5630;
+    font-weight: 700;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.ex-rejection-box p {
+    color: rgba(255, 200, 180, 0.8);
+    font-style: italic;
+    font-size: 0.875rem;
+    margin: 0;
+    line-height: 1.55;
+}
+
+.ex-divider {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin: 0;
 }
 
 .ex-info-list {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-top: 10px;
+    gap: 18px;
 }
 
-.ex-info-item.full-width {
-    grid-column: span 2;
-}
+.ex-info-item.full-width { grid-column: span 2; }
 
 .ex-label {
-    font-size: 0.75rem;
-    color: #555;
+    font-size: 0.67rem;
+    color: #3a3a3a;
     text-transform: uppercase;
     font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: 6px;
+    margin-bottom: 7px;
+    letter-spacing: 0.8px;
+    font-family: 'DM Sans', sans-serif;
 }
 
-.ex-label i {
-    color: #444;
-}
+.ex-label i { color: #333; font-size: 0.85rem; }
 
 .ex-value {
-    color: #eee;
+    color: #d0d0d2;
     font-weight: 500;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
 }
 
-.ex-status-group {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+.report-tag,
+.ex-report-name {
+    color: #4361ee;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 600;
 }
-
-.ex-status-badge {
-    padding: 6px 16px;
-    border-radius: 100px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.ex-status-badge.approved { background: rgba(14, 212, 90, 0.15); color: #0ed45a; border: 1px solid rgba(14, 212, 90, 0.2); }
-.ex-status-badge.pending { background: rgba(255, 171, 0, 0.15); color: #ffab00; border: 1px solid rgba(255, 171, 0, 0.2); }
-.ex-status-badge.rejected { background: rgba(255, 86, 48, 0.15); color: #ff5630; border: 1px solid rgba(255, 86, 48, 0.2); }
 
 .ex-desc-box {
-    line-height: 1.6;
-    background: #1a1a1a;
-    padding: 15px;
-    border-radius: 12px;
-    color: #aaa;
-    font-size: 0.9rem;
-    border: 1px solid #222;
+    line-height: 1.65;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 14px 16px;
+    border-radius: 11px;
+    color: #666;
+    font-size: 0.875rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
     margin: 0;
-}
-
-.ex-rejection-box {
-    background: rgba(255, 86, 48, 0.05);
-    border: 1px solid rgba(255, 86, 48, 0.2);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 25px;
-}
-
-.ex-rej-header {
-    color: #ff4757;
-    font-weight: 700;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-}
-
-.ex-rejection-box p {
-    color: #ffcccb;
-    font-style: italic;
-    font-size: 0.9rem;
-    margin: 0;
-}
-
-.ex-divider {
-    border: 0;
-    border-top: 1px solid #2a2a2a;
-    margin: 25px 0;
-}
-
-.report-tag, .ex-report-name {
-    color: #3498db !important; 
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.85rem !important;
-}
-
-.ex-panel-footer {
-    padding: 20px 25px;
-    background: #181818;
-    border-top: 1px solid #2a2a2a;
+    font-family: 'DM Sans', sans-serif;
 }
 
 .ex-primary-btn {
     width: 100%;
-    background: linear-gradient(135deg, #0ed45a 0%, #0ab84e 100%);
-    color: #000;
+    background: #0ed45a;
+    color: #050507;
     border: none;
-    padding: 16px;
-    border-radius: 14px;
-    font-weight: 800;
-    font-size: 1rem;
+    padding: 15px;
+    border-radius: 13px;
+    font-weight: 700;
+    font-size: 0.9rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    transition: all 0.3s ease;
+    gap: 10px;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+                transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+                box-shadow 0.35s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .ex-primary-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(14, 212, 90, 0.3);
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(14, 212, 90, 0.22);
 }
 
-.ex-primary-btn:active {
-    transform: translateY(-1px);
-}
+.ex-primary-btn:active { transform: translateY(0); }
