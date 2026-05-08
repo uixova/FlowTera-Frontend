@@ -1,204 +1,215 @@
-.tr-header-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, rgba(18,18,18,0.2) 0%, rgba(18,18,18,1) 100%);
-    pointer-events: none;
-}
-
 .tr-panel-content-internal {
+    padding: 22px 24px 28px;
     flex: 1;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .tr-panel-title-section {
     display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
+    align-items: flex-start;
+    gap: 14px;
 }
 
 .tr-type-icon {
-    width: 48px;
-    height: 48px;
-    background: rgba(14, 212, 90, 0.1);
-    color: #0ed45a;
-    border-radius: 14px;
+    width: 46px;
+    height: 46px;
+    background: rgba(0, 184, 217, 0.08);
+    color: #00b8d9;
+    border-radius: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    border: 1px solid rgba(14, 212, 90, 0.2);
+    font-size: 1.4rem;
+    border: 1px solid rgba(0, 184, 217, 0.15);
+    flex-shrink: 0;
 }
 
-.tr-title-text h3 {
-    margin: 0;
-    color: #fff;
-    font-size: 1.4rem;
+.tr-panel-title-section h3 {
+    margin: 0 0 4px;
+    color: #f0f0f2;
+    font-size: 1.25rem;
     font-weight: 700;
+    letter-spacing: -0.4px;
+    font-family: 'Syne', sans-serif;
+    line-height: 1.3;
 }
 
 .tr-panel-category {
-    color: #666;
-    font-size: 0.85rem;
+    color: #444;
+    font-size: 0.8rem;
     font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
 }
 
-.tr-panel-stats-grid {
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
+.tr-financial-card {
+    background: rgba(0, 184, 217, 0.04);
+    border: 1px solid rgba(0, 184, 217, 0.12);
     border-radius: 16px;
-    padding: 20px;
+    padding: 18px 20px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+    align-items: flex-end;
 }
 
-.tr-stat-item label {
+.tr-financial-card label {
     display: block;
-    color: #555;
-    font-size: 0.7rem;
+    color: #444;
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     letter-spacing: 1px;
+    font-family: 'DM Sans', sans-serif;
 }
 
-.tr-amount-section {
+.tr-main-price {
     display: flex;
     align-items: baseline;
-    gap: 4px;
+    gap: 5px;
 }
 
-.tr-amount-symbol {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #0ed45a;
+.tr-price-symbol {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #00b8d9;
 }
 
-.tr-amount-val {
-    font-size: 2.2rem;
+.tr-price-val {
+    font-size: 2rem;
     font-weight: 800;
-    color: #0ed45a;
-    letter-spacing: -1px;
+    color: #00b8d9;
+    letter-spacing: -1.5px;
+    font-family: 'Syne', sans-serif;
 }
 
-.tr-amount-cur {
-    font-size: 1rem;
-    color: #888;
+.tr-price-cur {
+    font-size: 0.9rem;
+    color: #555;
     font-weight: 600;
-    margin-left: 4px;
 }
 
-.tr-currency-freeze {
-    font-size: 0.85rem;
-    color: #666;
-    margin-top: 4px;
+.tr-local-conv {
+    font-size: 0.75rem;
+    color: #444;
+    margin-top: 6px;
     font-family: 'JetBrains Mono', monospace;
 }
 
-.tr-rate-info {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 10px 15px;
-    border-radius: 10px;
-    font-size: 0.75rem;
-    color: #777;
+.tr-status-group {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
 }
 
-.tr-rate-info i {
-    color: #0ed45a;
+.tr-status-badge {
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    font-family: 'DM Sans', sans-serif;
+    display: inline-block;
 }
+
+.tr-status-badge.approved,
+.tr-status-badge.confirmed { background: rgba(14, 212, 90, 0.1);  color: #0ed45a; border: 1px solid rgba(14, 212, 90, 0.2);  }
+.tr-status-badge.pending   { background: rgba(255, 171, 0, 0.1);  color: #ffab00; border: 1px solid rgba(255, 171, 0, 0.2);  }
+.tr-status-badge.onroad    { background: rgba(0, 184, 217, 0.1);  color: #00b8d9; border: 1px solid rgba(0, 184, 217, 0.2);  }
+.tr-status-badge.rejected  { background: rgba(255, 86, 48, 0.1);  color: #ff5630; border: 1px solid rgba(255, 86, 48, 0.2);  }
+
+.tr-rate-banner {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.tr-rate-banner i { color: #00b8d9; font-size: 0.9rem; }
 
 .tr-divider {
     border: 0;
-    border-top: 1px solid #2a2a2a;
-    margin: 25px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin: 0;
 }
 
-.tr-detail-row {
-    margin-bottom: 20px;
+.tr-info-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
 }
 
-.tr-detail-row span {
-    font-size: 0.75rem;
-    color: #555;
+.tr-info-item-detail { display: flex; flex-direction: column; }
+.tr-info-item-detail.full-width { grid-column: span 2; }
+
+.tr-label {
+    font-size: 0.67rem;
+    color: #3a3a3a;
     text-transform: uppercase;
     font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: 6px;
+    margin-bottom: 7px;
+    letter-spacing: 0.8px;
+    font-family: 'DM Sans', sans-serif;
 }
 
-.tr-detail-row span i {
-    color: #444;
-}
+.tr-label i { color: #333; font-size: 0.85rem; }
 
-.tr-detail-row p {
-    color: #eee;
+.tr-value {
+    color: #d0d0d2;
     font-weight: 500;
-    font-size: 1rem;
-    margin: 0;
-}
-
-.tr-desc-text {
-    line-height: 1.6;
-    background: #1a1a1a;
-    padding: 15px;
-    border-radius: 12px;
-    color: #aaa !important;
     font-size: 0.9rem;
-    border: 1px solid #222;
+    font-family: 'DM Sans', sans-serif;
 }
 
-.tr-status-badge {
-    padding: 6px 16px;
-    border-radius: 100px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    display: inline-block;
+.tr-desc-box {
+    line-height: 1.65;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 14px 16px;
+    border-radius: 11px;
+    color: #666;
+    font-size: 0.875rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    margin: 0;
+    font-family: 'DM Sans', sans-serif;
 }
 
-.tr-status-badge.approved, .tr-status-badge.confirmed { background: rgba(14, 212, 90, 0.15); color: #0ed45a; border: 1px solid rgba(14, 212, 90, 0.2); }
-.tr-status-badge.pending { background: rgba(255, 171, 0, 0.15); color: #ffab00; border: 1px solid rgba(255, 171, 0, 0.2); }
-.tr-status-badge.rejected { background: rgba(255, 86, 48, 0.15); color: #ff5630; border: 1px solid rgba(255, 86, 48, 0.2); }
-.tr-status-badge.onroad { background: rgba(0, 184, 217, 0.15); color: #00b8d9; border: 1px solid rgba(0, 184, 217, 0.2); }
-
-.tr-panel-footer {
-    padding: 20px 25px;
-    background: #181818;
-    border-top: 1px solid #2a2a2a;
-}
-
-.tr-action-btn.primary {
+.tr-primary-btn {
     width: 100%;
-    background: linear-gradient(135deg, #0ed45a 0%, #0ab84e 100%);
-    color: #000;
+    background: #00b8d9;
+    color: #020d10;
     border: none;
-    padding: 16px;
-    border-radius: 14px;
-    font-weight: 800;
-    font-size: 1rem;
+    padding: 15px;
+    border-radius: 13px;
+    font-weight: 700;
+    font-size: 0.9rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    transition: all 0.3s ease;
+    gap: 10px;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+                transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+                box-shadow 0.35s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.tr-action-btn.primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(14, 212, 90, 0.3);
+.tr-primary-btn:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(0, 184, 217, 0.22);
 }
 
-.tr-action-btn.primary:active {
-    transform: translateY(-1px);
-}
+.tr-primary-btn:active { transform: translateY(0); }

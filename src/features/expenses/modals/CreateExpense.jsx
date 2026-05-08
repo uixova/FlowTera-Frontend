@@ -272,7 +272,7 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
                                     name="currency"
                                     value={form.currency}
                                     onChange={handleChange}
-                                    className="ex-field-input"
+                                    className="ex-currency-select"
                                 >
                                     {CURRENCIES.map(c => (
                                         <option key={c.value} value={c.value}>

@@ -168,7 +168,7 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
         ]}
       />
 
-      <hr />
+      <hr className='sub-nav-divider' />
 
       <div className="team-grid-container">
         {members.map(member => {

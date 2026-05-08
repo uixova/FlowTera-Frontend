@@ -2,93 +2,100 @@ import React, { memo } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import './TripDetail.css';
 
-const TripDetail = ({ isOpen, onClose, data }) => {
-  if (!data) return null;
-
-  const sidebarFooter = (
-    <div className="tr-panel-footer" style={{ width: '100%', borderTop: 'none', padding: 0 }}>
-      <button className="tr-action-btn primary">
-        <i className="ti ti-edit"></i> Gezi Detaylarını İndir
-      </button>
+const TrInfoItem = ({ icon, label, children, full }) => (
+    <div className={`tr-info-item-detail${full ? ' full-width' : ''}`}>
+        <span className="tr-label">
+            <i className={`ti ${icon}`} />
+            {label}
+        </span>
+        {children}
     </div>
-  );
+);
 
-  return (
-    <ActionSidebar
-      isOpen={isOpen}
-      onClose={onClose} 
-      title={null}
-      footer={sidebarFooter}
-      width="480px"
-    >
+const TripDetail = ({ isOpen, onClose, data }) => {
+    if (!data) return null;
 
-      <div className="tr-panel-content-internal">
-        <div className="tr-panel-title-section">
-          <div className="tr-type-icon">
-            <i className={`ti ${data.icon || 'ti-map-pin'}`}></i>
-          </div>
-          <div className="tr-title-text">
-            <h3>{data.title}</h3>
-            <span className="tr-panel-category">{data.category} • {data.date}</span>
-          </div>
-        </div>
+    const statusKey = data.statusClass?.toLowerCase() || data.status?.toLowerCase();
 
-        <div className="tr-panel-stats-grid">
-          <div className="tr-stat-item">
-            <label>Mali Kayıt Tutarı</label>
-            <div className="tr-amount-section">
-              {/* Burası her zaman Base Currency (USD) kalır */}
-              <span className="tr-amount-symbol">{data.currencySymbol}</span>
-              <strong className="tr-amount-val">
-                {(Number(data.amount) || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
-              </strong>
-              <span className="tr-amount-cur">{data.currency}</span>
+    const sidebarFooter = (
+        <button className="tr-primary-btn">
+            <i className="ti ti-file-download" />
+            Gezi Detaylarını İndir
+        </button>
+    );
+
+    return (
+        <ActionSidebar
+            isOpen={isOpen}
+            onClose={onClose}
+            title={null}
+            footer={sidebarFooter}
+            width="480px"
+        >
+            <div className="tr-panel-content-internal">
+
+                <div className="tr-panel-title-section">
+                    <div className="tr-type-icon">
+                        <i className={`ti ${data.icon || 'ti-plane-departure'}`} />
+                    </div>
+                    <div>
+                        <h3>{data.title}</h3>
+                        <span className="tr-panel-category">
+                            {data.category} · {data.date}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="tr-financial-card">
+                    <div>
+                        <label>Mali Kayıt Tutarı</label>
+                        <div className="tr-main-price">
+                            <span className="tr-price-symbol">{data.currencySymbol}</span>
+                            <span className="tr-price-val">
+                                {(Number(data.amount) || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+                            </span>
+                            <span className="tr-price-cur">{data.currency}</span>
+                        </div>
+                        <div className="tr-local-conv">
+                            Ödenen: {data.localSymbol}{data.localAmount?.toLocaleString('tr-TR')} {data.localCurrency}
+                        </div>
+                    </div>
+                    <div className="tr-status-group">
+                        <label>Mevcut Durum</label>
+                        <span className={`tr-status-badge ${statusKey}`}>
+                            {data.status}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="tr-rate-banner">
+                    <i className="ti ti-arrows-exchange" />
+                    1 {data.currency} = {data.exchangeRates?.[data.localCurrency] || data.exchangeRate?.rate} {data.localCurrency}
+                </div>
+
+                <div className="tr-divider" />
+
+                <div className="tr-info-list">
+                    <TrInfoItem icon="ti-map-2" label="Varış Noktası">
+                        <span className="tr-value">{data.destination}</span>
+                    </TrInfoItem>
+                    <TrInfoItem icon="ti-clock" label="Tarih Aralığı">
+                        <span className="tr-value">{data.startDate} — {data.endDate}</span>
+                    </TrInfoItem>
+                    <TrInfoItem icon="ti-car" label="Araç">
+                        <span className="tr-value">{data.vehicle}</span>
+                    </TrInfoItem>
+                    <TrInfoItem icon="ti-hourglass" label="Süre">
+                        <span className="tr-value">{data.duration}</span>
+                    </TrInfoItem>
+                    <TrInfoItem icon="ti-notes" label="Gezi Açıklaması" full>
+                        <p className="tr-desc-box">{data.desc || 'Ek not yok.'}</p>
+                    </TrInfoItem>
+                </div>
+
             </div>
-            {/* Orijinal Yerel Harcama (TRY, EUR vs.) */}
-            <div className="tr-currency-freeze">
-              Ödenen: {data.localSymbol}{data.localAmount?.toLocaleString('tr-TR')} {data.localCurrency}
-            </div>
-          </div>
-          <div className="tr-stat-item">
-            <label>Mevcut Durum</label>
-            <span className={`tr-status-badge ${data.statusClass}`}>
-              {data.status}
-            </span>
-          </div>
-        </div>
-
-        {/* SABİT KUR BİLGİSİ */}
-        <div className="tr-rate-info">
-          <i className="ti ti-history"></i>
-          <span>
-            İşlem Kuru: 1 {data.currency} = {data.exchangeRates?.[data.localCurrency] || data.exchangeRate?.rate} {data.localCurrency}
-          </span>
-        </div>
-
-        <hr className="tr-divider" />
-
-        <div className="tr-detail-row">
-          <span><i className="ti ti-map-2"></i> Varış Noktası</span>
-          <p>{data.destination}</p>
-        </div>
-
-        <div className="tr-detail-row">
-          <span><i className="ti ti-car"></i> Araç ve Süre</span>
-          <p>{data.vehicle} • {data.duration}</p>
-        </div>
-
-        <div className="tr-detail-row">
-          <span><i className="ti ti-clock"></i> Tarih Aralığı</span>
-          <p>{data.startDate} - {data.endDate}</p>
-        </div>
-
-        <div className="tr-detail-row">
-          <span><i className="ti ti-notes"></i> Gezi Açıklaması</span>
-          <p className="tr-desc-text">{data.desc || "Ek not yok."}</p>
-        </div>
-      </div>
-    </ActionSidebar>
-  );
+        </ActionSidebar>
+    );
 };
 
 export default memo(TripDetail);

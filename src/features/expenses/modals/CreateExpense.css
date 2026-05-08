@@ -151,7 +151,7 @@ textarea:focus {
     border-radius: 11px;
     transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
-
+ 
 .ex-amount-wrapper:focus-within {
     border-color: rgba(14, 212, 90, 0.35);
     box-shadow: 0 0 0 3px rgba(14, 212, 90, 0.07);
@@ -168,7 +168,7 @@ textarea:focus {
     min-width: 0;
     border-radius: 11px 0 0 11px;
 }
-
+ 
 .ex-amount-input::placeholder { color: #282828; }
 .ex-amount-input:focus { outline: none; }
 
@@ -177,25 +177,6 @@ textarea:focus {
     display: flex;
     align-items: center;
     border-left: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-.ex-currency-wrap select {
-    background: #0d0d10 !important;
-    border: none;
-    padding: 0 28px 0 12px;
-    height: 100%;
-    color: #0ed45a;
-    font-size: 0.875rem;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    min-width: 100px;
-}
-
-.ex-currency-wrap select:focus {
-    outline: none !important;
-    border: none !important;
 }
 
 .ex-currency-trigger {
@@ -301,27 +282,22 @@ textarea:focus {
 .ex-field-select option { background: #0d0d10; color: #c8c8cc; }
 
 .ex-currency-select {
-    background: rgba(255, 255, 255, 0.025);
+    background: transparent;
     border: none;
-    padding: 0 30px 0 12px;
+    padding: 0 28px 0 12px;
     height: 100%;
     color: #0ed45a;
-    font-size: 0.82rem;
-    font-weight: 700;
+    font-size: 0.875rem;
+    font-weight: 600;
     font-family: 'DM Sans', sans-serif;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
-    min-width: 86px;
-    transition: background 0.2s;
+    min-width: 96px;
 }
-
-.ex-currency-select:focus {
-    outline: none;
-    background: rgba(14, 212, 90, 0.05);
-}
-
-.ex-currency-select option { background: #0d0d10; color: #c8c8cc; font-weight: 600; }
+ 
+.ex-currency-select:focus { outline: none; }
+.ex-currency-select option { color: #c8c8cc; }
 
 .ex-currency-arrow {
     position: absolute;

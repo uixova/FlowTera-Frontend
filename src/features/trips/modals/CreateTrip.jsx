@@ -1,213 +1,334 @@
-import React, { useState, useEffect } from 'react'; 
-import './CreateTrip.css'; 
+import React, { useState, useEffect } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
+import { useTeam } from '../../../context/TeamContext';
 import { tripsService } from '../services/tripsService';
 import { archiveService } from '../../archive/services/archiveServices';
+import './CreateTrip.css';
 
+const CATEGORIES = [
+    { value: 'Business', label: 'İş Gezisi' },
+    { value: 'Vacation', label: 'Tatil'      },
+    { value: 'Event',    label: 'Etkinlik'   },
+    { value: 'Other',    label: 'Diğer'      },
+];
+
+const VEHICLES = [
+    { value: 'Plane', label: 'Uçak'    },
+    { value: 'Train', label: 'Tren'    },
+    { value: 'Car',   label: 'Araba'   },
+    { value: 'Bus',   label: 'Otobüs'  },
+    { value: 'Ship',  label: 'Gemi'    },
+];
+
+const CURRENCIES = [
+    { value: 'USD', label: 'USD $' },
+    { value: 'EUR', label: 'EUR €' },
+    { value: 'TRY', label: 'TRY ₺' },
+    { value: 'GBP', label: 'GBP £' },
+];
 
 const formatDateForInput = (dateStr) => {
-  if (!dateStr) return '';
-  if (dateStr.includes('-')) return dateStr; 
-  const [day, month, year] = dateStr.split('/');
-  return `${year}-${month}-${day}`;
+    if (!dateStr) return '';
+    if (dateStr.includes('-')) return dateStr;
+    const [day, month, year] = dateStr.split('/');
+    return `${year}-${month}-${day}`;
+};
+
+const EMPTY_FORM = {
+    title:       '',
+    category:    'Business',
+    vehicle:     'Plane',
+    destination: '',
+    startDate:   '',
+    endDate:     '',
+    amount:      '',
+    currency:    'USD',
+    desc:        '',
 };
 
 const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
-  const isEditMode = !!editData;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+    const isEditMode     = !!editData;
+    const { selectedTeamId } = useTeam();
+    const timeAgoDisplay = useTimeAgo(editData?.date);
 
-  const [formData, setFormData] = useState({
-    trInpTitle: '',
-    trInpCategory: 'Business',
-    trInpVehicle: 'Plane',
-    trInpDestination: '',
-    trInpStartDate: '',
-    trInpEndDate: '',
-    trInpCost: '',
-    trInpCurrency: 'USD',
-    trInpDescription: ''
-  });
+    const [form,        setForm]        = useState(EMPTY_FORM);
+    const [isSubmitting,setIsSubmitting]= useState(false);
 
-  // Modal açıldığında veya veri geldiğinde state yönetimi
-  useEffect(() => {
-    if (isOpen && editData) {
-      setFormData({
-        trInpTitle: editData.title || '',
-        trInpCategory: editData.category || 'Business',
-        trInpVehicle: editData.vehicle || 'Plane',
-        trInpDestination: editData.destination || '',
-        trInpStartDate: formatDateForInput(editData.startDate),
-        trInpEndDate: formatDateForInput(editData.endDate),
-        trInpCost: editData.amount || '',
-        trInpCurrency: editData.currency || 'USD',
-        trInpDescription: editData.desc || ''
-      });
-    } else if (!isOpen) {
-      // Modal kapandığında formu sıfırla
-      setFormData({
-        trInpTitle: '', trInpCategory: 'Business', trInpVehicle: 'Plane',
-        trInpDestination: '', trInpStartDate: '', trInpEndDate: '',
-        trInpCost: '', trInpCurrency: 'USD', trInpDescription: ''
-      });
-    }
-  }, [isOpen, editData]);
+    useEffect(() => {
+        if (!isOpen) return;
+        if (isEditMode && editData) {
+            setForm({
+                title:       editData.title       || '',
+                category:    editData.category    || 'Business',
+                vehicle:     editData.vehicle     || 'Plane',
+                destination: editData.destination || '',
+                startDate:   formatDateForInput(editData.startDate),
+                endDate:     formatDateForInput(editData.endDate),
+                amount:      editData.amount      || '',
+                currency:    editData.currency    || 'USD',
+                desc:        editData.desc        || '',
+            });
+        } else {
+            setForm(EMPTY_FORM);
+        }
+    }, [isOpen, isEditMode, editData]);
 
-  const timeAgoDisplay = useTimeAgo(editData?.date);
-
-  // Tüm form alanlarındaki değişiklikleri yakalar.
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  // Veriyi paketler ve servise gönderir.
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    const activeTeamId = localStorage.getItem('tm_selected_id');
-
-    const finalTripData = {
-      id: isEditMode ? editData.id : `tr-${Math.floor(Math.random() * 10000)}`,
-      teamId: activeTeamId,
-      title: formData.trInpTitle,
-      category: formData.trInpCategory,
-      vehicle: formData.trInpVehicle,
-      destination: formData.trInpDestination,
-      startDate: formData.trInpStartDate,
-      endDate: formData.trInpEndDate,
-      amount: Number(formData.trInpCost),
-      currency: formData.trInpCurrency,
-      desc: formData.trInpDescription,
-      status: isEditMode ? editData.status : "Pending",
-      statusClass: isEditMode ? editData.statusClass : "pending",
-      date: isEditMode ? editData.date : new Date().toLocaleDateString('tr-TR')
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    try {
-      if (isEditMode) {
-        await tripsService.updateTrip(editData.id, finalTripData);
-      } else {
-        await tripsService.createTrip(finalTripData);
-      }
-    
-      // ARŞİV CACHE TEMİZLEME
-      archiveService.clearCache(); 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
 
-      if (onSuccess) onSuccess(); 
-      onClose(); 
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+        const now     = new Date();
+        const payload = {
+            id:          isEditMode ? editData.id : `tr-${Math.floor(Math.random() * 10000)}`,
+            teamId:      selectedTeamId,
+            title:       form.title,
+            category:    form.category,
+            vehicle:     form.vehicle,
+            destination: form.destination,
+            startDate:   form.startDate,
+            endDate:     form.endDate,
+            amount:      Number(form.amount),
+            currency:    form.currency,
+            desc:        form.desc,
+            status:      isEditMode ? editData.status      : 'Pending',
+            statusClass: isEditMode ? editData.statusClass : 'pending',
+            date:        isEditMode ? editData.date        : now.toLocaleDateString('tr-TR'),
+        };
 
-  
+        try {
+            if (isEditMode) {
+                await tripsService.updateTrip(editData.id, payload);
+            } else {
+                await tripsService.createTrip(payload);
+            }
 
-  // Sidebar Başlık Yapısı
-  const sidebarTitle = (
-    <div className="tr-create-title">
-      <div className="tr-title-icon">
-        <i className={`ti ${isEditMode ? 'ti-edit' : 'ti-plane-arrival'}`}></i>
-      </div>
-      <div className="tr-title-text">
-        <span>{isEditMode ? 'Gezi Planını Düzenle' : 'Yeni Gezi Planla'}</span>
-        <small>{isEditMode ? `Son güncelleme: ${timeAgoDisplay}` : 'Bir rota oluşturmak için detayları doldurun'}</small>
-      </div>
-    </div>
-  );
+            if (archiveService && typeof archiveService.clearCache === 'function') {
+                archiveService.clearCache();
+            }
 
-  // Sidebar Alt Buton Grubu
-  const sidebarFooter = (
-    <div className="tr-create-footer-alt" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', width: '100%' }}>
-      <button type="button" className="tr-btn-secondary" onClick={onClose} disabled={isSubmitting}>İptal</button>
-      <button type="submit" form="newTripForm" className="tr-btn-primary" disabled={isSubmitting}>
-        <i className={`ti ${isEditMode ? 'ti-check' : 'ti-plus'}`}></i>
-        {isSubmitting ? 'Kaydediliyor...' : (isEditMode ? 'Güncelle' : 'Gezi Planı Oluştur')}
-      </button>
-    </div>
-  );
+            if (onSuccess) onSuccess();
+            onClose();
+        } catch (err) {
+            console.error('Gezi işlemi başarısız:', err);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
-  return (
-    <ActionSidebar isOpen={isOpen} onClose={onClose} title={sidebarTitle} footer={sidebarFooter} width="480px">
-      <div className="tr-create-body-internal">
-        <form id="newTripForm" className="tr-create-form" onSubmit={handleSubmit}>
-          {/* Form içeriği */}
-          <div className="tr-form-section">
-            <label className="tr-section-label">Genel Bilgiler</label>
-            <div className="tr-input-group">
-              <label htmlFor="trInpTitle">Seyahat Amacı</label>
-              <div className="tr-input-wrapper">
-                  <i className="ti ti-flag"></i>
-                  <input name="trInpTitle" type="text" value={formData.trInpTitle} onChange={handleChange} placeholder="İş toplantısı..." required />
-              </div>
+    const sidebarTitle = (
+        <div className="tr-panel-title">
+            <div className="tr-panel-title-icon">
+                <i className={`ti ${isEditMode ? 'ti-edit' : 'ti-plane-arrival'}`} />
             </div>
-
-            <div className="tr-form-row">
-              <div className="tr-input-group">
-                <label htmlFor="trInpCategory">Kategori</label>
-                <select name="trInpCategory" value={formData.trInpCategory} onChange={handleChange}>
-                  <option value="Business">İş Gezisi</option>
-                  <option value="Vacation">Tatil</option>
-                  <option value="Event">Etkinlik</option>
-                </select>
-              </div>
-              <div className="tr-input-group">
-                <label htmlFor="trInpVehicle">Araç</label>
-                <select name="trInpVehicle" value={formData.trInpVehicle} onChange={handleChange}>
-                  <option value="Plane">Uçak</option>
-                  <option value="Train">Tren</option>
-                  <option value="Car">Araba</option>
-                  <option value="Bus">Otobüs</option>
-                </select>
-              </div>
+            <div className="tr-panel-title-text">
+                <span className="tr-panel-title-name">
+                    {isEditMode ? 'Gezi Planını Düzenle' : 'Yeni Gezi Planla'}
+                </span>
+                <span className="tr-panel-title-sub">
+                    {isEditMode
+                        ? `Son güncelleme: ${timeAgoDisplay}`
+                        : 'Bir rota oluşturmak için detayları doldurun'}
+                </span>
             </div>
+        </div>
+    );
 
-            <div className="tr-input-group">
-              <label htmlFor="trInpDestination">Varış Noktası</label>
-              <div className="tr-input-wrapper">
-                  <i className="ti ti-map-pin"></i>
-                  <input name="trInpDestination" type="text" value={formData.trInpDestination} onChange={handleChange} placeholder="Berlin, Germany" required />
-              </div>
-            </div>
-          </div>
+    const sidebarFooter = (
+        <div className="tr-panel-footer-alt">
+            <button
+                type="button"
+                className="tr-panel-btn cancel"
+                onClick={onClose}
+                disabled={isSubmitting}
+            >
+                <i className="ti ti-x" />
+                İptal
+            </button>
+            <button
+                type="submit"
+                form="newTripForm"
+                className="tr-panel-btn save"
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? (
+                    <><i className="ti ti-loader-2 tr-spin" /> Kaydediliyor...</>
+                ) : (
+                    <><i className={`ti ${isEditMode ? 'ti-device-floppy' : 'ti-check'}`} />
+                    {isEditMode ? 'Değişiklikleri Kaydet' : 'Gezi Planı Oluştur'}</>
+                )}
+            </button>
+        </div>
+    );
 
-          <div className="tr-form-section">
-            <label className="tr-section-label">Zaman Çizelgesi ve Bütçe</label>
-            <div className="tr-form-row">
-              <div className="tr-input-group">
-                <label htmlFor="trInpStartDate">Başlangıç Tarihi</label>
-                <input name="trInpStartDate" type="date" value={formData.trInpStartDate} onChange={handleChange} required />
-              </div>
-              <div className="tr-input-group">
-                <label htmlFor="trInpEndDate">Bitiş Tarihi</label>
-                <input name="trInpEndDate" type="date" value={formData.trInpEndDate} onChange={handleChange} required />
-              </div>
-            </div>
+    return (
+        <ActionSidebar
+            isOpen={isOpen}
+            onClose={onClose}
+            title={sidebarTitle}
+            footer={sidebarFooter}
+            width="480px"
+        >
+            <div className="tr-panel-body-internal">
+                <div className="tr-modal-info-bar">
+                    <div className="tr-info-item">
+                        <i className="ti ti-calendar-event" />
+                        <span>{isEditMode ? editData.date : new Date().toLocaleDateString('tr-TR')}</span>
+                    </div>
+                    <div className="tr-info-item">
+                        <i className="ti ti-shield-check" />
+                        <span>{isEditMode ? editData.status : 'Beklemede'}</span>
+                    </div>
+                </div>
 
-            <div className="tr-input-group">
-              <label htmlFor="trInpCost">Tahmini Gider</label>
-              <div className="tr-amount-container">
-                <input name="trInpCost" type="number" value={formData.trInpCost} onChange={handleChange} placeholder="0.00" step="0.01" />
-                <select name="trInpCurrency" value={formData.trInpCurrency} onChange={handleChange} className="tr-currency-select">
-                  <option value="USD">USD ($)</option>
-                  <option value="EUR">EUR (€)</option>
-                  <option value="TRY">TRY (₺)</option>
-                </select>
-              </div>
+                <form id="newTripForm" className="tr-create-form" onSubmit={handleSubmit}>
+
+                    <div className="tr-section-divider">
+                        <span>Genel Bilgiler</span>
+                    </div>
+
+                    <div className="tr-input-group">
+                        <label>Seyahat Amacı</label>
+                        <div className="tr-input-icon-wrap">
+                            <i className="ti ti-flag" />
+                            <input
+                                className="tr-field-input"
+                                name="title"
+                                type="text"
+                                placeholder="İş toplantısı, Berlin konferansı..."
+                                value={form.title}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="tr-input-row">
+                        <div className="tr-input-group">
+                            <label>Kategori</label>
+                            <select
+                                className="tr-field-input"
+                                name="category"
+                                value={form.category}
+                                onChange={handleChange}
+                            >
+                                {CATEGORIES.map((c) => (
+                                    <option key={c.value} value={c.value}>{c.label}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="tr-input-group">
+                            <label>Araç</label>
+                            <select
+                                className="tr-field-input"
+                                name="vehicle"
+                                value={form.vehicle}
+                                onChange={handleChange}
+                            >
+                                {VEHICLES.map((v) => (
+                                    <option key={v.value} value={v.value}>{v.label}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="tr-input-group">
+                        <label>Varış Noktası</label>
+                        <div className="tr-input-icon-wrap">
+                            <i className="ti ti-map-pin" />
+                            <input
+                                className="tr-field-input"
+                                name="destination"
+                                type="text"
+                                placeholder="Berlin, Almanya"
+                                value={form.destination}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="tr-section-divider">
+                        <span>Zaman & Bütçe</span>
+                    </div>
+
+                    <div className="tr-input-row">
+                        <div className="tr-input-group">
+                            <label>Başlangıç Tarihi</label>
+                            <input
+                                className="tr-field-input"
+                                name="startDate"
+                                type="date"
+                                value={form.startDate}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="tr-input-group">
+                            <label>Bitiş Tarihi</label>
+                            <input
+                                className="tr-field-input"
+                                name="endDate"
+                                type="date"
+                                value={form.endDate}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="tr-input-group">
+                        <label>Tahmini Gider</label>
+                        <div className="tr-amount-wrapper">
+                            <input
+                                className="tr-amount-input"
+                                name="amount"
+                                type="number"
+                                placeholder="0.00"
+                                step="0.01"
+                                value={form.amount}
+                                onChange={handleChange}
+                            />
+                            <div className="tr-currency-wrap">
+                                <select
+                                    className="tr-currency-select"
+                                    name="currency"
+                                    value={form.currency}
+                                    onChange={handleChange}
+                                >
+                                    {CURRENCIES.map((c) => (
+                                        <option key={c.value} value={c.value}>{c.label}</option>
+                                    ))}
+                                </select>
+                                <i className="ti ti-chevron-down tr-currency-arrow" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="tr-section-divider">
+                        <span>Notlar</span>
+                    </div>
+
+                    <div className="tr-input-group">
+                        <label>Gezi Açıklaması</label>
+                        <textarea
+                            className="tr-field-input tr-textarea"
+                            name="desc"
+                            placeholder="Detaylı bilgi, notlar, önemli noktalar..."
+                            value={form.desc}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                </form>
             </div>
-          </div>
-          
-          <div className="tr-input-group full">
-            <label htmlFor="trInpDescription">Gezi Açıklaması</label>
-            <textarea name="trInpDescription" value={formData.trInpDescription} onChange={handleChange} placeholder="Detaylı bilgi verin..." required></textarea>
-          </div>
-        </form>
-      </div>
-    </ActionSidebar>
-  );
+        </ActionSidebar>
+    );
 };
 
 export default CreateTrip;

@@ -80,7 +80,7 @@ const History = () => {
                 ]}
             />
             
-            <hr className="hi-divider" />
+            <hr className="sub-nav-divider" />
 
             <div className="history-list-container">
                 {filteredLogs.length > 0 ? (
