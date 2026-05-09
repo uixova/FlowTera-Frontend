@@ -19,7 +19,7 @@ const Language = ({ isOpen, onClose }) => {
   ];
 
   const handleLangSelect = (code) => {
-    setSelectedLang(code); // State'i güncelle
+    setSelectedLang(code); 
     console.log(`${code} seçildi`);
     
     setTimeout(() => {

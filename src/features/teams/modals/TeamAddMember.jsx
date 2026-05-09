@@ -12,7 +12,7 @@ const AddMemberModal = ({ isOpen, onClose }) => {
   
   // Yetki yönetimi için yazdığımız hook'u çağırıyoruz
   const { 
-    getFilteredPermissions, // Filtreleme fonksiyonunu hook'tan alıyoruz
+    getFilteredPermissions, 
     restrictedPerms,  
     toggleRestriction,
     resetRestrictions 
@@ -21,7 +21,7 @@ const AddMemberModal = ({ isOpen, onClose }) => {
   // Modal yönetimi 
   const { confirmConfig, askConfirm, closeConfirm, alertConfig, showAlert, closeAlert } = useModal();
 
-  // Sabit roller (Burada durabilir veya ileride hook içine de alınabilir)
+  // Sabit roller 
   const roles = [
     { id: 'admin', name: 'Admin', desc: 'Full access, no restrictions.', color: 'admin' },
     { id: 'moderator', name: 'Moderator', desc: 'Management and monitoring.', color: 'moderator' },

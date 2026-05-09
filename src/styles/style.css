@@ -3,6 +3,8 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
+    scrollbar-width: thin;
+    scrollbar-color: #333 transparent;
 }
 
 body {
@@ -15,6 +17,7 @@ body {
     --white: #fff;
     --black: #000;
     --bg-app: #0a0a0a;
+    color-scheme: dark;
 }
 
 h2 {
@@ -67,6 +70,7 @@ input::-webkit-inner-spin-button {
 }
 
 input[type=number] {
+    appearance: textfield;
   -moz-appearance: textfield;
 }
 

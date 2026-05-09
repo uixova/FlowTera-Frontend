@@ -40,6 +40,7 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
   
+  // Formu sıfırlayan fonksiyon, modal kapandığında veya açıldığında çağrılır
   const resetForm = useCallback(() => {
     setFormData({
       ...INITIAL_FORM_STATE,
@@ -60,6 +61,7 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
     }
   }, [isOpen, planMaxMembers, resetForm]);
 
+  // Form inputlarını yöneten genel değişiklik fonksiyonu
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     
@@ -76,6 +78,7 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
     }
   };
 
+  // Logo önizlemesi için dosya inputu değişiklik handler'ı
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {

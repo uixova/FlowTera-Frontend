@@ -19,7 +19,7 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
         resetRestrictions 
     } = usePermissions([]);
 
-    // Confirm modal yönetimi için hook'u çağır
+    // Confirm modal yönetimi için hook u
     const { confirmConfig, askConfirm, closeConfirm } = useModal();
 
     // Modal açıldığında mevcut rol ve kısıtlamaları yükle

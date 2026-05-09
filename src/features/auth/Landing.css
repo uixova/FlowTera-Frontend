@@ -237,6 +237,7 @@ footer { position: relative; z-index: 1; }
 
 /* Shared Buttons */
 .primary-btn {
+  text-decoration: none;
   background: var(--accent-green);
   color: #050507;
   padding: 14px 28px;

@@ -112,9 +112,9 @@ const Landing = () => {
             ve kusursuz seyahat planlamasını tek bir akışta birleştirir.
           </p>
           <div className="hero-actions">
-            <button className="primary-btn">
+            <Link to="/signup" className="primary-btn">
               Hemen Deneyin <i className="ti ti-arrow-narrow-right"></i>
-            </button>
+            </Link>
             <button className="secondary-btn">
               <i className="ti ti-player-play"></i> Demoyu İzle
             </button>

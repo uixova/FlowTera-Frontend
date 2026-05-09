@@ -18,7 +18,7 @@ const Teams = () => {
   const [switchingTeam, setSwitchingTeam] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   
-  // viewMode artık localStorage'dan değil, selectedTeamId varsa 'main' yoksa 'selection' olarak başlıyor
+  // viewMode localStorage'dan değil, selectedTeamId varsa 'main' yoksa 'selection' olarak başlıyor
   const [viewMode, setViewMode] = useState(selectedTeamId ? 'main' : 'selection');
 
   // Takımları Çekme

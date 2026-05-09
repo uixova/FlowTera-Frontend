@@ -1,47 +1,33 @@
 import { api } from '../../../api/api';
 
-const randomDelay = (min = 200, max = 800) => {
-    const ms = Math.floor(Math.random() * (max - min + 1) + min);
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
-
-const extractList = (response) => {
-    if (!response) return [];
-    if (Array.isArray(response)) return response;
-    if (Array.isArray(response.data)) return response.data;
-    return [];
-};
+const toArray = (result) =>
+    Array.isArray(result) ? result : (result?.data ?? []);
 
 export const historyService = {
 
     // Takım bazlı geçmiş verilerini getirme
     getHistoryByTeam: async (teamId, page = 1, limit = 20) => {
         try {
-            await randomDelay(400, 1000);
-
             const response = await api.logs.getAll({ pageSize: 2000 });
-            const rawList = extractList(response);
+            const rawList  = toArray(response);
 
             // JSON yapısından TeamLogs konteynerini ayıkla
-            const teamLogContainer = rawList.find(item => item.TeamLogs);
-            const allLogs = teamLogContainer ? teamLogContainer.TeamLogs : [];
+            const container = rawList.find((item) => item.TeamLogs);
+            const allLogs   = container?.TeamLogs ?? [];
 
-            const filteredLogs = allLogs.filter(
-                log => String(log.teamId) === String(teamId)
-            );
+            const filtered  = allLogs.filter((log) => String(log.teamId) === String(teamId));
 
-            const startIndex = (page - 1) * limit;
-            const endIndex = startIndex + limit;
-            const paginatedData = filteredLogs.slice(startIndex, endIndex);
+            const start = (page - 1) * limit;
+            const end   = start + limit;
 
             return {
-                data: paginatedData,
-                hasMore: filteredLogs.length > endIndex,
-                totalCount: filteredLogs.length
+                data:       filtered.slice(start, end),
+                hasMore:    filtered.length > end,
+                totalCount: filtered.length,
             };
         } catch (error) {
-            console.error("History fetching error:", error);
+            console.error('[historyService] getHistoryByTeam:', error);
             return { data: [], hasMore: false, totalCount: 0 };
         }
-    }
+    },
 };

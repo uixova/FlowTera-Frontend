@@ -1,89 +1,60 @@
-.tm-list-view {
-    margin-bottom: 25px;
-    background: #3d3d3d;
-    border-radius: 8px;
-    border: 1px solid #5a5a5a;
-    overflow: hidden;
-}
-
-.tm-list-item {
-    padding: 15px 20px;
+.tm-feature-wrapper {
     display: flex;
-    justify-content: space-between;
-    cursor: pointer;
-    border-bottom: 1px solid #4a4a4a;
-    color: #a7a7a7;
-    transition: 0.2s;
+    flex-direction: column;
+    height: 100%;
 }
 
-.tm-list-item:hover {
-    background: #444;
-    color: #fff;
-}
-
-.tm-list-item.active {
-    border-left: 4px solid #0ed45a;
-    background: #444;
-    color: #fff;
-}
-
-.tm-count {
-    font-size: 0.85rem;
-    opacity: 0.7;
+.full-screen-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
 }
 
 .feature-locked {
     position: relative;
-    opacity: 0.6; 
+    opacity: 0.55;
     cursor: not-allowed;
-    filter: grayscale(0.4); 
-    transition: all 0.3s ease;
+    filter: grayscale(0.4);
+    transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
 .feature-locked * {
-    pointer-events: none; 
+    pointer-events: none;
+}
+
+.feature-locked:hover {
+    opacity: 0.75;
+    filter: grayscale(0);
 }
 
 .lock-badge {
-    background: linear-gradient(45deg, #f1c40f, #f39c12); 
-    color: #000;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 2px 8px;
-    border-radius: 12px;
-    margin-left: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     display: inline-flex;
     align-items: center;
+    gap: 4px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(255, 171, 0, 0.1);
+    color: #ffab00;
+    border: 1px solid rgba(255, 171, 0, 0.2);
     vertical-align: middle;
+    margin-left: 8px;
 }
 
 .upgrade-notice {
     margin-top: 8px;
-    font-size: 12px;
-    color: #e67e22; 
+    font-size: 0.72rem;
+    color: #ffab00;
     font-weight: 500;
-    font-style: italic;
-    animation: fadeIn 0.5s ease-out;
+    font-family: 'DM Sans', sans-serif;
+    animation: tmFadeIn 0.4s ease-out;
 }
 
-.feature-locked .tm-custom-checkbox {
-    border-color: #ddd !important;
-}
-
-.feature-locked .checkmark {
-    background-color: #eee !important;
-    border: 1px solid #ccc !important;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.feature-locked:hover {
-    opacity: 0.8;
-    filter: grayscale(0); 
+@keyframes tmFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
 }

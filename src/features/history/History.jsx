@@ -11,21 +11,15 @@ import HistoryFilter from './modals/HistoryFilter';
 import { historyService } from './services/historyService';
 import { usePagination } from '../../hooks/usePagination';
 import { useFilter } from '../../hooks/useFilter';
-import { useTeam } from '../../context/TeamContext'; 
+import { useTeam } from '../../context/TeamContext';
 
 const History = () => {
     const { selectedTeamId } = useTeam();
-    const [activeLog, setActiveLog] = useState(null);
+    const [activeLog,    setActiveLog]    = useState(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-    // Veri Çekme 
-    const { 
-        data: historyData, 
-        loading, 
-        loadingMore, 
-        hasMore, 
-        loadMore,
-        totalCount
+    const {
+        data: historyData, loading, loadingMore, hasMore, loadMore, totalCount
     } = usePagination(historyService.getHistoryByTeam, selectedTeamId, 20);
 
     // Filtreleme işlemi
@@ -36,19 +30,13 @@ const History = () => {
         applyFilters, clearFilters
     } = useFilter(
         historyData || [],
-        {
-            startDate: '',
-            endDate: '',
-            role: '',
-            type: '',
-            target: ''
-        },
+        { startDate: '', endDate: '', role: '', type: '', target: '' },
         ['user', 'action', 'target']
     );
 
-    const handleToggle = (id) => {
-        setActiveLog(activeLog === id ? null : id);
-    };
+    const handleToggle = (id) => setActiveLog((prev) => (prev === id ? null : id));
+
+    const isFiltered = searchTerm || Object.values(tempFilters).some(Boolean);
 
     const filterFooter = (
         <div className="as-filter-footer">
@@ -64,58 +52,57 @@ const History = () => {
     return (
         // key={selectedTeamId} sayesinde takım değişince tüm liste componenti sıfırlanır
         <div className="history-page" key={selectedTeamId}>
-            <SubNavbar 
+            <SubNavbar
                 pageName="Aktif Geçmiş"
-                searchPlaceholder="Geçmiş Kayıtlar..."
+                searchPlaceholder="Kullanıcı, işlem veya hedef ara..."
                 searchValue={searchTerm}
-                onSearch={(val) => setSearchTerm(val)} 
-                showSearch={true}      
-                showCreate={false}      
+                onSearch={(val) => setSearchTerm(val)}
+                showSearch={true}
+                showCreate={false}
                 buttons={[
-                    { 
-                        icon: 'ti ti-adjustments-horizontal', 
-                        tooltip: 'Filtre Geçmişi', 
-                        onClick: () => setIsFilterOpen(true) 
-                    }
+                    {
+                        icon: 'ti ti-adjustments-horizontal',
+                        tooltip: 'Filtrele',
+                        onClick: () => setIsFilterOpen(true),
+                    },
                 ]}
             />
-            
+
             <hr className="sub-nav-divider" />
 
             <div className="history-list-container">
                 {filteredLogs.length > 0 ? (
                     <>
                         {filteredLogs.map((item) => (
-                            <HistoryItem 
-                                key={item.id} 
-                                item={item} 
-                                isActive={activeLog === item.id} 
-                                onToggle={handleToggle} 
+                            <HistoryItem
+                                key={item.id}
+                                item={item}
+                                isActive={activeLog === item.id}
+                                onToggle={handleToggle}
                             />
                         ))}
-                        
-                        <PaginationFooter 
-                            hasMore={hasMore} 
-                            loadingMore={loadingMore} 
-                            loadMore={loadMore} 
-                            currentCount={filteredLogs.length} 
-                            totalCount={searchTerm || Object.values(tempFilters).some(x => x) ? filteredLogs.length : totalCount}
-                            label="İşlem Geçmişi" 
+                        <PaginationFooter
+                            hasMore={hasMore}
+                            loadingMore={loadingMore}
+                            loadMore={loadMore}
+                            currentCount={filteredLogs.length}
+                            totalCount={isFiltered ? filteredLogs.length : totalCount}
+                            label="İşlem Geçmişi"
                         />
                     </>
                 ) : (
                     <div className="no-data-info">
-                        {Object.values(tempFilters).some(x => x) || searchTerm 
-                            ? "Arama kriterlerine uygun kayıt bulunamadı." 
-                            : "Bu takıma ait bir aktivite kaydı bulunamadı."}
+                        {isFiltered
+                            ? 'Arama kriterlerine uygun kayıt bulunamadı.'
+                            : 'Bu takıma ait aktivite kaydı bulunamadı.'}
                     </div>
                 )}
             </div>
 
-            <ActionSidebar 
-                isOpen={isFilterOpen} 
-                onClose={() => setIsFilterOpen(false)} 
-                title="İşlemleri Filtrele"
+            <ActionSidebar
+                isOpen={isFilterOpen}
+                onClose={() => setIsFilterOpen(false)}
+                title={<h2>İşlemleri Filtrele</h2>}
                 footer={filterFooter}
             >
                 <HistoryFilter filters={tempFilters} setFilters={setTempFilters} />

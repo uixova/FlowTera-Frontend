@@ -7,46 +7,56 @@
 
 .lang-dropdown-modal {
     position: absolute;
-    top: 75px; 
-    right: 150px; 
-    width: 180px;
-    background: #181818;
-    border: 1px solid #252525;
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    top: 75px;
+    right: 150px;
+    width: 185px;
+    background: #0d0d10;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.04) inset;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     padding: 8px;
     z-index: 9998;
-    animation: fadeInDropdown 0.2s ease-out;
+    animation: langDrop 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-origin: top right;
+}
+
+@keyframes langDrop {
+    from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .lang-modal-header {
-    padding: 6px 12px;
-    border-bottom: 1px solid #252525;
+    padding: 6px 10px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     margin-bottom: 6px;
 }
 
 .lang-modal-header span {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 800;
-    color: #444;
+    color: #28282e;
     text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'DM Sans', sans-serif;
 }
 
 .lang-option {
     background: transparent;
-    border: none;
-    color: #888;
-    padding: 10px 12px;
+    border: 1px solid transparent;
+    color: #555;
+    padding: 9px 10px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    border-radius: 10px;
+    font-size: 0.845rem;
     font-weight: 600;
-    transition: 0.2s;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
     width: 100%;
 }
 
@@ -57,7 +67,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border-radius: 2px;
+    border-radius: 3px;
     flex-shrink: 0;
 }
 
@@ -68,29 +78,27 @@
     display: block;
 }
 
+.lang-name { flex: 1; }
+
 .lang-option:hover {
-    background: #222;
-    color: #fff;
+    background: rgba(255, 255, 255, 0.04);
+    color: #d0d0d4;
 }
 
 .lang-option.active {
-    color: #0ed45a;
-    background: rgba(14, 212, 90, 0.05);
+    background: rgba(14, 212, 90, 0.07);
+    border-color: rgba(14, 212, 90, 0.18);
+    color: #f0f0f2;
 }
 
 .lang-check-icon {
     margin-left: auto;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #0ed45a;
+    animation: checkIn 0.2s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-@keyframes fadeInDropdown {
-    from { 
-        opacity: 0; 
-        transform: translateY(-10px); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
-    }
+@keyframes checkIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
 }

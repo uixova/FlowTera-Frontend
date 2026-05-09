@@ -15,7 +15,7 @@ const TeamSelection = ({ onNavigate, teams, loading }) => {
         team.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // TAKIM SEÇİM BARİKATI
+    // Takım seçim duvarında bakım modunu kontrol eden fonksiyon
     const handleTeamAction = (team) => {
         const userRole = roleNameForTeam(team.id);
         const isMaintenance = team.settings?.status === 'maintenance';

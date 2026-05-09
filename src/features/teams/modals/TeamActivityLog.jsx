@@ -11,7 +11,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Veri Çekme Logic'i (Aynen korundu)
+    // Veri Çekme Logic'i 
     useEffect(() => {
         if (!isOpen || !user || !teamId) {
             setUserLogs([]);
