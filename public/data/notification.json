@@ -8,7 +8,7 @@
       "user": "Ahmet Yılmaz",
       "title": "Harcama Onayı",
       "detail": "Ofis Malzemeleri - 400$",
-      "date": "2026-01-03T10:00:00Z",
+      "date": "2026-04-13T10:00:00Z",
       "targetId": "exp_445",
       "path": "/expense",
       "status": "pending"
@@ -21,7 +21,7 @@
       "user": "Selin Ak",
       "title": "Takımdan Çıkarma",
       "detail": "Moderatör talebi: Kullanıcı pasif.",
-      "date": "2026-04-02T18:15:00Z",
+      "date": "2026-05-09T10:00:00Z",
       "targetId": "usr_992",
       "path": "/team",
       "status": "pending"
