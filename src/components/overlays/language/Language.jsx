@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import Flags from 'country-flag-icons/react/3x2';
 import './Language.css';
 
@@ -19,25 +20,24 @@ const Language = ({ isOpen, onClose }) => {
   ];
 
   const handleLangSelect = (code) => {
-    setSelectedLang(code); 
+    setSelectedLang(code);
     console.log(`${code} seçildi`);
-    
     setTimeout(() => {
       onClose();
     }, 200);
   };
 
-  return (
+  return createPortal(
     <>
-      <div className="lang-overlay" onClick={onClose}></div>
+      <div className="lang-overlay" onClick={onClose} />
       <div className="lang-dropdown-modal" onClick={(e) => e.stopPropagation()}>
         <div className="lang-modal-header">
           <span>Dil Seç</span>
         </div>
         <div className="lang-list">
           {languages.map((lang) => (
-            <button 
-              key={lang.code} 
+            <button
+              key={lang.code}
               className={`lang-option ${selectedLang === lang.code ? 'active' : ''}`}
               onClick={() => handleLangSelect(lang.code)}
             >
@@ -45,13 +45,13 @@ const Language = ({ isOpen, onClose }) => {
                 <FlagIcon code={lang.code} className="lang-svg-flag" />
               </div>
               <span className="lang-name">{lang.name}</span>
-              
-              {selectedLang === lang.code && <i className="ti ti-check"></i>}
+              {selectedLang === lang.code && <i className="ti ti-check lang-check-icon"></i>}
             </button>
           ))}
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 };
 

@@ -1,170 +1,269 @@
-.team-grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 25px;
-    margin-top: 20px;
-}
-
-.team-grid-container .team-card:first-child {
-    border-top: 3px solid #ff4757;
-}
-
-.team-card {
-    background: #3d3d3d;
-    border-radius: 15px;
-    padding: 20px;
-    border: 1px solid #5a5a5a;
-    transition: transform 0.3s ease;
-}
-
-.team-card:hover {
-    transform: translateY(-5px);
-}
-
-.tm-card-header {
+.tm-member-list-page {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 15px;
+    flex-direction: column;
 }
 
-.tm-role-badge {
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    background: rgba(142, 68, 173, 0.2);
-    color: #9b59b6;
-}
-
-.tm-actions {
-    display: flex;
-    gap: 6px;
-}
-
-.tm-action-btn {
-    background: #2d2d2d;
-    border: 1px solid #444;
-    color: #a7a7a7;
-    padding: 6px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.tm-action-btn:hover {
-    color: #0ed45a;
-    border-color: #0ed45a;
-}
-
-.tm-action-btn.delete-btn:hover {
-    color: #ff4444;
-    border-color: #ff4444;
-}
-
-.tm-user-body {
-    text-align: center;
-    padding-bottom: 15px;
-}
-
-.tm-user-body img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    border: 2px solid #5a5a5a;
-    margin-bottom: 10px;
-}
-
-.tm-user-avatar-deleted {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    border: 2px solid #5a5a5a;
-    background: #1a1a1a;
+.full-screen-loader {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 10px auto;
-    color: #ff4757;
-    font-size: 28px;
+    height: 60vh;
+}
+
+.team-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: var(--space-4);
+    margin-top: 20px;
+    align-items: stretch;
+}
+
+/* Üye kartı */
+.team-card {
+    background: var(--white-a2);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-2xl);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 320px; 
+    transition: all var(--transition-spring);
+}
+
+/* İlk kart (Admin) üst border aksanı */
+.team-grid-container .team-card:first-child::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--status-danger-border), transparent);
+}
+
+.team-card:hover {
+    border-color: var(--white-a10);
+    background: var(--white-a3);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Kart başlığı */
+.tm-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    flex-shrink: 0;
+}
+
+/* Rol badge */
+.tm-role-badge {
+    padding: 3px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 0.67rem;
+    font-weight: 700;
+    font-family: var(--font-sans);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.tm-role-badge.admin     { background: var(--status-danger-bg);   color: var(--status-danger); border: 1px solid var(--status-danger-border); }
+.tm-role-badge.moderator { background: var(--status-warning-bg); color: var(--status-warning); border: 1px solid var(--status-warning-border); }
+.tm-role-badge.member    { background: var(--status-info-bg);    color: var(--status-info); border: 1px solid var(--status-info-border); }
+
+/* Aksiyon butonları */
+.tm-actions { display: flex; gap: 6px; }
+
+.tm-action-btn {
+    background: var(--white-a3);
+    border: 1px solid var(--white-a7);
+    color: var(--text-tertiary);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tm-action-btn:hover {
+    background: var(--accent-subtle);
+    color: var(--accent-color);
+    border-color: var(--accent-border);
+}
+
+.tm-action-btn.delete-btn:hover {
+    background: var(--status-danger-bg);
+    color: var(--status-danger);
+    border-color: var(--status-danger-border);
+}
+
+.tm-action-btn:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+/* Kullanıcı gövdesi */
+.tm-user-body {
+    text-align: center;
+    padding-bottom: 18px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
 }
 
 .tm-user-body h3 {
-    color: #fff;
-    font-size: 1.1rem;
+    margin: 0 0 4px 0;
+    min-height: 1.2rem;
+}
+
+.tm-user-body p {
+    margin: 0;
+    min-height: 1rem; 
+    line-height: 1;
+}
+
+.tm-user-body img {
+    width: 68px;
+    height: 68px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--white-a8);
+    margin-bottom: 12px;
+    object-fit: cover;
+}
+
+.tm-user-avatar-deleted {
+    width: 68px;
+    height: 68px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--status-danger-border);
+    background: var(--status-danger-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    color: var(--status-danger);
+    font-size: 1.6rem;
+}
+
+.tm-user-body h3 {
+    color: var(--text-primary);
+    font-size: 0.98rem;
+    font-weight: 700;
+    font-family: var(--font-head);
+    letter-spacing: -0.2px;
     margin-bottom: 4px;
 }
 
 .tm-user-body p {
-    color: #888;
-    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    font-size: 0.78rem;
+    font-family: var(--font-sans);
 }
 
+/* Alt alan */
 .tm-user-footer {
-    border-top: 1px solid #4a4a4a;
-    padding-top: 15px;
+    border-top: 1px solid var(--white-a5);
+    padding-top: 14px;
+    flex-shrink: 0;
+    width: 100%;
 }
 
 .tm-stat {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 12px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
 }
 
 .stat-label {
-    color: #777;
+    color: var(--text-tertiary);
+    font-family: var(--font-sans);
 }
 
 .stat-value {
-    color: #fff;
-    font-weight: 500;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-family: var(--font-sans);
 }
 
+/* Log butonu */
 .view-full-logs-btn {
     width: 100%;
-    padding: 8px;
-    background: #2d2d2d;
-    border: 1px solid #444;
-    color: #fff;
-    border-radius: 6px;
+    padding: 9px;
+    background: var(--white-a2);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    border-radius: var(--radius-md);
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .view-full-logs-btn:hover {
-    background: #444;
+    background: var(--accent-ghost);
+    color: var(--accent-color);
+    border-color: var(--accent-border);
 }
 
+/* Üye ekle kartı */
 .add-member-card {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border: 2px dashed #5a5a5a;
-    background: transparent;
-    min-height: 280px;
+    gap: 10px;
+    border: 1px dashed var(--white-a8);
+    background: var(--white-a1);
+    min-height: 320px;
     cursor: pointer;
+    transition:
+        border-color var(--transition-spring),
+        background   var(--transition-spring),
+        transform    var(--transition-spring);
 }
 
 .add-member-card:hover {
-    border-color: #0ed45a;
-    background: rgba(14, 212, 90, 0.03);
+    border-color: var(--accent-border);
+    background: var(--accent-subtle);
+    transform: translateY(-4px);
 }
 
 .add-icon-wrapper {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: #3d3d3d;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    color: #0ed45a;
-    margin-bottom: 12px;
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    transition: transform var(--transition-spring);
 }
 
-.tm-role-badge.admin { background: #ff4757; color: #fff; }
-.tm-role-badge.moderator { background: #ffa502; color: #fff; }
-.tm-role-badge.member { background: #2f3542; color: #fff; }
+.add-member-card:hover .add-icon-wrapper {
+    transform: scale(1.1) rotate(-4deg);
+}
+
+.add-member-card span {
+    color: var(--text-tertiary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    transition: color var(--transition-fast);
+}
+
+.add-member-card:hover span { color: var(--accent-color); }

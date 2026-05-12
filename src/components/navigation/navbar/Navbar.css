@@ -1,20 +1,20 @@
 header.navbar-header {
     display: flex;
     justify-content: center;
-    background: rgba(5, 5, 7, 0.82);
+    background: var(--bg-navbar);
     backdrop-filter: blur(24px) saturate(200%);
     -webkit-backdrop-filter: blur(24px) saturate(200%);
     padding: 14px 24px;
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-    transition: background 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    border-bottom: 1px solid var(--white-a7);
+    transition: background var(--transition-spring);
 }
 
 .nav-container {
     width: 100%;
-    max-width: 100%;
+    max-width: var(--container-max); 
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -22,6 +22,7 @@ header.navbar-header {
     gap: 20px;
 }
 
+/* Logo Alanı */
 .app-logo {
     display: flex;
     align-items: center;
@@ -34,10 +35,11 @@ header.navbar-header {
 .logo-icon-wrapper {
     width: 34px;
     height: 34px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
 .logo-img {
@@ -52,13 +54,14 @@ header.navbar-header {
     font-size: 1.25rem;
     font-weight: 800;
     letter-spacing: -0.5px;
-    background: linear-gradient(90deg, #0ed45a, #00d2ff);
+    background: linear-gradient(90deg, #0edd0e, #00d2ff);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 0;
 }
 
+/* Orta Linkler */
 .nav-links-center {
     flex-grow: 1;
     display: flex;
@@ -76,37 +79,41 @@ header.navbar-header {
 
 .nav-links-center ul li a {
     text-decoration: none;
-    color: #888;
+    color: var(--text-tertiary);
     padding: 7px 13px;
     font-size: 0.85rem;
     font-weight: 500;
-    border-radius: 10px;
-    transition: color 0.25s ease, background 0.25s ease;
+    border-radius: var(--radius-md);
+    transition: 
+        color var(--transition-base), 
+        background var(--transition-base);
     display: flex;
     align-items: center;
     gap: 6px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
 }
 
 .nav-links-center ul li a:hover {
-    background: rgba(255, 255, 255, 0.03);
-    color: #f0f0f2;
+    background: var(--white-a3);
+    color: var(--text-primary);
 }
 
 .nav-links-center ul li a.active {
-    color: #0ed45a;
-    background: rgba(14, 212, 90, 0.07);
+    color: var(--accent-color);
+    background: var(--accent-subtle);
 }
 
 .nav-links-center ul li a i {
     font-size: 1rem;
     opacity: 0.7;
+    transition: opacity var(--transition-fast);
 }
 
 .nav-links-center ul li a.active i {
     opacity: 1;
 }
 
+/* Sağ Aksiyonlar */
 .nav-actions-right {
     display: flex;
     flex-direction: row;
@@ -125,15 +132,16 @@ header.navbar-header {
 .btn-dark {
     padding: 8px 10px;
     font-size: 1rem;
-    background: rgba(255, 255, 255, 0.03);
-    color: #666;
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 10px;
+    background: var(--white-a3);
+    color: var(--text-muted);
+    border: 1px solid var(--white-a7);
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: background 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-                border-color 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-                color 0.25s ease,
-                transform 0.25s ease;
+    transition: 
+        background var(--transition-spring),
+        border-color var(--transition-spring),
+        color var(--transition-base),
+        transform var(--transition-base);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -141,18 +149,19 @@ header.navbar-header {
 }
 
 .btn-dark:hover {
-    background: rgba(255, 255, 255, 0.045);
-    border-color: rgba(255, 255, 255, 0.14);
-    color: #f0f0f2;
+    background: var(--white-a5);
+    border-color: var(--white-a14);
+    color: var(--text-primary);
     transform: translateY(-1px);
 }
 
 .btn-dark.active {
-    background: rgba(14, 212, 90, 0.07);
-    border-color: rgba(14, 212, 90, 0.25);
-    color: #0ed45a;
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent-color);
 }
 
+/* Profil ve Bildirim */
 .head-user-profile {
     position: relative;
     cursor: pointer;
@@ -161,14 +170,16 @@ header.navbar-header {
 .head-profile-img {
     width: 34px;
     height: 34px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
+    border: 1px solid var(--white-a10);
+    border-radius: var(--radius-full);
     overflow: hidden;
-    transition: border-color 0.25s ease, transform 0.25s ease;
+    transition: 
+        border-color var(--transition-base), 
+        transform var(--transition-base);
 }
 
 .head-profile-img:hover {
-    border-color: rgba(14, 212, 90, 0.4);
+    border-color: var(--accent-border);
     transform: scale(1.05);
 }
 
@@ -182,20 +193,34 @@ header.navbar-header {
     position: relative;
 }
 
+/* Bildirim Noktası */
 .nt-dot {
     width: 6px;
     height: 6px;
-    background: #0ed45a;
-    border-radius: 50%;
+    background: var(--accent-color);
+    border-radius: var(--radius-full);
     position: absolute;
     top: 5px;
     right: 5px;
-    border: 1.5px solid #050507;
-    box-shadow: 0 0 6px rgba(14, 212, 90, 0.6);
+    border: 1.5px solid var(--bg-surface);
+    box-shadow: 0 0 6px var(--accent-glow); 
     animation: ntPulse 2.2s ease infinite;
+}
+
+.btn-dark.btn-danger-action:hover {
+    background: var(--status-danger-bg);
+    border-color: var(--status-danger-border);
+    color: var(--status-danger);
 }
 
 @keyframes ntPulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50%       { opacity: 0.5; transform: scale(1.25); }
+}
+
+/* Mobil Duyarlılık İçin Ufak Dokunuş */
+@media (max-width: 768px) {
+    .nav-links-center {
+        display: none; 
+    }
 }

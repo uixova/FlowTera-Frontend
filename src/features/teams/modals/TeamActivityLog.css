@@ -1,7 +1,7 @@
 .tm-log-user-info {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: var(--space-3);
 }
 
 .tm-avatar-wrapper {
@@ -16,68 +16,71 @@
     height: 100%;
     object-fit: cover;
     border-radius: 13px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-subtle);
 }
 
 .tm-avatar-deleted {
     width: 100%;
     height: 100%;
     border-radius: 13px;
-    border: 1px solid rgba(255, 86, 48, 0.2);
-    background: rgba(255, 86, 48, 0.06);
+    border: 1px solid var(--status-danger-border);
+    background: var(--status-danger-bg);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ff5630;
+    color: var(--status-danger);
     font-size: 1.3rem;
 }
 
+/* Durum Noktası */
 .status-dot {
     position: absolute;
     bottom: -2px;
     right: -2px;
     width: 12px;
     height: 12px;
-    border-radius: 50%;
-    border: 2px solid #050507;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--bg-surface);
 }
 
 .status-dot.online {
-    background: #0ed45a;
-    box-shadow: 0 0 8px rgba(14, 212, 90, 0.5);
+    background: var(--status-success);
+    box-shadow: 0 0 8px var(--status-success-glow);
 }
 
 .user-meta h3 {
-    color: #f0f0f2;
+    color: var(--text-primary);
     font-size: 0.98rem;
     font-weight: 700;
     margin: 0 0 3px;
-    font-family: 'Syne', sans-serif;
+    font-family: var(--font-head);
     letter-spacing: -0.2px;
 }
 
 .user-meta span {
-    color: #2c2c38;
+    color: var(--text-muted);
     font-size: 0.78rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
 }
 
-/* Arama alanı */
+/* Log Gövdesi ve Arama */
 .tm-log-search-wrapper {
-    margin-bottom: 16px;
+    margin-bottom: var(--space-4);
 }
 
-/* Log body */
 .tm-log-body-content {
     flex: 1;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.06) transparent;
+    scrollbar-color: var(--white-a6) transparent;
 }
 
 .tm-log-body-content::-webkit-scrollbar       { width: 3px; }
 .tm-log-body-content::-webkit-scrollbar-track { background: transparent; }
-.tm-log-body-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 10px; }
+.tm-log-body-content::-webkit-scrollbar-thumb { 
+    background: var(--white-a10); 
+    border-radius: var(--radius-full); 
+}
 
 .log-loader-container {
     display: flex;
@@ -85,7 +88,7 @@
     padding: 48px 0;
 }
 
-/* Timeline */
+/* Timeline (Zaman Tüneli) */
 .timeline-container {
     display: flex;
     flex-direction: column;
@@ -94,12 +97,12 @@
 .timeline-item {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
+    gap: var(--space-3);
     padding-bottom: 24px;
     position: relative;
 }
 
-/* İkon altındaki dikey çizgi */
+/* Dikey Çizgi (Timeline Line) */
 .timeline-item:not(:last-child)::after {
     content: '';
     position: absolute;
@@ -107,7 +110,7 @@
     top: 36px;
     bottom: 0;
     width: 1px;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.06), transparent);
+    background: linear-gradient(to bottom, var(--border-faint), transparent);
 }
 
 .timeline-icon {
@@ -122,24 +125,23 @@
     z-index: 1;
 }
 
-.timeline-icon.green  { color: #0ed45a; background: rgba(14,212,90,0.08);   border: 1px solid rgba(14,212,90,0.18);   }
-.timeline-icon.orange { color: #ffab00; background: rgba(255,171,0,0.08);   border: 1px solid rgba(255,171,0,0.18);   }
-.timeline-icon.red    { color: #ff5630; background: rgba(255,86,48,0.08);   border: 1px solid rgba(255,86,48,0.18);   }
-.timeline-icon.blue   { color: #00b8d9; background: rgba(0,184,217,0.08);   border: 1px solid rgba(0,184,217,0.18);   }
-.timeline-icon.purple { color: #9d4edd; background: rgba(157,78,221,0.08);  border: 1px solid rgba(157,78,221,0.18);  }
+/* Renkli İkon Durumları */
+.timeline-icon.green  { color: var(--status-success); background: var(--status-success-bg); border: 1px solid var(--status-success-border); }
+.timeline-icon.orange { color: var(--status-warning); background: var(--status-warning-bg); border: 1px solid var(--status-warning-border); }
+.timeline-icon.red    { color: var(--status-danger);  background: var(--status-danger-bg);  border: 1px solid var(--status-danger-border);  }
+.timeline-icon.blue   { color: var(--status-info);    background: var(--status-info-bg);    border: 1px solid var(--status-info-border);    }
+.timeline-icon.purple { color: #9d4edd; background: rgba(157, 78, 221, 0.08); border: 1px solid rgba(157, 78, 221, 0.18); }
 
 .timeline-content {
     flex: 1;
-    background: rgba(255, 255, 255, 0.018);
-    border: 1px solid rgba(255, 255, 255, 0.055);
+    background: var(--white-a2);
+    border: 1px solid var(--border-subtle);
     border-radius: 14px;
     padding: 14px 16px;
-    transition: background 0.25s ease, transform 0.25s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .timeline-content:hover {
-    background: rgba(255, 255, 255, 0.03);
-    transform: translateX(4px);
+    background: var(--bg-hover);
 }
 
 .timeline-header {
@@ -150,25 +152,25 @@
 }
 
 .timeline-title {
-    color: #d8d8dc;
+    color: var(--text-secondary);
     font-weight: 600;
     font-size: 0.875rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
 }
 
 .timeline-date {
-    color: #28282e;
+    color: var(--text-disabled);
     font-size: 0.7rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
     white-space: nowrap;
 }
 
 .timeline-desc {
-    color: #484854;
+    color: var(--text-tertiary);
     font-size: 0.82rem;
     margin: 0;
     line-height: 1.55;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
 }
 
 .timeline-tag {
@@ -176,25 +178,25 @@
     align-items: center;
     margin-top: 10px;
     padding: 3px 10px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--bg-inset);
+    border: 1px solid var(--border-faint);
     border-radius: 6px;
     font-size: 0.68rem;
-    color: #0ed45a;
-    font-family: 'DM Sans', monospace;
+    color: var(--accent-color);
+    font-family: var(--font-sans);
     letter-spacing: 0.3px;
 }
 
-/* Boş durum */
+/* Boş Durum (No Activity) */
 .no-activity {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: var(--space-3);
     padding: 56px 0;
-    color: #22222a;
+    color: var(--text-disabled);
 }
 
 .no-activity i    { font-size: 2.2rem; opacity: 0.4; }
-.no-activity p    { font-size: 0.82rem; font-family: 'DM Sans', sans-serif; margin: 0; }
+.no-activity p    { font-size: 0.82rem; font-family: var(--font-sans); margin: 0; }

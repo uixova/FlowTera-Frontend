@@ -1,15 +1,15 @@
 .tm-modal-user {
     display: flex;
     align-items: center;
-    gap: 13px;
+    gap: var(--space-3);
 }
 
 .role-icon-box {
     width: 38px;
     height: 38px;
-    background: rgba(14, 212, 90, 0.06);
-    border: 1px solid rgba(14, 212, 90, 0.14);
-    color: #0ed45a;
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
+    color: var(--accent-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -19,54 +19,50 @@
 }
 
 .user-meta h3 {
-    color: #f0f0f2;
+    color: var(--text-primary);
     margin: 0 0 3px;
     font-size: 0.95rem;
     font-weight: 700;
-    font-family: 'Syne', sans-serif;
+    font-family: var(--font-head);
     letter-spacing: -0.2px;
 }
 
 .user-meta p {
-    color: #2c2c38;
+    color: var(--text-muted);
     margin: 0;
     font-size: 0.78rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
 }
 
-/* Rol listesi */
+/* Rol Listesi */
 .role-selection-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-3);
 }
 
 .role-option-wrapper { display: block; }
-
 .role-option-label input[type="radio"] { display: none; }
 
 .role-card-content {
-    background: rgba(255, 255, 255, 0.018);
-    border: 1px solid rgba(255, 255, 255, 0.065);
+    background: var(--white-a2);
+    border: 1px solid var(--border-subtle);
     border-radius: 16px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     cursor: pointer;
-    transition:
-        border-color 0.3s cubic-bezier(0.23, 1, 0.32, 1),
-        background   0.3s cubic-bezier(0.23, 1, 0.32, 1),
-        transform    0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: var(--transition-base) var(--transition-spring);
 }
 
 .role-option-wrapper:hover .role-card-content {
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateX(3px);
+    border-color: var(--border-strong);
+    background: var(--bg-hover);
 }
 
 .role-option-label.active .role-card-content {
-    border-color: rgba(14, 212, 90, 0.3);
-    background: rgba(14, 212, 90, 0.03);
+    border-color: var(--accent-border);
+    background: var(--accent-subtle);
 }
 
 .role-header-part {
@@ -85,49 +81,48 @@
 .role-name {
     font-weight: 700;
     font-size: 0.9rem;
-    font-family: 'Syne', sans-serif;
+    font-family: var(--font-head);
 }
 
-.role-name.admin     { color: #ff5630; }
-.role-name.moderator { color: #ffab00; }
-.role-name.member    { color: #00b8d9; }
+.role-name.admin     { color: var(--status-danger); }
+.role-name.moderator { color: var(--status-warning); }
+.role-name.member    { color: var(--status-info); }
 
 .role-desc {
-    color: #2c2c38;
+    color: var(--text-tertiary);
     font-size: 0.76rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
     line-height: 1.4;
 }
 
 .role-check-indicator {
     width: 22px;
     height: 22px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-full);
+    background: var(--white-a5);
+    border: 1px solid var(--border-subtle);
     color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.75rem;
     flex-shrink: 0;
-    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    transition: var(--transition-base);
 }
 
 .role-option-label.active .role-check-indicator {
-    background: #0ed45a;
-    border-color: #0ed45a;
-    color: #050507;
+    background: var(--status-success);
+    color: var(--accent-fg);
 }
 
-/* İzin listesi — seçildiğinde açılır */
+/* İzin Listesi (Seçildiğinde Açılır) */
 .role-internal-perms {
     max-height: 0;
     opacity: 0;
     overflow: hidden;
     padding: 0 18px;
     border-top: 1px solid transparent;
-    transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+    transition: var(--transition-base);
     box-sizing: border-box;
 }
 
@@ -135,117 +130,127 @@
     max-height: 280px;
     opacity: 1;
     padding: 14px 18px 18px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    
-    display: block; 
+    border-top: 1px solid var(--border-faint);
     overflow-y: auto;
-    overflow-x: hidden;
 }
 
+/* Scrollbar Style */
 .role-internal-perms::-webkit-scrollbar { width: 4px; }
 .role-internal-perms::-webkit-scrollbar-track { background: transparent; }
-.role-internal-perms::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; } 
-.role-internal-perms::-webkit-scrollbar-thumb:hover { background: rgba(14, 212, 90, 0.5); }
+.role-internal-perms::-webkit-scrollbar-thumb { 
+    background: var(--white-a15); 
+    border-radius: var(--radius-full); 
+}
+.role-internal-perms::-webkit-scrollbar-thumb:hover { 
+    background: var(--accent-glow); 
+}
 
 .tm-perm-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 10px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid var(--border-faint);
     cursor: pointer;
 }
 
 .tm-perm-row:last-child { border-bottom: none; }
-.tm-perm-row:hover .tm-perm-text span { color: #f0f0f2; }
+.tm-perm-row:hover .tm-perm-text span { color: var(--text-primary); }
 
 .tm-perm-text span {
     display: block;
     font-size: 0.82rem;
-    color: #888;
+    color: var(--text-secondary);
     font-weight: 500;
-    font-family: 'DM Sans', sans-serif;
-    transition: color 0.2s ease;
+    font-family: var(--font-sans);
+    transition: var(--transition-fast);
 }
 
 .tm-perm-text small {
     font-size: 0.7rem;
-    color: #28282e;
-    font-family: 'DM Sans', sans-serif;
+    color: var(--text-disabled);
+    font-family: var(--font-sans);
 }
 
+/* Custom Checkbox (Perms) */
 .tm-custom-check {
     width: 20px;
     height: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-inset);
     flex-shrink: 0;
-    transition: background 0.2s ease, border-color 0.2s ease;
+    transition: var(--transition-base);
 }
 
 .tm-custom-check.checked {
-    background: rgba(255, 86, 48, 0.12);
-    border-color: rgba(255, 86, 48, 0.3);
+    background: var(--status-danger-bg);
+    border-color: var(--status-danger-border);
 }
 
-.tm-custom-check i { color: #ff5630; font-size: 11px; }
+.tm-custom-check i { 
+    color: var(--status-danger); 
+    font-size: 11px; 
+}
 
 .admin-notice {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: var(--space-2);
     padding: 10px 0;
-    color: #28282e;
+    color: var(--text-disabled);
     font-size: 0.78rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
     font-style: italic;
 }
 
-/* Footer butonları */
+/* Footer Butonları */
 .tm-modal-footer-grid {
     display: grid;
     grid-template-columns: 1fr 2fr;
-    gap: 10px;
+    gap: var(--space-3);
     width: 100%;
 }
 
 .tm-cancel-btn {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    color: #444;
+    background: var(--bg-inset);
+    border: 1px solid var(--border-default);
+    color: var(--text-tertiary);
     padding: 13px;
     border-radius: 12px;
     cursor: pointer;
     font-weight: 600;
-    font-family: 'DM Sans', sans-serif;
-    transition: background 0.25s ease, color 0.25s ease;
+    font-family: var(--font-sans);
+    transition: var(--transition-base);
 }
 
-.tm-cancel-btn:hover { background: rgba(255,255,255,0.07); color: #f0f0f2; }
+.tm-cancel-btn:hover { 
+    background: var(--bg-hover); 
+    color: var(--text-primary); 
+}
 
 .tm-save-role-btn {
-    background: #0ed45a;
-    color: #050507;
+    background: var(--accent-color);
+    color: var(--accent-fg);
     border: none;
     padding: 13px;
     border-radius: 12px;
     font-weight: 700;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
     cursor: pointer;
-    transition:
-        background 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-        transform  0.35s cubic-bezier(0.23, 1, 0.32, 1),
-        box-shadow 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: var(--transition-spring);
 }
 
 .tm-save-role-btn:hover:not(:disabled) {
-    background: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(14, 212, 90, 0.25);
+    box-shadow: var(--shadow-accent);
 }
 
-.tm-save-role-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.tm-save-role-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: saturate(0.5);
+}

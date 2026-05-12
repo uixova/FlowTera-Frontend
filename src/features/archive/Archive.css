@@ -101,17 +101,17 @@
     gap: 12px;
 }
 
-.archive-card {
+.archive-container .archive-card {
     background: #0d0d0d;
     border: 1px solid #1a1a1a;
     border-radius: 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden; 
+    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
-.status-approved { border-left: 3px solid #10b981; }
-.is-pending { border-left: 3px solid #f59e0b; }
-.is-rejected { border-left: 3px solid #ef4444; }
+.archive-container .status-approved { border-left: 3px solid #10b981 !important; }
+.archive-container .is-pending      { border-left: 3px solid #f59e0b !important; }
+.archive-container .is-rejected     { border-left: 3px solid #ef4444 !important; }
 
 .card-summary {
     display: grid;

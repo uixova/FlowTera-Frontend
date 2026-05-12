@@ -1,0 +1,76 @@
+{
+  "compilerOptions": {
+
+    // Hedef & Modül
+    "target": "ES2020",                        // Vite zaten transpile ediyor
+    "module": "ESNext",                        // Vite ESM tabanlı çalışır
+    "moduleResolution": "Bundler",             // Vite/esbuild için doğru mod
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],  // Browser + modern JS API'leri
+
+    // JSX
+    "jsx": "react-jsx",          // React 17+ yeni JSX transform — import React gerekmez
+    "jsxImportSource": "react",
+
+    // Tip Kaynakları 
+    "types": ["vite/client"],    // import.meta.env tanımları buradan gelir
+
+    // Katı Tip Kontrolü 
+    "strict": false,             // Tüm dosyaları birden sıkmaz; ts ye geçince dosya bazlı açarsın
+    "noImplicitAny": false,      // js → ts geçişinde any'e izin ver, sonra sıkıştırırsın
+    "strictNullChecks": true,    // null/undefined hataları — en kritik olan, şimdiden açık kalsın
+    "strictFunctionTypes": true, // Fonksiyon parametresi tip uyumsuzluklarını yakala
+    "noImplicitReturns": true,   // Return eksik bırakma
+    "noFallthroughCasesInSwitch": true,
+
+    // JS/JSX Dosyalarını da Kontrol Et
+    "allowJs": true,             // .js ve .jsx dosyaları da derlemeye girer
+    "checkJs": false,            // .js dosyalarında tip hatası vermez — geçiş sürecinde kritik
+    "allowImportingTsExtensions": true, // .ts/.tsx import'larında uzantı yazılabilir
+
+    // Modül Çözümleme
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".", // Proje kökü baz alınır
+    "paths": {
+      "@/*":           ["./src/*"], // @/components/... şeklinde kullanım
+      "@components/*": ["./src/components/*"],
+      "@features/*":   ["./src/features/*"],
+      "@context/*":    ["./src/context/*"],
+      "@styles/*":     ["./src/styles/*"],
+      "@api/*":        ["./src/api/*"],
+      "@types/*":      ["./src/types/*"],
+      "@utils/*":      ["./src/utils/*"],
+      "@hooks/*":      ["./src/hooks/*"],
+      "@assets/*":     ["./src/assets/*"]
+    },
+
+    // Interop
+    "esModuleInterop": true,          // import X from 'y' — CJS modüllerde sorun çıkarmaz
+    "allowSyntheticDefaultImports": true, // default export olmayan lib'leri import et
+    "resolveJsonModule": true,        // import data from './data.json' çalışsın
+    "isolatedModules": true,          // Vite her dosyayı ayrı transpile eder — zorunlu
+
+    // Çıktı
+    "noEmit": true,              // Derlemeyi Vite yapıyor; ts sadece tip kontrolü yapar
+    "skipLibCheck": true,        // node_modules içi tip hatalarını yoksay — hız kazanır
+
+    // Ek Kalite Kontrolleri
+    "forceConsistentCasingInFileNames": true,  // Windows/Linux arasında büyük/küçük harf tutarlılığı
+    "useUnknownInCatchVariables": false        // catch(e) → e:unknown yerine any kalır; geçiş kolaylığı
+  },
+
+  // Kapsam
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.js",
+    "src/**/*.jsx",
+    "src/vite-env.d.ts"
+  ],
+
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    ".vite"
+  ]
+}

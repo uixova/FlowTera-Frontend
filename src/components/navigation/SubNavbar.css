@@ -5,16 +5,16 @@
     padding: 12px 24px;
     margin-bottom: 24px;
     width: 100%;
-    background: rgba(255, 255, 255, 0.015);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 16px;
+    background: var(--white-a2); 
+    border: 1px solid var(--white-a5);
+    border-radius: var(--radius-xl);
     backdrop-filter: blur(12px);
 }
 
 .sub-nav-left h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #f0f0f2;
+    color: var(--text-primary);
     margin: 0;
     font-family: 'Syne', sans-serif;
     letter-spacing: -0.3px;
@@ -26,42 +26,43 @@
     gap: 12px; 
 }
 
+/* Breadcrumb Tasarımı */
 .sub-nav-breadcrumb {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
 }
 
 .breadcrumb-team {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #888; 
+    color: var(--text-tertiary); 
     display: flex;
     align-items: center;
     gap: 6px;
     padding: 6px 10px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--white-a3);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--white-a5);
 }
 
 .breadcrumb-separator {
     font-size: 0.9rem;
-    color: #555;
+    color: var(--text-muted); 
 }
 
 .breadcrumb-page {
     font-size: 1.25rem;
     font-weight: 700;
     font-family: 'Syne', sans-serif;
-    background: linear-gradient(90deg, #f0f0f2, #a0a0a5);
+    background: linear-gradient(90deg, var(--text-primary), var(--text-tertiary));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-/* Özel Arama Kutusu */
+/* Özel Arama Kutusu (Dynamic Width) */
 .sub-search-wrapper {
     position: relative;
     display: flex;
@@ -71,92 +72,131 @@
 .sub-search-wrapper .search-icon {
     position: absolute;
     left: 14px;
-    color: #666;
+    color: var(--text-muted);
     font-size: 1.1rem;
-    transition: color 0.3s ease;
+    transition: color var(--transition-base);
 }
 
 .sub-search-wrapper input {
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.065);
+    background: var(--bg-inset);
+    border: 1px solid var(--border-subtle);
     padding: 10px 14px 10px 40px;
-    border-radius: 12px;
-    color: #f0f0f2;
-    font-size: 0.85rem;
-    font-family: 'DM Sans', sans-serif;
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    font-family: var(--font-sans);
     width: 260px;
     outline: none;
-    transition: border-color 0.3s ease, background 0.3s ease, width 0.3s ease;
+    transition: 
+        border-color var(--transition-spring), 
+        background var(--transition-spring), 
+        width var(--transition-spring),
+        box-shadow var(--transition-spring);
 }
 
-.sub-search-wrapper input::placeholder { color: #555; }
+.sub-search-wrapper input::placeholder { color: var(--text-muted); }
 
 .sub-search-wrapper input:focus {
-    border-color: rgba(14, 212, 90, 0.3);
-    background: rgba(14, 212, 90, 0.04);
-    width: 290px;
+    border-color: var(--accent-border-strong);
+    background: var(--bg-input-focus);
+    width: 300px;
+    box-shadow: 0 0 0 4px var(--accent-glow-sm);
 }
 
 .sub-search-wrapper input:focus + .search-icon {
-    color: #0ed45a;
+    color: var(--accent-color);
 }
 
+/* Sub-nav Aksiyon Butonları */
 .btn-dark-sub {
     padding: 10px 14px;
     font-size: 0.9rem;
-    background: rgba(255, 255, 255, 0.03);
-    color: #888;
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 12px;
+    background: var(--white-a3);
+    color: var(--text-tertiary);
+    border: 1px solid var(--white-a7);
+    border-radius: var(--radius-lg);
     cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
     font-weight: 600;
-    transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: all var(--transition-spring);
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.btn-dark-sub i { font-size: 1.1rem; }
-
 .btn-dark-sub:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.15);
-    color: #f0f0f2;
+    background: var(--white-a5);
+    border-color: var(--white-a15);
+    color: var(--text-primary);
     transform: translateY(-1px);
 }
 
+/* Ana "Create" Butonu */
 .sub-create-btn {
-    background: linear-gradient(135deg, #0ed45a 0%, #00b04a 100%);
-    color: #050507;
-    border: 1px solid rgba(14, 212, 90, 0.5);
+    position: relative;
+    overflow: hidden;
+    background: var(--accent-color); 
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--main-color) 100%);
+    color: var(--accent-fg);
+    border: none;
     padding: 10px 18px;
-    font-size: 0.9rem;
-    font-family: 'DM Sans', sans-serif;
+    font-size: var(--text-base);
+    font-family: var(--font-sans);
     font-weight: 700;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
-    box-shadow: 0 4px 14px rgba(14, 212, 90, 0.15);
+    z-index: 1;
+    transition: 
+        transform var(--transition-spring), 
+        box-shadow var(--transition-spring),
+        color var(--transition-base);
+    box-shadow: var(--shadow-sm), 0 4px 12px var(--accent-glow-sm);
 }
 
-.sub-create-btn i { font-size: 1.1rem; }
+.sub-create-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--main-color-hover) 0%, var(--accent-bright) 100%);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity var(--transition-slow); 
+}
 
 .sub-create-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(14, 212, 90, 0.3);
-    background: linear-gradient(135deg, #12f56b 0%, #00cc55 100%);
+    box-shadow: var(--shadow-accent);
+    color: var(--accent-fg);
 }
 
+.sub-create-btn:hover::before {
+    opacity: 1;
+}
+
+.sub-create-btn:active {
+    transform: translateY(0) scale(0.97);
+}
+
+/* Simge Ayarı */
+.sub-create-btn i {
+    font-size: var(--text-lg);
+    color: inherit;
+    display: flex;
+    align-items: center;
+    filter: drop-shadow(0 0 2px rgba(0,0,0,0.2));
+}
+
+/* Currency/Uyarı Indicator */
 .nav-currency-indicator {
-    color: #ffab00;
-    background: rgba(255, 171, 0, 0.08);
-    border-color: rgba(255, 171, 0, 0.2);
+    color: var(--status-warning);
+    background: var(--status-warning-bg);
+    border-color: var(--status-warning-border);
 }
 
+/* Responsive Düzenleme */
 @media (max-width: 900px) {
     .sub-navbar-container {
         flex-direction: column;
@@ -169,11 +209,17 @@
         width: 100%;
         flex-wrap: wrap;
         justify-content: flex-start;
+        gap: 10px;
+    }
+
+    .sub-search-wrapper {
+        width: 100%;
     }
 
     .sub-search-wrapper input {
         width: 100%;
     }
+    
     .sub-search-wrapper input:focus {
         width: 100%;
     }

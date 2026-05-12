@@ -3,7 +3,7 @@
     inset: 0;
     z-index: 9999;
     visibility: hidden;
-    transition: visibility 0.4s;
+    transition: visibility var(--transition-base);
 }
 
 .as-wrapper.is-active {
@@ -13,11 +13,11 @@
 .as-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(5, 5, 7, 0.4);
+    background: var(--black-a40); 
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     opacity: 0;
-    transition: opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: opacity var(--transition-base) cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .as-wrapper.is-active .as-overlay {
@@ -31,14 +31,14 @@
     right: 0;
     width: var(--as-width, 520px);
     height: 100%;
-    background: #0a0a0c;
-    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--bg-surface); 
+    border-left: 1px solid var(--white-a7);
     display: flex;
     flex-direction: column;
-    box-shadow: -20px 0 50px rgba(0, 0, 0, 0.5);
+    box-shadow: -20px 0 50px var(--black-a55);
     
     transform: translateX(105%);
-    transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: transform var(--transition-spring);
     will-change: transform;
 }
 
@@ -46,6 +46,7 @@
     transform: translateX(0);
 }
 
+/* Üst aksan çizgisi */
 .as-panel::before {
     content: '';
     position: absolute;
@@ -53,7 +54,7 @@
     left: 0;
     width: 100%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(14, 212, 90, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, var(--accent-border), transparent);
 }
 
 /* Header Tasarımı */
@@ -62,52 +63,53 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.01);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--white-a2);
+    border-bottom: 1px solid var(--white-a5);
 }
 
 .as-header-content h2 {
     margin: 0;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
     font-family: 'Syne', sans-serif;
     letter-spacing: -0.5px;
 }
 
-/* Yeni Nesil Kapatma Butonu */
+/* Kapatma Butonu (Danger Map) */
 .as-close-circle {
     width: 36px;
     height: 36px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #666;
+    border-radius: var(--radius-full);
+    background: var(--white-a3);
+    border: 1px solid var(--white-a8);
+    color: var(--text-muted);
     display: grid;
     place-items: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all var(--transition-base) ease;
 }
 
 .as-close-circle:hover {
-    background: rgba(255, 86, 48, 0.1);
-    border-color: rgba(255, 86, 48, 0.2);
-    color: #ff5630;
+    background: var(--status-danger-bg);
+    border-color: var(--status-danger-border);
+    color: var(--status-danger);
     transform: rotate(90deg);
 }
 
 /* İçerik Alanı */
 .as-body {
     flex: 1;
-    padding: 32px;
+    padding: 24px;
     overflow-y: auto;
     position: relative;
 }
 
+/* Açılış animasyonu */
 .as-content-motion {
     opacity: 0;
     transform: translateY(5px);
-    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0.15s;
+    transition: all var(--transition-slow) cubic-bezier(0.23, 1, 0.32, 1) 0.15s;
 }
 
 .as-wrapper.is-active .as-content-motion {
@@ -118,35 +120,47 @@
 /* Footer Tasarımı */
 .as-footer {
     padding: 24px 32px;
-    background: rgba(5, 5, 7, 0.8);
+    background: var(--bg-nav);
     backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--white-a5);
+    
+    display: flex; 
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.as-footer > div {
+    display: flex;
+    width: 100%;
+    gap: 12px;
 }
 
 /* Özel Scrollbar */
-.custom-scroll::-webkit-scrollbar {
+.as-body::-webkit-scrollbar {
     width: 4px;
 }
 
-.custom-scroll::-webkit-scrollbar-track {
+.as-body::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.custom-scroll::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+.as-body::-webkit-scrollbar-thumb {
+    background: var(--white-a10);
+    border-radius: var(--radius-full);
 }
 
-.custom-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(14, 212, 90, 0.3);
+.as-body::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-border);
 }
 
+/* Responsive */
 @media (max-width: 600px) {
     .as-panel {
         width: 100% !important;
         border-left: none;
     }
     .as-body {
-        padding: 24px;
+        padding: 20px; 
     }
 }

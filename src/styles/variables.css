@@ -1,91 +1,403 @@
+/* =============================================================================
+   
+   KATMANLAR:
+   1. Primitive  - Ham değerler, sadece aşağıda kullanılır, component'e gitmez
+   2. Semantic   - Amaç bazlı token'lar, component CSS buradan beslenir
+   3. Sabitler   - Tema bağımsız, her iki temada da aynı kalır
+   ============================================================================= */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LAYER 1 — PRİMİTİF DEĞERLER
+   Bunları component CSS'te doğrudan kullanma. Sadece Layer 2'ye besleme amaçlı.
+   ───────────────────────────────────────────────────────────────────────────── */
 :root {
-    /* 1. Base */
-    --white: #fff;
-    --black: #000;
-    --transparent: transparent;
 
-    /* 2. Theme Accents (Yeşil/Mor vb. - Dinamik) */
-    --accent: #0ed45a;          
-    --accent-bright: #12ff6e;   
-    --accent-soft: #50e091;     
-    --accent-rgb-03: rgba(14, 212, 90, 0.03);
-    --accent-rgb-04: rgba(14, 212, 90, 0.04);
-    --accent-rgb-05: rgba(14, 212, 90, 0.05);
-    --accent-rgb-1: rgba(14, 212, 90, 0.1);
-    --accent-rgb-15: rgba(14, 212, 90, 0.15);
-    --accent-rgb-2: rgba(14, 212, 90, 0.2);
+    /* Gri Skalası — Dark sistem için taban */
+    --_gray-0:   #050507;
+    --_gray-1:   #0a0a0f;
+    --_gray-2:   #111118;
+    --_gray-3:   #18181f;
+    --_gray-4:   #1e1e26;
+    --_gray-5:   #26262f;
+    --_gray-6:   #2e2e38;
+    --_gray-7:   #3a3a45;
+    --_gray-8:   #4a4a58;
+    --_gray-9:   #606070;
+    --_gray-a:   #808090;
+    --_gray-b:   #a0a0b0;
+    --_gray-c:   #c0c0cc;
+    --_gray-d:   #dcdce8;
+    --_gray-e:   #f0f0f5;
+    --_gray-f:   #ffffff;
 
-    /* 3. Status */
-    --red-soft: #ff4444; --red-soft-alt: #ff4757; --red-sharp: #e74c3c;
-    --orange: #ffab00; --blue: #00b8d9; --blue-sharp: #007aff;
-    --blue-gray: #8cbed1; --purple: #A212E0;
+    /* Durum Primitifleri */
+    --_red:      #ff4444;
+    --_red-alt:  #ff5630;
+    --_orange:   #ffab00;
+    --_yellow:   #ffbe0b;
+    --_green:    #22c55e;
+    --_teal:     #00d2ff;
+    --_blue:     #007aff;
+    --_purple:   #8338ec;
+    --_pink:     #ff006e;
+    --_lavender: #a78bfa;
+    --_steel:    #8cbed1;
 
-    /* 4. Surface (Zeminler - Koyu) */
-    --bg-app: #181818; --bg-navbar: #111111; --bg-sidebar: #0f0f0f;
-    --bg-header: #0e0e0e; --bg-modal: #0a0a0a;
-    --bg-surface-10: #101010; --bg-surface-12: #121212;
-    --bg-surface-14: #141414; --bg-surface-15: #151515;
-    --bg-surface-16: #161616; --bg-surface-1a: #1a1a1a;
-    --bg-surface-1c: #1c1c1c; --bg-surface-1e: #1e1e1e;
-    --bg-surface-1f: #1f1f1f; --bg-surface-20: #202020;
-    --bg-surface-25: #252525; --bg-surface-28: #282828;
-    --bg-surface-33: #333333; --bg-surface-36: #363636;
-    --bg-item: #3d3d3d; --bg-item-hover: #464646;
-
-    /* 5. Borders */
-    --border-222: #222222; --border-2a: #2a2a2a; --border-2d: #2d2d2d;
-    --border-444: #444444; --border-4a: #4a4a4a; --border-5a: #5a5a5a;
-
-    /* 6. Typography (Yazılar - Açık) */
-    --text-main: #ffffff; --text-f1: #f1f1f1; --text-eee: #eeeeee;
-    --text-ef: #efefef; --text-d1: #d1d1d1; --text-ccc: #cccccc;
-    --text-aaa: #aaaaaa; --text-a7: #a7a7a7; --text-888: #888888;
-    --text-777: #777777; --text-666: #666666; --text-555: #555555;
-
-    /* 7. Glass/Overlays */
-    --ov-dark-075: rgba(0, 0, 0, 0.75); --ov-dark-05: rgba(0, 0, 0, 0.5);
-    --glass-white-1: rgba(255, 255, 255, 0.1); --glass-white-05: rgba(255, 255, 255, 0.05);
+    /* Main Color */
+    --main-color: #00b04a;
+    --main-color-hover: #12f56b
 }
 
-[data-theme='light'] {
-    /* 1. Base */
-    --white: #000; 
-    --black: #fff;
 
-    /* 2. Theme Accents (Işıkta biraz daha doygun yeşil) */
-    --accent: #0ba345; 
-    --accent-bright: #098a3a;
-    --accent-soft: #27ae60;
-    --accent-rgb-03: rgba(11, 163, 69, 0.08); 
-    --accent-rgb-1: rgba(11, 163, 69, 0.15);
+/* LAYER 2A — DARK TEMA (varsayılan) */
+:root,
+[data-theme="dark"] {
 
-    /* 4. Surface (Zeminler - Açık) */
-    --bg-app: #f8f9fa;      
-    --bg-navbar: #ffffff;   
-    --bg-sidebar: #f1f3f5;  
-    --bg-header: #e9ecef;   
-    --bg-modal: #ffffff;    
-    
-    --bg-surface-12: #fdfdfd; --bg-surface-1a: #f1f1f1;
-    --bg-surface-33: #e0e0e0; --bg-surface-36: #dadada;
-    
-    --bg-item: #ffffff;     
-    --bg-item-hover: #f0f0f0;
+    /* ACCENT — ThemeContext JS ile --accent-color'u override eder */
+    --accent-color:    #0ed45a;
 
-    /* 5. Borders (Koyu griler yerine hafif gri çizgiler) */
-    --border-222: #dee2e6;
-    --border-2a: #ced4da;
-    --border-4a: #adb5bd;
+    /* Accent türevleri — color-mix ile otomatik, 8 renk için tek tanım yeter   */
+    --accent-subtle:   color-mix(in srgb, var(--accent-color)  6%, transparent);
+    --accent-ghost:    color-mix(in srgb, var(--accent-color) 10%, transparent);
+    --accent-muted:    color-mix(in srgb, var(--accent-color) 16%, transparent);
+    --accent-soft:     color-mix(in srgb, var(--accent-color) 25%, transparent);
+    --accent-dim:      color-mix(in srgb, var(--accent-color) 35%, transparent);
+    --accent-mid:      color-mix(in srgb, var(--accent-color) 50%, transparent);
+    --accent-border:   color-mix(in srgb, var(--accent-color) 30%, transparent);
+    --accent-border-strong: color-mix(in srgb, var(--accent-color) 50%, transparent);
+    --accent-glow:     color-mix(in srgb, var(--accent-color) 35%, transparent);
+    --accent-glow-sm:  color-mix(in srgb, var(--accent-color) 20%, transparent);
+    --accent-text:     var(--accent-color);
+    --accent-fg:       #051a0d;   /* Accent buton üzerine yazı — koyu */
+    --accent-bright:   color-mix(in srgb, var(--accent-color) 100%, #fff 15%);
 
-    /* 6. Typography (Yazılar - Koyu) */
-    --text-main: #1a1a1b;   
-    --text-f1: #212529;
-    --text-eee: #343a40;
-    --text-ccc: #495057;
-    --text-888: #6c757d;    
-    --text-555: #adb5bd;    
+    /* ALFA DEĞERLER — Border, divider, glass efektler için */
+    /* "white" adı semantik — dark'ta beyaz, light'ta siyah alfa kullanılır     */
+    --white-a2:  rgba(255, 255, 255, 0.02);
+    --white-a3:  rgba(255, 255, 255, 0.03);
+    --white-a4:  rgba(255, 255, 255, 0.04);
+    --white-a5:  rgba(255, 255, 255, 0.05);
+    --white-a6:  rgba(255, 255, 255, 0.06);
+    --white-a7:  rgba(255, 255, 255, 0.07);
+    --white-a8:  rgba(255, 255, 255, 0.08);
+    --white-a10: rgba(255, 255, 255, 0.10);
+    --white-a12: rgba(255, 255, 255, 0.12);
+    --white-a15: rgba(255, 255, 255, 0.15);
+    --white-a20: rgba(255, 255, 255, 0.20);
+    --white-a25: rgba(255, 255, 255, 0.25);
 
-    /* 7. Glass/Overlays */
-    --ov-dark-075: rgba(0, 0, 0, 0.2); 
-    --glass-white-1: rgba(0, 0, 0, 0.05); 
+    /* Siyah alfa — overlay, shadow, backdrop */
+    --black-a30: rgba(0, 0, 0, 0.30);
+    --black-a50: rgba(0, 0, 0, 0.50);
+    --black-a55: rgba(0, 0, 0, 0.55);
+    --black-a75: rgba(0, 0, 0, 0.75);
+    --black-a85: rgba(0, 0, 0, 0.85);
+
+    /* ── ARKAPLAN — Derinlik sıralaması: base < app < surface < elevated < float */
+    --bg-base:           var(--_gray-0);   /* Body, en dip zemin               */
+    --bg-app:            var(--_gray-1);   /* Sayfa ana arkaplanı              */
+    --bg-surface:        var(--_gray-1);   /* Card, panel, section             */
+    --bg-surface-raised: var(--_gray-2);   /* Card üstü card, iç panel         */
+    --bg-elevated:       var(--_gray-2);   /* Dropdown, popover, floating panel */
+    --bg-overlay:        var(--_gray-3);   /* Modal, drawer arka yüzey         */
+    --bg-float:          var(--_gray-4);   /* Tooltip, context menu            */
+
+    /* Özel yüzeyler */
+    --bg-navbar:         var(--_gray-1);
+    --bg-dropdown:       var(--_gray-1);
+    --bg-sidebar:        var(--_gray-0);
+    --bg-modal:          var(--_gray-1);
+    --bg-header:         var(--_gray-0);
+    --bg-card:           var(--_gray-2);
+    --bg-card-hover:     var(--_gray-3);
+
+    /* İnteraktif yüzey durumları */
+    --bg-inset:          var(--white-a3);  /* Input iç, chip, tag             */
+    --bg-hover:          var(--white-a4);  /* Herhangi bir hover              */
+    --bg-active:         var(--white-a7);  /* Pressed, seçili                 */
+    --bg-selected:       var(--accent-ghost); /* Seçili liste öğesi           */
+    --bg-disabled:       var(--white-a2);  /* Devre dışı element              */
+    --bg-active:         var(--accent-subtle);      /* Focus durumundaki hafif arka plan rengi */
+    --bg-input-focus:    var(--bg-surface-raised); /* Input focus state için özel arkaplan */
+
+    /* Cam/Glass efekti */
+    --bg-glass:          rgba(10, 10, 15, 0.82);
+    --bg-glass-light:    rgba(10, 10, 15, 0.55);
+
+    /* Input özel */
+    --bg-input:          var(--_gray-3);
+    --bg-input-focus:    var(--_gray-4);
+
+    /* BORDER */
+    --border-faint:          var(--white-a3);  /* Çok hafif ayraç              */
+    --border-subtle:         var(--white-a5);  /* Varsayılan card border       */
+    --border-default:        var(--white-a7);  /* Standart border              */
+    --border-strong:         var(--white-a12); /* Vurgulu border               */
+    --border-heavy:          var(--white-a20); /* En kalın, hover state        */
+    --border-bg-card:       var(--white-a6);  /* Card arkaplanıyla kontrastlı */
+    --border-input:          var(--_gray-6);   /* Input box border             */
+    --border-input-focus:    var(--accent-border); /* Input focus border       */
+    --border-divider:        var(--white-a6);  /* HR, section ayırıcı          */
+    --border-color:          var(--border-subtle); /* Genel border rengi, component CSS'te override edilebilir */
+    --border-color-hover:    var(--border-heavy); /* Hover durumundaki border */
+    --border-active:         var(--accent-border); /* Focus durumundaki sınır rengi */
+
+    /* METİN */
+    --text-base:       #ffffff;
+    --text-primary:    #f0f0f2;          /* Başlık, label                      */
+    --text-secondary:  #9090a0;          /* Açıklama, subtitle                 */
+    --text-tertiary:   #606070;          /* Placeholder, yardımcı              */
+    --text-muted:      #4a4a58;          /* Deaktif, çok soluk                 */
+    --text-disabled:   #333340;          /* Tamamen pasif                      */
+    --text-inverse:    #05050a;          /* Açık arka üzerine yazı             */
+    --text-link:       var(--accent-color);
+    --text-link-hover: var(--accent-bright);
+
+    /* SHADOW */
+    --shadow-xs:     0 1px 4px  rgba(0, 0, 0, 0.25);
+    --shadow-sm:     0 2px 8px  rgba(0, 0, 0, 0.35);
+    --shadow-md:     0 4px 20px rgba(0, 0, 0, 0.45);
+    --shadow-lg:     0 10px 40px rgba(0, 0, 0, 0.55);
+    --shadow-xl:     0 20px 60px rgba(0, 0, 0, 0.65);
+    --shadow-panel:  10px 0 50px rgba(0, 0, 0, 0.60);
+    --shadow-card:   0 4px 24px rgba(0, 0, 0, 0.40);
+    --shadow-float:  0 8px 32px rgba(0, 0, 0, 0.50);
+    --shadow-accent: 0 8px 28px var(--accent-glow);
+    --shadow-accent-lg: 0 16px 48px var(--accent-dim);
+
+    /* SCROLLBAR */
+    --scrollbar-thumb:       rgba(255, 255, 255, 0.07);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.12);
+    --scrollbar-track:       transparent;
+
+    /* OVERLAY & BACKDROP */
+    --overlay-dim:      var(--black-a55);
+    --overlay-heavy:    var(--black-a75);
+    --overlay-modal:    var(--black-a50);
+    --backdrop-blur:    blur(8px);
+    --backdrop-blur-sm: blur(4px);
+    --backdrop-blur-lg: blur(16px);
+
+    /* Genişlik ve yükseklik */
+    --preview-height: 220px;
+
+    /* NAVBAR / SİDEBAR */
+    --navbar-bg:     rgba(10, 10, 15, 0.88);
+    --navbar-border: var(--white-a6);
+    --sidebar-bg:    var(--_gray-0);
+    --sidebar-border: var(--white-a5);
+
+    /* DURUM (STATUS) — Her biri: ham renk, arkaplan, border, metin */
+    --status-success:        var(--_green);
+    --status-success-bg:     color-mix(in srgb, var(--_green)    10%, transparent);
+    --status-success-border: color-mix(in srgb, var(--_green)    28%, transparent);
+    --status-success-text:   color-mix(in srgb, var(--_green)    90%, #fff);
+
+    --status-warning:        var(--_orange);
+    --status-warning-bg:     color-mix(in srgb, var(--_orange)   10%, transparent);
+    --status-warning-border: color-mix(in srgb, var(--_orange)   28%, transparent);
+    --status-warning-text:   color-mix(in srgb, var(--_orange)   90%, #fff);
+
+    --status-danger:         var(--_red-alt);
+    --status-danger-bg:      color-mix(in srgb, var(--_red-alt)  10%, transparent);
+    --status-danger-border:  color-mix(in srgb, var(--_red-alt)  28%, transparent);
+    --status-danger-text:    color-mix(in srgb, var(--_red-alt)  90%, #fff);
+    --status-danger-subtle: rgba(255, 86, 48, 0.15);
+
+    --status-info:           var(--_teal);
+    --status-info-bg:        color-mix(in srgb, var(--_teal)     10%, transparent);
+    --status-info-border:    color-mix(in srgb, var(--_teal)     28%, transparent);
+    --status-info-text:      color-mix(in srgb, var(--_teal)     90%, #fff);
+
+    --status-pending:        var(--_yellow);
+    --status-pending-bg:     color-mix(in srgb, var(--_yellow)   10%, transparent);
+    --status-pending-border: color-mix(in srgb, var(--_yellow)   28%, transparent);
+    --status-pending-text:   color-mix(in srgb, var(--_yellow)   90%, #fff);
+
+    --status-purple:         var(--_purple);
+    --status-purple-bg:      color-mix(in srgb, var(--_purple)   10%, transparent);
+    --status-purple-border:  color-mix(in srgb, var(--_purple)   28%, transparent);
+    --status-purple-text:    color-mix(in srgb, var(--_purple)   90%, #fff);
+    --status-purple-faint: rgba(167, 139, 250, 0.1); 
+
+    color-scheme: dark;
 }
+
+
+/* LAYER 2B — LIGHT TEMA OVERRIDE
+   Sadece değişen token'lar yazılır; geri kalanı dark'tan miras alır. */
+[data-theme="light"] {
+
+    /* ACCENT */
+    --accent-color: #0ba345;
+    --accent-fg:    #ffffff;
+
+    /*  ALFA — Light'ta siyah alfa kullanılır */
+    --white-a2:  rgba(0, 0, 0, 0.02);
+    --white-a3:  rgba(0, 0, 0, 0.03);
+    --white-a4:  rgba(0, 0, 0, 0.04);
+    --white-a5:  rgba(0, 0, 0, 0.05);
+    --white-a6:  rgba(0, 0, 0, 0.06);
+    --white-a7:  rgba(0, 0, 0, 0.08);
+    --white-a8:  rgba(0, 0, 0, 0.09);
+    --white-a10: rgba(0, 0, 0, 0.10);
+    --white-a12: rgba(0, 0, 0, 0.14);
+    --white-a15: rgba(0, 0, 0, 0.18);
+    --white-a20: rgba(0, 0, 0, 0.22);
+
+    /*  ARKAPLAN  */
+    --bg-base:           #e8e8f0;
+    --bg-app:            #f0f0f5;
+    --bg-surface:        #ffffff;
+    --bg-surface-raised: #f8f8fc;
+    --bg-elevated:       #f4f4f9;
+    --bg-overlay:        #ededf3;
+    --bg-float:          #e8e8f0;
+
+    --bg-navbar:         rgba(255, 255, 255, 0.90);
+    --bg-sidebar:        #f4f4f9;
+    --bg-modal:          #ffffff;
+    --bg-header:         #f0f0f5;
+    --bg-card:           #ffffff;
+    --bg-card-hover:     #f8f8fc;
+
+    --bg-input:          #f0f0f5;
+    --bg-input-focus:    #ffffff;
+
+    --bg-glass:          rgba(255, 255, 255, 0.82);
+    --bg-glass-light:    rgba(255, 255, 255, 0.60);
+
+    /* BORDER */
+    --border-input:  #d0d0dc;
+
+    /* METİN */
+    --text-base:       #0a0a12;
+    --text-primary:    #111118;
+    --text-secondary:  #50505f;
+    --text-tertiary:   #80808f;
+    --text-muted:      #a0a0af;
+    --text-disabled:   #c8c8d5;
+    --text-inverse:    #f0f0f5;
+
+    /* SHADOW */
+    --shadow-xs:     0 1px 4px  rgba(0, 0, 0, 0.06);
+    --shadow-sm:     0 2px 8px  rgba(0, 0, 0, 0.08);
+    --shadow-md:     0 4px 20px rgba(0, 0, 0, 0.10);
+    --shadow-lg:     0 10px 40px rgba(0, 0, 0, 0.12);
+    --shadow-xl:     0 20px 60px rgba(0, 0, 0, 0.14);
+    --shadow-panel:  10px 0 30px rgba(0, 0, 0, 0.14);
+    --shadow-card:   0 4px 24px rgba(0, 0, 0, 0.08);
+    --shadow-float:  0 8px 32px rgba(0, 0, 0, 0.12);
+
+    /* SCROLLBAR */
+    --scrollbar-thumb:       rgba(0, 0, 0, 0.12);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.20);
+
+    /* OVERLAY */
+    --overlay-dim:   rgba(0, 0, 0, 0.25);
+    --overlay-heavy: rgba(0, 0, 0, 0.40);
+    --overlay-modal: rgba(0, 0, 0, 0.20);
+
+    /* NAVBAR / SİDEBAR */
+    --navbar-bg:      rgba(255, 255, 255, 0.88);
+    --navbar-border:  rgba(0, 0, 0, 0.07);
+    --sidebar-bg:     #f4f4f9;
+    --sidebar-border: rgba(0, 0, 0, 0.07);
+
+    color-scheme: light;
+}
+
+
+/* LAYER 3 — TEMA BAĞIMSIZ SABİTLER
+   Tema değişince değişmemesi gereken şeyler. */
+:root {
+
+    /*TİPOGRAFİ */
+    --font-sans:  'DM Sans',        sans-serif;
+    --font-head:  'Syne',           sans-serif;
+    --font-mono:  'JetBrains Mono', monospace;
+    --font-inter: 'Inter',          sans-serif;
+
+    --text-2xs:  0.625rem;
+    --text-xs:   0.688rem;
+    --text-sm:   0.75rem;
+    --text-base: 0.875rem;
+    --text-md:   1rem;
+    --text-lg:   1.125rem;
+    --text-xl:   1.25rem;
+    --text-2xl:  1.5rem;
+    --text-3xl:  1.875rem;
+
+    /* BORDER RADIUS — ThemeContext --main-radius'u override eder */
+    --main-radius: 8px;
+    --radius-xs:   calc(var(--main-radius) * 0.375);
+    --radius-sm:   calc(var(--main-radius) * 0.625);
+    --radius-md:   var(--main-radius);
+    --radius-lg:   calc(var(--main-radius) * 1.5);
+    --radius-xl:   calc(var(--main-radius) * 2);
+    --radius-2xl:  calc(var(--main-radius) * 2.75);
+    --radius-full: 9999px;
+
+    /* SPACING  */
+    --space-1:  4px;  --space-2:  8px;  --space-3:  12px;
+    --space-4:  16px; --space-5:  20px; --space-6:  24px;
+    --space-7:  28px; --space-8:  32px; --space-10: 40px;
+    --space-12: 48px;
+
+    /* TRANSITION */
+    --transition-fast:   0.15s ease;
+    --transition-base:   0.25s ease;
+    --transition-slow:   0.35s ease;
+    --transition-spring: 0.38s cubic-bezier(0.23, 1, 0.32, 1);
+
+    /* Z-INDEX KATMANLARI */
+    --z-base:     0;   --z-raised:   10;  --z-dropdown: 100;
+    --z-sticky:   200; --z-navbar:   300; --z-sidebar:  400;
+    --z-overlay:  500; --z-modal:    600; --z-toast:    700;
+    --z-tooltip:  800; --z-theme:    10010;
+
+    /* GRAFİK PALETİ — Chart, istatistik için sabit renkler */
+    --chart-1: #0ed45a; --chart-2: #00d2ff; --chart-3: #8338ec;
+    --chart-4: #ff006e; --chart-5: #fb5607; --chart-6: #ffbe0b;
+    --chart-7: #a78bfa; --chart-8: #8cbed1;
+}
+
+
+/* =============================================================================
+   KILAVUZ — ESKİDEN YENİYE DÖNÜŞÜM TABLOSU
+
+   ARKAPLAN:
+   #181818, #111, #0a0a0a          → var(--bg-app)
+   #0a0a0f, #0d0d0d, #0f0f0f      → var(--bg-surface)
+   rgba(255,255,255,0.025)         → var(--bg-inset)
+   rgba(255,255,255,0.04)          → var(--bg-hover)
+   rgba(255,255,255,0.07)          → var(--bg-active)
+
+   BORDER:
+   rgba(255,255,255,0.03-0.04)     → var(--border-faint)
+   rgba(255,255,255,0.05-0.06)     → var(--border-subtle)
+   rgba(255,255,255,0.07-0.08)     → var(--border-default)
+   rgba(255,255,255,0.12-0.15)     → var(--border-strong)
+   #2a2a2a, #333, #3d3d3d          → var(--border-input)
+
+   METİN:
+   #fff, #f0f0f2, #f1f1f1          → var(--text-primary)
+   #aaa, #999, #888                → var(--text-secondary)
+   #666, #555                      → var(--text-tertiary)
+   #444, #333                      → var(--text-muted)
+
+   ACCENT:
+   rgba(14,212,90,0.03-0.05)       → var(--accent-subtle)
+   rgba(14,212,90,0.08-0.1)        → var(--accent-ghost)
+   rgba(14,212,90,0.15-0.2)        → var(--accent-soft)
+   rgba(14,212,90,0.25-0.3)        → var(--accent-border)
+   #0ed45a (solid)                 → var(--accent-color)
+
+   DURUM:
+   #ff5630, #ff4444                → var(--status-danger)
+   rgba(255,86,48,0.08-0.1)        → var(--status-danger-bg)
+   rgba(255,86,48,0.2-0.3)         → var(--status-danger-border)
+   #ffab00, #f59e0b                → var(--status-warning)
+   #22c55e                         → var(--status-success)
+   #00d2ff, #007aff                → var(--status-info)
+   ============================================================================= */

@@ -22,13 +22,12 @@ const OCRSidebar = ({ isOpen, onClose }) => {
         'Yazılım & Lisans', 'Ulaşım', 'Pazarlama', 'Kira & Altyapı'
     ];
 
-    // Akıllı Pozisyon Kontrolü
+    // Optimize edilmiş hızlı pozisyon kontrolü
     const checkSpace = (ref, setter) => {
         if (ref.current) {
             const rect = ref.current.getBoundingClientRect();
             const spaceBelow = window.innerHeight - rect.bottom;
-            // Eğer altta 200px'den az yer varsa yukarı aç
-            setter(spaceBelow < 200);
+            setter(spaceBelow < 220); // 220px güvenli sınır
         }
     };
 
@@ -111,16 +110,14 @@ const OCRSidebar = ({ isOpen, onClose }) => {
                                         <span className="selected-value">{currency}</span>
                                         <i className="ti ti-chevron-down arrow-icon"></i>
                                     </div>
-                                    {isCurrencyOpen && (
-                                        <div className={`custom-dropdown-list custom-scroll ${currencyUp ? 'open-up' : ''}`}>
-                                            {currencyOptions.map(opt => (
-                                                <div key={opt} className={`dropdown-item ${currency === opt ? 'selected' : ''}`} 
-                                                     onClick={() => { setCurrency(opt); setIsCurrencyOpen(false); }}>
-                                                    {opt}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                    <div className={`custom-dropdown-list custom-scroll ${isCurrencyOpen ? 'show' : ''} ${currencyUp ? 'open-up' : ''}`}>
+                                        {currencyOptions.map(opt => (
+                                            <div key={opt} className={`dropdown-item ${currency === opt ? 'selected' : ''}`} 
+                                                 onClick={() => { setCurrency(opt); setIsCurrencyOpen(false); }}>
+                                                {opt}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
@@ -132,7 +129,7 @@ const OCRSidebar = ({ isOpen, onClose }) => {
                                 </div>
                             </div>
 
-                            {/* Kategori Dropdown (Sorunlu olan buydu) */}
+                            {/* Kategori Dropdown */}
                             <div className="st-input-group" ref={categoryRef}>
                                 <label>Kategori</label>
                                 <div className="custom-select-wrapper">
@@ -142,16 +139,14 @@ const OCRSidebar = ({ isOpen, onClose }) => {
                                         <span className="selected-value">{category}</span>
                                         <i className="ti ti-chevron-down arrow-icon"></i>
                                     </div>
-                                    {isCategoryOpen && (
-                                        <div className={`custom-dropdown-list custom-scroll ${categoryUp ? 'open-up' : ''}`}>
-                                            {categoryOptions.map(opt => (
-                                                <div key={opt} className={`dropdown-item ${category === opt ? 'selected' : ''}`} 
-                                                     onClick={() => { setCategory(opt); setIsCategoryOpen(false); }}>
-                                                    {opt}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                    <div className={`custom-dropdown-list custom-scroll ${isCategoryOpen ? 'show' : ''} ${categoryUp ? 'open-up' : ''}`}>
+                                        {categoryOptions.map(opt => (
+                                            <div key={opt} className={`dropdown-item ${category === opt ? 'selected' : ''}`} 
+                                                 onClick={() => { setCategory(opt); setIsCategoryOpen(false); }}>
+                                                {opt}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>

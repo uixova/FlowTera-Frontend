@@ -11,12 +11,14 @@
     height: 60vh;
 }
 
+/* Kilitli Özellik Durumu */
+
 .feature-locked {
     position: relative;
     opacity: 0.55;
     cursor: not-allowed;
     filter: grayscale(0.4);
-    transition: opacity 0.3s ease, filter 0.3s ease;
+    transition: var(--transition-base);
 }
 
 .feature-locked * {
@@ -28,33 +30,43 @@
     filter: grayscale(0);
 }
 
+/* Kilit Rozeti */
+
 .lock-badge {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.62rem;
+    gap: var(--space-1);
+    font-size: var(--text-2xs);
     font-weight: 800;
     padding: 2px 8px;
-    border-radius: 7px;
+    border-radius: var(--radius-sm);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: rgba(255, 171, 0, 0.1);
-    color: #ffab00;
-    border: 1px solid rgba(255, 171, 0, 0.2);
+    background: var(--status-warning-bg);
+    color: var(--status-warning-text);
+    border: 1px solid var(--status-warning-border);
     vertical-align: middle;
-    margin-left: 8px;
+    margin-left: var(--space-2);
 }
 
+/* Yükseltme Bildirimi */
+
 .upgrade-notice {
-    margin-top: 8px;
+    margin-top: var(--space-2);
     font-size: 0.72rem;
-    color: #ffab00;
+    color: var(--status-warning);
     font-weight: 500;
-    font-family: 'DM Sans', sans-serif;
-    animation: tmFadeIn 0.4s ease-out;
+    font-family: var(--font-sans);
+    animation: tmFadeIn var(--transition-base) ease-out;
 }
 
 @keyframes tmFadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { 
+        opacity: 0; 
+        transform: translateY(-4px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
 }

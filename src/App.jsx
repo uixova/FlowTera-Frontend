@@ -1,5 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+import './styles/variables.css';
+
+// Context Providers
 import { ThemeProvider } from './context/ThemeContext';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { AuthProvider, useAuth } from './context/AuthContext';

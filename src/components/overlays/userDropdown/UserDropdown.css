@@ -1,83 +1,91 @@
 .dropdown-overlay {
     position: fixed;
     inset: 0;
-    z-index: 9998; 
     background: transparent;
+    z-index: 9998;
 }
 
 .user-quick-dropdown {
-    position: absolute;
-    top: 60px; 
+    position: fixed;
+    top: 75px; 
     right: 15px;
     width: 190px;
-    background: #181818; 
-    border: 1px solid #252525;
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
     display: flex;
     flex-direction: column;
-    padding: 8px;
+    padding: var(--space-2);
     z-index: 9999;
-    animation: fadeInDropdown 0.2s ease-out;
+    animation: fadeInDropdown var(--transition-spring);
+    backdrop-filter: var(--backdrop-blur-md);
 }
 
+/* Dropdown Header */
 .dropdown-header {
-    padding: 8px 12px;
+    padding: var(--space-2) var(--space-3);
 }
 
 .user-name {
-    color: #fff;
+    color: var(--text-primary);
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: var(--text-sm);
     margin: 0;
+    font-family: var(--font-sans);
 }
 
 .user-status {
-    color: #0ed45a;
-    font-size: 0.7rem;
+    color: var(--accent-color);
+    font-size: var(--text-2xs);
     font-weight: 600;
     margin-top: 2px;
 }
 
 .user-quick-dropdown hr {
     border: 0;
-    border-top: 1px solid #252525;
-    margin: 6px 0;
+    border-top: 1px solid var(--border-faint);
+    margin: var(--space-2) 0;
 }
 
+/* Dropdown Item */
 .dropdown-item {
     background: transparent;
     border: none;
-    color: #888;
+    color: var(--text-secondary);
     padding: 10px 12px;
     display: flex;
     align-items: center;
     gap: 12px;
     cursor: pointer;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
     font-weight: 600;
-    transition: 0.2s;
+    transition: all var(--transition-spring);
     width: 100%;
     text-align: left;
+    font-family: var(--font-sans);
 }
 
 .dropdown-item:hover {
-    background: #222;
-    color: #0ed45a;
+    background: var(--white-a1);
+    color: var(--accent-color);
+    transform: translateX(4px);
 }
 
 .dropdown-item i {
     font-size: 1.1rem;
 }
 
+/* Logout Item */
 .dropdown-item.logout {
-    color: #ff4444;
+    color: var(--status-danger);
     margin-top: 4px;
 }
 
 .dropdown-item.logout:hover {
-    background: rgba(255, 68, 68, 0.08);
+    background: var(--status-danger-bg);
+    color: var(--status-danger-text);
 }
 
 @keyframes fadeInDropdown {

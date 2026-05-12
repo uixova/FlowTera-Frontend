@@ -5,15 +5,11 @@ const randomDelay = (min = 200, max = 500) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+// Dışarıdan import edilen cache'ler 
 export const teamMembersCache = new Map();
 export const teamMembersRequestCache = new Map();
 
-
-const ROLE_PRIORITY = {
-    "Admin": 1,
-    "Moderator": 2,
-    "Member": 3
-};
+const ROLE_PRIORITY = { "Admin": 1, "Moderator": 2, "Member": 3 };
 
 // Paginated veya düz array'den veriyi güvenle çıkar
 const extractList = (response) => {
@@ -21,6 +17,14 @@ const extractList = (response) => {
     if (Array.isArray(response)) return response;
     if (Array.isArray(response.data)) return response.data;
     return [];
+};
+
+// Cache invalidasyonu - clearMemberCache ile dışarıdan tetiklenebilir.
+export const clearMemberCache = (teamId) => {
+    if (!teamId) return;
+    const key = String(teamId);
+    teamMembersCache.delete(key);
+    teamMembersRequestCache.delete(key);
 };
 
 export const teamsService = {
@@ -44,13 +48,14 @@ export const teamsService = {
             )
             .map(team => ({
                 ...team,
+                // Her iki formata karşı defensive
                 members: Array.isArray(team.members)
                     ? team.members.length
                     : (team.membersCount ?? 0)
             }));
     },
 
-    // Takım üyelerini getirme 
+    // Takım üyelerini getirme
     getTeamMembers: async (teamId) => {
         if (!teamId) return [];
         await randomDelay(200, 400);
@@ -66,23 +71,24 @@ export const teamsService = {
         const teamData = allTeams.find(t => String(t.id) === String(teamId));
         const teamMembersRaw = Array.isArray(teamData?.members) ? teamData.members : [];
 
+        // Lookup için Map — büyük user listelerinde find() döngüsünden çok daha hızlı
         const userMap = new Map(allUsers.map(u => [String(u.id), u]));
 
         const normalized = teamMembersRaw.map((tm) => {
-            const isDeleted = Boolean(tm?.isDeleted);
+            const isDeleted   = Boolean(tm?.isDeleted);
             const fullUserData = userMap.get(String(tm.id));
             const specificTeamRole = fullUserData?.role?.find(
                 r => String(r.teamId) === String(teamId)
             );
 
             return {
-                id: String(tm.id),
-                name: isDeleted ? "DeletedUser" : (tm.name || fullUserData?.name || "Unknown"),
-                avatar: isDeleted ? null : (tm.avatar || fullUserData?.avatar || null),
-                email: isDeleted ? '' : (tm.email || fullUserData?.email || ''),
+                id:          String(tm.id),
+                name:        isDeleted ? "DeletedUser" : (tm.name        || fullUserData?.name        || "Unknown"),
+                avatar:      isDeleted ? null          : (tm.avatar      || fullUserData?.avatar      || null),
+                email:       isDeleted ? ''            : (tm.email       || fullUserData?.email       || ''),
                 isDeleted,
-                lastLogin: tm?.lastLogin ?? fullUserData?.lastLogin ?? null,
-                roleName: specificTeamRole?.roleName || tm?.roleName || "Member",
+                lastLogin:   tm?.lastLogin   ?? fullUserData?.lastLogin   ?? null,
+                roleName:    specificTeamRole?.roleName    || tm?.roleName    || "Member",
                 permissions: specificTeamRole?.permissions || tm?.permissions || []
             };
         });
@@ -92,7 +98,7 @@ export const teamsService = {
         );
     },
 
-    // Kullanıcı loglarını getirme 
+    // Kullanıcı loglarını getirme
     getUserLogs: async (userId, teamId) => {
         if (!userId || !teamId) return [];
         await randomDelay(400, 800);
@@ -121,7 +127,7 @@ export const teamsService = {
             );
     },
 
-    // Takım ayarlarını getirme 
+    // Takım ayarlarını getirme
     getTeamSettings: async (teamId) => {
         if (!teamId) return null;
         await randomDelay(100, 200);
@@ -135,38 +141,37 @@ export const teamsService = {
         const allTeams = extractList(teamsResponse);
         const allUsers = extractList(usersResponse);
         // Plans paginated değil; düz array ya da obje olabilir
-        const allPlans = Array.isArray(plansResponse)
-            ? plansResponse
-            : extractList(plansResponse);
+        const allPlans = Array.isArray(plansResponse) ? plansResponse : extractList(plansResponse);
 
         const team = allTeams.find(t => String(t.id) === String(teamId));
         if (!team) return null;
 
         // 1. Takımın içine gömülü planId'yi alıyoruz
         const teamPlanContext = team.settings?.planContext || {};
-        const teamPlanId = teamPlanContext.planId;
-    
+        const teamPlanId      = teamPlanContext.planId;
+
         // 2. Bu ID ile plan.json içinden ilgili planı buluyoruz
         const linkedPlan = allPlans.find(p => String(p.id) === String(teamPlanId));
 
         // 3. Owner (Kurucu) verisini hala çekiyoruz ama sadece "Upgrade" kontrolü için
         const ownerUser = allUsers.find(u => String(u.id) === String(team.ownerId));
 
-        let baseFeatures = linkedPlan?.feature_keys || [];
-        let baseMaxLimit = linkedPlan?.Promise?.TeamMemberLimit
+        const baseFeatures = linkedPlan?.feature_keys || [];
+        const baseMaxLimit = linkedPlan?.Promise?.TeamMemberLimit
             ? parseInt(linkedPlan.Promise.TeamMemberLimit, 10)
             : (teamPlanContext.maxMembersAllowed || 5);
 
         const ownerFeatures = ownerUser?.subscription?.feature_keys || [];
         const ownerMaxLimit = ownerUser?.subscription?.maxMembersPerTeam || 0;
 
+        // Set kullanarak duplicate feature key'leri temizle
         const finalFeatures = Array.from(new Set([...baseFeatures, ...ownerFeatures]));
         const finalMaxLimit = Math.max(baseMaxLimit, ownerMaxLimit);
 
         return {
             ...team,
             adminPlanLimit: finalMaxLimit,
-            ownerPlanType: linkedPlan?.name || teamPlanContext.planName || 'Free',
+            ownerPlanType:  linkedPlan?.name || teamPlanContext.planName || 'Free',
             availableFeatures: finalFeatures,
             planDetails: linkedPlan || null
         };
@@ -179,14 +184,32 @@ export const teamsService = {
         return { success: true, message: "Role updated successfully" };
     },
 
-    // Takım ayarlarını güncelleme (simülasyon) 
+    // Takım ayarlarını güncelleme (simülasyon)
     updateTeamSettings: async (teamId, updatePayload) => {
         await randomDelay(600, 1200);
         console.log(`[API UPDATE] Team: ${teamId} için ayarlar güncellendi.`, updatePayload);
         return { success: true, message: "Ayarlar başarıyla güncellendi." };
     },
 
-    // Basit takım listesini getirme 
+    // Gerçek API'de DELETE /teams/:id olacak; şimdilik simülasyon.
+    deleteTeam: async (teamId) => {
+        await randomDelay(800, 1500);
+        console.log(`[API DELETE] Team: ${teamId} silme isteği gönderildi.`);
+        // Cache'i temizle — silinen takımın verisi önbellekte kalmasın
+        clearMemberCache(teamId);
+        return { success: true, message: "Takım silme işlemi başlatıldı." };
+    },
+
+    // Üye çıkarma simülasyonu; backend gelince api.fetch('TEAMS', ..., { method: 'DELETE' }) olacak.
+    removeMember: async (teamId, userId) => {
+        await randomDelay(400, 800);
+        console.log(`[API DELETE] Team: ${teamId}, User: ${userId} çıkarıldı.`);
+        // Cache'i invalidate et — üye listesi güncel kalsın
+        clearMemberCache(teamId);
+        return { success: true };
+    },
+
+    // Basit takım listesini getirme
     getSimpleTeams: async () => {
         await randomDelay(100, 300);
         const response = await api.teams.getAll({ pageSize: 500 });

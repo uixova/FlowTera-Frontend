@@ -1,7 +1,6 @@
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(6px);
     z-index: 10002;
     display: flex;
@@ -11,15 +10,16 @@
 
 .export-modal {
     width: 440px;
-    background: #0d0d10;
+    background: var(--bg-elevated); 
     border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(14, 212, 90, 0.06);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-lg), 0 0 0 1px var(--accent-subtle);
     overflow: hidden;
     animation: modalSpring 0.32s cubic-bezier(0.23, 1, 0.32, 1);
     position: relative;
 }
 
+/* Accent Glow Line at Top */
 .export-modal::before {
     content: '';
     position: absolute;
@@ -27,7 +27,7 @@
     left: 20%;
     right: 20%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(14, 212, 90, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, var(--accent-border), transparent);
     pointer-events: none;
 }
 
@@ -47,9 +47,9 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #f0f0f2;
+    color: var(--text-primary);
     font-weight: 700;
-    font-family: 'Syne', sans-serif;
+    font-family: var(--font-head);
     font-size: 1rem;
     letter-spacing: -0.3px;
 }
@@ -57,56 +57,59 @@
 .ex-title-icon {
     width: 34px;
     height: 34px;
-    background: rgba(14, 212, 90, 0.06);
-    border: 1px solid rgba(14, 212, 90, 0.14);
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
     border-radius: 10px;
     display: grid;
     place-items: center;
     font-size: 1rem;
-    color: #0ed45a;
+    color: var(--accent-color);
 }
 
 .ex-close {
     width: 30px;
     height: 30px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: var(--bg-hover);
+    border: 1px solid var(--border-faint);
     border-radius: 8px;
-    color: #444;
+    color: var(--text-tertiary);
     cursor: pointer;
     display: grid;
     place-items: center;
     font-size: 0.9rem;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition: var(--transition-base);
 }
 
-.ex-close:hover { background: rgba(255, 255, 255, 0.07); color: #f0f0f2; }
+.ex-close:hover { 
+    background: var(--border-subtle); 
+    color: var(--text-primary); 
+}
 
 .ex-body {
     padding: 20px 22px 22px;
 }
 
 .ex-document-preview {
-    background: rgba(255, 255, 255, 0.015);
+    background: var(--bg-inset);
     border-radius: 14px;
     padding: 14px 16px;
     margin-bottom: 20px;
-    border: 1px dashed rgba(255, 255, 255, 0.08);
+    border: 1px dashed var(--border-subtle);
 }
 
 .ex-doc-header {
     display: flex;
     justify-content: space-between;
     font-size: 0.72rem;
-    color: #2c2c38;
+    color: var(--text-muted);
     margin-bottom: 14px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
     font-weight: 600;
 }
 
 .doc-line {
     height: 5px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--border-faint);
     border-radius: 3px;
     margin-bottom: 8px;
 }
@@ -122,8 +125,8 @@
 .ex-option input { display: none; }
 
 .ex-option-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.065);
+    background: var(--bg-inset);
+    border: 1px solid var(--border-subtle);
     border-radius: 14px;
     padding: 16px 10px;
     display: flex;
@@ -131,39 +134,38 @@
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    transition:
-        background    0.25s cubic-bezier(0.23, 1, 0.32, 1),
-        border-color  0.25s ease,
-        transform     0.25s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: var(--transition-spring);
 }
 
 .ex-option-card:hover {
-    background: rgba(255, 255, 255, 0.035);
+    background: var(--bg-hover);
     transform: translateY(-2px);
+    border-color: var(--border-subtle);
 }
 
 .ex-option-card i {
     font-size: 1.5rem;
-    color: #2c2c38;
-    transition: color 0.25s ease;
+    color: var(--text-muted);
+    transition: var(--transition-base);
 }
 
 .ex-option-card span {
     font-size: 0.69rem;
-    color: #2c2c38;
+    color: var(--text-tertiary);
     font-weight: 700;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
     letter-spacing: 0.3px;
-    transition: color 0.25s ease;
+    transition: var(--transition-base);
 }
 
+/* Selected State */
 .ex-option input:checked + .ex-option-card {
-    border-color: rgba(14, 212, 90, 0.3);
-    background: rgba(14, 212, 90, 0.05);
+    border-color: var(--accent-border);
+    background: var(--accent-subtle);
 }
 
-.ex-option input:checked + .ex-option-card i   { color: #0ed45a; }
-.ex-option input:checked + .ex-option-card span { color: #f0f0f2; }
+.ex-option input:checked + .ex-option-card i   { color: var(--accent-color); }
+.ex-option input:checked + .ex-option-card span { color: var(--text-primary); }
 
 .ex-footer {
     padding: 0 22px 22px;
@@ -179,32 +181,33 @@
     font-size: 0.875rem;
     cursor: pointer;
     border: none;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition:
-        background 0.3s cubic-bezier(0.23, 1, 0.32, 1),
-        transform  0.3s cubic-bezier(0.23, 1, 0.32, 1),
-        box-shadow 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: var(--transition-spring);
 }
 
 .ex-btn.cancel {
-    background: rgba(255, 255, 255, 0.04);
-    color: #555;
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: var(--bg-hover);
+    color: var(--text-tertiary);
+    border: 1px solid var(--border-subtle);
 }
 
-.ex-btn.cancel:hover { background: rgba(255, 255, 255, 0.07); color: #f0f0f2; }
+.ex-btn.cancel:hover { 
+    background: var(--border-subtle); 
+    color: var(--text-primary); 
+}
 
 .ex-btn.download {
-    background: #0ed45a;
-    color: #050507;
+    background: var(--accent-color);
+    color: var(--text-inverse); 
 }
 
 .ex-btn.download:hover {
-    background: #fff;
+    background: var(--accent-color);
     transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(14, 212, 90, 0.25);
+    filter: brightness(1.1);
+    box-shadow: 0 10px 28px color-mix(in srgb, var(--accent-color), transparent 75%);
 }

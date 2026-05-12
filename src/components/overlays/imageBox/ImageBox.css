@@ -4,32 +4,36 @@
     overflow: hidden;
     width: 100%;
     display: block;
+    border-radius: var(--radius-lg);
 }
 
+/* Hover Overlay  */
 .image-box-zoom-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: var(--black-a7); 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: #fff;
-    gap: 10px;
+    transition: all var(--transition-spring);
+    color: var(--white);
+    gap: var(--space-2);
 }
 
 .image-box-zoom-overlay i {
     font-size: 2.5rem;
-    transform: translateY(10px);
-    transition: 0.3s ease;
+    transform: translateY(15px);
+    transition: transform var(--transition-spring);
 }
 
 .image-box-zoom-overlay span {
-    font-size: 0.7rem;
+    font-size: var(--text-2xs);
     font-weight: 800;
     letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: var(--font-sans);
 }
 
 .image-box-trigger:hover .image-box-zoom-overlay {
@@ -40,16 +44,17 @@
     transform: translateY(0);
 }
 
+/* Tam Ekran Overlay */
 .image-box-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(10, 10, 10, 0.95);
-    backdrop-filter: blur(15px);
-    z-index: 99999;
+    background: color-mix(in srgb, var(--bg-body), transparent 5%);
+    backdrop-filter: blur(20px) saturate(180%);
+    z-index: var(--z-theme); 
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeIn var(--transition-base) ease-out;
 }
 
 .image-box-top-bar {
@@ -57,74 +62,82 @@
     top: 0;
     left: 0;
     right: 0;
-    padding: 20px 40px;
+    padding: var(--space-6) var(--space-10);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+    background: linear-gradient(to bottom, var(--black-a6), transparent);
 }
 
 .image-box-filename {
-    color: #888;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono); 
+    font-size: var(--text-sm);
 }
 
+/* Kapat Butonu */
 .image-box-close {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 100px;
+    background: var(--white-a1);
+    border: 1px solid var(--border-subtle);
+    color: var(--white);
+    padding: 8px 24px;
+    border-radius: var(--radius-full);
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 10px;
-    transition: 0.3s;
+    transition: all var(--transition-spring);
 }
 
 .image-box-close i { font-size: 1.2rem; }
-.image-box-close span { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
-
-.image-box-close:hover {
-    background: #ff4757;
-    border-color: #ff4757;
-    transform: scale(1.05);
+.image-box-close span { 
+    font-weight: 700; 
+    font-size: var(--text-xs); 
+    text-transform: uppercase; 
 }
 
+.image-box-close:hover {
+    background: var(--status-danger); 
+    border-color: var(--status-danger);
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
+}
+
+/* İçerik ve Animasyon */
 .image-box-content {
     position: relative;
-    max-width: 85vw;
-    max-height: 80vh;
+    max-width: 90vw;
+    max-height: 85vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    animation: zoomIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: zoomIn 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
 .image-box-fullscreen {
     max-width: 100%;
-    max-height: 80vh;
-    border-radius: 8px;
-    box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+    max-height: 85vh;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-2xl);
     object-fit: contain;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--white-a1);
 }
 
 .image-box-caption {
     position: absolute;
-    bottom: 40px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 10px 25px;
-    border-radius: 100px;
-    color: #eee;
-    font-size: 0.9rem;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.1);
+    bottom: -60px; 
+    background: var(--white-a1);
+    padding: 8px 20px;
+    border-radius: var(--radius-full);
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    backdrop-filter: var(--backdrop-blur-sm);
+    border: 1px solid var(--border-faint);
 }
 
+/* Keyframes */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes zoomIn { 
-    from { opacity: 0; transform: scale(0.9); } 
+    from { opacity: 0; transform: scale(0.95); } 
     to { opacity: 1; transform: scale(1); } 
 }

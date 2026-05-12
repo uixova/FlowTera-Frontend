@@ -4,19 +4,19 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useModal } from '../../../hooks/useModal';
 import Confirm from '../Confirm';
-import Alert from '../Alert'; 
+import Alert from '../Alert';
 import './UserDropdown.css';
 
 const UserDropdown = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const { currentUser, loading, logout } = useAuth();
-  
-  const { 
-    alertConfig, 
-    confirmConfig, 
-    askConfirm, 
-    closeAlert, 
-    closeConfirm 
+
+  const {
+    alertConfig,
+    confirmConfig,
+    askConfirm,
+    closeAlert,
+    closeConfirm
   } = useModal();
 
   if (!isOpen) return null;
@@ -28,8 +28,8 @@ const UserDropdown = ({ isOpen, onClose }) => {
 
   const handleLogoutClick = () => {
     askConfirm(
-      "Oturumu Kapat", 
-      "Hesabınızdan çıkış yapmak istediğinize emin misiniz?", 
+      "Oturumu Kapat",
+      "Hesabınızdan çıkış yapmak istediğinize emin misiniz?",
       () => {
         logout();
         navigate('/');
@@ -39,11 +39,10 @@ const UserDropdown = ({ isOpen, onClose }) => {
     );
   };
 
-  return (
+  return createPortal(
     <>
-      <div className="dropdown-overlay" onClick={onClose}></div>
-      
-      <div className="user-quick-dropdown active" onClick={(e) => e.stopPropagation()}>
+      <div className="dropdown-overlay" onClick={onClose} />
+      <div className="user-quick-dropdown" onClick={(e) => e.stopPropagation()}>
         <div className="dropdown-header">
           {loading ? (
             <p className="user-name">Yükleniyor...</p>
@@ -57,7 +56,7 @@ const UserDropdown = ({ isOpen, onClose }) => {
           )}
         </div>
         <hr />
-        
+
         <div className="dropdown-body">
           <button className="dropdown-item" onClick={handleSettings}>
             <i className="ti ti-settings"></i> Ayarlar
@@ -65,16 +64,17 @@ const UserDropdown = ({ isOpen, onClose }) => {
         </div>
 
         <hr />
-        
+
         <button className="dropdown-item logout" onClick={handleLogoutClick}>
           <i className="ti ti-logout"></i> Hesaptan Çık
         </button>
       </div>
 
-      {/* Global Modallar - createPortal ile document.body'ye render edilir */}
-      {createPortal(<Confirm {...confirmConfig} onClose={closeConfirm} />, document.body)}
-      {createPortal(<Alert {...alertConfig} onClose={closeAlert} />, document.body)}
-    </>
+      {/* Confirm ve Alert artık aynı portal içinde — ekstra createPortal gereksiz */}
+      <Confirm {...confirmConfig} onClose={closeConfirm} />
+      <Alert {...alertConfig} onClose={closeAlert} />
+    </>,
+    document.body
   );
 };
 

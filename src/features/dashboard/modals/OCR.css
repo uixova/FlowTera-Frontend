@@ -1,40 +1,44 @@
+/* Ana Konteyner */
 .ocr-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding-bottom: 20px;
+    gap: var(--space-5);
+    padding-bottom: var(--space-5);
 }
 
+/* Kart Stili */
 .hm-card-style {
-    background: rgba(255, 255, 255, 0.018);
-    border: 1px solid rgba(255, 255, 255, 0.065);
+    background: var(--white-a2);
+    border: 1px solid var(--border-subtle);
     border-radius: 22px;
     position: relative;
-    transition: border-color 0.4s cubic-bezier(0.23, 1, 0.32, 1),
-                background   0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: all var(--transition-slow) var(--transition-spring);
 }
 
+/* Dosya Yükleme Alanı (Dropzone) */
 .ocr-dropzone {
     border-style: dashed;
     border-width: 1px;
-    padding: 56px 20px;
+    padding: 56px var(--space-5);
     text-align: center;
     cursor: pointer;
     overflow: hidden;
 }
 
 .ocr-dropzone:hover {
-    border-color: rgba(14, 212, 90, 0.3);
-    background: rgba(14, 212, 90, 0.02);
+    border-color: var(--accent-border);
+    background: var(--accent-subtle);
+    outline: 2px solid var(--accent-color);
+    outline-offset: -2px;
 }
 
 .ocr-dropzone i {
     font-size: 2.8rem;
-    color: #0ed45a;
-    margin-bottom: 16px;
+    color: var(--accent-color);
+    margin-bottom: var(--space-4);
     display: block;
     opacity: 0.9;
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-base);
 }
 
 .ocr-dropzone:hover i {
@@ -42,26 +46,28 @@
 }
 
 .dropzone-title {
-    color: #f0f0f2;
-    font-size: 1rem;
-    margin-bottom: 8px;
-    font-family: 'Syne', sans-serif;
+    color: var(--text-primary);
+    font-size: var(--text-md);
+    margin-bottom: var(--space-2);
+    font-family: var(--font-head);
     font-weight: 700;
 }
 
-.dropzone-title span { color: #0ed45a; }
+.dropzone-title span { color: var(--accent-color); }
 
 .dropzone-subtitle {
-    color: #555;
-    font-size: 0.75rem;
-    font-family: 'DM Sans', sans-serif;
+    color: var(--text-tertiary);
+    font-size: var(--text-sm);
+    font-family: var(--font-sans);
     font-weight: 600;
 }
 
+/* Önizleme Alanı */
 .ocr-preview-container {
-    height: 220px;
+    height: var(--preview-height);
     padding: 0;
     overflow: hidden;
+    border-radius: 22px;
 }
 
 .ocr-preview-container img {
@@ -74,60 +80,62 @@
     position: absolute;
     top: 14px;
     right: 14px;
-    background: rgba(255, 86, 48, 0.15);
-    border: 1px solid rgba(255, 86, 48, 0.3);
-    backdrop-filter: blur(8px);
-    color: #ff5630;
+    background: var(--status-danger-subtle);
+    border: none;
+    backdrop-filter: var(--backdrop-blur);
+    color: var(--status-danger);
     padding: 8px 14px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
     font-weight: 700;
-    font-size: 0.75rem;
+    font-size: var(--text-sm);
     display: flex;
     align-items: center;
     gap: 6px;
-    font-family: 'DM Sans', sans-serif;
-    transition: all 0.3s ease;
-    z-index: 10;
+    font-family: var(--font-sans);
+    transition: all var(--transition-base);
+    z-index: var(--z-raised);
 }
 
 .ocr-remove-btn:hover {
-    background: rgba(255, 86, 48, 0.25);
+    background: var(--status-danger-bg);
     transform: scale(1.05);
 }
 
+/* Bilgi Banner'ı */
 .ocr-info-banner {
-    padding: 16px;
+    padding: var(--space-4);
     display: flex;
     align-items: center;
     gap: 14px;
-    border-color: rgba(167, 139, 250, 0.15);
+    border-color: var(--status-purple-border);
 }
 
 .ocr-banner-icon {
     width: 36px;
     height: 36px;
-    background: rgba(167, 139, 250, 0.1);
-    border: 1px solid rgba(167, 139, 250, 0.2);
+    background: var(--status-purple-bg);
+    border: 1px solid var(--status-purple-border);
     border-radius: 10px;
     display: grid;
     place-items: center;
     font-size: 1.1rem;
-    color: #a78bfa;
+    color: var(--status-purple);
     flex-shrink: 0;
 }
 
 .ocr-info-banner span {
-    color: #ccccd4;
-    font-size: 0.8rem;
-    font-family: 'DM Sans', sans-serif;
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+    font-family: var(--font-sans);
     line-height: 1.6;
     font-weight: 500;
 }
 
+/* Form Alanı */
 .ocr-results-form {
-    padding: 24px;
-    animation: ocrFadeIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) both;
+    padding: var(--space-6);
+    animation: ocrFadeIn var(--transition-slow) var(--transition-spring) both;
 }
 
 @keyframes ocrFadeIn {
@@ -138,25 +146,25 @@
 .st-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: var(--space-4);
 }
 
 .st-input-group {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--space-2);
     position: relative;
 }
 
 .st-input-group.full-width { grid-column: span 2; }
 
 .st-input-group label {
-    font-size: 0.7rem;
+    font-size: var(--text-2xs);
     font-weight: 700;
-    color: #666;
+    color: var(--text-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
 }
 
 .input-wrapper, .custom-select-wrapper {
@@ -169,30 +177,27 @@
 
 .st-input-group input,
 .custom-select-box {
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.065);
+    background: var(--bg-inset);
+    border: 1px solid var(--border-subtle);
     padding: 0 14px 0 42px; 
     height: 100%; 
-    border-radius: 12px;
-    color: #f0f0f2;
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
     font-size: 0.85rem;
     font-weight: 600;
     width: 100%;
-    outline: none;
-    font-family: 'DM Sans', sans-serif;
-    transition: border-color 0.3s ease, background 0.3s ease;
+    font-family: var(--font-sans);
+    transition: all var(--transition-fast);
     box-sizing: border-box; 
     display: flex;
     align-items: center;
 }
 
-.st-input-group input::placeholder { color: #444; }
-
 .st-input-group input:focus,
-.custom-select-box.active,
-.custom-select-box:hover {
-    border-color: rgba(14, 212, 90, 0.3);
-    background: rgba(14, 212, 90, 0.03);
+.custom-select-box.active {
+    border-color: transparent !important;
+    border: 1px solid var(--accent-border) !important;
+    box-shadow: 0 0 10px var(--accent-subtle);
 }
 
 .input-icon {
@@ -200,10 +205,16 @@
     left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: #666;
+    color: var(--text-tertiary);
     font-size: 1.1rem;
     z-index: 2;
     pointer-events: none;
+    transition: color var(--transition-fast);
+}
+
+.st-input-group:focus-within .input-icon,
+.custom-select-box.active .input-icon {
+    color: var(--accent-color);
 }
 
 .custom-select-box {
@@ -213,64 +224,59 @@
 
 .arrow-icon {
     font-size: 1rem;
-    color: #666;
-    transition: transform 0.3s ease;
+    color: var(--text-tertiary);
+    transition: var(--transition-base);
 }
 
 .custom-select-box.active .arrow-icon {
     transform: rotate(180deg);
-    color: #0ed45a;
+    color: var(--accent-color);
 }
 
+/* Dropdown Listesi */
 .custom-dropdown-list {
+    display: none; 
     position: absolute;
-    top: calc(100% + 6px); 
+    top: calc(100% + 4px);
     left: 0;
     right: 0;
-    background: #0f0f12;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    background: var(--bg-dropdown);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
     z-index: 100;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: var(--shadow-lg);
     max-height: 200px;
     overflow-y: auto;
-    animation: dropFadeIn 0.2s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.custom-dropdown-list.show {
+    display: block; 
 }
 
 .custom-dropdown-list.open-up {
     top: auto;
     bottom: calc(100% + 6px);
-    animation: dropFadeInUp 0.2s cubic-bezier(0.23, 1, 0.32, 1) both;
-}
-
-@keyframes dropFadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes dropFadeInUp {
-    from { opacity: 0; transform: translateY(5px); }
-    to   { opacity: 1; transform: translateY(0); }
+    animation: dropFadeInUp 0.2s var(--transition-spring) both;
 }
 
 .dropdown-item {
-    padding: 12px 16px;
+    padding: 12px var(--space-4);
     font-size: 0.85rem;
-    color: #ccccd4;
+    color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
 }
 
 .dropdown-item:hover, .dropdown-item.selected {
-    background: rgba(14, 212, 90, 0.08);
-    color: #0ed45a;
+    background: var(--accent-subtle);
+    color: var(--accent-color);
 }
 
-/* Scrollbar */
+/* Özel Scrollbar */
 .custom-scroll::-webkit-scrollbar { width: 4px; }
-.custom-scroll::-webkit-scrollbar-track { background: transparent; }
+.custom-scroll::-webkit-scrollbar-track { background: var(--scrollbar-track); }
 .custom-scroll::-webkit-scrollbar-thumb { 
-    background: rgba(255, 255, 255, 0.1); 
-    border-radius: 10px; 
+    background: var(--scrollbar-thumb); 
+    border-radius: var(--radius-full); 
 }

@@ -1,62 +1,67 @@
 .lang-overlay {
     position: fixed;
     inset: 0;
-    z-index: 9997;
     background: transparent;
+    z-index: 9998;
 }
 
 .lang-dropdown-modal {
-    position: absolute;
+    position: fixed;
     top: 75px;
     right: 150px;
-    width: 185px;
-    background: #0d0d10;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.04) inset;
+    width: 190px;
+    background: var(--bg-elevated); 
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl); 
+    box-shadow: 
+        var(--shadow-xl), 
+        inset 0 0 0 1px var(--white-a1);
+        
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: 8px;
-    z-index: 9998;
-    animation: langDrop 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+    padding: var(--space-2);
+    z-index: 9999;
+    
+    animation: langDrop var(--transition-spring);
     transform-origin: top right;
+    backdrop-filter: var(--backdrop-blur-md);
 }
 
 @keyframes langDrop {
-    from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+    from { opacity: 0; transform: translateY(-12px) scale(0.95); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .lang-modal-header {
-    padding: 6px 10px 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    margin-bottom: 6px;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-faint);
+    margin-bottom: var(--space-2);
 }
 
 .lang-modal-header span {
-    font-size: 0.65rem;
+    font-size: var(--text-2xs);
     font-weight: 800;
-    color: #28282e;
+    color: var(--text-tertiary); 
     text-transform: uppercase;
-    letter-spacing: 1px;
-    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 1.2px;
+    font-family: var(--font-sans);
 }
 
 .lang-option {
     background: transparent;
     border: 1px solid transparent;
-    color: #555;
-    padding: 9px 10px;
+    color: var(--text-secondary);
+    padding: 10px 12px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     cursor: pointer;
-    border-radius: 10px;
-    font-size: 0.845rem;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
     font-weight: 600;
-    font-family: 'DM Sans', sans-serif;
-    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+    font-family: var(--font-sans);
+    transition: all var(--transition-spring);
     width: 100%;
 }
 
@@ -67,8 +72,9 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border-radius: 3px;
+    border-radius: 2px;
     flex-shrink: 0;
+    box-shadow: 0 0 0 1px var(--white-a1); 
 }
 
 .lang-svg-flag {
@@ -81,24 +87,26 @@
 .lang-name { flex: 1; }
 
 .lang-option:hover {
-    background: rgba(255, 255, 255, 0.04);
-    color: #d0d0d4;
+    background: var(--white-a1);
+    color: var(--text-primary);
+    transform: translateX(4px); 
 }
 
+/* Aktif Dil */
 .lang-option.active {
-    background: rgba(14, 212, 90, 0.07);
-    border-color: rgba(14, 212, 90, 0.18);
-    color: #f0f0f2;
+    background: var(--accent-ghost); 
+    border-color: var(--accent-subtle);
+    color: var(--text-primary);
 }
 
 .lang-check-icon {
     margin-left: auto;
-    font-size: 0.85rem;
-    color: #0ed45a;
-    animation: checkIn 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+    font-size: 0.9rem;
+    color: var(--accent-color); 
+    animation: checkIn var(--transition-base) var(--transition-spring);
 }
 
 @keyframes checkIn {
-    from { transform: scale(0); opacity: 0; }
+    from { transform: scale(0.5); opacity: 0; }
     to   { transform: scale(1); opacity: 1; }
 }

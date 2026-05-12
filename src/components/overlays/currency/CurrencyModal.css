@@ -1,7 +1,7 @@
 .currency-dropdown-overlay {
     position: fixed;
     inset: 0;
-    z-index: 9997;
+    z-index: var(--z-overlay); 
     background: transparent;
 }
 
@@ -9,57 +9,61 @@
     position: absolute;
     top: 20%; 
     right: 16%; 
-    width: 190px;
-    background: #181818;
-    border: 1px solid #252525;
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+    width: 195px;
+    background: var(--bg-elevated); 
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
     display: flex;
     flex-direction: column;
-    padding: 6px;
-    z-index: 9998;
-    animation: fadeInCurrency 0.2s ease-out;
+    padding: var(--space-2);
+    z-index: calc(var(--z-overlay) + 1);
+    
+    backdrop-filter: var(--backdrop-blur-sm);
+    animation: fadeInCurrency var(--transition-spring);
 }
 
 .currency-modal-header {
-    padding: 8px 12px;
-    border-bottom: 1px solid #252525;
-    margin-bottom: 4px;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border-faint);
+    margin-bottom: var(--space-1);
 }
 
 .currency-modal-header span {
-    font-size: 0.65rem;
+    font-size: var(--text-2xs);
     font-weight: 900;
-    color: #444;
+    color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.2px;
+    font-family: var(--font-sans);
 }
 
 .currency-option {
     background: transparent;
     border: none;
-    color: #888;
+    color: var(--text-secondary);
     padding: 10px 12px;
     display: flex;
     align-items: center;
     gap: 12px;
     cursor: pointer;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
     font-weight: 600;
-    transition: 0.2s;
+    font-family: var(--font-sans);
+    transition: all var(--transition-fast);
     width: 100%;
     text-align: left;
 }
 
 .currency-option:hover {
-    background: #222;
-    color: #fff;
+    background: var(--bg-hover);
+    color: var(--text-primary);
 }
 
 .currency-option.active {
-    color: #0ed45a !important;
-    background: rgba(14, 212, 90, 0.05) !important;
+    color: var(--accent-color) !important;
+    background: var(--accent-ghost) !important;
 }
 
 .curr-info {
@@ -69,44 +73,53 @@
     gap: 2px;
 }
 
+/* Badge Renklerini Sisteme Bağladık */
 .team-default-badge {
     font-size: 9px;
-    background: #e3f2fd;
-    color: #d21919;
-    padding: 1px 6px;
-    border-radius: 10px;
-    font-weight: 600;
+    background: var(--status-danger-bg);
+    color: var(--status-danger-text);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
     text-transform: uppercase;
-    border: 1px solid #bbdefb;
+    border: 1px solid var(--status-danger-border);
 }
 
-
 .currency-symbol-box {
-    width: 24px;
-    height: 24px;
-    background: #222;
-    border-radius: 6px;
+    width: 26px;
+    height: 26px;
+    background: var(--white-a3);
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
-    color: #555;
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
     font-weight: bold;
-    border: 1px solid #282828;
+    border: 1px solid var(--border-faint);
+    transition: all var(--transition-fast);
 }
 
 .currency-option.active .currency-symbol-box {
-    border-color: #0ed45a;
-    color: #0ed45a;
+    border-color: var(--accent-border);
+    color: var(--accent-color);
+    background: var(--accent-subtle);
 }
 
 .currency-option i.ti-check {
     margin-left: auto;
     font-size: 1rem;
-    color: #0ed45a;
+    color: var(--accent-color);
 }
 
+/* Animasyon */
 @keyframes fadeInCurrency {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { 
+        opacity: 0; 
+        transform: translateY(-10px) scale(0.98); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
 }

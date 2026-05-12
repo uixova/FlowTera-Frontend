@@ -1,24 +1,24 @@
 .adm-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(6px);
+    background: var(--overlay-heavy);
+    backdrop-filter: var(--backdrop-blur);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10000;
-    padding: 20px;
+    z-index: var(--z-modal);
+    padding: var(--space-5);
 }
 
 .adm-modal-box {
-    background: #0d0d10;
+    background: var(--bg-surface);
     width: 100%;
     max-width: 480px;
     border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.65);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-xl);
     overflow: hidden;
-    animation: admSlideUp 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    animation: admSlideUp var(--transition-slow) var(--transition-spring);
     position: relative;
 }
 
@@ -30,7 +30,7 @@
     left: 20%;
     right: 20%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(14, 212, 90, 0.3), transparent);
+    background: linear-gradient(90deg, transparent, var(--accent-border), transparent);
     pointer-events: none;
 }
 
@@ -44,7 +44,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-faint);
 }
 
 .adm-header-left {
@@ -56,9 +56,9 @@
 .adm-icon-circle {
     width: 38px;
     height: 38px;
-    background: rgba(14, 212, 90, 0.06);
-    border: 1px solid rgba(14, 212, 90, 0.14);
-    color: #0ed45a;
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
+    color: var(--accent-color);
     border-radius: 11px;
     display: flex;
     align-items: center;
@@ -68,36 +68,39 @@
 }
 
 .adm-header-text h3 {
-    color: #f0f0f2;
+    color: var(--text-primary);
     margin: 0 0 3px;
     font-size: 0.98rem;
     font-weight: 700;
-    font-family: 'Syne', sans-serif;
+    font-family: var(--font-head);
     letter-spacing: -0.2px;
 }
 
 .adm-header-text p {
-    color: #2c2c38;
+    color: var(--text-muted);
     margin: 0;
     font-size: 0.76rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
 }
 
 .adm-close-btn {
     width: 30px;
     height: 30px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: var(--bg-inset);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    color: #383842;
+    color: var(--text-tertiary);
     cursor: pointer;
     display: grid;
     place-items: center;
     font-size: 0.9rem;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition: var(--transition-fast);
 }
 
-.adm-close-btn:hover { background: rgba(255,255,255,0.07); color: #f0f0f2; }
+.adm-close-btn:hover { 
+    background: var(--bg-hover); 
+    color: var(--text-primary); 
+}
 
 .adm-modal-body {
     padding: 22px;
@@ -105,13 +108,13 @@
 
 .adm-input-group label {
     display: block;
-    color: #32323c;
-    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-size: var(--text-2xs);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 8px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
 }
 
 .adm-input-wrapper {
@@ -123,43 +126,43 @@
 .adm-input-wrapper i {
     position: absolute;
     left: 14px;
-    color: #333;
+    color: var(--text-tertiary);
     font-size: 1rem;
     pointer-events: none;
 }
 
 .adm-input-wrapper input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.065);
+    background: var(--bg-inset);
+    border: 1px solid var(--border-default);
     border-radius: 13px;
     padding: 11px 14px 11px 42px;
-    color: #f0f0f2;
-    font-size: 0.875rem;
-    font-family: 'DM Sans', sans-serif;
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    font-family: var(--font-sans);
     outline: none;
-    transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    transition: var(--transition-base);
 }
 
-.adm-input-wrapper input::placeholder { color: #2a2a32; }
+.adm-input-wrapper input::placeholder { color: var(--text-disabled); }
 
 .adm-input-wrapper input:focus {
-    border-color: rgba(14, 212, 90, 0.35);
-    background: rgba(14, 212, 90, 0.02);
-    box-shadow: 0 0 0 3px rgba(14, 212, 90, 0.07);
+    border-color: var(--accent-border);
+    background: var(--accent-subtle);
+    box-shadow: 0 0 0 3px var(--accent-glow-sm);
 }
 
 .adm-role-section { margin-top: 22px; }
 
 .adm-role-section label {
     display: block;
-    color: #32323c;
-    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-size: var(--text-2xs);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 10px;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
 }
 
 .adm-role-list {
@@ -175,21 +178,22 @@
     justify-content: space-between;
     align-items: center;
     padding: 14px 16px;
-    background: rgba(255, 255, 255, 0.018);
-    border: 1px solid rgba(255, 255, 255, 0.065);
+    background: var(--white-a2);
+    border: 1px solid var(--border-subtle);
     border-radius: 14px;
     cursor: pointer;
-    transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+    transition: var(--transition-base);
 }
 
 .adm-role-card:hover .adm-role-content {
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-strong);
     transform: translateX(3px);
+    background: var(--bg-hover);
 }
 
 .adm-role-card input[type="radio"]:checked + .adm-role-content {
-    border-color: rgba(14, 212, 90, 0.3);
-    background: rgba(14, 212, 90, 0.03);
+    border-color: var(--accent-border);
+    background: var(--accent-subtle);
 }
 
 .adm-role-info {
@@ -201,37 +205,37 @@
 .adm-role-name {
     font-weight: 700;
     font-size: 0.88rem;
-    font-family: 'Syne', sans-serif;
+    font-family: var(--font-head);
 }
 
-.adm-role-name.admin     { color: #ff5630; }
-.adm-role-name.moderator { color: #ffab00; }
-.adm-role-name.member    { color: #00b8d9; }
+.adm-role-name.admin     { color: var(--status-danger); }
+.adm-role-name.moderator { color: var(--status-warning); }
+.adm-role-name.member    { color: var(--status-info); }
 
 .adm-role-desc {
-    color: #28282e;
+    color: var(--text-tertiary);
     font-size: 0.74rem;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
 }
 
 .adm-check-icon {
     width: 22px;
     height: 22px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-full);
+    background: var(--white-a5);
+    border: 1px solid var(--border-subtle);
     color: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.75rem;
-    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    transition: var(--transition-base);
 }
 
 .adm-role-card input[type="radio"]:checked + .adm-role-content .adm-check-icon {
-    background: #0ed45a;
-    border-color: #0ed45a;
-    color: #050507;
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--accent-fg);
 }
 
 .adm-modal-footer {
@@ -242,36 +246,36 @@
 }
 
 .adm-btn-secondary {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    color: #444;
+    background: var(--bg-inset);
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
     padding: 11px 20px;
     border-radius: 11px;
     font-weight: 600;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
     cursor: pointer;
-    transition: background 0.25s ease, color 0.25s ease;
+    transition: var(--transition-base);
 }
 
-.adm-btn-secondary:hover { background: rgba(255,255,255,0.07); color: #f0f0f2; }
+.adm-btn-secondary:hover { 
+    background: var(--bg-hover); 
+    color: var(--text-primary); 
+}
 
 .adm-btn-primary {
-    background: #0ed45a;
-    color: #050507;
+    background: var(--accent-color);
+    color: var(--accent-fg);
     border: none;
     padding: 11px 24px;
     border-radius: 11px;
     font-weight: 700;
-    font-family: 'DM Sans', sans-serif;
+    font-family: var(--font-sans);
     cursor: pointer;
-    transition:
-        background 0.35s cubic-bezier(0.23, 1, 0.32, 1),
-        transform  0.35s cubic-bezier(0.23, 1, 0.32, 1),
-        box-shadow 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: var(--transition-spring);
 }
 
 .adm-btn-primary:hover {
-    background: #fff;
+    background: var(--text-base);
     transform: translateY(-2px);
-    box-shadow: 0 10px 28px rgba(14, 212, 90, 0.25);
+    box-shadow: var(--shadow-accent);
 }

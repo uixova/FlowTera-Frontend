@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import Loader from '../../ui/Loader';
 import { notificationService } from '../../../services/notificationService';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
@@ -42,11 +43,10 @@ const Notification = ({ isOpen, onClose }) => {
         }
     };
 
-    // SADECE bilgilendirmeleri (infos) temizler
     const handleClearInfos = async () => {
         if (infos.length === 0) return;
         try {
-            await notificationService.clearAllInfos(currentUserId); 
+            await notificationService.clearAllInfos(currentUserId);
             setInfos([]);
         } catch (error) {
             console.error("Bildirimler temizlenirken hata:", error);
@@ -64,7 +64,7 @@ const Notification = ({ isOpen, onClose }) => {
 
     if (!isOpen) return null;
 
-    return (
+    return createPortal(
         <div className="nt-panel-overlay" onClick={onClose}>
             <div className="nt-panel-container" onClick={(e) => e.stopPropagation()}>
                 <div className="nt-header">
@@ -88,10 +88,9 @@ const Notification = ({ isOpen, onClose }) => {
 
                 <div className="nt-content">
                     {loading || authLoading ? (
-                        <div className="nt-loader-wrapper"><Loader type="dots"/></div>
+                        <div className="nt-loader-wrapper"><Loader type="dots" /></div>
                     ) : (
                         <>
-                            {/* TAKIM DAVETLERİ (REQUESTS) */}
                             {requests.length > 0 && (
                                 <section className="nt-section">
                                     <div className="section-title"><span>Bekleyen Davetler</span></div>
@@ -114,14 +113,14 @@ const Notification = ({ isOpen, onClose }) => {
                                                     </div>
                                                 </div>
                                                 <div className="invite-card-actions">
-                                                    <button 
-                                                        className="btn-invite-accept" 
+                                                    <button
+                                                        className="btn-invite-accept"
                                                         onClick={() => handleAction(req.id, 'accept', req.teamId)}
                                                     >
                                                         Kabul Et
                                                     </button>
-                                                    <button 
-                                                        className="btn-invite-reject" 
+                                                    <button
+                                                        className="btn-invite-reject"
                                                         onClick={() => handleAction(req.id, 'reject', req.teamId)}
                                                     >
                                                         Reddet
@@ -133,15 +132,14 @@ const Notification = ({ isOpen, onClose }) => {
                                 </section>
                             )}
 
-                            {/* BİLGİLENDİRMELER (INFOS) */}
                             <section className="nt-section">
                                 <div className="section-title"><span>Son Bildirimler</span></div>
                                 <div className="nt-list">
                                     {infos.length > 0 ? infos.map(nt => (
-                                        <NotificationItem 
-                                            key={nt.id} 
-                                            nt={nt} 
-                                            onRemove={removeNotification} 
+                                        <NotificationItem
+                                            key={nt.id}
+                                            nt={nt}
+                                            onRemove={removeNotification}
                                         />
                                     )) : <p className="no-data">Henüz bildirim yok.</p>}
                                 </div>
@@ -150,7 +148,8 @@ const Notification = ({ isOpen, onClose }) => {
                     )}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 

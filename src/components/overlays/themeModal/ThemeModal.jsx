@@ -1,113 +1,164 @@
-import React, { useState } from 'react';
-import './ThemeModal.css';
+import React, { useState, useEffect, useContext } from 'react';
+import ReactDOM from 'react-dom';
+import { ThemeContext } from '../../../context/ThemeContext';
 import { useSubscription } from '../../../context/SubscriptionContext';
+import './ThemeModal.css';
+
+const ACCENT_COLORS = [
+    { value: '#0ed45a', label: 'Yeşil'     },
+    { value: '#00d2ff', label: 'Mavi'       },
+    { value: '#8338ec', label: 'Mor'        },
+    { value: '#ff006e', label: 'Pembe'      },
+    { value: '#fb5607', label: 'Turuncu'    },
+    { value: '#ffbe0b', label: 'Sarı'       },
+    { value: '#a78bfa', label: 'Lavanta'    },
+    { value: '#8cbed1', label: 'Açık Mavi'  },
+];
+
+const RADIUS_OPTIONS = [
+    { key: 'sharp', label: 'Keskin'   },
+    { key: 'soft',  label: 'Yumuşak'  },
+    { key: 'round', label: 'Oval'     },
+    { key: 'ultra', label: 'Tam Oval' },
+];
+
+const DEFAULT_THEME = { mode: 'dark', accent: '#0ed45a', radius: 'soft' };
 
 const ThemeModal = ({ isOpen, onClose }) => {
-  const { hasFeature } = useSubscription();
-  
-  const [activeMode, setActiveMode] = useState('dark');
-  const [accentColor, setAccentColor] = useState('#50e091');
-  const [radius, setRadius] = useState('Yumuşak');
+    const { theme, setTheme } = useContext(ThemeContext);
+    const { hasFeature } = useSubscription();
 
-  const colors = [
-    '#50e091', '#0ed45a', '#3a86ff', '#8338ec', 
-    '#ff006e', '#fb5607', '#ffbe0b', '#8cbed1'
-  ];
+    // Draft state — ThemeContext'e sadece Uygula butonunda yazılır
+    const [draft, setDraft] = useState({ ...theme });
 
-  // Kısıtlama Kontrolü
-  const isAdvancedThemeEnabled = hasFeature('theme_management');
+    // Modal her açıldığında context'teki güncel değerden başla
+    useEffect(() => {
+        if (isOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setDraft({ ...theme });
+        }
+    }, [isOpen, theme]);
 
-  return (
-    <div className={`panel-overlay ${isOpen ? 'active' : ''}`} onClick={onClose}>
-      <div className={`side-panel ${isOpen ? 'open' : ''}`} onClick={(e) => e.stopPropagation()}>
-        
-        <div className="panel-header">
-          <div className="header-text">
-            <h3>Görünüm Ayarları</h3>
-            <p>Sistemi kendine göre özelleştir</p>
-          </div>
-          <button className="panel-close" onClick={onClose}>
-            <i className="ti ti-x"></i>
-          </button>
-        </div>
+    // Kısıtlama Kontrolü
+    const isAdvancedThemeEnabled = hasFeature('theme_management');
 
-        <div className="panel-body">
-          {/* TEMA SEÇİMİ - Herkes yapabilir */}
-          <div className="panel-section">
-            <label>Arayüz Modu</label>
-            <div className="mode-selection-grid">
-              <div 
-                className={`mode-card ${activeMode === 'dark' ? 'active' : ''}`}
-                onClick={() => setActiveMode('dark')}
-              >
-                <div className="mode-preview-box dark-preview"></div>
-                <span>Koyu Tema</span>
-              </div>
-              <div 
-                className={`mode-card ${activeMode === 'light' ? 'active' : ''}`}
-                onClick={() => setActiveMode('light')}
-              >
-                <div className="mode-preview-box light-preview"></div>
-                <span>Açık Tema</span>
-              </div>
-            </div>
-          </div>
+    const handleApply = () => {
+        setTheme(draft);
+        onClose();
+    };
 
-          {/* GELİŞMİŞ AYARLAR - Sadece Professional+ */}
-          <div className={`advanced-theme-settings ${!isAdvancedThemeEnabled ? 'locked-feature' : ''}`}>
-            {!isAdvancedThemeEnabled && (
-                <div className="lock-overlay">
-                    <i className="ti ti-lock"></i>
-                    <span>Bu ayarlar Professional plan gerektirir</span>
+    const handleReset = () => {
+        setDraft(DEFAULT_THEME);
+        setTheme(DEFAULT_THEME);
+    };
+
+    // Portal: overlay'i body'e doğrudan bağla — parent'ın transform/filter
+    // stacking context'i z-index'i kırdığı için bu şart
+    return ReactDOM.createPortal(
+        <div className={`tm-panel-overlay${isOpen ? ' active' : ''}`} onClick={onClose}>
+            {/* --preview-accent: panel içinde seçilen renk anlık önizleme sağlar
+                variables.css --accent-color ile senkron ThemeContext üzerinden akar */}
+            <div
+                className={`tm-side-panel${isOpen ? ' open' : ''}`}
+                style={{ '--preview-accent': draft.accent }}
+                onClick={e => e.stopPropagation()}
+            >
+                <div className="tm-panel-header">
+                    <div className="tm-header-text">
+                        <h3>Görünüm Ayarları</h3>
+                        <p>Sistemi kendine göre özelleştir</p>
+                    </div>
+                    <button className="tm-panel-close" onClick={onClose}>
+                        <i className="ti ti-x" />
+                    </button>
                 </div>
-            )}
 
-            {/* RENK SEÇİMİ */}
-            <div className="panel-section">
-              <label>Vurgu Rengi</label>
-              <div className="color-picker-grid">
-                {colors.map(c => (
-                  <div 
-                    key={c}
-                    className={`color-dot ${accentColor === c ? 'active' : ''}`} 
-                    style={{ background: c }}
-                    onClick={() => isAdvancedThemeEnabled && setAccentColor(c)}
-                  >
-                    {accentColor === c && <i className="ti ti-check" style={{color: '#fff'}}></i>}
-                  </div>
-                ))}
-              </div>
+                <div className="tm-panel-body">
+                    {/* Arayüz Modu - Herkes yapabilir */}
+                    <div className="tm-panel-section">
+                        <label className="tm-section-label">Arayüz Modu</label>
+                        <div className="tm-mode-grid">
+                            {['dark', 'light'].map(mode => (
+                                <div
+                                    key={mode}
+                                    className={`tm-mode-card${draft.mode === mode ? ' active' : ''}`}
+                                    onClick={() => setDraft(p => ({ ...p, mode }))}
+                                >
+                                    <div className={`tm-mode-preview ${mode}-preview`} />
+                                    <span>{mode === 'dark' ? 'Koyu Tema' : 'Açık Tema'}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Gelişmiş Ayarlar - Sadece Professional */}
+                    <div className={`tm-advanced-section${!isAdvancedThemeEnabled ? ' locked' : ''}`}>
+                        {!isAdvancedThemeEnabled && (
+                            <div className="tm-lock-overlay">
+                                <div className="tm-lock-icon">
+                                    <i className="ti ti-lock" />
+                                </div>
+                                <span>Bu ayarlar Professional plan gerektirir</span>
+                            </div>
+                        )}
+
+                        {/* Vurgu Rengi */}
+                        <div className="tm-panel-section">
+                            <label className="tm-section-label">Vurgu Rengi</label>
+                            <div className="tm-color-grid">
+                                {ACCENT_COLORS.map(c => (
+                                    <div
+                                        key={c.value}
+                                        className={`tm-color-dot${draft.accent === c.value ? ' active' : ''}`}
+                                        style={{ background: c.value }}
+                                        title={c.label}
+                                        onClick={() => isAdvancedThemeEnabled && setDraft(p => ({ ...p, accent: c.value }))}
+                                    >
+                                        {draft.accent === c.value && <i className="ti ti-check" />}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Seçili rengi variables.css --accent-color ile senkronize et */}
+                            <div className="tm-color-preview">
+                                <span className="tm-color-hex">{draft.accent}</span>
+                                <div className="tm-color-swatch" style={{ background: draft.accent }} />
+                            </div>
+                        </div>
+
+                        {/* Kenar Yapısı */}
+                        <div className="tm-panel-section">
+                            <label className="tm-section-label">Kenar Yapısı</label>
+                            <div className="tm-radius-grid">
+                                {RADIUS_OPTIONS.map(r => (
+                                    <button
+                                        key={r.key}
+                                        type="button"
+                                        className={`tm-radius-btn${draft.radius === r.key ? ' active' : ''}`}
+                                        onClick={() => isAdvancedThemeEnabled && setDraft(p => ({ ...p, radius: r.key }))}
+                                    >
+                                        <span className="tm-radius-preview" data-radius={r.key} />
+                                        {r.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="tm-panel-footer">
+                    <button type="button" className="tm-btn-reset" onClick={handleReset}>
+                        <i className="ti ti-refresh" />
+                        Sıfırla
+                    </button>
+                    <button type="button" className="tm-btn-apply" onClick={handleApply}>
+                        Değişiklikleri Uygula
+                    </button>
+                </div>
             </div>
-
-            {/* RADIUS */}
-            <div className="panel-section">
-              <label>Kenar Yapısı</label>
-              <div className="radius-list-modern">
-                {['Keskin', 'Yumuşak', 'Oval', 'Tam'].map(r => (
-                  <button 
-                    key={r}
-                    className={`rad-btn ${radius === r ? 'active' : ''}`}
-                    onClick={() => isAdvancedThemeEnabled && setRadius(r)}
-                  >
-                    {r}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="panel-footer">
-          <button className="btn-reset-plain" onClick={() => {
-            setActiveMode('dark');
-            setAccentColor('#50e091');
-            setRadius('Yumuşak');
-          }}>Sıfırla</button>
-          <button className="btn-apply" onClick={onClose}>Değişiklikleri Uygula</button>
-        </div>
-      </div>
-    </div>
-  );
+        </div>,
+        document.body  
+    );
 };
 
 export default ThemeModal;

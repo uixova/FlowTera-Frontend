@@ -1,158 +1,157 @@
 .tr-loader-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  min-height: 300px;
-  background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
+    background: transparent;
 }
 
 .tr-butterfly-loader {
-  --sizeLoader: 80px;
-  --sizeLoaderHalf: calc(var(--sizeLoader) / 2);
-  
-  display: flex;
-  position: relative;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: var(--sizeLoader);
-  height: var(--sizeLoader);
-  
-  background: radial-gradient(circle, rgba(14, 212, 90, 0.2) 0%, transparent 70%);
-  border-radius: 50%;
+    --sizeLoader: 80px;
+    --sizeLoaderHalf: calc(var(--sizeLoader) / 2);
+    
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: var(--sizeLoader);
+    height: var(--sizeLoader);
+    
+    background: radial-gradient(circle, var(--accent-glow-sm) 0%, transparent 70%);
+    border-radius: 50%;
 
-  right: var(--sizeLoaderHalf);
-  transform-origin: center right;
-  animation: moveAround 2s linear infinite;
-  
-  filter: drop-shadow(0 0 10px rgba(14, 212, 90, 0.6));
+    right: var(--sizeLoaderHalf);
+    transform-origin: center right;
+    animation: moveAround 2s linear infinite;
+    
+    filter: drop-shadow(0 0 10px var(--accent-glow-md));
 }
 
 /* Kanat Çırpma - Sol */
 .tr-butterfly-loader svg:nth-child(1) {
-  position: relative;
-  height: 100%;
-  left: 2%;
-  transform-origin: center right;
-  animation: wing 0.2s ease-in-out infinite;
+    position: relative;
+    height: 100%;
+    left: 2%;
+    transform-origin: center right;
+    animation: wing 0.2s ease-in-out infinite;
 }
 
-/* Gövde - Parlak Beyaz */
+/* Gövde - Root Metin Rengi */
 .tr-butterfly-loader svg:nth-child(2) {
-  height: 50%;
-  fill: #fff; 
-  z-index: 2;
+    height: 50%;
+    fill: var(--text-primary); 
+    z-index: 2;
 }
 
 /* Kanat Çırpma - Sağ */
 .tr-butterfly-loader svg:nth-child(3) {
-  position: relative;
-  height: 100%;
-  left: -2%;
-  transform-origin: center left;
-  animation: wing 0.25s ease-in-out infinite;
+    position: relative;
+    height: 100%;
+    left: -2%;
+    transform-origin: center left;
+    animation: wing 0.25s ease-in-out infinite;
 }
 
-/* Kanat Rengi */
+/* Kanat Rengi - Accent Color */
 .tr-butterfly-loader svg path {
-  fill: #0ed45a; 
-}
-
-/* Kanat Hareketi (Wing) */
-@keyframes wing {
-  0% { transform: rotateY(0deg); }
-  50% { transform: rotateY(70deg); }
-  100% { transform: rotateY(0deg); }
-}
-
-/* Dönme Hareketi (MoveAround) */
-@keyframes moveAround {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+    fill: var(--accent-color); 
 }
 
 /* Metin Alanı */
 .tr-loader-text {
-  margin-top: 50px;
-  color: #0ed45a;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  font-family: 'Inter', sans-serif;
-  text-shadow: 0 0 8px rgba(14, 212, 90, 0.4);
+    margin-top: 50px;
+    color: var(--accent-color);
+    font-size: var(--text-xs); 
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-family: var(--font-sans);
+    text-shadow: 0 0 8px var(--accent-glow-sm);
 }
 
 /* Loader Dots */
-
 .tr-dots-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-3);
+    margin-top: var(--space-3);
 }
 
 .tr-dots-loader {
-  position: relative;
-  display: flex;
-  gap: 0.6em; 
+    position: relative;
+    display: flex;
+    gap: 0.6em; 
 }
 
-/* Parlama efekti (Background blur) */
+/* Parlama efekti */
 .tr-dots-loader::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 100%;
-  height: 1.5em;
-  filter: blur(20px);
-  background-image: radial-gradient(at 50% 50%, rgba(14, 212, 90, 0.4) 0%, transparent 70%);
-  opacity: 0.6;
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 1.5em;
+    filter: blur(20px);
+    background-image: radial-gradient(at 50% 50%, var(--accent-glow-sm) 0%, transparent 70%);
+    opacity: 0.6;
 }
 
 .loader__circle {
-  --size__loader: 0.6em;
-  width: var(--size__loader);
-  height: var(--size__loader);
-  border-radius: 50%;
-  animation: loader__circle__jumping 2s infinite;
-  background: #0ed45a; 
-  box-shadow: 0 0 10px rgba(14, 212, 90, 0.5);
+    --size__loader: 0.6em;
+    width: var(--size__loader);
+    height: var(--size__loader);
+    border-radius: 50%;
+    animation: loader__circle__jumping 2s infinite;
+    background: var(--accent-color); 
+    box-shadow: 0 0 10px var(--accent-glow-sm);
 }
 
 .loader__circle:nth-child(2n) {
-  animation-delay: 300ms;
-  background-color: rgba(14, 212, 90, 0.6);
-  box-shadow: 0 0 8px rgba(14, 212, 90, 0.3);
+    animation-delay: 300ms;
+    background-color: var(--accent-bright); /* Hafif farklı ton için bright kullandık */
+    box-shadow: 0 0 8px var(--accent-glow-sm);
 }
 
 .loader__circle:nth-child(3n) {
-  animation-delay: 600ms;
-  background-color: #12ff6e;
-  box-shadow: 0 0 12px rgba(14, 212, 90, 0.6);
+    animation-delay: 600ms;
+    background-color: var(--accent-color);
+    filter: brightness(1.2); /* Orijinaldeki gibi biraz daha parlak */
+    box-shadow: 0 0 12px var(--accent-glow-md);
+}
+
+/* Animasyonlar (Dokunulmadı) */
+@keyframes wing {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(70deg); }
+    100% { transform: rotateY(0deg); }
+}
+
+@keyframes moveAround {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 @keyframes loader__circle__jumping {
-  0%, 100% { 
-    transform: translateY(0px); 
-    opacity: 0.5;
-  }
-  25% { 
-    transform: translateY(-12px) scale(1.2); 
-    opacity: 1;
-  }
-  50% { 
-    transform: translateY(0px); 
-    opacity: 0.5;
-  }
-  75% { 
-    transform: translateY(4px) scale(0.9); 
-    opacity: 0.7;
-  }
+    0%, 100% { 
+        transform: translateY(0px); 
+        opacity: 0.5;
+    }
+    25% { 
+        transform: translateY(-12px) scale(1.2); 
+        opacity: 1;
+    }
+    50% { 
+        transform: translateY(0px); 
+        opacity: 0.5;
+    }
+    75% { 
+        transform: translateY(4px) scale(0.9); 
+        opacity: 0.7;
+    }
 }

@@ -14,7 +14,7 @@ const InfoItem = ({ icon, label, children, full }) => (
     </div>
 );
 
-const ExpenseDetail = ({ isOpen, onClose, data, onReopen }) => {
+const ExpenseDetail = ({ isOpen, onClose, data }) => {
     const { wrapSidebarClose } = useImageBox();
 
     if (!data) return null;
@@ -41,10 +41,6 @@ const ExpenseDetail = ({ isOpen, onClose, data, onReopen }) => {
                 <ImageBox
                     src={data.image || '/src/assets/images/receipt-placeholder.png'}
                     alt={data.title}
-                    onToggle={(state) => {
-                        if (state) onClose();
-                        else if (onReopen) onReopen();
-                    }}
                 >
                     <img src={data.image || '/src/assets/images/receipt-placeholder.png'} alt="Fatura" />
                     <div className="ex-header-overlay" />
