@@ -736,6 +736,7 @@ footer { position: relative; z-index: 1; }
 .pricing-section { background: #050507; }
 
 .pricing-grid {
+  margin-top: 40px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;

@@ -27,7 +27,7 @@
 .an-card {
     background: var(--bg-inset);
     border: 1px solid var(--border-subtle);
-    border-radius: 22px;
+    border-radius: var(--radius-2xl);
     padding: 24px 22px 20px;
     display: flex;
     flex-direction: column;

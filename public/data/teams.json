@@ -32,8 +32,8 @@
       "autoApproved": false,
       "autoApprovedLimit": 500,
       "planContext":{
-        "planId": "13433988-d39c-43f0-a731-51f2bb4749ec",
-        "planName": "professional",
+        "planId": "7fe59f64-6bee-4816-bd66-4d12a8822042",
+        "planName": "enterprise",
         "maxMembersAllowed": 50,
         "isPlanFixed": true
       }

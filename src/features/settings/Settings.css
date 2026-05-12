@@ -1,11 +1,10 @@
-
+/* Ayarlar Sayfası Ana Konteynır */
 .settings-container {
     display: flex;
     height: 100vh;
-    background: #0f0f0f;
-    color: #ffffff;
-    font-family: 'Inter', sans-serif;
-    overflow: hidden; 
+    background: var(--bg-base);
+    color: var(--text-primary);
+    overflow: hidden;
 }
 
 .app-container.st-page-active {
@@ -13,171 +12,317 @@
     max-width: 100% !important;
 }
 
+/* Yan Menü (Sidebar) Yapısı */
 .st-sidebar {
-    width: 280px;
-    background: #141414;
-    border-right: 1px solid #222;
+    width: 260px;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--sidebar-border);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 30px 15px;
+    padding: var(--space-7) var(--space-4);
     flex-shrink: 0;
 }
 
+.st-sidebar-header {
+    margin-bottom: var(--space-2);
+    padding: 0 var(--space-2) var(--space-5);
+    border-bottom: 1px solid var(--border-faint);
+}
+
 .st-sidebar-header h3 {
-    font-size: 1.3rem;
+    font-size: var(--text-lg);
     font-weight: 800;
-    margin-bottom: 25px;
-    padding-left: 15px;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.4px;
+    color: var(--text-primary);
+    font-family: var(--font-head);
+    margin: 0;
+}
+
+.st-sidebar-header p {
+    margin: var(--space-1) 0 0;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+}
+
+/* Gezinme Menüsü Elemanları */
+.st-menu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
 }
 
 .st-menu-item {
     cursor: pointer;
-    padding: 12px 18px;
-    border-radius: 12px;
-    color: #888;
-    margin-bottom: 5px;
-    font-size: 0.95rem;
-    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 11px var(--space-4);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+    font-weight: 500;
+    font-family: var(--font-sans);
+    transition: background var(--transition-fast), color var(--transition-fast);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 11px;
+}
+
+.st-menu-item i { 
+    font-size: var(--text-lg); 
 }
 
 .st-menu-item:hover {
-    background: #1e1e1e;
-    color: #fff;
+    background: var(--bg-hover);
+    color: var(--text-primary);
 }
 
 .st-menu-item.active {
-    background: rgba(14, 212, 90, 0.1);
-    color: #0ed45a;
+    background: var(--accent-ghost);
+    color: var(--accent-text);
     font-weight: 600;
+    border: 1px solid var(--accent-border);
 }
 
+/* Çıkış Butonu */
 .st-logout-btn {
-    padding: 14px;
-    background: rgba(255, 68, 68, 0.05);
-    color: #ff4444;
-    border: 1px solid rgba(255, 68, 68, 0.1);
-    border-radius: 12px;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--status-danger-bg);
+    color: var(--status-danger-text);
+    border: 1px solid var(--status-danger-border);
+    border-radius: var(--radius-md);
     cursor: pointer;
-    font-weight: 700;
+    font-weight: 600;
+    font-size: var(--text-base);
+    font-family: var(--font-sans);
+    transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
+.st-logout-btn:hover {
+    background: var(--status-danger-subtle);
+    border-color: var(--status-danger);
+}
+
+/* Ana İçerik Alanı ve Scrollbar */
 .st-main-content {
     flex: 1;
-    padding: 50px 60px;
+    padding: var(--space-12) 56px;
+    background: var(--bg-app);
     overflow-y: auto;
-    overflow-x: hidden; 
+    overflow-x: hidden;
     scroll-behavior: smooth;
 }
 
+.st-main-content::-webkit-scrollbar { 
+    width: 4px; 
+}
+.st-main-content::-webkit-scrollbar-track { 
+    background: var(--scrollbar-track); 
+}
+.st-main-content::-webkit-scrollbar-thumb { 
+    background: var(--scrollbar-thumb); 
+    border-radius: var(--radius-full); 
+}
+
+/* Form Bölümleri ve Animasyonlar */
 .st-content-section {
-    max-width: 850px;
+    max-width: 820px;
     margin: 0 auto;
-    animation: stFadeIn 0.3s ease-out;
+    animation: stFadeIn var(--transition-slow) var(--transition-spring) both;
 }
 
 @keyframes stFadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-.st-header-box { margin-bottom: 35px; }
-.st-header-box h2 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; }
-.st-header-box p { color: #666; font-size: 0.95rem; }
+.st-header-box {
+    margin-bottom: var(--space-8);
+}
 
+.st-header-box h2 {
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    margin: 0 0 6px;
+    letter-spacing: -0.5px;
+    font-family: var(--font-head);
+    color: var(--text-primary);
+}
+
+.st-header-box p {
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+    margin: 0;
+    font-family: var(--font-sans);
+}
+
+/* Kartlar ve Form Elemanları */
 .st-card {
-    background: #181818;
-    padding: 35px;
-    border-radius: 20px;
-    border: 1px solid #252525;
-    margin-bottom: 25px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-7);
+    margin-bottom: var(--space-5);
+    position: relative;
+    overflow: hidden;
 }
 
-.st-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-.st-input-group { display: flex; flex-direction: column; gap: 8px; }
-.st-input-group label { font-size: 0.8rem; font-weight: 700; color: #555; text-transform: uppercase; }
+.st-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+    opacity: 0;
+    transition: opacity var(--transition-slow) ease;
+}
+
+.st-card:hover::before { 
+    opacity: 1; 
+}
+
+.st-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+}
+
+.st-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.st-input-group label {
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: var(--font-sans);
+}
 
 .st-input-group input {
-    background: #202020;
-    border: 1px solid #333;
-    padding: 14px 16px;
-    border-radius: 12px;
-    color: #fff;
-    transition: 0.2s;
+    background: var(--bg-input);
+    border: 1px solid var(--border-input);
+    padding: 11px var(--space-4);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    font-family: var(--font-sans);
     width: 100%;
-    box-sizing: border-box; 
+    box-sizing: border-box;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.st-input-group input::placeholder { 
+    color: var(--text-muted); 
 }
 
 .st-input-group input:focus {
-    border-color: #0ed45a;
-    background: #252525;
+    border-color: var(--border-input-focus);
+    box-shadow: 0 0 0 3px var(--accent-glow-sm);
     outline: none;
+    background: var(--bg-input-focus);
 }
 
-.st-input-group.readonly input {
-    background: #111;
-    color: #444;
+.st-input-group input:disabled {
+    background: var(--bg-disabled);
+    color: var(--text-disabled);
     border-style: dashed;
+    cursor: not-allowed;
 }
 
+/* Buton ve Switch Kontrolleri */
 .st-btn-save {
-    background: #0ed45a;
-    color: #000;
-    padding: 14px 35px;
-    border-radius: 12px;
-    font-weight: 800;
+    background: var(--accent-color);
+    color: var(--accent-fg);
+    padding: 13px var(--space-8);
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: var(--text-base);
     border: none;
     cursor: pointer;
-    transition: 0.3s;
+    font-family: var(--font-sans);
+    transition: all var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
 }
 
 .st-btn-save:hover {
+    background: var(--accent-bright);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(14, 212, 90, 0.3);
+    box-shadow: var(--shadow-accent);
 }
 
 .st-switch {
-    width: 44px;
-    height: 22px;
+    width: 42px;
+    height: 24px;
     position: relative;
     display: inline-block;
+    flex-shrink: 0;
 }
 
-.st-switch input { opacity: 0; width: 0; height: 0; }
+.st-switch input { 
+    opacity: 0; 
+    width: 0; 
+    height: 0; 
+}
+
 .st-slider {
     position: absolute;
     inset: 0;
-    background: #333;
-    border-radius: 30px;
+    background: var(--white-a6);
+    border: 1px solid var(--white-a10);
+    border-radius: var(--radius-full);
     cursor: pointer;
-    transition: 0.3s;
+    transition: background var(--transition-base), border-color var(--transition-base);
 }
 
-.st-slider:before {
-    content: "";
+.st-slider::before {
+    content: '';
     position: absolute;
-    height: 16px; width: 16px;
-    left: 3px; bottom: 3px;
-    background: #fff;
-    border-radius: 50%;
-    transition: 0.3s;
+    height: 17px;
+    width: 17px;
+    left: 3px;
+    bottom: 3px;
+    background: var(--text-tertiary);
+    border-radius: var(--radius-full);
+    transition: transform 0.3s var(--transition-spring), background var(--transition-base);
 }
 
-input:checked + .st-slider { background: #0ed45a; }
-input:checked + .st-slider:before { transform: translateX(22px); }
+input:checked + .st-slider {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
 
+input:checked + .st-slider::before {
+    transform: translateX(18px);
+    background: var(--accent-fg);
+}
+
+input:disabled + .st-slider { 
+    opacity: 0.35; 
+    cursor: not-allowed; 
+}
+
+/* Yükleme Ekranı */
 .st-loader {
     height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: #0f0f0f;
-    color: #0ed45a;
-    font-weight: 900;
-    letter-spacing: 3px;
+    gap: var(--space-3);
+    background: var(--bg-base);
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
 }

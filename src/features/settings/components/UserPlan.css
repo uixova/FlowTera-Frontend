@@ -1,153 +1,345 @@
+/* Plan Yönetimi Ana Grid Yapısı */
 .plan-management-container {
     display: grid;
-    grid-template-columns: 1fr 1.1fr;
-    gap: 24px;
-    margin-top: 25px;
+    grid-template-columns: 1fr 1.15fr;
+    gap: var(--space-5);
+    margin-top: var(--space-6);
     align-items: start;
 }
 
-.current-plan-status {
-    background: linear-gradient(145deg, #1a1a1a 0%, #080808 100%);
-    border: 1px solid #2a2a2a;
-    padding: 32px;
-    border-radius: 24px;
+/* Mevcut Plan Kartı */
+.current-plan-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-7);
     display: flex;
     flex-direction: column;
-    gap: 20px; 
+    gap: var(--space-5);
+    position: relative;
+    overflow: hidden;
 }
 
-.plan-main-info {
-    display: flex;
-    flex-direction: column; 
-    gap: 15px;
+.current-plan-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 15%;
+    right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
 }
 
+/* Plan Durum Rozeti */
+.plan-active-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--text-2xs);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-text);
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    width: fit-content;
+    font-family: var(--font-sans);
+}
+
+/* Plan Marka ve İkon Alanı */
 .plan-brand {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--space-3);
 }
 
-.plan-icon {
-    font-size: 2rem;
-    color: #0ed45a;
-    background: rgba(14, 212, 90, 0.08);
-    padding: 14px;
-    border-radius: 16px;
+.plan-icon-wrap {
+    width: 54px;
+    height: 54px;
+    background: var(--accent-subtle);
+    border: 1px solid var(--accent-border);
+    border-radius: var(--radius-md);
+    display: grid;
+    place-items: center;
+    font-size: var(--text-2xl);
+    color: var(--accent-color);
     flex-shrink: 0;
 }
 
-.plan-brand h3 {
-    font-size: 1.8rem; 
-    font-weight: 900;
-    margin: 0;
-    color: #fff;
-    letter-spacing: -0.5px;
+.plan-brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
-.plan-price-tag {
-    font-size: 2.4rem;
+.plan-brand-text h3 {
+    font-size: var(--text-2xl);
     font-weight: 800;
-    color: #fff;
+    margin: 0;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    font-family: var(--font-head);
+    line-height: 1;
+}
+
+.plan-tier-tag {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--text-tertiary);
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Fiyatlandırma Satırı */
+.plan-price-row {
     display: flex;
     align-items: baseline;
+    gap: 4px;
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--border-divider);
+    border-bottom: 1px solid var(--border-divider);
 }
 
-.plan-price-tag span {
-    font-size: 1rem;
-    color: #555;
-    margin-left: 4px;
+.plan-price-amount {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -1px;
+    font-family: var(--font-head);
+    line-height: 1;
 }
 
-.billing-notice {
-    font-size: 0.9rem;
-    color: #888;
-    border-top: 1px solid #222;
-    padding-top: 20px;
-    line-height: 1.6;
-}
-
-.billing-notice strong {
-    color: #0ed45a;
-}
-
-.upgrade-redirect-btn {
-    background: #0ed45a;
-    color: #000;
-    border: none;
-    padding: 16px;
-    border-radius: 14px;
+.plan-price-symbol {
+    font-size: var(--text-lg);
     font-weight: 700;
+    color: var(--accent-color);
+    align-self: flex-start;
+    margin-top: 4px;
+}
+
+.plan-price-period {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    margin-left: 2px;
+}
+
+/* Limitler ve Özellikler */
+.plan-limits {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.plan-limit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.plan-limit-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+}
+
+.plan-limit-label i {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.plan-limit-val {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--accent-text);
+    background: var(--accent-ghost);
+    border: 1px solid var(--accent-border);
+    padding: 3px 10px;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+}
+
+/* Yükseltme Butonu */
+.upgrade-btn {
+    width: 100%;
+    padding: 13px var(--space-4);
+    background: var(--accent-color);
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--accent-fg);
+    font-size: var(--text-base);
+    font-weight: 700;
+    font-family: var(--font-sans);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    transition: all 0.2s ease;
-    margin-top: 10px;
+    gap: var(--space-2);
+    transition: all var(--transition-base);
+    position: relative;
+    overflow: hidden;
 }
 
-.upgrade-redirect-btn:hover {
-    background: #12f068;
+.upgrade-btn:hover {
+    background: var(--accent-bright);
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(14, 212, 90, 0.2);
+    box-shadow: var(--shadow-accent);
 }
 
+/* Kullanım ve Özellik Kartları */
 .usage-and-features {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: var(--space-4);
 }
 
-.usage-card, .features-list-card {
-    background: #111;
-    border: 1px solid #222;
-    padding: 24px;
-    border-radius: 20px;
-}
-
-.progress-header {
+.usage-card-inner {
     display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.usage-label-row {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    font-size: 0.85rem;
-    color: #888;
-    margin-bottom: 12px;
+    gap: var(--space-2);
 }
 
-.progress-bar {
-    height: 8px;
-    background: #222;
-    border-radius: 10px;
+.usage-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-weight: 500;
 }
 
-.progress-fill {
+.usage-label i { 
+    font-size: 14px; 
+    color: var(--accent-color); 
+}
+
+.usage-count {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+}
+
+/* Kullanım Çubukları (Progress Bar) */
+.usage-bar-track {
+    height: 7px;
+    background: var(--bg-inset);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.usage-bar-fill {
     height: 100%;
-    background: #0ed45a;
-    border-radius: 10px;
-    box-shadow: 0 0 12px rgba(14, 212, 90, 0.3);
+    background: var(--accent-color);
+    border-radius: var(--radius-full);
+    box-shadow: 0 0 10px var(--accent-glow-sm);
+    transition: width 0.8s var(--transition-spring);
 }
 
-.active-feature-items {
+.usage-bar-fill.warn {
+    background: var(--status-warning);
+    box-shadow: 0 0 10px var(--status-warning-bg);
+}
+
+.usage-bar-fill.critical {
+    background: var(--status-danger);
+    box-shadow: 0 0 10px var(--status-danger-bg);
+}
+
+/* Özellik Listesi Alanı */
+.features-card-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.features-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.features-card-header h4 {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    font-family: var(--font-sans);
+}
+
+.features-count-tag {
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--accent-text);
+    background: var(--accent-ghost);
+    border: 1px solid var(--accent-border);
+    padding: 2px 8px;
+    border-radius: var(--radius-xs);
+    font-family: var(--font-sans);
+}
+
+.feature-list {
     list-style: none;
     padding: 0;
-    display: grid; 
-    gap: 12px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
 }
 
-.active-feature-items li {
-    font-size: 0.9rem;
-    color: #aaa;
+.feature-item {
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    padding: 8px var(--space-3);
+    border-radius: var(--radius-md);
+    background: var(--white-a2);
+    border: 1px solid var(--border-faint);
+    transition: background var(--transition-fast);
 }
 
-.active-feature-items li i {
-    color: #0ed45a;
+.feature-item:hover { 
+    background: var(--bg-hover); 
 }
 
+.feature-item i {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.feature-item.included i { 
+    color: var(--status-success); 
+}
+
+.feature-item.locked {
+    opacity: 0.4;
+    color: var(--text-muted);
+}
+
+.feature-item.locked i { 
+    color: var(--text-disabled); 
+}
+
+/* Responsive Düzen */
 @media (max-width: 992px) {
-    .plan-management-container {
-        grid-template-columns: 1fr;
+    .plan-management-container { 
+        grid-template-columns: 1fr; 
     }
 }
