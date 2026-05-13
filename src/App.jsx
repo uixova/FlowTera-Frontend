@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import './styles/variables.css';
+import Loader from './components/ui/Loader';
 
 // Context Providers
 import { ThemeProvider } from './context/ThemeContext';
@@ -21,14 +22,17 @@ import Navbar from './components/navigation/navbar/Navbar';
 import Dashboard from './features/dashboard/Dashboard';
 import Expenses from './features/expenses/Expenses';
 import Trips from './features/trips/Trips';
-import Analysis from './features/analysis/Analysis';
-import History from './features/history/History';
-import Requests from './features/requests/Requests';
-import Archive from './features/archive/Archive';
 import TeamSelection from './features/teams/Teams';
-import Settings from './features/settings/Settings';
-import Subscription from './features/subscription/Subscription';
-import PaymentPanel from './features/payment/PaymentPanel';
+
+// Lazy Load Sayfaları
+const Analysis = lazy(() => import('./features/analysis/Analysis'));
+const History = lazy(() => import('./features/history/History'));
+const Requests = lazy(() => import('./features/requests/Requests'));
+const Archive = lazy(() => import('./features/archive/Archive'));
+const Settings = lazy(() => import('./features/settings/Settings'));
+const Subscription = lazy(() => import('./features/subscription/Subscription'));
+const PaymentPanel = lazy(() => import('./features/payment/PaymentPanel'));
+const Help = lazy(() => import('./features/help/Help'));
 
 import './styles/GlobalFilter.css'; 
 
@@ -97,49 +101,52 @@ function App() {
         <TeamProvider>
           <SubscriptionProvider> 
             <CurrencyProvider> 
-              <Routes>
-                {/* Landing - Herkese açık */}
-                <Route path="/" element={<Landing />} />
+              <Suspense fallback={null}>
+                <Routes>
+                  {/* Landing - Herkese açık */}
+                  <Route path="/" element={<Landing />} />
 
-                {/* Login ve Register - Giriş yapanlar giremez */}
-                <Route element={<PublicRoute />}>
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignupPage />} />
-                    <Route path="/forgot-password" element={<PassPage />} />
-                </Route>
+                  {/* Login ve Register - Giriş yapanlar giremez */}
+                  <Route element={<PublicRoute />}>
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/signup" element={<SignupPage />} />
+                      <Route path="/forgot-password" element={<PassPage />} />
+                  </Route>
 
-                {/* Korumalı Alanlar - Giriş yapmayanlar giremez */}
-                <Route element={<ProtectedRoute />}>
-                    <Route element={<AppLayout />}>
-                        <Route path="/home" element={<Dashboard />} />
-                        <Route path="/expense" element={<Expenses />} />
-                        <Route path="/trips" element={<Trips />} />
-                        <Route path="/analysis" element={<Analysis />} />
-                        <Route path="/history" element={<History />} />
-                        <Route path="/team" element={<TeamSelection />} />
-                        <Route path="/settings" element={<Settings />} />
-                        <Route path="/subscription" element={<Subscription />} /> 
+                  {/* Korumalı Alanlar - Giriş yapmayanlar giremez */}
+                  <Route element={<ProtectedRoute />}>
+                      <Route element={<AppLayout />}>
+                          <Route path="/home" element={<Dashboard />} />
+                          <Route path="/expense" element={<Expenses />} />
+                          <Route path="/trips" element={<Trips />} />
+                          <Route path="/analysis" element={<Analysis />} />
+                          <Route path="/history" element={<History />} />
+                          <Route path="/team" element={<TeamSelection />} />
+                          <Route path="/help" element={<Help />} />
+                          <Route path="/settings" element={<Settings />} />
+                          <Route path="/subscription" element={<Subscription />} /> 
 
-                        {/* Sadece Adminlerin erişebileceği hassas alanlar */}
-                        <Route element={<AdminRoute />}>
-                            <Route path="/requests" element={<Requests />} /> 
-                            <Route path="/archive" element={<Archive />} /> 
-                        </Route>
-                    </Route>
-                </Route>
-              
-                {/* Erişilemez Alanlar */}
-                <Route path="/payment" element={
-                    <FlowGuard requiredKey="fromSubscription">
-                        <PaymentPanel />
-                    </FlowGuard>
-                } />
-
-                <Route path="/checkout" element={<Navigate to="/payment" replace />} />
+                          {/* Sadece Adminlerin erişebileceği hassas alanlar */}
+                          <Route element={<AdminRoute />}>
+                              <Route path="/requests" element={<Requests />} /> 
+                              <Route path="/archive" element={<Archive />} /> 
+                          </Route>
+                      </Route>
+                  </Route>
                 
-                {/* 404 Sayfası */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+                  {/* Erişilemez Alanlar */}
+                  <Route path="/payment" element={
+                      <FlowGuard requiredKey="fromSubscription">
+                          <PaymentPanel />
+                      </FlowGuard>
+                  } />
+
+                  <Route path="/checkout" element={<Navigate to="/payment" replace />} />
+                  
+                  {/* 404 Sayfası */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
             </CurrencyProvider>
           </SubscriptionProvider>
         </TeamProvider>

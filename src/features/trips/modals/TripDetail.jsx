@@ -73,6 +73,17 @@ const TripDetail = ({ isOpen, onClose, data }) => {
                     1 {data.currency} = {data.exchangeRates?.[data.localCurrency] || data.exchangeRate?.rate} {data.localCurrency}
                 </div>
 
+                {/* REDDETME SEBEBİ BURAYA EKLENDİ */}
+                {statusKey === 'rejected' && data.rejectionReason && (
+                    <div className="tr-rejection-box">
+                        <div className="tr-rej-header">
+                            <i className="ti ti-alert-triangle" />
+                            Reddetme Sebebi
+                        </div>
+                        <p>{data.rejectionReason}</p>
+                    </div>
+                )}
+
                 <div className="tr-divider" />
 
                 <div className="tr-info-list">

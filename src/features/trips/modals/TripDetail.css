@@ -203,6 +203,34 @@
     font-family: var(--font-sans);
 }
 
+/* Reddetme Sebebi Kutusu */
+.tr-rejection-box {
+    background: var(--status-danger-bg);
+    border: 1px solid var(--status-danger-border);
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    margin-top: 4px;
+}
+
+.tr-rej-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--status-danger-text);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    margin-bottom: 6px;
+    font-family: var(--font-sans);
+}
+
+.tr-rejection-box p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    font-family: var(--font-sans);
+}
+
 /* Açıklama Kutusu */
 .tr-desc-box {
     line-height: 1.65;

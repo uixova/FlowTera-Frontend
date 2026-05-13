@@ -188,11 +188,12 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
                   {!isMe && member.roleName !== 'Admin' && (
                     <>
                       {isAdmin && (
-                         <button className="tm-action-btn" onClick={() => handleEditClick(member)} disabled={member.isDeleted}>
+                        <button className="tm-action-btn" onClick={() => handleEditClick(member)} disabled={member.isDeleted}>
                             <i className="ti ti-edit"></i>
-                         </button>
+                        </button>
                       )}
-                      {canRemoveMember && (
+                      {/* Moderatör başka bir moderatörü çıkaramaz — sadece Admin çıkarabilir */}
+                      {canRemoveMember && (isAdmin || member.roleName !== 'Moderator') && (
                         <button className="tm-action-btn delete-btn" disabled={member.isDeleted} onClick={() => handleDeleteClick(member)}>
                           <i className="ti ti-user-minus"></i>
                         </button>

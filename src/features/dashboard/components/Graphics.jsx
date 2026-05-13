@@ -18,11 +18,15 @@ const tooltipStyle = {
         background:   'var(--bg-elevated)',
         border:       '1px solid var(--border-subtle)',
         borderRadius: '14px',
-        color:        'var(--text-primary)',
         fontSize:     '0.8rem',
         fontFamily:   "var(--font-sans)",
         boxShadow:    'var(--shadow-lg)',
         padding:      '10px 14px',
+    },
+    itemStyle: {
+        color: 'var(--accent-color)',
+        fontSize: '0.75rem',
+        padding: '2px 0'
     },
     cursor: { fill: 'var(--white-a5)', opacity: 0.1 },
 };
@@ -81,7 +85,11 @@ const MonthlyReport = ({ trendData, distributionData, typeData, teamData }) => {
                             <CartesianGrid strokeDasharray="3 3" stroke="var(--border-faint)" vertical={false} />
                             <XAxis dataKey="name" stroke={textColor} fontSize={10} tickLine={false} axisLine={false} />
                             <YAxis stroke={textColor} fontSize={11} tickLine={false} axisLine={false} />
-                            <Tooltip {...tooltipStyle} />
+                            <Tooltip 
+                                {...tooltipStyle} 
+                                itemStyle={tooltipStyle.itemStyle} 
+                                labelStyle={{ color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }} 
+                            />
                             <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                                 {distributionData.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={PIE_PALETTE[index % PIE_PALETTE.length]} />

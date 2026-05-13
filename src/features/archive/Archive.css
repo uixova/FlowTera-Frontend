@@ -5,6 +5,11 @@
     background: var(--bg-base);
 }
 
+.app-container.st-page-active {
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
 /* Sidebar */
 .arc-sidebar {
     width: 220px;

@@ -1,6 +1,6 @@
 import { api } from '../../../api/api';
 
-// ─── Yardımcı: Paginated veya düz array'den veriyi güvenle çıkar ───────────
+// Paginated veya düz array'den veriyi güvenle çıkar 
 const extractList = (response) => {
     if (!response) return [];
     if (Array.isArray(response)) return response;
@@ -74,13 +74,13 @@ export const dashboardService = {
             const typeComparison = [
                 {
                     name: 'Expenses',
-                    value: userExpenses.reduce((sum, e) => sum + (e.amount ?? 0), 0)
+                    value: parseFloat(userExpenses.reduce((sum, e) => sum + (e.amount ?? 0), 0).toFixed(2))
                 },
                 {
                     name: 'Trips',
-                    value: userTrips.reduce(
+                    value: parseFloat(userTrips.reduce(
                         (sum, t) => sum + (parseFloat(t.amount) || 0), 0
-                    )
+                    ).toFixed(2))
                 }
             ];
 
@@ -88,8 +88,11 @@ export const dashboardService = {
             const teamSpending = userExpenses.reduce((acc, exp) => {
                 const tName = getTeamName(exp.teamId);
                 const existing = acc.find(item => item.name === tName);
-                if (existing) existing.amount += exp.amount ?? 0;
-                else acc.push({ name: tName, amount: exp.amount ?? 0 });
+                if (existing) {
+                    existing.amount = parseFloat((existing.amount + (exp.amount ?? 0)).toFixed(2));
+                } else {
+                    acc.push({ name: tName, amount: parseFloat((exp.amount ?? 0).toFixed(2)) });
+                }
                 return acc;
             }, []);
 
@@ -102,8 +105,11 @@ export const dashboardService = {
                 const monthName = new Date(2026, parseInt(month, 10) - 1)
                     .toLocaleString('en-US', { month: 'short' });
                 const existing = acc.find(item => item.name === monthName);
-                if (existing) existing.amount += exp.amount ?? 0;
-                else acc.push({ name: monthName, amount: exp.amount ?? 0 });
+                if (existing) {
+                    existing.amount = parseFloat((existing.amount + (exp.amount ?? 0)).toFixed(2));
+                } else {
+                    acc.push({ name: monthName, amount: parseFloat((exp.amount ?? 0).toFixed(2)) });
+                }
                 return acc;
             }, []).sort(
                 (a, b) => new Date(`${a.name} 1`) - new Date(`${b.name} 1`)
@@ -114,17 +120,23 @@ export const dashboardService = {
                 'Infrastructure':   '#9d4edd',
                 'Food & Beverage':  '#4361ee',
                 'Office Equipment': '#e63946',
-                'Logistics':        '#0ed45a'
+                'Logistics':        '#0ed45a',
+                'Software':         '#f72585',
+                'Marketing':        '#4cc9f0',
+                'Food':             '#4361ee'
             };
 
             const categoryDistribution = userExpenses.reduce((acc, exp) => {
                 const existing = acc.find(item => item.name === exp.category);
-                if (existing) existing.value += exp.amount ?? 0;
-                else acc.push({
-                    name: exp.category,
-                    value: exp.amount ?? 0,
-                    color: categoryMap[exp.category] || '#555'
-                });
+                if (existing) {
+                    existing.value = parseFloat((existing.value + (exp.amount ?? 0)).toFixed(2));
+                } else {
+                    acc.push({
+                        name: exp.category,
+                        value: parseFloat((exp.amount ?? 0).toFixed(2)),
+                        color: categoryMap[exp.category] || '#555'
+                    });
+                }
                 return acc;
             }, []);
 

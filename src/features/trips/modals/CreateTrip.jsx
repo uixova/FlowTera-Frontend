@@ -36,15 +36,15 @@ const formatDateForInput = (dateStr) => {
 };
 
 const EMPTY_FORM = {
-    title:       '',
-    category:    'Business',
-    vehicle:     'Plane',
+    title: '',
+    category: 'Business',
+    vehicle: 'Plane',
     destination: '',
-    startDate:   '',
-    endDate:     '',
-    amount:      '',
-    currency:    'USD',
-    desc:        '',
+    startDate: '',
+    endDate: '',
+    amount: '',
+    currency: 'USD',
+    desc: '',
 };
 
 const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
@@ -59,15 +59,15 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
         if (!isOpen) return;
         if (isEditMode && editData) {
             setForm({
-                title:       editData.title       || '',
-                category:    editData.category    || 'Business',
-                vehicle:     editData.vehicle     || 'Plane',
+                title: editData.title || '',
+                category: editData.category || 'Business',
+                vehicle: editData.vehicle || 'Plane',
                 destination: editData.destination || '',
-                startDate:   formatDateForInput(editData.startDate),
-                endDate:     formatDateForInput(editData.endDate),
-                amount:      editData.amount      || '',
-                currency:    editData.currency    || 'USD',
-                desc:        editData.desc        || '',
+                startDate: formatDateForInput(editData.startDate),
+                endDate: formatDateForInput(editData.endDate),
+                amount: editData.amount || '',
+                currency: editData.currency || 'USD',
+                desc: editData.desc || '',
             });
         } else {
             setForm(EMPTY_FORM);
@@ -107,11 +107,9 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
             } else {
                 await tripsService.createTrip(payload);
             }
-
-            if (archiveService && typeof archiveService.clearCache === 'function') {
-                archiveService.clearCache();
-            }
-
+ 
+            archiveService.invalidate();
+ 
             if (onSuccess) onSuccess();
             onClose();
         } catch (err) {

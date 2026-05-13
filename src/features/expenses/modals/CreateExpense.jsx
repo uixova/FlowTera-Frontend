@@ -44,13 +44,13 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
     const currencyRef = useRef(null);
 
     const [form, setForm] = useState({
-        title:         '',
-        category:      'Food',
-        merchant:      '',
+        title: '',
+        category: 'Food',
+        merchant: '',
         paymentMethod: 'Cash',
-        amount:        '',
-        currency:      'USD',
-        isReported:    true,
+        amount: '',
+        currency: 'USD',
+        isReported: true,
     });
 
     // Form reset / fill on open
@@ -58,13 +58,13 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
         if (!isOpen) return;
         if (isEdit && editData) {
             setForm({
-                title:         editData.title         || '',
-                category:      editData.category      || 'Food',
-                merchant:      editData.merchant      || '',
+                title: editData.title || '',
+                category: editData.category || 'Food',
+                merchant: editData.merchant || '',
                 paymentMethod: editData.paymentMethod || 'Cash',
-                amount:        editData.amount        || '',
-                currency:      editData.currency      || 'USD',
-                isReported:    editData.isReported    ?? true,
+                amount: editData.amount || '',
+                currency: editData.currency || 'USD',
+                isReported: editData.isReported  ?? true,
             });
             setPreviewUrl(editData.receipt || null);
         } else {
@@ -105,14 +105,14 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
         const now = new Date();
         const payload = {
             ...form,
-            teamId:    selectedTeamId,
-            id:        isEdit ? editData.id : `exp-${Math.floor(Math.random() * 10000)}`,
-            status:    isEdit ? editData.status : 'Pending',
+            teamId: selectedTeamId,
+            id: isEdit ? editData.id : `exp-${Math.floor(Math.random() * 10000)}`,
+            status: isEdit ? editData.status : 'Pending',
             timestamp: isEdit ? editData.timestamp : now.toISOString(),
-            date:      isEdit ? editData.date : now.toLocaleDateString('tr-TR'),
-            desc:      isEdit ? editData.desc : 'New expense entry via Flowtera UI',
-            icon:      isEdit ? editData.icon : 'ti-receipt',
-            receipt:   selectedFile || previewUrl,
+            date: isEdit ? editData.date : now.toLocaleDateString('tr-TR'),
+            desc: isEdit ? editData.desc : 'New expense entry via Flowtera UI',
+            icon: isEdit ? editData.icon : 'ti-receipt',
+            receipt: selectedFile || previewUrl,
         };
         try {
             if (isEdit) {
@@ -121,9 +121,7 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
                 await expenseService.createExpense(payload);
             }
 
-            if (archiveService && typeof archiveService.clearCache === 'function') {
-                archiveService.clearCache();
-            }
+            archiveService.invalidate();
 
             if (onSuccess) onSuccess();
             onClose();

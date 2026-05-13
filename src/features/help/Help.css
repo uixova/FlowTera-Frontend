@@ -1,0 +1,251 @@
+.help-page {
+    display: flex;
+    height: calc(100vh - 65px);
+    background: var(--bg-base);
+    overflow: hidden;
+}
+
+.app-container.st-page-active {
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
+/* ITEM — accordion */
+.help-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.help-item {
+    background: var(--bg-inset);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: border-color var(--transition-base);
+}
+
+.help-item:hover { border-color: var(--border-strong); }
+
+.help-item-header {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    padding: 18px 22px;
+    cursor: pointer;
+    gap: 14px;
+    user-select: none;
+}
+
+.help-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.help-item-type-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--text-disabled);
+}
+
+.help-item.type-alert   .help-item-type-dot { background: var(--status-warning); }
+.help-item.type-steps   .help-item-type-dot { background: var(--accent-color); }
+.help-item.type-list    .help-item-type-dot { background: var(--status-info); }
+.help-item.type-article .help-item-type-dot { background: var(--text-muted); }
+
+.help-item-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Tag — orta sütun */
+.help-item-tag {
+    font-size: var(--text-2xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 3px 9px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-sans);
+    white-space: nowrap;
+    flex-shrink: 0;
+    background: var(--bg-active);
+    color: var(--text-muted);
+    border: 1px solid var(--border-faint);
+    min-width: 60px;
+    text-align: center;
+}
+
+.help-item.type-steps   .help-item-tag { background: var(--accent-subtle);    color: var(--accent-color);   border-color: var(--accent-border); }
+.help-item.type-list    .help-item-tag { background: var(--status-info-bg);    color: var(--status-info);    border-color: var(--status-info-border); }
+.help-item.type-alert   .help-item-tag { background: var(--status-warning-bg); color: var(--status-warning); border-color: var(--status-warning-border); }
+
+/* Chevron — sağ sütun, sabit ikon */
+.help-item-chevron {
+    font-size: 13px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: transform var(--transition-spring), color var(--transition-fast);
+}
+
+.help-item.is-open .help-item-chevron {
+    transform: rotate(180deg);
+    color: var(--accent-color);
+}
+
+/* Açılır gövde */
+.help-item-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.help-item.is-open .help-item-body { max-height: 600px; }
+
+.help-item-inner {
+    padding: 18px 22px 20px;
+    border-top: 1px solid var(--border-faint);
+}
+
+/* İçerik tipleri */
+.help-article-text {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    line-height: 1.7;
+    font-family: var(--font-sans);
+    margin: 0;
+}
+
+.help-steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.help-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.help-step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent-ghost);
+    border: 1px solid var(--accent-border);
+    color: var(--accent-color);
+    font-size: var(--text-2xs);
+    font-weight: 800;
+    font-family: var(--font-mono);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.help-step-text {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-family: var(--font-sans);
+}
+
+.help-list-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.help-list-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: var(--radius-lg);
+}
+
+.help-list-row i {
+    font-size: 14px;
+    color: var(--status-info);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.help-list-label {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    white-space: nowrap;
+    margin-right: 6px;
+}
+
+.help-list-desc {
+    font-size: var(--text-base);
+    color: var(--text-tertiary);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+}
+
+.help-alert-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: var(--radius-lg);
+    border: 1px solid;
+}
+
+.help-alert-box.severity-warning { background: var(--status-warning-bg); border-color: var(--status-warning-border); }
+.help-alert-box.severity-info    { background: var(--status-info-bg);    border-color: var(--status-info-border); }
+.help-alert-box.severity-danger  { background: var(--status-danger-bg);  border-color: var(--status-danger-border); }
+
+.help-alert-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.help-alert-box.severity-warning .help-alert-icon { color: var(--status-warning); }
+.help-alert-box.severity-info    .help-alert-icon { color: var(--status-info); }
+.help-alert-box.severity-danger  .help-alert-icon { color: var(--status-danger); }
+
+.help-alert-text {
+    font-size: var(--text-base);
+    line-height: 1.65;
+    font-family: var(--font-sans);
+}
+
+.help-alert-box.severity-warning .help-alert-text { color: var(--status-warning-text); }
+.help-alert-box.severity-info    .help-alert-text { color: var(--status-info-text); }
+.help-alert-box.severity-danger  .help-alert-text { color: var(--status-danger-text); }
+
+/* Boş durum */
+.help-empty {
+    text-align: center;
+    padding: 80px 0;
+    color: var(--text-disabled);
+    font-family: var(--font-sans);
+}
+
+.help-empty i    { font-size: 2.5rem; display: block; margin-bottom: 12px; opacity: 0.4; }
+.help-empty p    { font-size: var(--text-base); margin: 0; }

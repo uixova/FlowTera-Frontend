@@ -66,38 +66,41 @@ export const analysisService = {
             if (!d) return;
             const key = monthKey(d);
             const val = getValue(item);
-            monthlyMap[key] = (monthlyMap[key] || 0) + val;
+            monthlyMap[key] = parseFloat(((monthlyMap[key] || 0) + val).toFixed(2));
         });
 
         const currentMonthTotal = monthlyMap[currentKey] || 0;
         const lastMonthTotal    = monthlyMap[prevKey]    || 0;
 
         // Genel toplam 
-        const totalSpending = targetData.reduce(
+        const totalSpending = parseFloat(targetData.reduce(
             (sum, item) => sum + getValue(item), 0
-        );
+        ).toFixed(2));
 
         // Büyüme oranı
         const spendingGrowth =
             lastMonthTotal > 0
-                ? Number((((totalSpending - lastMonthTotal) / lastMonthTotal) * 100).toFixed(1))
+                ? Number((((currentMonthTotal - lastMonthTotal) / lastMonthTotal) * 100).toFixed(1))
                 : totalSpending > 0 ? 100 : null;
 
         // Yıllık toplam
         const currentYear = now.getFullYear();
-        const yearlyTotal = targetData.reduce((sum, item) => {
+        const yearlyTotal = parseFloat(targetData.reduce((sum, item) => {
             const d = getDate(item);
             if (!d || d.year !== currentYear) return sum;
             return sum + getValue(item);
-        }, 0);
+        }, 0).toFixed(2));
 
         // Kategori dağılımı 
         const categoryData = targetData.reduce((acc, item) => {
             const name = item.category || item.destination || 'Diğer';
             const val  = getValue(item);
             const found = acc.find(i => i.name === name);
-            if (found) found.value += val;
-            else acc.push({ name, value: val });
+            if (found) {
+                found.value = parseFloat((found.value + val).toFixed(2));
+            } else {
+                acc.push({ name, value: parseFloat(val.toFixed(2)) });
+            }
             return acc;
         }, []);
 
@@ -118,7 +121,7 @@ export const analysisService = {
                     order: d.year * 12 + d.month
                 };
             }
-            cashFlowMap[key].amount += val;
+            cashFlowMap[key].amount = parseFloat((cashFlowMap[key].amount + val).toFixed(2));
         });
 
         const cashFlowData = Object.values(cashFlowMap)
@@ -140,9 +143,9 @@ export const analysisService = {
         );
 
         const statusData = [
-            { name: 'Onaylı',    value: statusCount.approved  },
-            { name: 'Bekleyen',  value: statusCount.pending   },
-            { name: 'Reddedilen',value: statusCount.rejected  }
+            { name: 'Onaylı',     value: statusCount.approved  },
+            { name: 'Bekleyen',   value: statusCount.pending   },
+            { name: 'Reddedilen', value: statusCount.rejected  }
         ];
 
         return {
