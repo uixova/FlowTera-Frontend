@@ -5,6 +5,7 @@ import SubNavbar from '../../../components/navigation/SubNavbar';
 import EditRoleModal from '../modals/TeamEditMember';
 import AddMemberModal from '../modals/TeamAddMember';
 import TeamLogModal from '../modals/TeamActivityLog'; 
+import CreateRequestPanel from '../modals/CreateRequestPanel';
 import { teamsService, teamMembersCache, teamMembersRequestCache } from '../services/teamsService';
 import { useAuth } from '../../../context/AuthContext';
 import { notificationService } from '../../../services/notificationService';
@@ -34,6 +35,7 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
   
   const isAdmin = currentUserRoleObj?.roleName?.toLowerCase() === 'admin';
 
+  const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
@@ -155,18 +157,29 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
   return (
     <div className="tm-member-list-page">
       <SubNavbar 
-        title={teamName}
-        searchPlaceholder="Üye ara..."
-        createLabel="Hızlı Ekleme"
-        showSearch={true}
-        showCreate={canAddMember} 
-        onCreate={() => setIsAddModalOpen(true)}
-        onSearch={(val) => console.log("Member search:", val)}
-        buttons={[
-          { icon: 'ti ti-list', tooltip: 'Takımım', onClick: onBack },
-          ...(canManageSettings ? [{ icon: 'ti ti-settings', tooltip: 'Ayarlar', onClick: () => onNavigate('settings') }] : [])
-        ]}
-      />
+    title={teamName}
+    searchPlaceholder="Üye ara..."
+    createLabel="Hızlı Ekleme"
+    showSearch={true}
+    showCreate={canAddMember} 
+    onCreate={() => setIsAddModalOpen(true)}
+    onSearch={(val) => console.log("Member search:", val)}
+    buttons={[
+        { 
+            icon: 'ti ti-list', 
+            tooltip: 'Takım Listesi', 
+            onClick: onBack 
+        },
+        ...(canManageSettings ? [{ icon: 'ti ti-settings', tooltip: 'Ayarlar', onClick: () => onNavigate('settings') }] : []),
+        { 
+            icon: 'ti ti-file-plus', 
+            label: 'Talep Oluştur', 
+            isSpecial: true,
+            tooltip: 'Yeni Talep', 
+            onClick: () => setIsRequestModalOpen(true) 
+        }
+    ]}
+/>
 
       <hr className='sub-nav-divider' />
 
@@ -250,6 +263,12 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
         isOpen={isLogModalOpen} 
         onClose={() => setIsLogModalOpen(false)} 
         user={selectedUser} 
+        teamId={teamId}
+      />
+      <CreateRequestPanel 
+        isOpen={isRequestModalOpen} 
+        onClose={() => setIsRequestModalOpen(false)}
+        user={currentUser}
         teamId={teamId}
       />
       <Confirm {...confirmConfig} onClose={closeConfirm} />

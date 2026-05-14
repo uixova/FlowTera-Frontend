@@ -68,7 +68,7 @@ const SubNavbar = ({
                 {buttons.map((btn, index) => (
                     <button 
                         key={index} 
-                        className={`btn-dark-sub ${btn.className || ''}`} 
+                        className={`${btn.isSpecial ? 'sub-special-btn' : 'btn-dark-sub'} ${btn.className || ''}`} 
                         onClick={btn.onClick}
                         title={btn.tooltip}
                     >

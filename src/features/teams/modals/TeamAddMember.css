@@ -263,7 +263,6 @@
 }
 
 .adm-btn-invite:hover {
-    background: var(--text-base);
     transform: translateY(-2px);
     box-shadow: var(--shadow-accent);
 }

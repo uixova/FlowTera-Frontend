@@ -32,12 +32,12 @@ const AddMemberModal = ({ isOpen, onClose }) => {
     console.log("Flowtera API Invitation:", {
       id: identifier,
       role: selectedRole,
-      blocked: restrictedPerms // Hook'tan gelen kısıtlı yetkiler
+      blocked: restrictedPerms 
     });
     
     setIdentifier('');
     setSelectedRole('');
-    resetRestrictions(); // State'i hook üzerinden sıfırlıyoruz
+    resetRestrictions(); 
     onClose();
   };
 

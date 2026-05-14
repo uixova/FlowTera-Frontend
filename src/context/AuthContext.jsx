@@ -7,7 +7,8 @@ const AUTH_USER_ID_KEY = 'auth_user_id';
 
 export const AuthProvider = ({ children }) => {
     const [currentUserId, setCurrentUserId] = useState(() => {
-        return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || null;
+        // return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || null; id yi null dön
+        return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || "u1";
     });
     const [currentUser, setCurrentUser] = useState(null);
     const [teams, setTeams] = useState([]);

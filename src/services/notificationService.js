@@ -172,6 +172,21 @@ export const notificationService = {
         return true;
     },
 
+    createRequest: async (payload) => {
+    const send = send('request:new', payload);
+
+    // REST API üzerinden DB'ye kaydet 
+        try {
+            // const response = await api.post('notifications/ requests', payload);
+            // return response;
+            console.log("[WS] Yeni talep yayını yapıldı:",  payload);
+            return true;
+        } catch (error) {
+            console.error("Talep kaydedilirken hata:", error);
+            return false;
+        }
+    },
+
     // Gerçek zamanlı talep güncellemelerini dinle
     // Kullanım: const unsub = notificationService.onRequestUpdate(cb); → cleanup: unsub()
     onRequestUpdate: (callback) => subscribe('request:update', callback),
