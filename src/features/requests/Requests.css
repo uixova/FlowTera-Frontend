@@ -3,7 +3,6 @@
     flex-direction: column;
     height: 100%;
     font-family: var(--font-sans);
-    background: var(--bg-app);
 }
 
 .sub-nav-divider {

@@ -228,10 +228,7 @@
     background: var(--white-a1);
     min-height: 320px;
     cursor: pointer;
-    transition:
-        border-color var(--transition-spring),
-        background   var(--transition-spring),
-        transform    var(--transition-spring);
+    transition: all var(--transition-spring);
 }
 
 .add-member-card:hover {

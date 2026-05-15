@@ -1,39 +1,42 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import './Navbar.css';
 import UserImage from '../../../assets/images/user-profile.png';
 
 // Context & Hooks
-import { useTeam } from '../../../context/TeamContext';
-import { useAuth } from '../../../context/AuthContext';
+import { useTeam }         from '../../../context/TeamContext';
+import { useAuth }         from '../../../context/AuthContext';
 import { useSubscription } from '../../../context/SubscriptionContext';
-import { useModal } from '../../../hooks/useModal';
+import { useModal }        from '../../../hooks/useModal';
+import { useTheme }        from '../../../context/ThemeContext';
 
 // Modals
-import ThemeModal from '../../overlays/themeModal/ThemeModal';
-import Notification from '../../overlays/notification/Notification';
-import UserDropdown from '../../overlays/userDropdown/UserDropdown';
-import Language from '../../overlays/language/Language';
+import ThemeModal      from '../../overlays/themeModal/ThemeModal';
+import Notification    from '../../overlays/notification/Notification';
+import UserDropdown    from '../../overlays/userDropdown/UserDropdown';
+import Language        from '../../overlays/language/Language';
 import TeamSelectModal from '../../overlays/teamSelectModal/TeamSelectModal';
 
 const Navbar = () => {
     const { roleNameForTeam, loading: authLoading, currentUser } = useAuth();
-    const { selectedTeamId, selectTeam } = useTeam(); 
-    
+    const { selectedTeamId, selectTeam } = useTeam();
+    const { theme, toggleMode } = useTheme();
+
     const navigate = useNavigate();
     const location = useLocation();
     const { hasFeature } = useSubscription();
-    const { showAlert } = useModal();
+    const { showAlert }  = useModal();
 
-    const [isThemeOpen, setIsThemeOpen] = useState(false);
-    const [isUserOpen, setIsUserOpen] = useState(false);
+    const [isThemeOpen,        setIsThemeOpen]        = useState(false);
+    const [isUserOpen,         setIsUserOpen]         = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-    const [isLangOpen, setIsLangOpen] = useState(false);
-    const [isTeamOpen, setIsTeamOpen] = useState(false);
+    const [isLangOpen,         setIsLangOpen]         = useState(false);
+    const [isTeamOpen,         setIsTeamOpen]         = useState(false);
 
-    // Plan ve Yetki Hesaplamaları 
-    const currentPlan = useMemo(() => 
-        selectedTeamId ? roleNameForTeam(selectedTeamId, 'plan') : null, 
+    // Plan ve Yetki Hesaplamaları
+    const currentPlan = useMemo(() =>
+        selectedTeamId ? roleNameForTeam(selectedTeamId, 'plan') : null,
     [selectedTeamId, roleNameForTeam]);
 
     const teamRoleData = useMemo(() => {
@@ -44,14 +47,15 @@ const Navbar = () => {
     const checkAccess = useCallback((restrictionId) => {
         if (!teamRoleData) return false;
         if (teamRoleData.roleName?.toLowerCase() === 'admin') return true;
-        return !teamRoleData.permissions?.includes(restrictionId); 
+        return !teamRoleData.permissions?.includes(restrictionId);
     }, [teamRoleData]);
 
     const canAccessAnalysis = checkAccess('view_analytics');
     const canAccessRequests = checkAccess('manage_requests');
-    const canAccessArchive = checkAccess('view_archive');
-    const isAdmin = teamRoleData?.roleName?.toLowerCase() === 'admin';
-    const isEnterprise = !authLoading && selectedTeamId && currentPlan === 'enterprise';
+    const canAccessArchive  = checkAccess('view_archive');
+    const isAdmin           = teamRoleData?.roleName?.toLowerCase() === 'admin';
+    const isEnterprise      = !authLoading && selectedTeamId && currentPlan === 'enterprise';
+    const isDark            = theme.mode === 'dark';
 
     // Rota Koruması
     useEffect(() => {
@@ -80,79 +84,114 @@ const Navbar = () => {
     };
 
     return (
-        <header className="navbar-header">
-            <div className="nav-container">
-                {/* SOL: Logo */}
-                <div className="app-logo" onClick={() => navigate('/home')}>
-                    <div className="logo-icon-wrapper">
-                        <img src="/Logo.png" alt="FlowTera" className="logo-img" />
-                    </div>
-                    <h1>Flowtera</h1>
-                </div>
-
-                {/* ORTA: Navigasyon Linkleri */}
-                <nav className="nav-links-center">
-                    <ul>
-                        <li><NavLink to="/home"><i className="ti ti-home"></i> Anasayfa</NavLink></li>
-                        {selectedTeamId && (
-                            <>
-                                <li><NavLink to="/expense"><i className="ti ti-calendar-dollar"></i> Giderler</NavLink></li>
-                                <li><NavLink to="/trips"><i className="ti ti-plane-departure"></i> Geziler</NavLink></li>
-                                {canAccessAnalysis && (
-                                    <li><NavLink to="/analysis"><i className="ti ti-chart-pie"></i> Analiz</NavLink></li>
-                                )}
-                                <li><NavLink to="/history"><i className="ti ti-history"></i> Geçmiş</NavLink></li>
-                                {canAccessRequests && (
-                                    <li><NavLink to="/requests"><i className="ti ti-pencil-question"></i> İstekler</NavLink></li>
-                                )}
-                                {canAccessArchive && isEnterprise && (
-                                    <li><NavLink to="/archive"><i className="ti ti-archive"></i> Arşiv</NavLink></li>
-                                )}
-                            </>
-                        )}
-                        <li><NavLink to="/team"><i className="ti ti-users-group"></i> Takım</NavLink></li>
-                        <li><NavLink to="/help"><i className="ti ti-help"></i> Yardım</NavLink></li>
-                    </ul>
-                </nav>
-
-                {/* SAĞ: Aksiyon Butonları ve Profil */}
-                <div className="nav-actions-right">
-                    <div className="head-lnk-btn">
-                        <button className={`team-select-head btn-dark ${isTeamOpen ? 'active' : ''}`} onClick={() => setIsTeamOpen(!isTeamOpen)}>
-                            <i className="ti ti-users-group"></i>
-                        </button>
-
-                        <button className={`light-dark-head btn-dark ${isLangOpen ? 'active' : ''}`} onClick={() => setIsLangOpen(!isLangOpen)}>
-                            <i className="ti ti-world"></i>
-                        </button>
-
-                        <button className={`notification-btn btn-dark ${isNotificationOpen ? 'active' : ''}`} onClick={() => setIsNotificationOpen(!isNotificationOpen)}>
-                            <i className="ti ti-bell"></i>
-                            <span className="nt-dot"></span>
-                        </button>
-                        
-                        <button className="btn-dark" onClick={handleThemeClick}>
-                            <i className="ti ti-brush"></i> 
-                            {!hasFeature('theme_management') && <i className="ti ti-lock" style={{marginLeft: '5px', fontSize: '10px'}}></i>}
-                        </button>
-
-                        <button className="light-dark-head btn-dark"><i className="ti ti-sun"></i></button>
-                    </div>
-
-                    <div className="head-user-profile" onClick={() => setIsUserOpen(!isUserOpen)}>
-                        <div className="head-profile-img">
-                            <img src={currentUser?.avatar || UserImage} alt="Profile" />
+        <>
+            <header className="navbar-header">
+                <div className="nav-container">
+                    {/* SOL: Logo */}
+                    <div className="app-logo" onClick={() => navigate('/home')}>
+                        <div className="logo-icon-wrapper">
+                            <img src="/Logo.png" alt="FlowTera" className="logo-img" />
                         </div>
-                        <UserDropdown isOpen={isUserOpen} onClose={() => setIsUserOpen(false)} />
+                        <h1>Flowtera</h1>
+                    </div>
+
+                    {/* ORTA: Navigasyon Linkleri */}
+                    <nav className="nav-links-center">
+                        <ul>
+                            <li><NavLink to="/home"><i className="ti ti-home"></i> Anasayfa</NavLink></li>
+                            {selectedTeamId && (
+                                <>
+                                    <li><NavLink to="/expense"><i className="ti ti-calendar-dollar"></i> Giderler</NavLink></li>
+                                    <li><NavLink to="/trips"><i className="ti ti-plane-departure"></i> Geziler</NavLink></li>
+                                    {canAccessAnalysis && (
+                                        <li><NavLink to="/analysis"><i className="ti ti-chart-pie"></i> Analiz</NavLink></li>
+                                    )}
+                                    <li><NavLink to="/history"><i className="ti ti-history"></i> Geçmiş</NavLink></li>
+                                    {canAccessRequests && (
+                                        <li><NavLink to="/requests"><i className="ti ti-pencil-question"></i> İstekler</NavLink></li>
+                                    )}
+                                    {canAccessArchive && isEnterprise && (
+                                        <li><NavLink to="/archive"><i className="ti ti-archive"></i> Arşiv</NavLink></li>
+                                    )}
+                                </>
+                            )}
+                            <li><NavLink to="/team"><i className="ti ti-users-group"></i> Takım</NavLink></li>
+                            <li><NavLink to="/help"><i className="ti ti-help"></i> Yardım</NavLink></li>
+                        </ul>
+                    </nav>
+
+                    {/* SAĞ: Aksiyon Butonları ve Profil */}
+                    <div className="nav-actions-right">
+                        <div className="head-lnk-btn">
+                            <button
+                                className={`team-select-head btn-dark ${isTeamOpen ? 'active' : ''}`}
+                                onClick={() => setIsTeamOpen(!isTeamOpen)}
+                            >
+                                <i className="ti ti-users-group"></i>
+                            </button>
+
+                            <button
+                                className={`light-dark-head btn-dark ${isLangOpen ? 'active' : ''}`}
+                                onClick={() => setIsLangOpen(!isLangOpen)}
+                            >
+                                <i className="ti ti-world"></i>
+                            </button>
+
+                            <button
+                                className={`notification-btn btn-dark ${isNotificationOpen ? 'active' : ''}`}
+                                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                            >
+                                <i className="ti ti-bell"></i>
+                                <span className="nt-dot"></span>
+                            </button>
+
+                            <button className="btn-dark" onClick={handleThemeClick}>
+                                <i className="ti ti-brush"></i>
+                                {!hasFeature('theme_management') && (
+                                    <i className="ti ti-lock" style={{ marginLeft: '5px', fontSize: '10px' }}></i>
+                                )}
+                            </button>
+
+                            {/* Gece / Gündüz toggle — ThemeContext.toggleMode'a bağlı,
+                                localStorage'a otomatik yazılır, sayfa yenilemede korunur */}
+                            <button
+                                className={`light-dark-head btn-dark${!isDark ? ' active' : ''}`}
+                                onClick={toggleMode}
+                                title={isDark ? 'Açık temaya geç' : 'Koyu temaya geç'}
+                            >
+                                <i className={`ti ${isDark ? 'ti-sun' : 'ti-moon'}`}></i>
+                            </button>
+                        </div>
+
+                        <div className="head-user-profile" onClick={() => setIsUserOpen(!isUserOpen)}>
+                            <div className="head-profile-img">
+                                <img src={currentUser?.avatar || UserImage} alt="Profile" />
+                            </div>
+                            <UserDropdown isOpen={isUserOpen} onClose={() => setIsUserOpen(false)} />
+                        </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            <ThemeModal isOpen={isThemeOpen} onClose={() => setIsThemeOpen(false)} />
-            <Notification isOpen={isNotificationOpen} onClose={() => setIsNotificationOpen(false)} userRole={isAdmin ? "admin" : "user"} />
-            <Language isOpen={isLangOpen} onClose={() => setIsLangOpen(false)} />
-            <TeamSelectModal isOpen={isTeamOpen} onClose={() => setIsTeamOpen(false)} onSelectTeam={handleTeamChange} currentTeamId={selectedTeamId} />
-        </header>
+            {/* Portal modallar — header'ın backdrop-filter stacking context'inden çıkar,
+                overlay fixed inset-0 ile body'yi tam kapsar, her yere tıklayınca kapanır */}
+            {createPortal(
+                <ThemeModal isOpen={isThemeOpen} onClose={() => setIsThemeOpen(false)} />,
+                document.body
+            )}
+            {createPortal(
+                <Notification isOpen={isNotificationOpen} onClose={() => setIsNotificationOpen(false)} userRole={isAdmin ? 'admin' : 'user'} />,
+                document.body
+            )}
+            {createPortal(
+                <Language isOpen={isLangOpen} onClose={() => setIsLangOpen(false)} />,
+                document.body
+            )}
+            {createPortal(
+                <TeamSelectModal isOpen={isTeamOpen} onClose={() => setIsTeamOpen(false)} onSelectTeam={handleTeamChange} currentTeamId={selectedTeamId} />,
+                document.body
+            )}
+        </>
     );
 };
 

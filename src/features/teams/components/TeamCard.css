@@ -114,7 +114,7 @@
 }
 
 .tm-sel-card:hover .tm-sel-info h4 { 
-    color: var(--text-base); 
+    color: var(--text-primary); 
 }
 
 .tm-sel-meta {

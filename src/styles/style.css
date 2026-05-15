@@ -4,31 +4,25 @@
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
     scrollbar-width: thin;
-    scrollbar-color: #333 transparent;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 body {
     min-height: 100dvh;
-    background: var(--bg-app);
-    color: var(--white);
-}
-
-:root {
-    --white: #fff;
-    --black: #000;
-    --bg-app: #0a0a0a;
-    color-scheme: dark;
+    background: var(--bg-base); 
+    color: var(--text-primary);
 }
 
 h2 {
     font-size: 1.2rem;
     margin-bottom: 10px;
     font-weight: 600;
+    color: var(--text-primary);
 }
 
 hr {
     border: 0;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--border-divider); 
     margin-bottom: 20px;
 }
 
@@ -36,22 +30,22 @@ hr {
     position: relative;
     display: flex;
     align-items: center;
-    background: #3d3d3d;
-    border: 1px solid #5a5a5a;
+    background: var(--bg-inset); 
+    border: 1px solid var(--border-input); 
     border-radius: 7px;
     padding: 0 12px;
     transition: all 0.3s ease;
 }
 
 .search-wrapper i {
-    color: #a7a6a6;
+    color: var(--text-tertiary);
     font-size: 18px;
 }
 
 .search-wrapper input {
     background: transparent;
     border: none;
-    color: #fff;
+    color: var(--text-primary); 
     padding: 8px 10px;
     outline: none;
     font-size: 0.85rem;
@@ -61,6 +55,11 @@ hr {
 
 .search-wrapper input:focus {
     width: 280px;
+}
+
+.search-wrapper:focus-within {
+    border-color: var(--border-input-focus);
+    box-shadow: 0 0 0 2px var(--accent-subtle);
 }
 
 input::-webkit-outer-spin-button,
@@ -87,9 +86,9 @@ input[type=number] {
 }
 
 .load-more-btn {
-    background: #1e1e1e;
-    border: 1px solid #333;
-    color: #0ed45a;
+    background: var(--bg-surface-raised); 
+    border: 1px solid var(--border-subtle);
+    color: var(--accent-color);
     padding: 10px 24px;
     border-radius: 12px;
     font-weight: 600;
@@ -102,8 +101,8 @@ input[type=number] {
 }
 
 .load-more-btn:hover {
-    background: #252525;
-    border-color: #0ed45a;
+    background: var(--bg-hover); 
+    border-color: var(--accent-border);
     transform: translateY(-2px);
 }
 
@@ -113,7 +112,7 @@ input[type=number] {
 }
 
 .pagination-info {
-    color: #555;
+    color: var(--text-secondary); 
     font-size: 0.8rem;
     font-weight: 500;
 }

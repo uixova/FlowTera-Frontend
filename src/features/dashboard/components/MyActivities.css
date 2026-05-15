@@ -2,11 +2,9 @@
     grid-column: span 2;
     display: grid;
     grid-template-columns: 1fr 1.75fr;
-    gap: var(--space-5); 
+    gap: var(--space-5);
     align-items: stretch;
 }
-
-/* SOL PANEL */
 
 .hm-status-grid {
     display: grid;
@@ -18,7 +16,7 @@
 }
 
 .status-item {
-    background: var(--bg-inset); 
+    background: var(--bg-inset);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-2xl);
     padding: 22px 20px 20px;
@@ -32,7 +30,6 @@
     transition: var(--transition-spring);
 }
 
-/* Üst kenar gradient şeridi */
 .status-item::before {
     content: '';
     position: absolute;
@@ -42,13 +39,12 @@
     height: 1px;
     background: linear-gradient(90deg,
         transparent,
-        var(--s-accent, var(--white-a15)),
+        var(--s-accent, var(--border-strong)),
         transparent);
     opacity: 0;
     transition: opacity var(--transition-slow);
 }
 
-/* Alt köşe radial glow */
 .status-item::after {
     content: '';
     position: absolute;
@@ -74,26 +70,25 @@
 .status-item:hover::before,
 .status-item:hover::after { opacity: 1; }
 
-/* Dinamik Renk Atamaları */
-.status-item:nth-child(1) { 
-    --s-accent: var(--status-pending-border); 
-    --s-glow: var(--status-pending-bg); 
-    --s-color: var(--status-pending); 
+.status-item:nth-child(1) {
+    --s-accent: var(--status-pending-border);
+    --s-glow:   var(--status-pending-bg);
+    --s-color:  var(--status-pending);
 }
-.status-item:nth-child(2) { 
-    --s-accent: var(--status-info-border); 
-    --s-glow: var(--status-info-bg); 
-    --s-color: var(--status-info); 
+.status-item:nth-child(2) {
+    --s-accent: var(--status-info-border);
+    --s-glow:   var(--status-info-bg);
+    --s-color:  var(--status-info);
 }
-.status-item:nth-child(3) { 
-    --s-accent: var(--status-success-border); 
-    --s-glow: var(--status-success-bg); 
-    --s-color: var(--status-success); 
+.status-item:nth-child(3) {
+    --s-accent: var(--status-success-border);
+    --s-glow:   var(--status-success-bg);
+    --s-color:  var(--status-success);
 }
-.status-item:nth-child(4) { 
-    --s-accent: var(--status-danger-border); 
-    --s-glow: var(--status-danger-bg); 
-    --s-color: var(--status-danger); 
+.status-item:nth-child(4) {
+    --s-accent: var(--status-danger-border);
+    --s-glow:   var(--status-danger-bg);
+    --s-color:  var(--status-danger);
 }
 
 .status-top-row {
@@ -104,14 +99,14 @@
 
 .status-icon {
     width: 44px;
-    height: 44px !important;
+    height: 44px;
     border-radius: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.2rem;
     flex-shrink: 0;
-    background: var(--bg-inset) !important;
+    background: var(--bg-inset);
     border: 1px solid var(--border-default);
     color: var(--s-color, var(--text-tertiary));
     transition: var(--transition-spring);
@@ -135,6 +130,7 @@
     line-height: 1;
     transition: color var(--transition-slow);
 }
+
 .status-item:hover .status-value { color: var(--s-color, var(--text-primary)); }
 
 .status-label {
@@ -146,8 +142,6 @@
     letter-spacing: 1px;
     font-family: var(--font-sans);
 }
-
-/* SAĞ PANEL */
 
 .hm-recent-expenses {
     display: flex;
@@ -225,11 +219,10 @@
     flex-shrink: 0;
 }
 
-/* Tablo başlığı */
 .recent-grid-header {
     display: grid;
     grid-template-columns: 1.5fr 1fr 0.7fr 1.1fr 0.85fr;
-    padding: 10px 22px 10px;
+    padding: 10px 22px;
     align-items: center;
     gap: 8px;
     color: var(--text-muted);
@@ -243,7 +236,6 @@
 
 .recent-grid-header .col-right { text-align: right; }
 
-/* Scroll alan */
 .hm-recent-container {
     overflow-y: auto;
     flex: 1;
@@ -251,11 +243,10 @@
     max-height: 200px;
 }
 
-/* Satır */
 .hm-recent-box {
     display: grid;
     grid-template-columns: 1.5fr 1fr 0.7fr 1.1fr 0.85fr;
-    padding: 10px 10px;
+    padding: 10px;
     align-items: center;
     gap: 8px;
     border-radius: var(--radius-md);
@@ -279,7 +270,6 @@
     transform: translateX(5px);
 }
 
-/* Kolonlar */
 .col-subject {
     white-space: nowrap;
     overflow: hidden;
@@ -290,6 +280,7 @@
     font-family: var(--font-sans);
     transition: color var(--transition-fast);
 }
+
 .hm-recent-box:hover .col-subject { color: var(--text-primary); }
 
 .col-team-name {
@@ -302,6 +293,7 @@
     font-family: var(--font-sans);
     transition: color var(--transition-fast);
 }
+
 .hm-recent-box:hover .col-team-name { color: var(--text-secondary); }
 
 .col-type {
@@ -309,8 +301,9 @@
     font-weight: 700;
     font-family: var(--font-sans);
 }
+
 .col-type.expense { color: var(--_green); }
-.col-type.trip { color: var(--_teal); }
+.col-type.trip    { color: var(--_teal);  }
 
 .badge {
     display: inline-block;
@@ -329,6 +322,7 @@
     letter-spacing: 0.2px;
     transition: var(--transition-base);
 }
+
 .hm-recent-box:hover .badge {
     background: var(--accent-ghost);
     color: var(--accent-color);
@@ -344,9 +338,9 @@
     color: var(--text-muted);
     transition: color var(--transition-fast);
 }
+
 .hm-recent-box:hover .col-amount { color: var(--text-primary); }
 
-/* Boş durum */
 .no-data {
     display: flex;
     flex-direction: column;
@@ -356,26 +350,32 @@
     padding: 48px 0;
     color: var(--text-disabled);
 }
-.no-data i { font-size: 2.2rem; opacity: 0.4; }
+
+.no-data i    { font-size: 2.2rem; opacity: 0.4; }
 .no-data span { font-size: 0.82rem; font-family: var(--font-sans); }
 
-/* Scrollbar */
-.custom-scroll::-webkit-scrollbar { width: 3px; }
+.custom-scroll::-webkit-scrollbar       { width: 3px; }
 .custom-scroll::-webkit-scrollbar-track { background: var(--scrollbar-track); }
-.custom-scroll::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
-.custom-scroll::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 10px;
+}
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
 
-/* Responsive */
 @media (max-width: 1200px) {
     .hm-top-ct { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-    .hm-top-ct { grid-column: span 1; }
+    .hm-top-ct     { grid-column: span 1; }
     .hm-status-grid { grid-template-columns: 1fr 1fr; }
 
     .recent-grid-header,
-    .hm-recent-box { grid-template-columns: 1.6fr 0.8fr 0.9fr; }
+    .hm-recent-box {
+        grid-template-columns: 1.6fr 0.8fr 0.9fr;
+    }
 
     .recent-grid-header span:nth-child(2),
     .recent-grid-header span:nth-child(3),

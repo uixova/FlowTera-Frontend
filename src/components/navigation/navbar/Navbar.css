@@ -7,14 +7,14 @@ header.navbar-header {
     padding: 14px 24px;
     position: sticky;
     top: 0;
-    z-index: 1000;
-    border-bottom: 1px solid var(--white-a7);
+    z-index: var(--z-navbar);
+    border-bottom: 1px solid var(--border-divider);
     transition: background var(--transition-spring);
 }
 
 .nav-container {
     width: 100%;
-    max-width: var(--container-max); 
+    max-width: var(--container-max);
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -50,11 +50,11 @@ header.navbar-header {
 }
 
 .app-logo h1 {
-    font-family: 'Syne', sans-serif;
+    font-family: var(--font-head);
     font-size: 1.25rem;
     font-weight: 800;
     letter-spacing: -0.5px;
-    background: linear-gradient(90deg, #0edd0e, #00d2ff);
+    background: linear-gradient(90deg, var(--main-color), var(--_teal));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -81,12 +81,12 @@ header.navbar-header {
     text-decoration: none;
     color: var(--text-tertiary);
     padding: 7px 13px;
-    font-size: 0.85rem;
+    font-size: var(--text-base);
     font-weight: 500;
     border-radius: var(--radius-md);
-    transition: 
-        color var(--transition-base), 
-        background var(--transition-base);
+    transition:
+        color       var(--transition-base),
+        background  var(--transition-base);
     display: flex;
     align-items: center;
     gap: 6px;
@@ -94,7 +94,7 @@ header.navbar-header {
 }
 
 .nav-links-center ul li a:hover {
-    background: var(--white-a3);
+    background: var(--bg-hover);
     color: var(--text-primary);
 }
 
@@ -134,14 +134,14 @@ header.navbar-header {
     font-size: 1rem;
     background: var(--white-a3);
     color: var(--text-muted);
-    border: 1px solid var(--white-a7);
+    border: 1px solid var(--border-default);
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: 
-        background var(--transition-spring),
-        border-color var(--transition-spring),
-        color var(--transition-base),
-        transform var(--transition-base);
+    transition:
+        background    var(--transition-spring),
+        border-color  var(--transition-spring),
+        color         var(--transition-base),
+        transform     var(--transition-base);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -149,8 +149,8 @@ header.navbar-header {
 }
 
 .btn-dark:hover {
-    background: var(--white-a5);
-    border-color: var(--white-a14);
+    background: var(--bg-hover);
+    border-color: var(--border-strong);
     color: var(--text-primary);
     transform: translateY(-1px);
 }
@@ -170,12 +170,12 @@ header.navbar-header {
 .head-profile-img {
     width: 34px;
     height: 34px;
-    border: 1px solid var(--white-a10);
+    border: 1px solid var(--border-default);
     border-radius: var(--radius-full);
     overflow: hidden;
-    transition: 
-        border-color var(--transition-base), 
-        transform var(--transition-base);
+    transition:
+        border-color  var(--transition-base),
+        transform     var(--transition-base);
 }
 
 .head-profile-img:hover {
@@ -203,7 +203,7 @@ header.navbar-header {
     top: 5px;
     right: 5px;
     border: 1.5px solid var(--bg-surface);
-    box-shadow: 0 0 6px var(--accent-glow); 
+    box-shadow: 0 0 6px var(--accent-glow);
     animation: ntPulse 2.2s ease infinite;
 }
 
@@ -218,9 +218,6 @@ header.navbar-header {
     50%       { opacity: 0.5; transform: scale(1.25); }
 }
 
-/* Mobil Duyarlılık İçin Ufak Dokunuş */
 @media (max-width: 768px) {
-    .nav-links-center {
-        display: none; 
-    }
+    .nav-links-center { display: none; }
 }

@@ -1,7 +1,11 @@
-import React, { createContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useState, useEffect, useMemo, useContext } from 'react';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const ThemeContext = createContext();
+
+// Kolay tüketim için hook — useContext(ThemeContext) yazmak yerine
+// eslint-disable-next-line react-refresh/only-export-components
+export const useTheme = () => useContext(ThemeContext);
 
 const THEME_STORAGE_KEY = 'app_theme';
 const RADIUS_MAP = { sharp: '0px', soft: '8px', round: '16px', ultra: '24px' };
@@ -22,7 +26,14 @@ export const ThemeProvider = ({ children }) => {
 
     useEffect(() => {
         const root = document.documentElement;
+
+        // data-theme — variables.css [data-theme="light/dark"] bloklarını tetikler
         root.setAttribute('data-theme', theme.mode);
+
+        // color-scheme — tarayıcının native scroll, input, select renklerini ayarlar
+        root.style.colorScheme = theme.mode;
+
+        // Accent ve radius — ThemeContext'in JS tarafı
         root.style.setProperty('--accent-color', theme.accent);
         root.style.setProperty('--main-radius', RADIUS_MAP[theme.radius] ?? '8px');
 
@@ -33,7 +44,11 @@ export const ThemeProvider = ({ children }) => {
         }
     }, [theme]);
 
-    const value = useMemo(() => ({ theme, setTheme }), [theme]);
+    // Sadece mode'u tersine çevir
+    const toggleMode = () =>
+        setTheme(prev => ({ ...prev, mode: prev.mode === 'dark' ? 'light' : 'dark' }));
+
+    const value = useMemo(() => ({ theme, setTheme, toggleMode }), [theme]);
 
     return (
         <ThemeContext.Provider value={value}>

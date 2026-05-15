@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
-import './styles/variables.css';
+import './styles/GlobalFilter.css'; 
 import Loader from './components/ui/Loader';
 
 // Context Providers
@@ -33,8 +33,6 @@ const Settings = lazy(() => import('./features/settings/Settings'));
 const Subscription = lazy(() => import('./features/subscription/Subscription'));
 const PaymentPanel = lazy(() => import('./features/payment/PaymentPanel'));
 const Help = lazy(() => import('./features/help/Help'));
-
-import './styles/GlobalFilter.css'; 
 
 const ProtectedRoute = () => {
     const { currentUser, loading } = useAuth(); 

@@ -1,22 +1,22 @@
 .monthly-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-5); 
+    gap: var(--space-5);
     width: 100%;
     grid-column: 1 / -1;
-    margin-top: var(--space-2); 
+    margin-top: var(--space-2);
 }
 
 .report-card {
-    background: var(--bg-inset); 
+    background: var(--bg-inset);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-2xl); 
-    padding: var(--space-6); 
-    
-    transition: border-color var(--transition-spring),
-                background   var(--transition-spring),
-                transform    var(--transition-spring),
-                box-shadow   var(--transition-spring);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-6);
+    transition:
+        border-color  var(--transition-spring),
+        background    var(--transition-spring),
+        transform     var(--transition-spring),
+        box-shadow    var(--transition-spring);
     position: relative;
     overflow: hidden;
 }
@@ -28,7 +28,7 @@
     left: 20%;
     right: 20%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--white-a15), transparent);
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
     opacity: 0;
     transition: opacity var(--transition-base);
 }
@@ -40,8 +40,8 @@
     box-shadow: var(--shadow-lg);
 }
 
-.report-card:hover::before { 
-    opacity: 1; 
+.report-card:hover::before {
+    opacity: 1;
 }
 
 .report-header {
@@ -80,7 +80,7 @@
 }
 
 .report-period {
-    font-size: var(--text-2xs); 
+    font-size: var(--text-2xs);
     font-weight: 700;
     color: var(--accent-color);
     background: var(--accent-ghost);
@@ -101,6 +101,6 @@
 }
 
 @media (max-width: 768px) {
-    .monthly-grid { grid-template-columns: 1fr; }
-    .report-card { padding: var(--space-4); } 
+    .monthly-grid  { grid-template-columns: 1fr; }
+    .report-card   { padding: var(--space-4); }
 }

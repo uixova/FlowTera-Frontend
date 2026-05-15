@@ -1,9 +1,9 @@
 .home {
-    display:  grid;
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-5);
     padding: var(--space-3);
-    max-width:  100%;
+    max-width: 100%;
 }
 
 .hm-card {
@@ -16,7 +16,6 @@
     overflow: hidden;
 }
 
-/* Hover'da accent çizgisi — üst border gradyanı */
 .hm-card::before {
     content: '';
     position: absolute;
@@ -64,7 +63,6 @@ hr {
 .hm-mid-ct    { grid-column: span 2; }
 .hm-bottom-ct { grid-column: span 2; }
 
-/* Quick Access */
 .quick-access-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -81,13 +79,12 @@ hr {
     justify-content: center;
     align-items: center;
     gap: var(--space-3);
-    cursor:  pointer;
+    cursor: pointer;
     transition: var(--transition-spring);
     position: relative;
     overflow: hidden;
 }
 
-/* Hover'da accent radial glow — alttan */
 .create-box::after {
     content: '';
     position: absolute;
@@ -102,7 +99,6 @@ hr {
     opacity: 1;
 }
 
-/* Premium lock ikonu */
 .lock-icon {
     position: absolute;
     top: 10px;
@@ -120,7 +116,7 @@ hr {
 }
 
 .create-box span {
-    font-size:  0.82rem;
+    font-size: 0.82rem;
     font-weight: 600;
     color: var(--text-tertiary);
     transition: var(--transition-base);
@@ -135,17 +131,15 @@ hr {
     box-shadow: var(--shadow-card);
 }
 
-.create-box:hover i { color: var(--accent-color); }
-.create-box:hover span { color: var(--text-primary);  }
+.create-box:hover i     { color: var(--accent-color);  }
+.create-box:hover span  { color: var(--text-primary);  }
 
-/* Monthly Grid */
 .monthly-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap:  var(--space-5);
+    gap: var(--space-5);
 }
 
-/* Badge */
 .badge {
     padding: 4px 10px;
     border-radius: var(--radius-sm);
@@ -160,26 +154,21 @@ hr {
     letter-spacing: 0.2px;
 }
 
-/* Liste öğesi hover'ında badge accent'e döner */
 .hm-recent-box:hover .badge {
-    background:   var(--accent-ghost);
-    color:        var(--accent-text);
+    background: var(--accent-ghost);
+    color: var(--accent-color);
     border-color: var(--accent-border);
 }
 
-/* Responsive  */
 @media (max-width: 1100px) {
     .quick-access-container { grid-template-columns: repeat(2, 1fr); }
-    .hm-top-ct { grid-template-columns: 1fr; }
+    .hm-top-ct              { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-    .home {
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
+    .home                    { grid-template-columns: 1fr; gap: 14px; }
     .hm-top-ct,
     .hm-mid-ct,
-    .hm-bottom-ct { grid-column: span 1; }
-    .monthly-grid { grid-template-columns: 1fr; }
+    .hm-bottom-ct            { grid-column: span 1; }
+    .monthly-grid            { grid-template-columns: 1fr; }
 }

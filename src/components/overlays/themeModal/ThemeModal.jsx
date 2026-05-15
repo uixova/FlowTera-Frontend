@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { ThemeContext } from '../../../context/ThemeContext';
+import { useTheme } from '../../../context/ThemeContext';
 import { useSubscription } from '../../../context/SubscriptionContext';
 import './ThemeModal.css';
 
@@ -25,7 +25,7 @@ const RADIUS_OPTIONS = [
 const DEFAULT_THEME = { mode: 'dark', accent: '#0ed45a', radius: 'soft' };
 
 const ThemeModal = ({ isOpen, onClose }) => {
-    const { theme, setTheme } = useContext(ThemeContext);
+    const { theme, setTheme } = useTheme();
     const { hasFeature } = useSubscription();
 
     // Draft state — ThemeContext'e sadece Uygula butonunda yazılır
@@ -33,10 +33,8 @@ const ThemeModal = ({ isOpen, onClose }) => {
 
     // Modal her açıldığında context'teki güncel değerden başla
     useEffect(() => {
-        if (isOpen) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setDraft({ ...theme });
-        }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        if (isOpen) setDraft({ ...theme });
     }, [isOpen, theme]);
 
     // Kısıtlama Kontrolü
@@ -74,7 +72,7 @@ const ThemeModal = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="tm-panel-body">
-                    {/* Arayüz Modu - Herkes yapabilir */}
+                    {/* Arayüz Modu — tüm kullanıcılar değiştirebilir */}
                     <div className="tm-panel-section">
                         <label className="tm-section-label">Arayüz Modu</label>
                         <div className="tm-mode-grid">
@@ -91,7 +89,7 @@ const ThemeModal = ({ isOpen, onClose }) => {
                         </div>
                     </div>
 
-                    {/* Gelişmiş Ayarlar - Sadece Professional */}
+                    {/* Gelişmiş Ayarlar — Sadece Professional */}
                     <div className={`tm-advanced-section${!isAdvancedThemeEnabled ? ' locked' : ''}`}>
                         {!isAdvancedThemeEnabled && (
                             <div className="tm-lock-overlay">
@@ -157,7 +155,7 @@ const ThemeModal = ({ isOpen, onClose }) => {
                 </div>
             </div>
         </div>,
-        document.body  
+        document.body
     );
 };
 
