@@ -97,10 +97,81 @@
 }
 
 @media (max-width: 1300px) {
-    .monthly-grid { grid-template-columns: repeat(2, 1fr); }
+    .monthly-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-4);
+    }
 }
 
 @media (max-width: 768px) {
-    .monthly-grid  { grid-template-columns: 1fr; }
-    .report-card   { padding: var(--space-4); }
+    .monthly-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+
+    .report-card {
+        padding: var(--space-4);
+        border-radius: var(--radius-xl);
+    }
+
+    .report-header {
+        margin-bottom: var(--space-4);
+    }
+}
+
+@media (max-width: 480px) {
+    .monthly-grid {
+        gap: var(--space-3);
+    }
+
+    .report-card {
+        padding: 14px 12px;
+        border-radius: var(--radius-lg);
+    }
+
+    .report-panel-icon {
+        width: 30px;
+        height: 30px;
+        font-size: var(--text-sm);
+        border-radius: var(--radius-sm);
+    }
+
+    .report-header h3 {
+        font-size: var(--text-sm);
+    }
+
+    .report-period {
+        font-size: var(--text-2xs);
+        padding: 2px 8px;
+    }
+
+    .chart-wrapper {
+        margin-left: -10px;
+        width: calc(100% + 15px);
+    }
+
+    .chart-wrapper .recharts-yAxis .recharts-cartesian-axis-tick-value {
+        font-size: 10px !important;
+    }
+
+    .chart-wrapper .recharts-xAxis .recharts-cartesian-axis-tick-value {
+        font-size: 9px !important;
+    }
+
+    .report-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+@media (max-width: 360px) {
+    .report-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+    }
+
+    .report-period {
+        align-self: flex-start;
+    }
 }

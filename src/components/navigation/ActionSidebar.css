@@ -1,7 +1,7 @@
 .as-wrapper {
     position: fixed;
     inset: 0;
-    z-index: 9999;
+    z-index: var(--z-modal);
     visibility: hidden;
     transition: visibility var(--transition-base);
 }
@@ -13,9 +13,9 @@
 .as-overlay {
     position: absolute;
     inset: 0;
-    background: var(--black-a40); 
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: var(--overlay-modal);
+    backdrop-filter: var(--backdrop-blur);
+    -webkit-backdrop-filter: var(--backdrop-blur);
     opacity: 0;
     transition: opacity var(--transition-base) cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -30,13 +30,14 @@
     top: 0;
     right: 0;
     width: var(--as-width, 520px);
+    max-width: 100vw; /* Hiçbir zaman ekrandan taşmasın */
     height: 100%;
-    background: var(--bg-surface); 
-    border-left: 1px solid var(--white-a7);
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border-subtle);
     display: flex;
     flex-direction: column;
-    box-shadow: -20px 0 50px var(--black-a55);
-    
+    box-shadow: -20px 0 50px var(--black-a50);
+
     transform: translateX(105%);
     transition: transform var(--transition-spring);
     will-change: transform;
@@ -55,39 +56,44 @@
     width: 100%;
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--accent-border), transparent);
+    pointer-events: none;
 }
 
-/* Header Tasarımı */
+/* Header */
 .as-header {
-    padding: 24px 32px;
+    padding: 22px 28px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: var(--white-a2);
-    border-bottom: 1px solid var(--white-a5);
+    border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
 }
 
 .as-header-content h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--text-primary);
-    font-family: 'Syne', sans-serif;
-    letter-spacing: -0.5px;
+    font-family: var(--font-head);
+    letter-spacing: -0.4px;
 }
 
-/* Kapatma Butonu (Danger Map) */
+/* Kapatma Butonu */
 .as-close-circle {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: var(--radius-full);
     background: var(--white-a3);
-    border: 1px solid var(--white-a8);
+    border: 1px solid var(--border-subtle);
     color: var(--text-muted);
     display: grid;
     place-items: center;
     cursor: pointer;
-    transition: all var(--transition-base) ease;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: background var(--transition-base), color var(--transition-base),
+                border-color var(--transition-base), transform 0.25s ease;
 }
 
 .as-close-circle:hover {
@@ -97,19 +103,30 @@
     transform: rotate(90deg);
 }
 
-/* İçerik Alanı */
+/* İçerik */
 .as-body {
     flex: 1;
     padding: 24px;
     overflow-y: auto;
     position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
+
+.as-body::-webkit-scrollbar       { width: 4px; }
+.as-body::-webkit-scrollbar-track { background: transparent; }
+.as-body::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
+}
+.as-body::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 
 /* Açılış animasyonu */
 .as-content-motion {
     opacity: 0;
-    transform: translateY(5px);
-    transition: all var(--transition-slow) cubic-bezier(0.23, 1, 0.32, 1) 0.15s;
+    transform: translateY(6px);
+    transition: opacity var(--transition-slow) cubic-bezier(0.23, 1, 0.32, 1) 0.12s,
+                transform var(--transition-slow) cubic-bezier(0.23, 1, 0.32, 1) 0.12s;
 }
 
 .as-wrapper.is-active .as-content-motion {
@@ -117,50 +134,76 @@
     transform: translateY(0);
 }
 
-/* Footer Tasarımı */
+/* Footer */
 .as-footer {
-    padding: 24px 32px;
-    background: var(--bg-nav);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid var(--white-a5);
-    
-    display: flex; 
+    padding: 20px 28px;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 12px;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
 .as-footer > div {
     display: flex;
     width: 100%;
-    gap: 12px;
-}
-
-/* Özel Scrollbar */
-.as-body::-webkit-scrollbar {
-    width: 4px;
-}
-
-.as-body::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.as-body::-webkit-scrollbar-thumb {
-    background: var(--white-a10);
-    border-radius: var(--radius-full);
-}
-
-.as-body::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-border);
+    gap: 10px;
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 640px) {
+    /* Tablet ve küçük ekranlar: panel genişler */
+    .as-panel {
+        width: min(480px, 95vw);
+    }
+
+    .as-header { padding: 18px 20px; }
+    .as-body   { padding: 18px 20px; }
+    .as-footer { padding: 16px 20px; }
+}
+
+@media (max-width: 480px) {
+    /* Telefon: tam ekran sidebar */
     .as-panel {
         width: 100% !important;
         border-left: none;
+        top: auto;
+        bottom: 0;
+        height: 92dvh;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        transform: translateY(105%);
+        border-top: 1px solid var(--border-subtle);
     }
-    .as-body {
-        padding: 20px; 
+
+    .as-wrapper.is-active .as-panel {
+        transform: translateY(0);
     }
+
+    /* Üst köşelerde handle bar */
+    .as-panel::after {
+        content: '';
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 36px;
+        height: 4px;
+        background: var(--border-strong);
+        border-radius: var(--radius-full);
+    }
+
+    .as-header { padding: 20px 18px 16px; }
+    .as-body   { padding: 16px 18px; }
+    .as-footer { padding: 14px 18px 20px; }
+
+    /* Footer butonları tam genişlik */
+    .as-footer > div { flex-direction: column; }
+    .as-footer > div > button,
+    .as-footer > div > a { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 380px) {
+    .as-panel { height: 96dvh; }
 }

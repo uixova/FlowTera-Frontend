@@ -382,3 +382,117 @@
     .hm-recent-box .col-team-name,
     .hm-recent-box .col-type { display: none; }
 }
+
+@media (max-width: 1200px) {
+    .hm-top-ct {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .hm-top-ct {
+        grid-column: span 1;
+        gap: var(--space-4);
+    }
+
+    .recent-grid-header,
+    .hm-recent-box {
+        grid-template-columns: 1.6fr 1fr 0.9fr;
+    }
+
+    .recent-grid-header span:nth-child(2),
+    .recent-grid-header span:nth-child(3),
+    .hm-recent-box .col-team-name,
+    .hm-recent-box .col-type {
+        display: none;
+    }
+
+    .status-item {
+        padding: var(--space-4);
+        gap: var(--space-4);
+    }
+
+    .status-value {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hm-status-grid {
+        gap: var(--space-2);
+    }
+
+    .status-item {
+        padding: 14px 12px;
+        border-radius: var(--radius-xl);
+        gap: var(--space-3);
+    }
+
+    .status-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        font-size: 1rem;
+    }
+
+    .status-value {
+        font-size: 1.35rem;
+        letter-spacing: -1px;
+    }
+
+    .status-label {
+        font-size: 10px;
+        letter-spacing: 0.5px;
+    }
+
+    .hm-panel-header {
+        padding: var(--space-4) var(--space-4) 0;
+    }
+
+    .hm-divider {
+        margin: var(--space-3) var(--space-4) 0;
+    }
+
+    .recent-grid-header {
+        padding: 8px var(--space-4);
+        grid-template-columns: 1.8fr 1fr;
+    }
+
+    .hm-recent-box {
+        padding: 8px;
+        grid-template-columns: 1.8fr 1fr;
+    }
+
+    .recent-grid-header span:nth-child(4),
+    .hm-recent-box .badge {
+        display: none;
+    }
+
+    .col-subject {
+        font-size: var(--text-xs);
+    }
+
+    .col-amount {
+        font-size: var(--text-xs);
+    }
+
+    .hm-recent-container {
+        padding: var(--space-1) var(--space-2) var(--space-3);
+        max-height: 180px;
+    }
+
+    .status-item:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .hm-recent-box:hover {
+        transform: none;
+    }
+}
+
+@media (max-width: 340px) {
+    .hm-status-grid {
+        grid-template-columns: 1fr;
+    }
+}

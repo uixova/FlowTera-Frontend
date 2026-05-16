@@ -14,7 +14,7 @@ export const StatusOverview = ({ stats }) => {
         {
             key:   'trips',
             icon:  'ti-plane-tilt',
-            type:  'trips',
+            type:  'trip',
             label: 'Aktif Geziler',
             value: String(stats?.activeTrips   || 0).padStart(2, '0'),
         },

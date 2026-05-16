@@ -131,3 +131,55 @@
     transform: translateY(-1px);
     box-shadow: 0 4px 15px var(--accent-glow-sm);
 }
+
+@media screen and (max-width: 576px) {
+    .modal-overlay {
+        padding: var(--space-4);
+    }
+
+    .modal-container {
+        width: 100%;
+        max-width: 100%;
+        padding: var(--space-5) var(--space-4);
+        border-radius: var(--radius-lg);
+    }
+
+    .modal-icon {
+        font-size: 42px;
+        margin-bottom: var(--space-3);
+    }
+
+    .modal-body h3 {
+        font-size: var(--text-base);
+    }
+
+    .modal-body p {
+        font-size: var(--text-xs);
+        line-height: 1.4;
+    }
+
+    .modal-footer {
+        margin-top: var(--space-5);
+    }
+
+    .confirm-footer {
+        flex-direction: column-reverse;
+        gap: var(--space-2);
+    }
+
+    .modal-btn,
+    .btn-cancel,
+    .btn-confirm {
+        padding: 12px var(--space-4);
+        font-size: var(--text-sm);
+        width: 100%;
+        flex: none;
+    }
+
+    .modal-btn:hover,
+    .btn-cancel:hover,
+    .btn-confirm:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}

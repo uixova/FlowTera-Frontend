@@ -88,7 +88,6 @@
     gap: 0.6em; 
 }
 
-/* Parlama efekti */
 .tr-dots-loader::before {
     content: "";
     position: absolute;
@@ -114,18 +113,18 @@
 
 .loader__circle:nth-child(2n) {
     animation-delay: 300ms;
-    background-color: var(--accent-bright); /* Hafif farklı ton için bright kullandık */
+    background-color: var(--accent-bright); 
     box-shadow: 0 0 8px var(--accent-glow-sm);
 }
 
 .loader__circle:nth-child(3n) {
     animation-delay: 600ms;
     background-color: var(--accent-color);
-    filter: brightness(1.2); /* Orijinaldeki gibi biraz daha parlak */
+    filter: brightness(1.2); 
     box-shadow: 0 0 12px var(--accent-glow-md);
 }
 
-/* Animasyonlar (Dokunulmadı) */
+/* Animasyonlar (*/
 @keyframes wing {
     0% { transform: rotateY(0deg); }
     50% { transform: rotateY(70deg); }
@@ -153,5 +152,57 @@
     75% { 
         transform: translateY(4px) scale(0.9); 
         opacity: 0.7;
+    }
+}
+
+/* Mobil & Responsive Düzenlemeler */
+@media screen and (max-width: 576px) {
+    .tr-butterfly-loader {
+        --sizeLoader: 50px;
+        
+        filter: drop-shadow(0 0 6px var(--accent-glow-md));
+        background: radial-gradient(circle, var(--accent-glow-sm) 0%, transparent 65%);
+    }
+
+    .tr-loader-text {
+        margin-top: 35px;
+        font-size: 10px; 
+        letter-spacing: 2px;
+    }
+
+    .tr-dots-loader {
+        gap: 0.4em;
+    }
+
+    .loader__circle {
+        --size__loader: 0.45em; 
+        box-shadow: 0 0 6px var(--accent-glow-sm);
+    }
+    
+    .loader__circle:nth-child(2n) {
+        box-shadow: 0 0 5px var(--accent-glow-sm);
+    }
+    
+    .loader__circle:nth-child(3n) {
+        box-shadow: 0 0 8px var(--accent-glow-md);
+    }
+
+    @keyframes loader__circle__jumping {
+        0%, 100% { 
+            transform: translateY(0px); 
+            opacity: 0.5;
+        }
+        25% { 
+            transform: translateY(-8px) scale(1.15); 
+            opacity: 1;
+        }
+        50% { 
+            transform: translateY(0px); 
+            opacity: 0.5;
+        }
+        75% { 
+            transform: translateY(2px) scale(0.9); 
+            opacity: 0.7;
+        }
     }
 }

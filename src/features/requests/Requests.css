@@ -430,10 +430,169 @@
 }
 
 @media (max-width: 768px) {
-    .req-container { grid-template-columns: 1fr; padding: 0 12px 20px; }
-    .req-tabs { padding: 0 12px; flex-wrap: wrap; }
+    .req-tabs {
+        padding: 0 var(--space-4);
+        margin-bottom: var(--space-4);
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+    }
+
+    .req-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .req-tabs button {
+        padding: 8px 14px;
+        flex-shrink: 0;
+    }
+
+    .req-container {
+        grid-template-columns: 1fr;
+        padding: 0 var(--space-4) var(--space-4);
+        gap: var(--space-3);
+    }
 }
 
-@media (max-width: 480px) {
-    .req-container { grid-template-columns: 1fr; }
+@media (max-width: 520px) {
+    .sub-nav-divider {
+        margin: 0 0 var(--space-4);
+    }
+
+    .req-tabs {
+        padding: 0 var(--space-3);
+        gap: var(--space-2);
+        width: 100%;
+    }
+
+    .req-container {
+        padding: 0 var(--space-3) var(--space-3);
+    }
+
+    .req-content {
+        padding: var(--space-4) var(--space-4) var(--space-3);
+        gap: var(--space-3);
+    }
+
+    .req-icon-box {
+        width: 38px;
+        height: 38px;
+        font-size: 1.15rem;
+        border-radius: var(--radius-md);
+    }
+
+    .req-user-row {
+        position: relative;
+        padding-right: 65px;
+        width: 100%;
+    }
+
+    .req-category-tag {
+        position: absolute;
+        right: 0;
+        top: 0;
+        margin-left: 0;
+    }
+
+    .req-title {
+        font-size: 0.92rem;
+        margin: 4px 0 2px;
+    }
+
+    .req-detail {
+        font-size: var(--text-sm);
+        line-height: 1.45;
+    }
+
+    .req-right-side {
+        padding: var(--space-3) var(--space-4);
+    }
+
+    .action-row {
+        gap: var(--space-2);
+    }
+
+    .btn-icon {
+        padding: 10px;
+        font-size: var(--text-sm);
+        border-radius: var(--radius-md);
+    }
+
+    .btn-icon:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .compact-reject-area input {
+        padding: 10px 12px;
+        font-size: var(--text-sm);
+        border-radius: var(--radius-md);
+    }
+
+    .compact-reject-btns button {
+        padding: 9px;
+        font-size: var(--text-sm);
+        border-radius: var(--radius-md);
+    }
+
+    .compact-reject-btns button:hover {
+        transform: none;
+    }
+
+    .final-status-badge {
+        padding: 9px var(--space-3);
+        font-size: var(--text-2xs);
+        border-radius: var(--radius-md);
+    }
+
+    .req-reason-footer {
+        padding: 10px var(--space-4);
+        font-size: var(--text-xs);
+        gap: 6px;
+    }
+
+    .no-req {
+        padding: 48px var(--space-4);
+    }
+
+    .no-req i {
+        font-size: 2.2rem;
+        margin-bottom: 10px;
+    }
+
+    .no-req p {
+        font-size: var(--text-sm);
+    }
+}
+
+@media (max-width: 380px) {
+    .req-left-side {
+        gap: var(--space-2.5);
+    }
+
+    .req-user-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        padding-right: 0;
+    }
+
+    .req-dot {
+        display: none;
+    }
+
+    .req-category-tag {
+        position: static;
+        margin-top: 4px;
+        align-self: flex-start;
+    }
+
+    .action-row {
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+
+    .btn-icon {
+        width: 100%;
+    }
 }

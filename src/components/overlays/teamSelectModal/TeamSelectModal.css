@@ -220,3 +220,50 @@
     font-size: var(--text-sm);
     font-family: var(--font-sans);
 }
+
+/* Responsive */
+@media screen and (max-width: 576px) {
+    .team-dropdown-overlay {
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(2px);
+    }
+
+    .team-dropdown-modal {
+        top: auto !important;
+        bottom: 0 !important;
+        right: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+        animation: slideUpTeamModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        transform-origin: bottom center;
+    }
+
+    .team-dropdown-list {
+        max-height: 320px;
+    }
+
+    .team-dropdown-option {
+        padding: 12px 14px;
+        font-size: var(--text-base);
+    }
+
+    .team-dropdown-option:hover {
+        transform: none;
+    }
+
+    .add-team-small-btn {
+        padding: 12px;
+        font-size: var(--text-sm);
+    }
+
+    @keyframes slideUpTeamModal {
+        from { transform: translateY(100%); }
+        to   { transform: translateY(0); }
+    }
+}

@@ -214,7 +214,123 @@
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
-    .plan-card.popular { scale: 1; } 
-    .plans-grid { gap: var(--space-4); }
+@media (max-width: 1280px) {
+    .plans-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: var(--space-4);
+        padding: 0 var(--space-4);
+    }
+    
+    .plan-card.popular {
+        scale: 1;
+    }
+    
+    .plan-card {
+        padding: var(--space-6);
+    }
+}
+
+@media (max-width: 768px) {
+    .subscription-container {
+        padding: var(--space-6) var(--space-4);
+    }
+
+    .sub-header {
+        margin-bottom: var(--space-8);
+    }
+
+    .sub-header h1 {
+        font-size: var(--text-2xl);
+        margin-bottom: 10px;
+    }
+
+    .sub-header p {
+        font-size: var(--text-sm);
+        padding: 0 var(--space-2);
+    }
+
+    .plans-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-5);
+        max-width: 400px;
+    }
+
+    .plan-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+}
+
+@media (max-width: 480px) {
+    .subscription-container {
+        padding: var(--space-4) var(--space-3);
+    }
+
+    .plans-grid {
+        gap: var(--space-4);
+    }
+
+    .plan-card {
+        padding: var(--space-5);
+        border-radius: var(--radius-xl);
+    }
+
+    .icon-box {
+        width: 44px;
+        height: 44px;
+        font-size: 1.4rem;
+        margin-bottom: var(--space-4);
+    }
+
+    .plan-card h2 {
+        font-size: var(--text-lg);
+    }
+
+    .plan-desc {
+        font-size: var(--text-xs);
+    }
+
+    .plan-price {
+        margin: var(--space-4) 0;
+    }
+
+    .amount {
+        font-size: var(--text-2xl);
+    }
+
+    .feature-list {
+        margin: var(--space-4) 0;
+    }
+
+    .feature-list li {
+        margin-bottom: 12px;
+        font-size: var(--text-xs);
+    }
+
+    .promise-item {
+        margin-top: 12px;
+        padding-top: 12px;
+    }
+
+    .plan-btn {
+        padding: 14px;
+        font-size: var(--text-sm);
+        border-radius: var(--radius-lg);
+    }
+
+    .plan-btn:hover:not(.current-btn) {
+        transform: none;
+    }
+
+    .popular-badge, .current-badge {
+        top: -12px;
+        padding: 6px 16px;
+        font-size: 9px;
+    }
+
+    .login-hint {
+        margin-top: var(--space-6);
+        font-size: var(--text-xs);
+        text-align: center;
+    }
 }

@@ -368,3 +368,101 @@
 }
 
 .tm-btn-apply:hover::before { opacity: 1; }
+
+@media screen and (max-width: 768px) {
+    .tm-side-panel {
+        width: 320px;
+    }
+
+    .tm-color-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-2);
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .tm-panel-overlay {
+        justify-content: center;
+        align-items: flex-end;
+    }
+
+    .tm-side-panel {
+        width: 100% !important;
+        height: 85vh !important;
+        border-right: none;
+        border-top: 1px solid var(--sidebar-border);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        transform: translateY(100%);
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tm-side-panel.open {
+        transform: translateY(0);
+    }
+
+    .tm-panel-header {
+        padding: var(--space-4) var(--space-4) var(--space-4);
+    }
+
+    .tm-panel-body {
+        padding: var(--space-4);
+        gap: var(--space-5);
+    }
+
+    .tm-mode-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-2);
+    }
+
+    .tm-mode-card {
+        padding: var(--space-2);
+    }
+
+    .tm-mode-preview {
+        height: 44px;
+    }
+
+    .tm-color-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-2);
+    }
+
+    .tm-color-dot {
+        max-width: 60px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .tm-radius-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-2);
+    }
+
+    .tm-radius-btn {
+        padding: 10px var(--space-2);
+        font-size: var(--text-xs);
+    }
+
+    .tm-panel-footer {
+        padding: var(--space-3) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
+    }
+
+    .tm-btn-reset {
+        padding: 10px var(--space-3);
+        font-size: var(--text-sm);
+    }
+
+    .tm-btn-apply {
+        padding: 11px;
+        font-size: var(--text-sm);
+    }
+
+    .tm-btn-apply:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    .tm-color-dot:hover {
+        transform: none;
+    }
+}

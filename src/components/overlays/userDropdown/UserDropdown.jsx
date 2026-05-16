@@ -39,9 +39,14 @@ const UserDropdown = ({ isOpen, onClose }) => {
     );
   };
 
+  const handleOverlayClick = () => {
+    if (confirmConfig.isOpen || alertConfig.isOpen) return;
+    onClose();
+  };
+
   return createPortal(
     <>
-      <div className="dropdown-overlay" onClick={onClose} />
+      <div className="dropdown-overlay" onClick={handleOverlayClick} />
       <div className="user-quick-dropdown" onClick={(e) => e.stopPropagation()}>
         <div className="dropdown-header">
           {loading ? (
@@ -70,7 +75,6 @@ const UserDropdown = ({ isOpen, onClose }) => {
         </button>
       </div>
 
-      {/* Confirm ve Alert artık aynı portal içinde — ekstra createPortal gereksiz */}
       <Confirm {...confirmConfig} onClose={closeConfirm} />
       <Alert {...alertConfig} onClose={closeAlert} />
     </>,

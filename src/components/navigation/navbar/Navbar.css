@@ -4,7 +4,7 @@ header.navbar-header {
     background: var(--bg-navbar);
     backdrop-filter: blur(24px) saturate(200%);
     -webkit-backdrop-filter: blur(24px) saturate(200%);
-    padding: 14px 24px;
+    padding: 13px 24px;
     position: sticky;
     top: 0;
     z-index: var(--z-navbar);
@@ -22,7 +22,6 @@ header.navbar-header {
     gap: 20px;
 }
 
-/* Logo Alanı */
 .app-logo {
     display: flex;
     align-items: center;
@@ -51,17 +50,16 @@ header.navbar-header {
 
 .app-logo h1 {
     font-family: var(--font-head);
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 800;
     letter-spacing: -0.5px;
-    background: linear-gradient(90deg, var(--main-color), var(--_teal));
+    background: linear-gradient(90deg, var(--accent-color), var(--_teal));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 0;
 }
 
-/* Orta Linkler */
 .nav-links-center {
     flex-grow: 1;
     display: flex;
@@ -80,17 +78,16 @@ header.navbar-header {
 .nav-links-center ul li a {
     text-decoration: none;
     color: var(--text-tertiary);
-    padding: 7px 13px;
+    padding: 7px 12px;
     font-size: var(--text-base);
     font-weight: 500;
     border-radius: var(--radius-md);
-    transition:
-        color       var(--transition-base),
-        background  var(--transition-base);
+    transition: color var(--transition-base), background var(--transition-base);
     display: flex;
     align-items: center;
     gap: 6px;
     font-family: var(--font-sans);
+    white-space: nowrap;
 }
 
 .nav-links-center ul li a:hover {
@@ -109,11 +106,8 @@ header.navbar-header {
     transition: opacity var(--transition-fast);
 }
 
-.nav-links-center ul li a.active i {
-    opacity: 1;
-}
+.nav-links-center ul li a.active i { opacity: 1; }
 
-/* Sağ Aksiyonlar */
 .nav-actions-right {
     display: flex;
     flex-direction: row;
@@ -138,10 +132,10 @@ header.navbar-header {
     border-radius: var(--radius-md);
     cursor: pointer;
     transition:
-        background    var(--transition-spring),
-        border-color  var(--transition-spring),
-        color         var(--transition-base),
-        transform     var(--transition-base);
+        background   var(--transition-spring),
+        border-color var(--transition-spring),
+        color        var(--transition-base),
+        transform    var(--transition-base);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -161,7 +155,12 @@ header.navbar-header {
     color: var(--accent-color);
 }
 
-/* Profil ve Bildirim */
+.btn-dark.btn-danger-action:hover {
+    background: var(--status-danger-bg);
+    border-color: var(--status-danger-border);
+    color: var(--status-danger);
+}
+
 .head-user-profile {
     position: relative;
     cursor: pointer;
@@ -173,9 +172,7 @@ header.navbar-header {
     border: 1px solid var(--border-default);
     border-radius: var(--radius-full);
     overflow: hidden;
-    transition:
-        border-color  var(--transition-base),
-        transform     var(--transition-base);
+    transition: border-color var(--transition-base), transform var(--transition-base);
 }
 
 .head-profile-img:hover {
@@ -189,11 +186,8 @@ header.navbar-header {
     object-fit: cover;
 }
 
-.notification-btn {
-    position: relative;
-}
+.notification-btn { position: relative; }
 
-/* Bildirim Noktası */
 .nt-dot {
     width: 6px;
     height: 6px;
@@ -207,17 +201,339 @@ header.navbar-header {
     animation: ntPulse 2.2s ease infinite;
 }
 
-.btn-dark.btn-danger-action:hover {
-    background: var(--status-danger-bg);
-    border-color: var(--status-danger-border);
-    color: var(--status-danger);
-}
-
 @keyframes ntPulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50%       { opacity: 0.5; transform: scale(1.25); }
 }
 
-@media (max-width: 768px) {
+/* Hamburger butonu */
+.nav-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 38px;
+    height: 38px;
+    background: var(--white-a3);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+.nav-hamburger:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-strong);
+}
+
+.nav-hamburger.is-open {
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+}
+
+.hbg-line {
+    width: 18px;
+    height: 2px;
+    background: var(--text-tertiary);
+    border-radius: 2px;
+    transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+                opacity  0.25s ease,
+                width    0.25s ease;
+    transform-origin: center;
+}
+
+.nav-hamburger.is-open .hbg-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.is-open .hbg-line:nth-child(2) { opacity: 0; width: 0; }
+.nav-hamburger.is-open .hbg-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile drawer */
+.nav-mobile-drawer {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--z-navbar) + 10);
+    pointer-events: none;
+}
+
+.nav-mobile-drawer.is-open {
+    pointer-events: auto;
+}
+
+.nav-drawer-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--overlay-modal);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.nav-mobile-drawer.is-open .nav-drawer-overlay { opacity: 1; }
+
+.nav-drawer-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(300px, 88vw);
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-100%);
+    transition: transform 0.38s cubic-bezier(0.23, 1, 0.32, 1);
+    overflow-y: auto;
+}
+
+.nav-mobile-drawer.is-open .nav-drawer-panel { transform: translateX(0); }
+
+.nav-drawer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border-faint);
+    flex-shrink: 0;
+}
+
+.nav-drawer-logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.nav-drawer-logo img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.nav-drawer-logo span {
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    background: linear-gradient(90deg, var(--main-color), var(--_teal)) !important;
+    -webkit-background-clip: text;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-drawer-close {
+    width: 32px;
+    height: 32px;
+    background: var(--white-a3);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.25s ease;
+}
+
+.nav-drawer-close:hover {
+    background: var(--status-danger-bg);
+    color: var(--status-danger);
+    border-color: var(--status-danger-border);
+    transform: rotate(90deg);
+}
+
+.nav-drawer-links {
+    flex: 1;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+}
+
+.nav-drawer-links a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: var(--text-tertiary);
+    font-size: var(--text-base);
+    font-weight: 500;
+    font-family: var(--font-sans);
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.nav-drawer-links a:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.nav-drawer-links a.active {
+    background: var(--accent-subtle);
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.nav-drawer-links a i {
+    font-size: 1.15rem;
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* Drawer içi aksiyon butonu (tema toggle, bildirim) */
+.nav-drawer-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-lg);
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    font-size: var(--text-base);
+    font-weight: 500;
+    font-family: var(--font-sans);
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background var(--transition-fast), color var(--transition-fast);
+    position: relative;
+}
+
+.nav-drawer-action-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.nav-drawer-action-btn i {
+    font-size: 1.15rem;
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* Drawer bildirim noktası */
+.nav-drawer-nt-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--accent-color);
+    border-radius: var(--radius-full);
+    margin-left: auto;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px var(--accent-glow);
+    animation: ntPulse 2.2s ease infinite;
+}
+
+.nav-drawer-divider {
+    height: 1px;
+    background: var(--border-faint);
+    margin: 6px 4px;
+}
+
+.nav-drawer-footer {
+    padding: 14px 16px;
+    border-top: 1px solid var(--border-faint);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.nav-drawer-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    border: 1px solid var(--border-default);
+    flex-shrink: 0;
+}
+
+.nav-drawer-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nav-drawer-user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.nav-drawer-user-name {
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nav-drawer-user-plan {
+    font-size: var(--text-2xs);
+    color: var(--accent-color);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-family: var(--font-sans);
+}
+
+/* Drawer footer ayarlar butonu */
+.nav-drawer-settings-btn {
+    width: 32px;
+    height: 32px;
+    background: var(--white-a3);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.nav-drawer-settings-btn:hover {
+    background: var(--accent-subtle);
+    border-color: var(--accent-border);
+    color: var(--accent-color);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1024px) {
+    /* Tablet: link metinlerini gizle, sadece ikon kalsın */
+    .nav-links-center ul li a { padding: 7px 10px; font-size: 0; gap: 0; }
+    .nav-links-center ul li a i { font-size: 1.1rem; opacity: 1; }
+    /* Active'de accent renk korunur */
+    .nav-links-center ul li a.active { background: var(--accent-subtle); }
+}
+
+@media (max-width: 860px) {
+    /* Desktop nav ve bazı butonlar gizlenir, hamburger görünür */
     .nav-links-center { display: none; }
+    .nav-hamburger    { display: flex; }
+    .nav-mobile-drawer { display: block; }
+
+    .head-lnk-btn .btn-dark:not(.notification-btn):not(.light-dark-head):not(.team-select-head) { display: none; }
+    .head-lnk-btn .btn-dark:has(.ti-brush) { display: none; }
+}
+
+@media (max-width: 600px) {
+    header.navbar-header { padding: 12px 16px; }
+    .nav-actions-right   { gap: 6px; }
+    .head-lnk-btn        { gap: 4px; }
+    /* Çok dar ekranda logo metni gizle */
+    .app-logo h1 { display: none; }
+}
+
+@media (max-width: 380px) {
+    header.navbar-header { padding: 10px 12px; }
+    /* Profil avatarı küçülsün */
+    .head-profile-img { width: 30px; height: 30px; }
 }

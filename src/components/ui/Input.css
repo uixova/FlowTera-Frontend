@@ -1,4 +1,3 @@
-/* Input Wrapper & Search */
 .common-input-wrapper {
     position: relative;
     display: flex;
@@ -28,22 +27,26 @@
     transition: all var(--transition-spring);
 }
 
+.common-input-wrapper input::placeholder {
+    color: var(--text-tertiary);
+}
+
 .common-input-wrapper input:focus {
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px var(--accent-glow-sm);
     background: var(--bg-elevated);
 }
 
-.common-input-wrapper input:focus + i {
+.common-input-wrapper input:focus ~ i,
+.common-input-wrapper:focus-within i {
     color: var(--accent-color);
 }
 
-/* Base Nav Action Button */
 .nav-action-btn {
     padding: 8px 14px;
     font-size: var(--text-sm);
     font-weight: 600;
-    background: var(--white-a1);
+    background: var(--white-a3);
     color: var(--text-secondary);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
@@ -54,10 +57,11 @@
     gap: 8px;
     font-family: var(--font-sans);
     transition: all var(--transition-spring);
+    white-space: nowrap;
 }
 
 .nav-action-btn:hover {
-    background: var(--white-a2);
+    background: var(--bg-hover);
     border-color: var(--border-strong);
     color: var(--text-primary);
     transform: translateY(-1px);
@@ -67,11 +71,10 @@
     transform: translateY(0);
 }
 
-/* Nav Create Button (High Priority) */
 .nav-create-btn {
     background: var(--accent-color) !important;
     color: var(--accent-fg) !important;
-    border: 1px solid var(--accent-subtle) !important;
+    border: 1px solid var(--accent-border) !important;
     box-shadow: 0 8px 20px var(--accent-glow-sm);
     padding: 8px 20px !important;
     font-weight: 800 !important;
@@ -81,9 +84,52 @@
 .nav-create-btn:hover {
     background: var(--accent-bright) !important;
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px var(--accent-glow-md);
+    box-shadow: 0 10px 25px var(--accent-glow);
 }
 
 .nav-create-btn:active {
     transform: translateY(-1px);
+}
+
+@media (max-width: 860px) {
+    .common-input-wrapper {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .common-input-wrapper input {
+        width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .common-input-wrapper input {
+        font-size: var(--text-base);
+        padding: 9px 12px 9px 36px;
+    }
+
+    .common-input-wrapper i {
+        left: 11px;
+        font-size: 1rem;
+    }
+
+    .nav-action-btn {
+        padding: 8px 12px;
+        font-size: var(--text-xs);
+        gap: 6px;
+    }
+
+    .nav-create-btn {
+        padding: 8px 14px !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .nav-action-btn span {
+        display: none;
+    }
+
+    .nav-create-btn {
+        padding: 8px 12px !important;
+    }
 }

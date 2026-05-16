@@ -141,3 +141,69 @@
     from { opacity: 0; transform: scale(0.95); } 
     to { opacity: 1; transform: scale(1); } 
 }
+
+/* Responsive */
+@media screen and (max-width: 576px) {
+    .image-box-zoom-overlay i {
+        font-size: 2rem;
+    }
+
+    .image-box-zoom-overlay span {
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
+
+    .image-box-top-bar {
+        padding: var(--space-4) var(--space-4);
+        background: var(--bg-body); 
+        border-bottom: 1px solid var(--border-faint);
+        z-index: 2;
+    }
+
+    .image-box-filename {
+        max-width: 160px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .image-box-close {
+        padding: 6px 14px;
+        gap: 6px;
+    }
+
+    .image-box-close span {
+        display: none; 
+    }
+
+    .image-box-content {
+        max-width: 100vw;
+        max-height: 100vh;
+        width: 100%;
+        height: 100%;
+        padding: 80px var(--space-4) var(--space-4); 
+    }
+
+    .image-box-fullscreen {
+        max-height: 80vh;
+        width: 100%;
+        border-radius: var(--radius-sm);
+        border: none;
+    }
+
+    .image-box-caption {
+        bottom: var(--space-4);
+        font-size: var(--text-xs);
+        padding: 6px 14px;
+        max-width: 90%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        z-index: 2;
+    }
+
+    .image-box-close:hover {
+        transform: none; 
+        box-shadow: none;
+    }
+}

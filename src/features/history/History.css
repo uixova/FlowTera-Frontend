@@ -70,3 +70,31 @@
     transform: translateY(-1px);
     box-shadow: 0 8px 20px color-mix(in srgb, var(--accent-color), transparent 80%);
 }
+
+@media (max-width: 768px) {
+    .history-list-container {
+        padding: 0 var(--space-4) var(--space-4);
+    }
+}
+
+@media (max-width: 480px) {
+    .history-list-container {
+        padding: 0 var(--space-3) var(--space-3);
+        gap: 6px;
+    }
+
+    .no-data-info {
+        padding: 42px var(--space-4);
+        font-size: var(--text-xs);
+    }
+
+    .as-filter-footer {
+        gap: 8px;
+    }
+
+    .btn-clear, .btn-apply {
+        padding: 11px;
+        font-size: var(--text-xs);
+        border-radius: 10px;
+    }
+}

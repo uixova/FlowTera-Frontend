@@ -330,6 +330,153 @@
 
 .generate-report-btn i { font-size: 1.15rem; }
 
-@media (max-width: 480px) {
-    .report-grid-2 { grid-template-columns: 1fr; }
+@media (max-width: 500px) {
+    .report-wrapper {
+        gap: var(--space-3);
+    }
+
+    .mail-info-banner {
+        padding: 12px var(--space-3);
+        border-radius: 14px;
+        gap: var(--space-2);
+    }
+
+    .banner-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.85rem;
+    }
+
+    .mail-info-banner p {
+        font-size: var(--text-xs);
+        line-height: 1.45;
+    }
+
+    .report-info-card {
+        padding: var(--space-3) var(--space-4);
+        border-radius: 14px;
+        gap: var(--space-2.5);
+    }
+
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        font-size: 1rem;
+    }
+
+    .info-text span {
+        font-size: 9px;
+        margin-bottom: 2px;
+    }
+
+    .info-text strong {
+        font-size: 0.88rem;
+    }
+
+    .report-section {
+        gap: 8px;
+    }
+
+    .section-label {
+        font-size: 9px;
+        letter-spacing: 0.5px;
+    }
+
+    .quick-dates span {
+        padding: 2px 8px;
+        border-radius: 6px;
+    }
+
+    .input-with-icon i {
+        left: 12px;
+        font-size: 0.9rem;
+    }
+
+    .input-with-icon input {
+        padding: 10px 12px 10px 38px;
+        border-radius: 11px;
+        font-size: var(--text-sm);
+    }
+
+    .report-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .date-input-box {
+        padding: 8px 12px;
+        border-radius: 11px;
+    }
+
+    .date-input-box small {
+        font-size: 9px;
+        margin-bottom: 3px;
+    }
+
+    .date-input-box input {
+        font-size: var(--text-sm);
+    }
+
+    .option-item {
+        padding: 12px var(--space-3);
+        border-radius: 14px;
+    }
+
+    .option-info {
+        gap: var(--space-3);
+    }
+
+    .option-info i {
+        font-size: 1.15rem;
+    }
+
+    .option-info p {
+        font-size: var(--text-sm);
+    }
+
+    .option-info small {
+        font-size: 10px;
+        margin-top: 1px;
+    }
+
+    .custom-switch {
+        width: 34px;
+        height: 20px;
+    }
+
+    .custom-switch::after {
+        width: 14px;
+        height: 14px;
+        top: 2px;
+        left: 2px;
+    }
+
+    .option-item.active .custom-switch::after {
+        left: 16px;
+    }
+
+    .generate-report-btn {
+        padding: 12px;
+        border-radius: 11px;
+        font-size: 0.88rem;
+    }
+
+    .generate-report-btn i {
+        font-size: 1.05rem;
+    }
+
+    .option-item:hover,
+    .generate-report-btn:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+@media (max-width: 360px) {
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
 }

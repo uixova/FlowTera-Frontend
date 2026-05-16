@@ -341,3 +341,227 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+@media (max-width: 1024px) {
+    .payment-container {
+        max-width: 720px;
+    }
+
+    .card-visual-section {
+        padding: var(--space-6);
+    }
+
+    .credit-card-wrapper {
+        width: 340px;
+        height: 195px;
+    }
+
+    .card-front, .card-back {
+        padding: var(--space-5);
+    }
+
+    .card-chip {
+        width: 42px;
+        height: 32px;
+    }
+
+    .card-type-icon {
+        font-size: 2rem;
+    }
+
+    .card-number-display {
+        font-size: 1.1rem;
+        letter-spacing: 1.5px;
+        margin: var(--space-4) 0;
+    }
+
+    .card-info-item .value {
+        font-size: 0.8rem;
+    }
+
+    .magnetic-strip {
+        height: 38px;
+        margin-top: var(--space-5);
+    }
+
+    .signature-area {
+        padding: 0 var(--space-4);
+    }
+
+    .signature-bar {
+        height: 30px;
+    }
+
+    .cvv-box {
+        width: 42px;
+        height: 26px;
+        font-size: var(--text-sm);
+    }
+
+    .payment-form-section {
+        padding: var(--space-8);
+    }
+}
+
+@media (max-width: 768px) {
+    .payment-container {
+        flex-direction: column;
+        max-width: 480px;
+        border-radius: var(--radius-2xl);
+    }
+
+    .card-visual-section {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: var(--space-8) var(--space-6);
+    }
+
+    .payment-form-section {
+        padding: var(--space-8) var(--space-6);
+    }
+}
+
+@media (max-width: 480px) {
+    .payment-page {
+        padding: var(--space-3);
+    }
+
+    .payment-container {
+        border-radius: var(--radius-xl);
+    }
+
+    .card-visual-section {
+        padding: var(--space-6) var(--space-4);
+    }
+
+    .credit-card-wrapper {
+        width: 290px;
+        height: 165px;
+    }
+
+    .card-front, .card-back {
+        padding: var(--space-4);
+        border-radius: var(--radius-lg);
+    }
+
+    .card-chip {
+        width: 36px;
+        height: 26px;
+        border-radius: var(--radius-sm);
+    }
+
+    .card-type-icon {
+        font-size: 1.7rem;
+    }
+
+    .card-number-display {
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+    }
+
+    .card-info-item .label {
+        font-size: 9px;
+    }
+
+    .card-info-item .value {
+        font-size: var(--text-xs);
+    }
+
+    .magnetic-strip {
+        height: 32px;
+        margin-top: var(--space-4);
+    }
+
+    .signature-area {
+        padding: 0 var(--space-3);
+    }
+
+    .signature-bar {
+        height: 26px;
+    }
+
+    .cvv-box {
+        width: 36px;
+        height: 24px;
+        font-size: var(--text-xs);
+    }
+
+    .payment-form-section {
+        padding: var(--space-6) var(--space-4);
+    }
+
+    .form-header h2 {
+        font-size: var(--text-xl);
+    }
+
+    .plan-info-tag strong {
+        font-size: var(--text-lg);
+    }
+
+    .secure-text {
+        margin-bottom: var(--space-5);
+    }
+
+    .input-group {
+        margin-bottom: var(--space-4);
+    }
+
+    .input-group label {
+        font-size: var(--text-xs);
+        margin-bottom: 6px;
+    }
+
+    .input-group input {
+        padding: 12px;
+        font-size: var(--text-sm);
+        border-radius: var(--radius-md);
+    }
+
+    .input-wrapper input {
+        padding-left: 40px !important;
+    }
+
+    .input-wrapper i {
+        left: 14px;
+    }
+
+    .row {
+        gap: var(--space-3);
+    }
+
+    .terms-checkbox {
+        gap: var(--space-2.5);
+        margin: var(--space-3) 0;
+    }
+
+    .terms-checkbox input {
+        width: 14px;
+        height: 14px;
+    }
+
+    .terms-checkbox label {
+        font-size: var(--text-xs);
+    }
+
+    .pay-btn {
+        padding: 14px;
+        font-size: var(--text-sm);
+        border-radius: var(--radius-md);
+        margin-top: var(--space-4);
+    }
+
+    .pay-btn:hover:not(:disabled) {
+        transform: none;
+    }
+}
+
+@media (max-width: 340px) {
+    .credit-card-wrapper {
+        width: 260px;
+        height: 150px;
+    }
+
+    .card-number-display {
+        font-size: 0.85rem;
+    }
+}

@@ -102,6 +102,31 @@
     transform: scale(1.05);
 }
 
+.st-btn-save {
+    width: 100%;
+    background: var(--accent-color);
+    color: var(--accent-fg);
+    border: none;
+    padding: 15px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: var(--transition-spring);
+}
+
+.st-btn-save :hover {
+    background: var(--text-primary);
+    color: var(--text-inverse);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-accent);
+}
+
 /* Bilgi Banner'ı */
 .ocr-info-banner {
     padding: var(--space-4);
@@ -279,4 +304,119 @@
 .custom-scroll::-webkit-scrollbar-thumb { 
     background: var(--scrollbar-thumb); 
     border-radius: var(--radius-full); 
+}
+
+@media (max-width: 540px) {
+    .ocr-wrapper {
+        gap: var(--space-4);
+        padding-bottom: var(--space-4);
+    }
+
+    .hm-card-style {
+        border-radius: 16px;
+    }
+
+    .ocr-dropzone {
+        padding: 36px var(--space-4);
+    }
+
+    .ocr-dropzone i {
+        font-size: 2.2rem;
+        margin-bottom: var(--space-3);
+    }
+
+    .dropzone-title {
+        font-size: var(--text-sm);
+    }
+
+    .dropzone-subtitle {
+        font-size: var(--text-2xs);
+    }
+
+    .ocr-preview-container {
+        border-radius: 16px;
+    }
+
+    .ocr-remove-btn {
+        top: 10px;
+        right: 10px;
+        padding: 6px 10px;
+        font-size: var(--text-2xs);
+        border-radius: var(--radius-md);
+    }
+
+    .ocr-info-banner {
+        padding: var(--space-3);
+        gap: 10px;
+    }
+
+    .ocr-banner-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 0.95rem;
+        border-radius: 8px;
+    }
+
+    .ocr-info-banner span {
+        font-size: var(--text-xs);
+        line-height: 1.4;
+    }
+
+    .ocr-results-form {
+        padding: var(--space-4);
+    }
+
+    .st-form-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+    }
+
+    .st-input-group.full-width {
+        grid-column: span 1;
+    }
+
+    .st-input-group label {
+        font-size: 10px;
+        letter-spacing: 0.5px;
+    }
+
+    .input-wrapper, .custom-select-wrapper {
+        height: 42px;
+    }
+
+    .st-input-group input,
+    .custom-select-box {
+        padding: 0 12px 0 38px;
+        font-size: 0.8rem;
+        border-radius: var(--radius-md);
+    }
+
+    .input-icon {
+        left: 12px;
+        font-size: 0.95rem;
+    }
+
+    .custom-dropdown-list {
+        border-radius: var(--radius-md);
+        max-height: 160px;
+    }
+
+    .dropdown-item {
+        padding: 10px var(--space-3);
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .ocr-dropzone {
+        padding: 28px var(--space-3);
+    }
+
+    .ocr-dropzone i {
+        font-size: 1.8rem;
+    }
+
+    .dropzone-title {
+        font-size: var(--text-xs);
+    }
 }

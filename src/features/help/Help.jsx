@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './Help.css';
-import HelpSidebar from './components/HelpSidebar';
+import HelpSidebar from './components/Helpsidebar';
 import HelpContent from './components/HelpContent';
 import Loader from '../../components/ui/Loader';
 
