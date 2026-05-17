@@ -165,14 +165,6 @@
     white-space: nowrap;
 }
 
-.timeline-desc {
-    color: var(--text-tertiary);
-    font-size: 0.82rem;
-    margin: 0;
-    line-height: 1.55;
-    font-family: var(--font-sans);
-}
-
 .timeline-tag {
     display: inline-flex;
     align-items: center;

@@ -97,7 +97,6 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                                             <span className="timeline-title">{log.action}</span>
                                             <span className="timeline-date">{log.time}</span>
                                         </div>
-                                        <p className="timeline-desc">{log.details}</p>
                                     </div>
                                 </div>
                             ))}

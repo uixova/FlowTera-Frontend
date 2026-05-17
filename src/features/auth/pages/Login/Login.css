@@ -410,3 +410,82 @@
   cursor: pointer;
   width: fit-content;
 }
+
+@media (max-width: 540px) {
+  .auth-card-wrap {
+    padding: 16px 12px;
+  }
+
+  .auth-logo {
+    margin-bottom: 20px;
+  }
+
+  .auth-card {
+    padding: 32px 20px;
+    border-radius: 22px;
+  }
+
+  .auth-card-header {
+    margin-bottom: 24px;
+  }
+
+  .auth-card-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .auth-card-header p {
+    font-size: 0.8rem;
+  }
+
+  .auth-form {
+    gap: 16px;
+  }
+
+  .auth-input-wrap input {
+    padding: 12px 14px 12px 42px;
+    font-size: 0.85rem;
+    border-radius: 12px;
+  }
+
+  .auth-input-icon {
+    left: 14px;
+    font-size: 14px;
+  }
+
+  .auth-submit-btn {
+    padding: 12px 20px;
+    font-size: 0.85rem;
+    border-radius: 12px;
+  }
+
+  .auth-divider {
+    margin: 18px 0;
+  }
+
+  .auth-switch {
+    margin-top: 16px;
+    font-size: 0.8rem;
+  }
+
+  .login-verify-back {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 12px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .auth-card {
+    padding: 24px 14px;
+  }
+
+  .auth-field label {
+    font-size: 0.75rem;
+  }
+
+  .auth-forgot {
+    font-size: 0.72rem;
+  }
+}

@@ -194,10 +194,64 @@
 
 /* Responsiveness */
 @media (max-width: 1100px) {
-    .analysis-summary-cards { grid-template-columns: 1fr 1fr; }
+    .analysis-summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-4);
+    }
 }
 
 @media (max-width: 768px) {
-    .analysis-summary-cards { grid-template-columns: 1fr; }
-    .an-view-tabs { flex-wrap: wrap; }
+    .sub-nav-divider {
+        margin-bottom: var(--space-5);
+    }
+
+    .an-view-tabs {
+        width: 100%;
+        gap: var(--space-2);
+        margin-bottom: var(--space-5);
+    }
+
+    .an-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 9px var(--space-3);
+        font-size: var(--text-xs);
+    }
+
+    .analysis-summary-cards {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+    }
+
+    .an-card {
+        padding: var(--space-5);
+    }
+
+    .an-card-icon-row {
+        margin-bottom: var(--space-4);
+    }
+
+    .an-card-value {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .an-view-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .an-tab:first-child {
+        grid-column: span 2;
+    }
+
+    .an-card {
+        padding: var(--space-4);
+    }
+
+    .an-card-value {
+        font-size: 1.5rem;
+        letter-spacing: -1px;
+    }
 }

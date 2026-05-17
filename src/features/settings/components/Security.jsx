@@ -11,7 +11,7 @@ const Security = () => {
     const [twoFA,   setTwoFA]   = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate              = useNavigate();
-    const { logout, currentUser } = useAuth(); // Kontrol için currentUser eklendi
+    const { logout, currentUser } = useAuth(); 
 
     // Modal Hook Entegrasyonu
     const {
@@ -24,7 +24,7 @@ const Security = () => {
         try {
             setLoading(true);
 
-            // 1. Kullanıcının "Admin" rolüne sahip olduğu takımları filtrele
+            // Kullanıcının "Admin" rolüne sahip olduğu takımları filtrele
             const adminTeams = currentUser?.role
                 ?.filter(r => r.roleName === 'Admin')
                 .map(r => r.teamId) || [];
@@ -34,7 +34,7 @@ const Security = () => {
 
             const problematicTeams = [];
 
-            // 2. Admin olduğu her takım için diğer üyelerin rollerini kontrol et
+            // Admin olduğu her takım için diğer üyelerin rollerini kontrol et
             for (const teamId of adminTeams) {
                 const members = await teamsService.getTeamMembers(teamId);
 
@@ -77,7 +77,6 @@ const Security = () => {
                 'Hesabınız dondurulmuştur. 14 gün boyunca giriş yapmazsanız kalıcı olarak silinecektir. Şimdi oturumunuz kapatılıyor...',
                 'warning',
                 () => {
-                    // ALERT KAPATILDIĞINDA ÇALIŞACAK KISIM
                     if (logout) logout(); // LocalStorage temizliği
                     navigate('/'); // Ana sayfaya yönlendir
                 }

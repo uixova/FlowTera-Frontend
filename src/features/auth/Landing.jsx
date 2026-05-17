@@ -91,7 +91,7 @@ const Landing = () => {
           <div className="nav-divider"></div>
           <Link to="/login" className="nav-login-btn">Giriş Yap</Link>
           <Link to="/signup" className="nav-register-btn">
-            Ücretsiz Başla <i className="ti ti-arrow-narrow-right"></i>
+            Ücretsiz Başla 
           </Link>
         </div>
       </nav>

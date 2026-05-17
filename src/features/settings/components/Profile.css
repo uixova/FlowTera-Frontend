@@ -154,3 +154,59 @@
     padding-top: var(--space-5);
     border-top: 1px solid var(--border-divider);
 }
+
+@media (max-width: 768px) {
+    .st-content-section {
+        padding: 0 var(--space-4);
+    }
+    .st-user-top {
+        gap: var(--space-5);
+        margin-bottom: var(--space-6);
+        padding-bottom: var(--space-5);
+    }
+    .st-avatar-box {
+        width: 76px;
+        height: 76px;
+    }
+    .st-avatar-badge {
+        width: 26px;
+        height: 26px;
+        font-size: var(--text-xs);
+    }
+    .name-row h4 {
+        font-size: var(--text-lg);
+    }
+    .st-form-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+    .full-width {
+        grid-column: span 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .st-user-top {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: var(--space-4);
+    }
+    .st-user-meta {
+        align-items: center;
+    }
+    .name-row {
+        justify-content: center;
+    }
+    .plan-pill {
+        padding: 3px var(--space-2);
+    }
+    .st-form-footer {
+        margin-top: var(--space-5);
+        padding-top: var(--space-4);
+    }
+    .st-btn-save {
+        width: 100%;
+        justify-content: center;
+    }
+}

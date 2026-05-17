@@ -126,3 +126,31 @@
 .select-subs-actions {
   padding-top: 2px;
 }
+
+@media (max-width: 900px) {
+  .select-subs-frame {
+    max-height: none;
+    overflow: visible;
+    padding: 16px;
+  }
+
+  .select-subs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    overflow: visible;
+  }
+}
+
+@media (max-width: 640px) {
+  .select-subs-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .select-subs-card {
+    padding: 16px;
+  }
+
+  .select-subs-desc {
+    min-height: auto;
+  }
+}

@@ -264,3 +264,64 @@
 }
 
 .add-member-card:hover span { color: var(--accent-color); }
+
+@media (max-width: 1024px) {
+    .team-grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: var(--space-4);
+    }
+}
+
+@media (max-width: 768px) {
+    .team-grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: var(--space-3);
+    }
+    .team-card, .add-member-card {
+        min-height: 300px;
+        padding: var(--space-4);
+    }
+}
+
+@media (max-width: 480px) {
+    .team-grid-container {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+        margin-top: var(--space-4);
+    }
+    .team-card, .add-member-card {
+        min-height: auto;
+        padding: var(--space-5);
+    }
+    .tm-card-header {
+        margin-bottom: var(--space-3);
+    }
+    .tm-user-body {
+        padding-bottom: var(--space-4);
+    }
+    .tm-user-body img, .tm-user-avatar-deleted {
+        width: 60px;
+        height: 60px;
+        margin-bottom: var(--space-2);
+    }
+    .tm-user-avatar-deleted {
+        font-size: 1.4rem;
+    }
+    .tm-user-body h3 {
+        font-size: var(--text-sm);
+    }
+    .tm-user-body p {
+        font-size: var(--text-xs);
+    }
+    .tm-user-footer {
+        padding-top: var(--space-3);
+    }
+    .tm-stat {
+        margin-bottom: var(--space-2);
+        font-size: var(--text-xs);
+    }
+    .view-full-logs-btn {
+        padding: 8px;
+        font-size: var(--text-xs);
+    }
+}

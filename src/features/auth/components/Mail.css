@@ -86,16 +86,63 @@
 }
 
 @media (max-width: 640px) {
+  .mail-verify-panel {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .mail-verify-head h3 {
+    font-size: 0.95rem;
+  }
+
+  .mail-verify-head p {
+    font-size: 0.78rem;
+  }
+
   .mail-code-row {
     flex-direction: column;
+    gap: 10px;
+  }
+
+  .mail-code-row input {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.85rem;
+    letter-spacing: 0.25rem;
   }
 
   .mail-code-row button {
     height: 44px;
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 0;
   }
 
   .mail-verify-footer {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .mail-verify-footer span {
+    font-size: 0.75rem;
+    word-break: break-all;
+  }
+
+  .mail-verify-footer button {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .mail-verify-panel {
+    padding: 12px;
+  }
+
+  .mail-code-row input {
+    letter-spacing: 0.15rem;
   }
 }

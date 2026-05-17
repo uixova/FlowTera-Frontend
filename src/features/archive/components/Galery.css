@@ -99,3 +99,59 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
+
+@media (max-width: 1024px) {
+    .invoice-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: var(--space-5);
+    }
+}
+
+@media (max-width: 768px) {
+    .invoice-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: var(--space-4);
+    }
+    .mini-info {
+        padding: var(--space-3) var(--space-1) 0 var(--space-1);
+    }
+    .mini-header strong {
+        font-size: var(--text-sm);
+    }
+    .mini-amount {
+        font-size: var(--text-base);
+    }
+}
+
+@media (max-width: 480px) {
+    .invoice-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+    }
+    .invoice-card-mini {
+        display: flex;
+        gap: var(--space-3);
+        align-items: center;
+        padding: var(--space-2);
+    }
+    .invoice-card-mini > :first-child {
+        width: 80px;
+        flex-shrink: 0;
+    }
+    .mini-receipt-preview {
+        height: 80px;
+    }
+    .mini-info {
+        flex: 1;
+        padding: 0;
+    }
+    .mini-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+        margin-bottom: var(--space-1);
+    }
+    .mini-header strong {
+        max-width: 100%;
+    }
+}

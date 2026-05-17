@@ -153,3 +153,127 @@
     color: var(--text-primary);
     border-color: var(--border-subtle);
 }
+
+.st-pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-5);
+    padding: var(--space-4) var(--space-5) 0 var(--space-5);
+    border-top: 1px solid var(--border-divider);
+}
+
+.st-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--text-primary);
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), 
+                border-color var(--transition-fast), 
+                color var(--transition-fast),
+                transform var(--transition-fast);
+    box-shadow: var(--shadow-xs);
+}
+
+.st-btn-outline i {
+    font-size: var(--text-lg);
+    display: flex;
+    align-items: center;
+}
+
+.st-btn-outline:not(:disabled):hover {
+    color: var(--accent-bright);
+    background-color: var(--bg-hover);
+    border-color: var(--border-color-hover);
+    box-shadow: var(--shadow-sm);
+}
+
+.st-btn-outline:not(:disabled):active {
+    transform: scale(0.97);
+    background-color: var(--bg-active);
+}
+
+.st-btn-outline:disabled {
+    color: var(--text-disabled);
+    background-color: var(--bg-disabled);
+    border-color: var(--border-faint);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.st-page-info {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+}
+
+.st-page-info strong {
+    color: var(--text-base);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .st-log-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-3);
+        padding: var(--space-4);
+    }
+
+    .st-log-card::before {
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        height: auto;
+        border-radius: 0;
+    }
+
+    .st-log-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .log-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .log-info {
+        width: 100%;
+    }
+
+    .log-action {
+        white-space: normal;
+        word-break: break-word;
+        font-size: calc(var(--text-sm) + 1px);
+    }
+
+    .log-meta-row {
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 2px;
+    }
+
+    .log-status-badge {
+        align-self: flex-start;
+        margin-top: 4px;
+        padding: 4px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .st-log-card {
+        padding: var(--space-3);
+    }
+    
+    .st-header-box h2 {
+        font-size: 1.25rem;
+    }
+}

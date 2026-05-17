@@ -128,6 +128,6 @@ input[type=number] {
 
 @media (max-width: 480px) {
     .app-container {
-        padding: 8px;
+        padding: 12px;
     }
 }

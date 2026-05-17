@@ -172,3 +172,49 @@
     from { opacity: 0; }
     to   { opacity: 1; }
 }
+
+@media (max-width: 1024px) {
+    .tm-sel-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: var(--space-4);
+    }
+}
+
+@media (max-width: 768px) {
+    .tm-sel-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+    .tm-sel-card {
+        padding: var(--space-4);
+    }
+}
+
+@media (max-width: 480px) {
+    .tm-sel-grid {
+        margin-top: var(--space-4);
+    }
+    .tm-sel-card {
+        padding: var(--space-4);
+        gap: var(--space-3);
+    }
+    .tm-maintenance-badge {
+        top: var(--space-3);
+        right: var(--space-3);
+        padding: 2px 8px;
+        font-size: var(--text-3xs);
+    }
+    .tm-sel-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    .tm-sel-info h4 {
+        font-size: var(--text-sm);
+    }
+    .tm-sel-meta {
+        font-size: var(--text-3xs);
+    }
+    .tm-sel-stats {
+        font-size: var(--text-xs);
+    }
+}

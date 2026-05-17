@@ -157,29 +157,29 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
   return (
     <div className="tm-member-list-page">
       <SubNavbar 
-    title={teamName}
-    searchPlaceholder="Üye ara..."
-    createLabel="Hızlı Ekleme"
-    showSearch={true}
-    showCreate={canAddMember} 
-    onCreate={() => setIsAddModalOpen(true)}
-    onSearch={(val) => console.log("Member search:", val)}
-    buttons={[
-        { 
+        title={teamName}
+        searchPlaceholder="Üye ara..."
+        createLabel="Hızlı Ekleme"
+        showSearch={true}
+        showCreate={canAddMember} 
+        onCreate={() => setIsAddModalOpen(true)}
+        onSearch={(val) => console.log("Member search:", val)}
+        buttons={[
+          { 
             icon: 'ti ti-list', 
             tooltip: 'Takım Listesi', 
             onClick: onBack 
-        },
-        ...(canManageSettings ? [{ icon: 'ti ti-settings', tooltip: 'Ayarlar', onClick: () => onNavigate('settings') }] : []),
-        { 
+          },
+            ...(canManageSettings ? [{ icon: 'ti ti-settings', tooltip: 'Ayarlar', onClick: () => onNavigate('settings') }] : []),
+          { 
             icon: 'ti ti-file-plus', 
             label: 'Talep Oluştur', 
             isSpecial: true,
             tooltip: 'Yeni Talep', 
             onClick: () => setIsRequestModalOpen(true) 
-        }
-    ]}
-/>
+          }
+        ]}
+      />
 
       <hr className='sub-nav-divider' />
 

@@ -338,8 +338,63 @@
 }
 
 /* Responsive Düzen */
+@media (max-width: 1024px) {
+    .plan-management-container {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4);
+    }
+    .current-plan-card {
+        padding: var(--space-5);
+    }
+}
+
 @media (max-width: 992px) {
-    .plan-management-container { 
-        grid-template-columns: 1fr; 
+    .plan-management-container {
+        grid-template-columns: 1fr;
+        gap: var(--space-5);
+    }
+}
+
+@media (max-width: 768px) {
+    .st-content-section {
+        padding: 0 var(--space-4);
+    }
+    .plan-management-container {
+        margin-top: var(--space-4);
+    }
+    .plan-brand-text h3 {
+        font-size: var(--text-xl);
+    }
+    .plan-price-amount {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .current-plan-card {
+        padding: var(--space-4);
+        gap: var(--space-4);
+    }
+    .plan-brand {
+        gap: var(--space-2);
+    }
+    .plan-icon-wrap {
+        width: 44px;
+        height: 44px;
+        font-size: var(--text-xl);
+    }
+    .plan-price-row {
+        padding: var(--space-3) 0;
+    }
+    .plan-price-amount {
+        font-size: 1.6rem;
+    }
+    .upgrade-btn {
+        padding: 11px var(--space-3);
+        font-size: var(--text-sm);
+    }
+    .feature-item {
+        padding: 6px var(--space-2);
+        font-size: var(--text-xs);
     }
 }

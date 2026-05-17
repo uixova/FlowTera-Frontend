@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './HelpContent.css';
+import './Helpcontent.css';
 
 const TYPE_LABELS = {
     steps:   'Adımlar',

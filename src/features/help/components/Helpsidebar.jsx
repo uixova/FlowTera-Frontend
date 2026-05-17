@@ -1,5 +1,5 @@
 import React from 'react';
-import './HelpSidebar.css';
+import './Helpsidebar.css';
 
 const CONTACT_LINKS = [
     { key: 'github',  href: 'https://github.com/uixova', icon: 'ti-brand-github',  label: 'GitHub'       },

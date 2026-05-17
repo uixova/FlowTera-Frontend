@@ -38,11 +38,37 @@
 }
 
 @media (max-width: 680px) {
+  .pass-wrap {
+    max-width: 100%;
+  }
+
   .pass-card {
-    padding: 26px 18px;
+    padding: 24px 16px;
+    border-radius: 20px;
+  }
+
+  .pass-form {
+    padding: 14px 12px;
   }
 
   .pass-channel {
     grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .pass-channel button {
+    padding: 12px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pass-card {
+    padding: 20px 12px;
+  }
+
+  .auth-submit-btn {
+    width: 100%;
+    padding: 14px;
   }
 }

@@ -255,7 +255,7 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
                         <span>Zaman & Bütçe</span>
                     </div>
 
-                    <div className="tr-input-row">
+                    <div className="tr-input-row tr-date-row">
                         <div className="tr-input-group">
                             <label>Başlangıç Tarihi</label>
                             <input
@@ -267,7 +267,7 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
                                 required
                             />
                         </div>
-                        <div className="tr-input-group">
+                        <div className="tr-input-group tr-date-row">
                             <label>Bitiş Tarihi</label>
                             <input
                                 className="tr-field-input"

@@ -70,3 +70,26 @@
         transform: translateY(0); 
     }
 }
+
+@media (max-width: 1024px) {
+    .full-screen-loader {
+        height: 50vh;
+    }
+}
+
+@media (max-width: 768px) {
+    .tm-feature-wrapper {
+        padding: 0 var(--space-4);
+    }
+}
+
+@media (max-width: 480px) {
+    .lock-badge {
+        padding: 1px 6px;
+        font-size: var(--text-3xs);
+        margin-left: var(--space-1);
+    }
+    .upgrade-notice {
+        font-size: var(--text-3xs);
+    }
+}

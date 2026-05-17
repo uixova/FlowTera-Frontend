@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './Help.css';
 import HelpSidebar from './components/Helpsidebar';
-import HelpContent from './components/HelpContent';
+import HelpContent from './components/Helpcontent';
 import Loader from '../../components/ui/Loader';
 
 const Help = () => {

@@ -66,7 +66,52 @@
 }
 
 @media (max-width: 1100px) {
-    .analysis-charts-container, .monthly-grid {
+    .analysis-charts-container, 
+    .monthly-grid {
         grid-template-columns: 1fr;
+        gap: var(--space-4);
+    }
+}
+
+@media (max-width: 768px) {
+    .chart-box, 
+    .report-card {
+        padding: var(--space-4);
+        border-radius: var(--radius-xl);
+    }
+
+    .chart-box-header, 
+    .report-header {
+        margin-bottom: var(--space-4);
+    }
+
+    .chart-box-header h3, 
+    .report-header h3 {
+        font-size: var(--text-sm);
+    }
+
+    .chart-period-tag, 
+    .report-period {
+        font-size: var(--text-3xs);
+        padding: 2px 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-box, 
+    .report-card {
+        padding: var(--space-3);
+    }
+
+    .chart-box-header, 
+    .report-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+    }
+
+    .chart-period-tag, 
+    .report-period {
+        align-self: flex-start;
     }
 }
