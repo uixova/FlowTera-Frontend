@@ -1,10 +1,5 @@
 import { api } from '../../../api/api';
 
-const randomDelay = (min = 200, max = 800) => {
-    const ms = Math.floor(Math.random() * (max - min + 1) + min);
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
-
 // Paginated veya düz array'den veriyi güvenle çıkar
 const extractList = (response) => {
     if (!response) return [];
@@ -49,7 +44,6 @@ export const tripsService = {
 
     // Takım ID'sine göre seyahatleri getir 
     getTripsByTeam: async (teamId, page = 1, limit = 20) => {
-        await randomDelay(400, 1000);
         if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
 
         // Backend hazır olduğunda teamId filtresi
@@ -79,8 +73,6 @@ export const tripsService = {
 
     // Seyahat ID'sine göre tek seyahati getir
     getTripById: async (tripId) => {
-        await randomDelay(200, 500);
-
         const response = await api.trips.getAll({ pageSize: 2000 });
         const allTrips = extractList(response);
 
@@ -93,7 +85,6 @@ export const tripsService = {
 
     // Yeni seyahat oluşturma (simülasyon)
     createTrip: async (tripData) => {
-        await randomDelay(600, 1200);
         // Gelecekte: return await api.fetch('TRIPS', {}, { method: 'POST', body: tripData });
         console.log("[API CREATE] New Trip Payload:", tripData);
         return { success: true, data: tripData };
@@ -101,7 +92,6 @@ export const tripsService = {
 
     // Seyahat güncelleme (simülasyon)
     updateTrip: async (id, tripData) => {
-        await randomDelay(400, 800);
         // Gelecekte: return await api.fetch('TRIPS', {}, { method: 'PUT', body: tripData });
         console.log(`[API UPDATE] Trip ID: ${id}`, tripData);
         return { success: true };

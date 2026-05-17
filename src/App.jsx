@@ -20,11 +20,11 @@ import PassPage from './features/auth/pages/Password/PassPage';
 import NotFound from './features/error/NotFound';
 import Navbar from './components/navigation/navbar/Navbar';
 import Dashboard from './features/dashboard/Dashboard';
-import Expenses from './features/expenses/Expenses';
-import Trips from './features/trips/Trips';
 import TeamSelection from './features/teams/Teams';
 
 // Lazy Load Sayfaları
+const Expenses = lazy(() => import('./features/expenses/Expenses'));
+const Trips = lazy(() => import('./features/trips/Trips'));
 const Analysis = lazy(() => import('./features/analysis/Analysis'));
 const History = lazy(() => import('./features/history/History'));
 const Requests = lazy(() => import('./features/requests/Requests'));

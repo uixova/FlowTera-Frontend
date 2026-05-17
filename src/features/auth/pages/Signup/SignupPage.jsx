@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import Mail from '../../components/Mail';
 import SelectSubscription from '../../section/SelectSubscription';
-import PhoneNumber from '../../components/PhoneNumber'; 
+import PhoneNumber from '../../../../components/overlays/phone/PhoneNumber'; 
 import './Signup.css';
 
 const initialForm = {
@@ -241,6 +241,7 @@ function SignupPage() {
                   value={formData.phone} 
                   onChange={handlePhoneChange} 
                   error={formErrors.phone} 
+                  authMode={true}
                 />
               </div>
 

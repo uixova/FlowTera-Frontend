@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import PhoneNumber from '../../../components/overlays/phone/PhoneNumber';
 import './Profile.css';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -7,6 +8,7 @@ const Profile = ({ user }) => {
     const fileInputRef                      = useRef(null);
     const [avatarPreview, setAvatarPreview] = useState(user?.avatar || '');
     const [avatarError,   setAvatarError]   = useState('');
+    const [phone,         setPhone]         = useState(user?.phone || '');
 
     const handleAvatarPick = (e) => {
         const file = e.target.files?.[0];
@@ -83,7 +85,11 @@ const Profile = ({ user }) => {
                     </div>
                     <div className="st-input-group">
                         <label>Telefon Numarası</label>
-                        <input type="text" defaultValue={user.phone} placeholder="+90 5XX XXX XX XX" />
+                        <PhoneNumber 
+                            value={phone} 
+                            onChange={setPhone} 
+                            placeholder="5xx xxx xx xx"
+                        />
                     </div>
                 </div>
 

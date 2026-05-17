@@ -3,14 +3,15 @@ import './Help.css';
 import HelpSidebar from './components/Helpsidebar';
 import HelpContent from './components/Helpcontent';
 import Loader from '../../components/ui/Loader';
+import ActionSidebar from '../../components/navigation/ActionSidebar';
 
 const Help = () => {
     const [data,          setData]          = useState(null);
     const [loading,       setLoading]       = useState(true);
     const [activeId,      setActiveId]      = useState(null);
     const [search,        setSearch]        = useState('');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    // help_data.json'u public/data'dan çek
     useEffect(() => {
         fetch('/data/help.data.json')
             .then(r => r.json())
@@ -22,12 +23,12 @@ const Help = () => {
             .finally(() => setLoading(false));
     }, []);
 
-    // sayfa açılışında app-container i kaldır
+    // Sayfa açılışında app-container padding'ini kaldır
     useEffect(() => {
-            const appContainer = document.querySelector('.app-container');
-            if (appContainer) appContainer.classList.add('st-page-active');
-            return () => appContainer?.classList.remove('st-page-active');
-        }, []);
+        const appContainer = document.querySelector('.app-container');
+        if (appContainer) appContainer.classList.add('st-page-active');
+        return () => appContainer?.classList.remove('st-page-active');
+    }, []);
 
     // Kategori başına öge sayısı
     const counts = useMemo(() => {
@@ -50,7 +51,6 @@ const Help = () => {
                 (typeof item.content === 'string' && item.content.toLowerCase().includes(trimmed))
             );
         }
-
         return data.items.filter(item => item.category === activeId);
     }, [data, activeId, search]);
 
@@ -63,9 +63,11 @@ const Help = () => {
         return data.categories.find(c => c.id === activeId) ?? null;
     }, [data, activeId, search]);
 
+    // Kategori seçimi — drawer'ı da kapat
     const handleCatSelect = (id) => {
         setActiveId(id);
         setSearch('');
+        setIsSidebarOpen(false);
     };
 
     if (loading) return <Loader type="butterfly" />;
@@ -73,20 +75,56 @@ const Help = () => {
 
     return (
         <div className="help-page">
-            <HelpSidebar
-                categories={data.categories}
-                contact={data.contact}
-                activeId={search ? null : activeId}
-                onSelect={handleCatSelect}
-                counts={counts}
-                search={search}
-                onSearch={setSearch}
-            />
-            <HelpContent
-                category={activeCategory}
-                items={visibleItems}
-                search={search}
-            />
+            {/* Desktop sidebar — 680px üstünde görünür */}
+            <div className="help-desktop-sidebar-wrapper">
+                <HelpSidebar
+                    categories={data.categories}
+                    contact={data.contact}
+                    activeId={search ? null : activeId}
+                    onSelect={handleCatSelect}
+                    counts={counts}
+                    search={search}
+                    onSearch={setSearch}
+                />
+            </div>
+
+            <div className="help-content-wrapper">
+                {/* Mobil kategori tetikleyici — sadece dar ekranda görünür */}
+                <button
+                    className="help-mobile-trigger-btn"
+                    onClick={() => setIsSidebarOpen(true)}
+                >
+                    <i className="ti ti-layout-sidebar" />
+                    Yardım Merkezi
+                    <i className="ti ti-chevron-down" style={{ marginLeft: 'auto', fontSize: '0.85rem', opacity: 0.6 }} />
+                </button>
+
+                <HelpContent
+                    category={activeCategory}
+                    items={visibleItems}
+                    search={search}
+                />
+            </div>
+
+            {/* Mobil kategori drawer */}
+            <ActionSidebar
+                isOpen={isSidebarOpen}
+                onClose={() => setIsSidebarOpen(false)}
+                title="Yardım Merkezi"
+                width="300px"
+            >
+                <div className="help-mobile-sidebar-container">
+                    <HelpSidebar
+                        categories={data.categories}
+                        contact={data.contact}
+                        activeId={search ? null : activeId}
+                        onSelect={handleCatSelect}
+                        counts={counts}
+                        search={search}
+                        onSearch={setSearch}
+                    />
+                </div>
+            </ActionSidebar>
         </div>
     );
 };

@@ -12,6 +12,7 @@ import TripList from './components/TripList';
 import Alert from '../../components/overlays/Alert';
 
 import { tripsService } from './services/tripsService';
+import { archiveService } from '../archive/services/archiveServices';
 import { usePagination } from '../../hooks/usePagination';
 import { useFilter } from '../../hooks/useFilter';
 import { useCurrency } from '../../context/CurrencyContext';
@@ -91,6 +92,21 @@ const Trips = () => {
         setTimeout(() => refreshData(), 0);
     };
 
+    const handleDeleteTrip = async () => {
+        try {
+            await tripsService.deleteTrip(selectedTrip.id);
+            archiveService.invalidate();
+            setIsCreateOpen(false);
+            setIsEditMode(false);
+            setSelectedTrip(null);
+            showAlert('Silindi', 'Seyahat kaydı başarıyla silindi.', 'success');
+            setTimeout(() => refreshData(), 0);
+        } catch (err) {
+            console.error('Silme başarısız:', err);
+            showAlert('Hata', 'Seyahat silinirken bir hata oluştu.', 'error');
+        }
+    };
+
     if (loading) return <Loader type="butterfly" />;
 
     const filterFooter = (
@@ -152,12 +168,11 @@ const Trips = () => {
                                 data={filteredTrips}
                                 onOpenDetail={(trip) => { setSelectedTrip(trip); setIsDetailOpen(true); }}
                                 onEdit={(e, trip) => {
-                                    e.stopPropagation();
+                                    e?.stopPropagation();
                                     setSelectedTrip(trip);
                                     setIsEditMode(true);
                                     setIsCreateOpen(true);
                                 }}
-                                onDelete={handleDelete}
                             />
                             <PaginationFooter
                                 hasMore={hasMore}
@@ -192,6 +207,7 @@ const Trips = () => {
                 onClose={() => { setIsCreateOpen(false); setIsEditMode(false); setSelectedTrip(null); }}
                 editData={isEditMode ? selectedTrip : null}
                 onSuccess={handleSuccess}
+                onDelete={handleDeleteTrip}
             />
 
             <TripDetail
@@ -199,6 +215,7 @@ const Trips = () => {
                 onClose={() => setIsDetailOpen(false)}
                 data={selectedTrip}
                 onSuccess={handleSuccess}
+                onDelete={handleDelete}
             />
 
             <CurrencyModal

@@ -245,9 +245,13 @@ textarea:focus {
 /* Footer & Buttons */
 .tr-panel-footer-alt {
     display: grid;
-    grid-template-columns: 1fr 1.4fr;
+    grid-template-columns: 1fr 1fr 1.4fr;
     gap: var(--space-3);
-    width: 100%;
+    width: 100% !important;
+}
+
+.tr-panel-footer-alt:has(.tr-panel-btn.delete) {
+    grid-template-columns: 0.8fr 1fr 1.4fr;
 }
 
 .tr-panel-btn {
@@ -292,6 +296,19 @@ textarea:focus {
 
 .tr-panel-btn.save:active { transform: translateY(0); }
 
+.tr-panel-btn.delete {
+    background: var(--status-danger-bg);
+    color: var(--status-danger-text);
+    border: 1px solid var(--status-danger-border);
+}
+
+.tr-panel-btn.delete:hover {
+    background: var(--status-danger);
+    color: white;
+    border-color: var(--status-danger);
+    transform: translateY(-2px);
+}
+
 .tr-panel-btn:disabled {
     opacity: 0.4;
     pointer-events: none;
@@ -311,5 +328,13 @@ textarea:focus {
     .tr-date-row {
         flex-direction: column;
         gap: var(--space-4);
+    }
+    
+    .tr-panel-footer-alt {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .tr-panel-footer-alt:has(.tr-panel-btn.delete) {
+        grid-template-columns: 1fr !important;
     }
 }

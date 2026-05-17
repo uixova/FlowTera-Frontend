@@ -294,9 +294,13 @@
 /* Footer & Butonlar */
 .ex-panel-footer-alt {
     display: grid;
-    grid-template-columns: 1fr 1.4fr;
+    grid-template-columns: 1fr 1fr 1.4fr;
     gap: var(--space-3);
     width: 100%;
+}
+
+.ex-panel-footer-alt:has(.ex-panel-btn.delete) {
+    grid-template-columns: 0.8fr 1fr 1.4fr;
 }
 
 .ex-panel-btn {
@@ -337,6 +341,19 @@
     filter: brightness(1.1);
 }
 
+.ex-panel-btn.delete {
+    background: var(--status-danger-bg);
+    color: var(--status-danger-text);
+    border: 1px solid var(--status-danger-border);
+}
+
+.ex-panel-btn.delete:hover {
+    background: var(--status-danger);
+    color: white;
+    border-color: var(--status-danger);
+    transform: translateY(-2px);
+}
+
 /* Spinner Animasyonu */
 @keyframes ex-spin {
     to { transform: rotate(360deg); }
@@ -347,9 +364,22 @@
     animation: ex-spin 0.8s linear infinite;
 }
 
+.ex-panel-footer-alt {
+    width: 100% !important;
+    display: grid !important;
+}
+
 @media (max-width: 480px) {
     .ex-input-row {
         flex-direction: column;
         gap: var(--space-4);
+    }
+    
+    .ex-panel-footer-alt {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .ex-panel-footer-alt:has(.ex-panel-btn.delete) {
+        grid-template-columns: 1fr !important;
     }
 }

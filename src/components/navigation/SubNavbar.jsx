@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import './SubNavbar.css';
 import { useTeam } from '../../context/TeamContext';
 
-const SubNavbar = ({
+const SubNavbar = memo(({
     title,
     pageName,
     onCreate,
@@ -18,6 +18,24 @@ const SubNavbar = ({
     const { activeTeam } = useTeam();
     // Mobilde sağ aksiyonları aç/kapat
     const [isActionsOpen, setIsActionsOpen] = useState(false);
+
+    const handleToggleActions = useCallback(() => {
+        setIsActionsOpen(v => !v);
+    }, []);
+
+    const handleCreate = useCallback(() => {
+        if (onCreate) {
+            onCreate();
+        }
+        setIsActionsOpen(false);
+    }, [onCreate]);
+
+    const handleSearchChange = useCallback((e) => {
+
+        if (onSearch) {
+            onSearch(e.target.value);
+        }
+    }, [onSearch]);
 
     const formatTeamName = useCallback((teamName) => {
         if (!teamName) return '';
@@ -58,7 +76,7 @@ const SubNavbar = ({
                             type="text"
                             placeholder={searchPlaceholder || 'Ara…'}
                             value={searchValue}
-                            onChange={(e) => onSearch && onSearch(e.target.value)}
+                            onChange={handleSearchChange}
                         />
                     </div>
                 )}
@@ -76,7 +94,7 @@ const SubNavbar = ({
                 ))}
 
                 {showCreate && createLabel && (
-                    <button className="sub-create-btn" onClick={onCreate}>
+                    <button className="sub-create-btn" onClick={handleCreate}>
                         <i className="ti ti-plus"></i>
                         {createLabel}
                     </button>
@@ -86,7 +104,7 @@ const SubNavbar = ({
             {/* Mobil: sağ aksiyonlar toggle butonu */}
             <button
                 className={`sub-nav-toggle${isActionsOpen ? ' is-open' : ''}`}
-                onClick={() => setIsActionsOpen(v => !v)}
+                onClick={handleToggleActions}
                 aria-label="Araçları göster"
             >
                 <i className={`ti ${isActionsOpen ? 'ti-x' : 'ti-dots-vertical'}`}></i>
@@ -125,7 +143,7 @@ const SubNavbar = ({
                             </button>
                         ))}
                         {showCreate && createLabel && (
-                            <button className="sub-create-btn" onClick={() => { onCreate && onCreate(); setIsActionsOpen(false); }}>
+                            <button className="sub-create-btn" onClick={handleCreate}>
                                 <i className="ti ti-plus"></i>
                                 {createLabel}
                             </button>
@@ -135,6 +153,8 @@ const SubNavbar = ({
             )}
         </div>
     );
-};
+});
+
+SubNavbar.displayName = 'SubNavbar';
 
 export default SubNavbar;

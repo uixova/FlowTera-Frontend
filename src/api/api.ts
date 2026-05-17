@@ -7,7 +7,7 @@ import type {
     LogData,
     Plan,
     PaginatedResponse,
-} from '../types/api.types';
+} from './api.types';
 
 // İçsel Tipler #######################################################################################
 
@@ -42,6 +42,8 @@ const IS_MOCK    = import.meta.env.VITE_USE_MOCK !== 'false'; // .env den kontro
 const REQUEST_TIMEOUT_MS = 12_000;
 const DEFAULT_PAGE_SIZE  = 20;
 const DEFAULT_TTL_MS     = 5 * 60 * 1000; // 5 dakika
+const MAX_RETRIES        = 3;
+const RETRY_BASE_DELAY   = 1000; // 1 saniye
 
 // Endpoint Tanımları
 // Mock - REST dönüşümü tek yerden yönetilir; backend gelince sadece IS_MOCK değişir.
@@ -135,6 +137,15 @@ const fetchWithTimeout = (url: string, options: RequestInit = {}, timeoutMs = RE
         .finally(() => clearTimeout(timer));
 };
 
+const shouldRetry = (error: Error & { status?: number }, attempt: number): boolean => {
+    if (attempt >= MAX_RETRIES) return false;
+    if (error.name === 'AbortError') return false;
+    if (error.status && error.status >= 400 && error.status < 500) return false;
+    return true;
+};
+
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 // Sayfalama Yardımcısı (Mock + REST)
 // Mock modda backend sayfalamayı taklit eder.
 // REST modda backend zaten { data, total, page, pageSize } döner.
@@ -187,8 +198,10 @@ const request = async <T = unknown>(
         ...(body ? { body: JSON.stringify(body) } : {}),
     };
 
-    const promise = fetchWithTimeout(url, fetchOptions)
-        .then(async (response) => {
+    const executeRequest = async (attempt: number = 0): Promise<T> => {
+        try {
+            const response = await fetchWithTimeout(url, fetchOptions);
+            
             if (!response.ok) {
                 const err = Object.assign(new Error(`HTTP ${response.status}`), {
                     status: response.status,
@@ -210,18 +223,28 @@ const request = async <T = unknown>(
             }
 
             return result;
-        })
-        .catch((error: Error & { status?: number }) => {
-            if (error.name === 'AbortError') {
+        } catch (error: unknown) {
+            const err = error as Error & { status?: number };
+            
+            if (shouldRetry(err, attempt)) {
+                const delay = RETRY_BASE_DELAY * Math.pow(2, attempt);
+                console.warn(`[API] Retrying [${resourceKey}] attempt ${attempt + 1}/${MAX_RETRIES} in ${delay}ms`);
+                await wait(delay);
+                return executeRequest(attempt + 1);
+            }
+
+            if (err.name === 'AbortError') {
                 console.error(`[API] Timeout [${resourceKey}]`);
             } else {
-                console.error(`[API] Error [${resourceKey}] ${error.status ?? ''} — ${error.message}`);
+                console.error(`[API] Error [${resourceKey}] ${err.status ?? ''} — ${err.message}`);
             }
-            throw error; // servise fırlat, UI handle etsin
-        })
-        .finally(() => {
-            inflight.delete(inflightKey);
-        });
+            throw err;
+        }
+    };
+
+    const promise = executeRequest().finally(() => {
+        inflight.delete(inflightKey);
+    });
 
     if (method === 'GET') inflight.set(inflightKey, promise);
     return promise;

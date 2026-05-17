@@ -30,7 +30,7 @@ const CURRENCIES = [
 
 const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', TRY: '₺', GBP: '£' };
 
-const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
+const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
     const isEdit     = !!editData;
     const displayDate = editData
         ? editData.date
@@ -147,6 +147,17 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess }) => {
 
     const sidebarFooter = (
         <div className="ex-panel-footer-alt">
+            {isEdit && onDelete && (
+                <button
+                    type="button"
+                    className="ex-panel-btn delete"
+                    onClick={onDelete}
+                    disabled={isSubmitting}
+                >
+                    <i className="ti ti-trash" />
+                    Sil
+                </button>
+            )}
             <button
                 type="button"
                 className="ex-panel-btn cancel"

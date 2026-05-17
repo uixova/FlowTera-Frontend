@@ -211,7 +211,8 @@
 
 @media (max-width: 680px) {
     .help-sidebar  { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border-subtle); }
-    .help-cat-list { flex-direction: row; flex-wrap: wrap; padding: 8px 10px; }
+    .help-sidebar-head { display: none; }
+    .help-search-wrap { margin-top: 12px; }
+    .help-cat-list { flex-wrap: wrap; padding: 8px 10px; }
     .help-cat-btn  { width: auto; }
-    .help-cat-label { display: none; }
 }

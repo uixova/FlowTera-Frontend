@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, memo, useMemo } from 'react';
 import { useActionPermissions } from '../../../hooks/useActionPermissions';
 import { useCurrency } from '../../../context/CurrencyContext';
 import { useModal } from '../../../hooks/useModal';
@@ -12,15 +12,39 @@ const STATUS_MAP = {
     rejected:  { label: 'Reddedildi',cls: 'status-rejected'  },
 };
 
-const TripRow = ({ trip, onOpenDetail, onEdit, onDeleteClick }) => {
-    const { canEdit, canDelete }                = useActionPermissions(trip);
+const TripRow = memo(({ trip, onOpenDetail, onEdit, onDeleteClick }) => {
+    const { canEdit, canDelete } = useActionPermissions(trip);
     const { convert, selectedCurrency, symbol } = useCurrency();
-    const displayAmount                         = convert(trip, selectedCurrency);
-    const statusKey                             = trip.statusClass?.toLowerCase() || trip.status?.toLowerCase();
-    const statusInfo                            = STATUS_MAP[statusKey] || { label: trip.status, cls: `status-${statusKey}` };
+    
+    const displayAmount = useMemo(() => convert(trip, selectedCurrency), [trip, selectedCurrency, convert]);
+    
+    const statusKey = trip.statusClass?.toLowerCase() || trip.status?.toLowerCase();
+    const statusInfo = useMemo(() => 
+        STATUS_MAP[statusKey] || { label: trip.status, cls: `status-${statusKey}` }, 
+        [statusKey, trip.status]
+    );
+    const isPending = statusKey === 'pending';
+
+    const handleRowClick = useCallback((e) => {
+        if (isPending && canEdit) {
+            onEdit(e, trip);
+        } else {
+            onOpenDetail(trip);
+        }
+    }, [isPending, canEdit, trip, onEdit, onOpenDetail]);
+
+    const handleEditClick = useCallback((e) => {
+        e.stopPropagation();
+        onEdit(e, trip);
+    }, [trip, onEdit]);
+
+    const handleDeleteClick = useCallback((e) => {
+        e.stopPropagation();
+        onDeleteClick(e, trip);
+    }, [trip, onDeleteClick]);
 
     return (
-        <div className="trip-block" onClick={() => onOpenDetail(trip)}>
+        <div className="trip-block" onClick={handleRowClick}>
             <div className="trip-block-details">
                 <span className="trip-icon">
                     <i className={`ti ${trip.icon || 'ti-plane-departure'}`} />
@@ -43,15 +67,26 @@ const TripRow = ({ trip, onOpenDetail, onEdit, onDeleteClick }) => {
 
             <span className="trip-duration">{trip.duration}</span>
 
-            <span className={`trip-status ${statusInfo.cls}`}>
-                {statusInfo.label}
+            <span className={`trip-status ${statusInfo.cls}`} title={statusInfo.label}>
+                <span className="status-text">{statusInfo.label}</span>
+                <span className="status-icon">
+                    {statusInfo.cls.includes('approved') || statusInfo.cls.includes('confirmed') ? (
+                        <i className="ti ti-circle-check" />
+                    ) : statusInfo.cls.includes('pending') ? (
+                        <i className="ti ti-clock" />
+                    ) : statusInfo.cls.includes('onroad') ? (
+                        <i className="ti ti-route" />
+                    ) : (
+                        <i className="ti ti-circle-x" />
+                    )}
+                </span>
             </span>
 
             <div className="ex-row-actions">
-                {canEdit && (
+                {canEdit && isPending && (
                     <button
                         className="action-btn edit"
-                        onClick={(e) => { e.stopPropagation(); onEdit(e, trip); }}
+                        onClick={handleEditClick}
                         title="Düzenle"
                     >
                         <i className="ti ti-edit" />
@@ -60,7 +95,7 @@ const TripRow = ({ trip, onOpenDetail, onEdit, onDeleteClick }) => {
                 {canDelete && (
                     <button
                         className="action-btn delete"
-                        onClick={(e) => onDeleteClick(e, trip)}
+                        onClick={handleDeleteClick}
                         title="Sil"
                     >
                         <i className="ti ti-trash" />
@@ -69,12 +104,14 @@ const TripRow = ({ trip, onOpenDetail, onEdit, onDeleteClick }) => {
             </div>
         </div>
     );
-};
+});
 
-const TripList = ({ data, onOpenDetail, onEdit, onDelete }) => {
+TripRow.displayName = 'TripRow';
+
+const TripList = memo(({ data, onOpenDetail, onEdit, onDelete }) => {
     const { confirmConfig, askConfirm, closeConfirm } = useModal();
 
-    const handleDeleteClick = (e, trip) => {
+    const handleDeleteClick = useCallback((e, trip) => {
         e.stopPropagation();
         askConfirm(
             'Gezi Kaydını Sil',
@@ -82,7 +119,7 @@ const TripList = ({ data, onOpenDetail, onEdit, onDelete }) => {
             () => onDelete(e, trip.id),
             'danger'
         );
-    };
+    }, [askConfirm, onDelete]);
 
     return (
         <div className="trip-list-container">
@@ -98,6 +135,8 @@ const TripList = ({ data, onOpenDetail, onEdit, onDelete }) => {
             <Confirm {...confirmConfig} onClose={closeConfirm} />
         </div>
     );
-};
+});
+
+TripList.displayName = 'TripList';
 
 export default TripList;

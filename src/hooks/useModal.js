@@ -43,9 +43,11 @@ export const useModal = () => {
 
     // Kapatma fonksiyonları
     const closeAlert = useCallback(() => {
-        if (alertConfig.onClose) alertConfig.onClose();
-        setAlertConfig(prev => ({ ...prev, isOpen: false }));
-    }, [alertConfig]);
+        setAlertConfig(prev => {
+            if (prev.onClose) prev.onClose();
+            return { ...prev, isOpen: false };
+        });
+    }, []);
 
     const closeConfirm = useCallback(() => {
         setConfirmConfig(prev => ({ ...prev, isOpen: false }));

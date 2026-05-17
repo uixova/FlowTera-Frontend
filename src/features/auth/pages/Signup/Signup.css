@@ -155,32 +155,32 @@
   cursor: not-allowed;
 }
 
-.pn-root {
+.signup-form .pn-root {
   margin-top: 4px;
 }
 
-.pn-input-row {
+.signup-form .pn-input-row {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   transition: all 0.2s ease;
 }
 
-.pn-focused {
+.signup-form .pn-focused {
   border-color: #4361ee !important;
   background: rgba(67, 97, 238, 0.05);
 }
 
-.pn-number-input {
+.signup-form .pn-number-input {
   color: #fff !important;
 }
 
-.pn-dropdown {
+.signup-form .pn-dropdown {
   background: #1a1a1f !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-.pn-option:hover {
+.signup-form .pn-option:hover {
   background: rgba(255, 255, 255, 0.05) !important;
 }
 

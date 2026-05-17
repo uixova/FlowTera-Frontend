@@ -1,10 +1,5 @@
 import { api } from '../../../api/api';
 
-const randomDelay = (min = 200, max = 500) => {
-    const ms = Math.floor(Math.random() * (max - min + 1) + min);
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
-
 // Dışarıdan import edilen cache'ler 
 export const teamMembersCache = new Map();
 export const teamMembersRequestCache = new Map();
@@ -32,7 +27,6 @@ export const teamsService = {
     // Tüm takımları getirme - kullanıcıya göre filtreleyerek
     getTeams: async (currentUser) => {
         if (!currentUser?.teams?.length) return [];
-        await randomDelay(300, 500);
 
         // Büyük veri setlerinde tek sayfaya sığmayabileceğinden pageSize'ı
         // yüksek tutuyoruz; backend gelince sunucu taraflı filtre eklenecek.
@@ -58,7 +52,6 @@ export const teamsService = {
     // Takım üyelerini getirme
     getTeamMembers: async (teamId) => {
         if (!teamId) return [];
-        await randomDelay(200, 400);
 
         const [teamsResponse, usersResponse] = await Promise.all([
             api.teams.getAll({ pageSize: 500 }),
@@ -101,7 +94,6 @@ export const teamsService = {
     // Kullanıcı loglarını getirme
     getUserLogs: async (userId, teamId) => {
         if (!userId || !teamId) return [];
-        await randomDelay(400, 800);
 
         const logsResponse = await api.logs.getAll({ pageSize: 2000 });
         const rawList = extractList(logsResponse);
@@ -130,7 +122,6 @@ export const teamsService = {
     // Takım ayarlarını getirme
     getTeamSettings: async (teamId) => {
         if (!teamId) return null;
-        await randomDelay(100, 200);
 
         const [teamsResponse, usersResponse, plansResponse] = await Promise.all([
             api.teams.getAll({ pageSize: 500 }),
@@ -179,21 +170,18 @@ export const teamsService = {
 
     // Rol güncelleme (simülasyon)
     updateUserRole: async (userId, teamId, newRoleName) => {
-        await randomDelay(500, 1000);
         console.log(`[API UPDATE] User: ${userId}, Team: ${teamId}, New Role: ${newRoleName}`);
         return { success: true, message: "Role updated successfully" };
     },
 
     // Takım ayarlarını güncelleme (simülasyon)
     updateTeamSettings: async (teamId, updatePayload) => {
-        await randomDelay(600, 1200);
         console.log(`[API UPDATE] Team: ${teamId} için ayarlar güncellendi.`, updatePayload);
         return { success: true, message: "Ayarlar başarıyla güncellendi." };
     },
 
     // Gerçek API'de DELETE /teams/:id olacak; şimdilik simülasyon.
     deleteTeam: async (teamId) => {
-        await randomDelay(800, 1500);
         console.log(`[API DELETE] Team: ${teamId} silme isteği gönderildi.`);
         // Cache'i temizle — silinen takımın verisi önbellekte kalmasın
         clearMemberCache(teamId);
@@ -202,7 +190,6 @@ export const teamsService = {
 
     // Üye çıkarma simülasyonu; backend gelince api.fetch('TEAMS', ..., { method: 'DELETE' }) olacak.
     removeMember: async (teamId, userId) => {
-        await randomDelay(400, 800);
         console.log(`[API DELETE] Team: ${teamId}, User: ${userId} çıkarıldı.`);
         // Cache'i invalidate et — üye listesi güncel kalsın
         clearMemberCache(teamId);
@@ -211,7 +198,6 @@ export const teamsService = {
 
     // Basit takım listesini getirme
     getSimpleTeams: async () => {
-        await randomDelay(100, 300);
         const response = await api.teams.getAll({ pageSize: 500 });
         const teams = extractList(response);
         return [...teams].sort((a, b) => a.name.localeCompare(b.name));

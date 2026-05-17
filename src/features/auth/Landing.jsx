@@ -47,6 +47,7 @@ const FeedItem = ({ icon, text, amount, time, type, delay }) => (
 const Landing = () => {
   const statsRef = useRef(null);
   const [statsVisible, setStatsVisible] = useState(false);
+  const originalThemeRef = useRef(null);
 
   const c1 = useCounter(998, 2000, statsVisible);
   const c2 = useCounter(24, 2000, statsVisible);
@@ -54,11 +55,21 @@ const Landing = () => {
 
   useEffect(() => {
     document.title = "FlowTera | Finansal Akışın Yeni Nesli";
+    
+    originalThemeRef.current = document.documentElement.getAttribute('data-theme');
+    document.documentElement.removeAttribute('data-theme');
+    
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) setStatsVisible(true);
     }, { threshold: 0.3 });
     if (statsRef.current) observer.observe(statsRef.current);
-    return () => observer.disconnect();
+    
+    return () => {
+      observer.disconnect();
+      if (originalThemeRef.current) {
+        document.documentElement.setAttribute('data-theme', originalThemeRef.current);
+      }
+    };
   }, []);
 
   const expenseData = [12, 19, 15, 27, 22, 34, 28, 42, 38, 51, 45, 60];

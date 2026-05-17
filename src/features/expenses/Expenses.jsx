@@ -12,6 +12,7 @@ import ExpensesList from './components/ExpensesList';
 import Alert from '../../components/overlays/Alert';
 
 import { expenseService } from './services/expenseService';
+import { archiveService } from '../archive/services/archiveServices';
 import { usePagination } from '../../hooks/usePagination';
 import { useFilter } from '../../hooks/useFilter';
 import { useCurrency } from '../../context/CurrencyContext';
@@ -65,21 +66,27 @@ const Expenses = () => {
         ['title', 'merchant']
     );
 
-    const handleDelete = async (e, id) => {
-        try {
-            await expenseService.deleteExpense(id);
-            refreshData();
-            showAlert('Silindi', 'Harcama kaydı başarıyla silindi.', 'success');
-        } catch {
-            showAlert('Hata', 'Silme işlemi başarısız oldu.', 'error');
-        }
-    };
-
-    const handleSuccess = () => {
+    const handleSuccess = (message = 'İşlem başarıyla gerçekleştirildi.') => {
         setIsCreateOpen(false);
         setIsEditMode(false);
         setSelectedExpense(null);
+        showAlert('Başarılı', message, 'success');
         setTimeout(() => refreshData(), 0);
+    };
+
+    const handleDelete = async (expense) => {
+        try {
+            await expenseService.deleteExpense(expense.id);
+            archiveService.invalidate();
+            setIsCreateOpen(false);
+            setIsEditMode(false);
+            setSelectedExpense(null);
+            showAlert('Başarılı', 'Gider başarıyla silindi.', 'success');
+            setTimeout(() => refreshData(), 0);
+        } catch (err) {
+            console.error('Silme başarısız:', err);
+            showAlert('Hata', 'Gider silinirken bir hata oluştu.', 'error');
+        }
     };
 
     if (loading) return <Loader type="butterfly" />;
@@ -141,12 +148,11 @@ const Expenses = () => {
                             data={filteredExpenses}
                             onOpenDetail={(ex) => { setSelectedExpense(ex); setIsDetailOpen(true); }}
                             onEdit={(e, ex) => {
-                                e.stopPropagation();
+                                if(e) e.stopPropagation();
                                 setSelectedExpense(ex);
                                 setIsEditMode(true);
                                 setIsCreateOpen(true);
                             }}
-                            onDelete={handleDelete}
                         />
                         <PaginationFooter
                             hasMore={hasMore}
@@ -176,6 +182,7 @@ const Expenses = () => {
                 onClose={() => { setIsCreateOpen(false); setIsEditMode(false); setSelectedExpense(null); }}
                 editData={isEditMode ? selectedExpense : null}
                 onSuccess={handleSuccess}
+                onDelete={() => handleDelete(selectedExpense)}
             />
 
             <ExpenseDetail

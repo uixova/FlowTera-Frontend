@@ -15,10 +15,9 @@
     flex: 1;
 }
 
-/* Başlık Navigasyonu */
 .trip-title-nav {
     display: grid;
-    grid-template-columns: 2.2fr 1.2fr 1.4fr 1.1fr 1.4fr 0.9fr 1.1fr 72px;
+    grid-template-columns: 2.4fr 1.4fr 1.4fr 1.3fr 1.8fr 1.3fr 1.1fr 32px;
     gap: var(--space-3);
     align-items: center;
     padding: var(--space-3) var(--space-5);
@@ -40,10 +39,9 @@
     gap: var(--space-1);
 }
 
-/* Trip Bloğu (Satır) */
 .trip-block {
     display: grid;
-    grid-template-columns: 2.2fr 1.2fr 1.4fr 1.1fr 1.4fr 0.9fr 1.1fr 72px;
+    grid-template-columns: 2.4fr 1.4fr 1.4fr 1.3fr 1.8fr 1.3fr 1.1fr 32px;
     gap: var(--space-3);
     align-items: center;
     padding: 13px var(--space-5);
@@ -79,7 +77,6 @@
     opacity: 1;
 }
 
-/* Detaylar ve İkon */
 .trip-block-details {
     display: flex;
     align-items: center;
@@ -130,9 +127,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     font-family: var(--font-sans);
+    min-width: 0;
 }
 
-/* Metin Alanları */
 .trip-category,
 .trip-destination,
 .trip-vehicle,
@@ -143,19 +140,21 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
 }
 
-/* Tutar Alanı */
 .tr-list-amount-wrapper {
     display: flex;
-    align-items: baseline;
-    gap: 3px;
+    align-items: center;
+    gap: 4px;
+    justify-self: end;
 }
 
 .tr-list-symbol {
     color: var(--accent-color);
     font-weight: 700;
     font-size: var(--text-sm);
+    flex-shrink: 0;
 }
 
 .tr-list-amount-val {
@@ -164,6 +163,7 @@
     font-weight: 700;
     font-family: var(--font-head);
     letter-spacing: -0.3px;
+    flex-shrink: 0;
 }
 
 .tr-list-currency {
@@ -171,9 +171,10 @@
     font-size: var(--text-xs);
     font-weight: 700;
     letter-spacing: 0.5px;
+    flex-shrink: 0;
+    min-width: 40px;
 }
 
-/* Durum (Status) Badge'leri */
 .trip-status {
     display: inline-flex;
     align-items: center;
@@ -186,6 +187,11 @@
     letter-spacing: 0.6px;
     white-space: nowrap;
     font-family: var(--font-sans);
+    flex-shrink: 0;
+}
+
+.trip-status .status-icon {
+    display: none;
 }
 
 .trip-status.status-confirmed,
@@ -213,13 +219,13 @@
     border: 1px solid var(--status-danger-border);
 }
 
-/* Satır Aksiyonları */
 .ex-row-actions {
     display: flex;
     gap: 6px;
     justify-content: flex-end;
     opacity: 0;
     transition: var(--transition-fast);
+    min-width: 0;
 }
 
 .trip-block:hover .ex-row-actions {
@@ -238,6 +244,7 @@
     align-items: center;
     justify-content: center;
     transition: var(--transition-base);
+    flex-shrink: 0;
 }
 
 .action-btn.edit:hover {
@@ -253,14 +260,15 @@
 }
 
 .no-data-info {
-    text-align: center;
-    padding: 80px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8) var(--space-4);
     color: var(--text-tertiary);
     font-size: var(--text-base);
     font-family: var(--font-sans);
 }
 
-/* Filtre Footer */
 .as-filter-footer {
     display: flex;
     gap: var(--space-3);
@@ -308,11 +316,10 @@
     box-shadow: var(--shadow-accent);
 }
 
-/* Responsive Düzenlemeler */
 @media (max-width: 1200px) {
     .trip-title-nav,
     .trip-block {
-        grid-template-columns: 2fr 1.1fr 1.3fr 1.2fr 1.1fr 72px;
+        grid-template-columns: 2fr 1.2fr 1.2fr 1.1fr 1.2fr 1fr 32px;
     }
     .trip-title-nav .tr-title-span:nth-child(4),
     .trip-block > .trip-vehicle { display: none; }
@@ -321,6 +328,127 @@
 @media (max-width: 900px) {
     .trip-title-nav,
     .trip-block {
-        grid-template-columns: 1fr 1fr 1fr 72px;
+        grid-template-columns: 2fr 1.2fr 1.1fr 1fr 32px;
     }
+    .trip-title-nav .tr-title-span:nth-child(3),
+    .trip-title-nav .tr-title-span:nth-child(6),
+    .trip-block > .trip-destination,
+    .trip-block > .trip-duration { display: none; }
+}
+
+@media (max-width: 680px) {
+    .trip-table-wrapper { padding: 0 var(--space-3) var(--space-4); }
+    .trip-title-nav { display: none; }
+
+    .trip-block {
+        grid-template-columns: 1fr auto auto;
+        padding: var(--space-3) var(--space-3);
+        gap: var(--space-4);
+        transform: none !important; 
+    }
+
+    .trip-block > .trip-category,
+    .trip-block > .trip-destination,
+    .trip-block > .trip-vehicle,
+    .trip-block > .trip-duration,
+    .trip-block .ex-row-actions 
+    { display: none !important; }
+
+    .trip-icon i {
+        width: 34px;
+        height: 34px;
+        font-size: 16px;
+        border-radius: 9px;
+    }
+
+    .trip-title   { font-size: var(--text-sm); }
+    .trip-date    { font-size: 10px; }
+    .tr-list-amount-val { font-size: var(--text-base); }
+    .tr-list-currency   { display: none; }
+}
+
+@media (max-width: 480px) {
+    .trip-block {
+        grid-template-columns: 1fr auto 36px; 
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-2);
+        align-items: center; 
+    }
+
+    .trip-block > .tr-list-amount-wrapper,
+    .trip-block > .trip-status {
+        grid-column: auto; 
+    }
+
+    .trip-status {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        width: 36px;
+        height: 36px;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        justify-self: end; 
+    }
+
+    .trip-status .status-text {
+        display: none !important;
+    }
+
+    .trip-status .status-icon {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px; 
+        line-height: 1;
+        width: 100%;
+        height: 100%;
+    }
+
+    .trip-status.status-approved .status-icon,
+    .trip-status.status-confirmed .status-icon {
+        color: var(--status-success-text) !important;
+        filter: drop-shadow(0 0 4px var(--status-success-bg));
+    }
+
+    .trip-status.status-pending .status-icon {
+        color: var(--status-pending-text) !important; 
+        filter: drop-shadow(0 0 4px var(--status-pending-bg));
+    }
+
+    .trip-status.status-rejected .status-icon {
+        color: var(--status-danger-text) !important; 
+        filter: drop-shadow(0 0 4px var(--status-danger-bg));
+    }
+
+    .trip-status.status-onroad .status-icon {
+        color: var(--status-info-text) !important; 
+        filter: drop-shadow(0 0 4px var(--status-info-bg));
+    }
+}
+
+@media (max-width: 380px) {
+    .trip-table-wrapper { padding: 0 var(--space-2) var(--space-3); }
+
+    .trip-block {
+        padding: var(--space-2) var(--space-2);
+        gap: var(--space-2);
+        grid-template-columns: 1fr auto 32px;
+    }
+
+    .trip-status {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .trip-status .status-icon {
+        font-size: 20px;
+    }
+
+    .trip-title { text-wrap: wrap; }
+    .trip-icon i { width: 30px; height: 30px; font-size: 14px; }
+    .trip-title  { font-size: 0.78rem; }
+    .trip-date   { font-size: 9px; }
+    .tr-list-amount-val { font-size: var(--text-sm); }
 }

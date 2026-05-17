@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { usePhoneCountry } from '../hook/usePhoneCountry';
+import { usePhoneCountry } from '../../../hooks/usePhoneCountry';
 import Flags from 'country-flag-icons/react/3x2';
 import './PhoneNumber.css';
 
@@ -8,15 +8,60 @@ const FlagIcon = ({ code, className }) => {
   return Component ? <Component className={className} /> : <span>🌐</span>;
 };
 
-const PhoneNumber = ({ value = '', onChange, error, placeholder = '5xx xxx xx xx' }) => {
+const formatPhoneNumber = (raw, format) => {
+  const digits = raw.replace(/\D/g, '');
+  if (!format) return digits;
+  
+  let result = '';
+  let digitIndex = 0;
+  
+  for (let i = 0; i < format.length && digitIndex < digits.length; i++) {
+    const char = format[i];
+    if (char === '#') {
+      result += digits[digitIndex];
+      digitIndex++;
+    } else {
+      result += char;
+    }
+  }
+  
+  return result;
+};
+
+const getPlaceholderFromFormat = (format) => {
+  if (!format) return '5xx xxx xx xx';
+  return format.replace(/#/g, 'x');
+};
+
+const PhoneNumber = ({ value = '', onChange, error, authMode = false }) => {
   const { countries, defaultCountry } = usePhoneCountry();
   const [selected, setSelected] = useState(defaultCountry);
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [localNum, setLocalNum] = useState(value.replace(/^\+\d+\s?/, ''));
+  
+  const getLocalNum = (val, country) => {
+    const rawDigits = val.replace(/\D/g, '');
+    if (val) {
+      const withoutDial = rawDigits.replace(new RegExp(`^${country.dial.replace(/\D/g, '')}`), '');
+      return formatPhoneNumber(withoutDial, country.format);
+    }
+    return '';
+  };
+
+  const [localNum, setLocalNum] = useState(() => getLocalNum(value, defaultCountry));
+  const [isUp, setIsUp] = useState(false);
+  const inputRef = useRef(null);
 
   const wrapRef = useRef(null);
   const searchRef = useRef(null);
+
+  const checkSpace = () => {
+    if (wrapRef.current) {
+      const rect = wrapRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setIsUp(spaceBelow < 280);
+    }
+  };
 
   useEffect(() => {
     const handler = (e) => {
@@ -39,16 +84,34 @@ const PhoneNumber = ({ value = '', onChange, error, placeholder = '5xx xxx xx xx
   }, [onChange]);
 
   const handleNumberInput = (e) => {
-    const raw = e.target.value.replace(/[^\d\s-]/g, '');
-    setLocalNum(raw);
-    emitChange(selected, raw);
+    const cursorPos = e.target.selectionStart;
+    const oldValue = localNum;
+    const raw = e.target.value.replace(/[^\d]/g, '');
+    
+    const formatted = formatPhoneNumber(raw, selected.format);
+    setLocalNum(formatted);
+    emitChange(selected, formatted);
+    
+    setTimeout(() => {
+      if (inputRef.current) {
+        let newCursorPos = cursorPos;
+        if (formatted.length > oldValue.length) {
+          newCursorPos += (formatted.length - oldValue.length);
+        }
+        inputRef.current.setSelectionRange(newCursorPos, newCursorPos);
+      }
+    }, 0);
   };
 
   const handleSelect = (country) => {
     setSelected(country);
     setIsOpen(false);
     setSearch('');
-    emitChange(country, localNum);
+    
+    const currentDigits = localNum.replace(/\D/g, '');
+    const formatted = formatPhoneNumber(currentDigits, country.format);
+    setLocalNum(formatted);
+    emitChange(country, formatted);
   };
 
   const filtered = search.trim()
@@ -59,13 +122,15 @@ const PhoneNumber = ({ value = '', onChange, error, placeholder = '5xx xxx xx xx
       )
     : countries;
 
+  const dynamicPlaceholder = getPlaceholderFromFormat(selected.format);
+
   return (
-    <div className={`pn-root ${error ? 'pn-has-error' : ''}`} ref={wrapRef}>
+    <div className={`pn-root ${error ? 'pn-has-error' : ''} ${authMode ? 'pn-auth-mode' : ''}`} ref={wrapRef}>
       <div className={`pn-input-row ${isOpen ? 'pn-focused' : ''}`}>
         <button
           type="button"
           className="pn-trigger"
-          onClick={() => setIsOpen((v) => !v)}
+          onClick={() => { checkSpace(); setIsOpen((v) => !v); }}
         >
           <div className="pn-flag-container">
             <FlagIcon code={selected.code} className="pn-svg-flag" />
@@ -77,17 +142,18 @@ const PhoneNumber = ({ value = '', onChange, error, placeholder = '5xx xxx xx xx
         </button>
         <div className="pn-divider" />
         <input
+          ref={inputRef}
           className="pn-number-input"
           type="tel"
           value={localNum}
           onChange={handleNumberInput}
-          placeholder={placeholder}
+          placeholder={dynamicPlaceholder}
           autoComplete="tel-national"
         />
       </div>
 
       {isOpen && (
-        <div className="pn-dropdown">
+        <div className={`pn-dropdown ${isUp ? 'open-up' : ''}`}>
           <div className="pn-search-wrap">
             <input
               ref={searchRef}

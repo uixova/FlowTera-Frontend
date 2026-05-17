@@ -47,7 +47,7 @@ const EMPTY_FORM = {
     desc: '',
 };
 
-const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
+const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
     const isEditMode     = !!editData;
     const { selectedTeamId } = useTeam();
     const timeAgoDisplay = useTimeAgo(editData?.date);
@@ -139,6 +139,17 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess }) => {
 
     const sidebarFooter = (
         <div className="tr-panel-footer-alt">
+            {isEditMode && onDelete && (
+                <button
+                    type="button"
+                    className="tr-panel-btn delete"
+                    onClick={onDelete}
+                    disabled={isSubmitting}
+                >
+                    <i className="ti ti-trash" />
+                    Sil
+                </button>
+            )}
             <button
                 type="button"
                 className="tr-panel-btn cancel"

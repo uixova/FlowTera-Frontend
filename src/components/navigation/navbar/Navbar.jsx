@@ -16,7 +16,7 @@ import UserDropdown    from '../../overlays/userDropdown/UserDropdown';
 import Language        from '../../overlays/language/Language';
 import TeamSelectModal from '../../overlays/teamSelectModal/TeamSelectModal';
 
-const Navbar = () => {
+const Navbar = React.memo(() => {
     const { roleNameForTeam, loading: authLoading, currentUser } = useAuth();
     const { selectedTeamId, selectTeam } = useTeam();
     const { theme, toggleMode } = useTheme();
@@ -82,18 +82,18 @@ const Navbar = () => {
         if (path === '/archive' && (!canAccessArchive || !isEnterprise)) navigate('/home');
     }, [selectedTeamId, location.pathname, navigate, canAccessAnalysis, canAccessRequests, canAccessArchive, isEnterprise]);
 
-    const handleThemeClick = () => {
+    const handleThemeClick = useCallback(() => {
         if (!hasFeature('theme_management')) {
             showAlert("Planınız Yetersiz", "Tema Özelleştirme Professional paketine özeldir.", "info", () => navigate('/subscription'));
             return;
         }
         setIsThemeOpen(true);
-    };
+    }, [hasFeature, showAlert, navigate]);
 
-    const handleTeamChange = (teamId) => {
+    const handleTeamChange = useCallback((teamId) => {
         selectTeam(teamId);
         setIsTeamOpen(false);
-    };
+    }, [selectTeam]);
 
     const handleHamburgerClick = useCallback((e) => {
         e.stopPropagation();
@@ -106,8 +106,12 @@ const Navbar = () => {
         setIsUserOpen(v => !v);
     }, []);
 
+    const handleToggleMode = useCallback(() => {
+        toggleMode();
+    }, [toggleMode]);
+
     // Drawer'daki nav linkleri — tek yerde tanımlı, hem drawer hem desktop kullanır
-    const navLinks = (
+    const navLinks = useMemo(() => (
         <>
             <NavLink to="/home"><i className="ti ti-home" /> <span>Anasayfa</span></NavLink>
             {selectedTeamId && (
@@ -129,7 +133,7 @@ const Navbar = () => {
             <NavLink to="/team"><i className="ti ti-users-group" /> <span>Takım</span></NavLink>
             <NavLink to="/help"><i className="ti ti-help" /> <span>Yardım</span></NavLink>
         </>
-    );
+    ), [selectedTeamId, canAccessAnalysis, canAccessRequests, canAccessArchive, isEnterprise]);
 
     return (
         <>
@@ -201,7 +205,7 @@ const Navbar = () => {
                                 localStorage'a otomatik yazılır, sayfa yenilemede korunur */}
                             <button
                                 className={`light-dark-head btn-dark${!isDark ? ' active' : ''}`}
-                                onClick={(e) => { e.stopPropagation(); toggleMode(); }}
+                                onClick={(e) => { e.stopPropagation(); handleToggleMode(); }}
                                 title={isDark ? 'Açık temaya geç' : 'Koyu temaya geç'}
                             >
                                 <i className={`ti ${isDark ? 'ti-sun' : 'ti-moon'}`} />
@@ -248,7 +252,7 @@ const Navbar = () => {
                         <nav className="nav-drawer-links">
                             {navLinks}
                             <div className="nav-drawer-divider" />
-                            <button className="nav-drawer-action-btn" onClick={() => { toggleMode(); }}>
+                            <button className="nav-drawer-action-btn" onClick={handleToggleMode}>
                                 <i className={`ti ${isDark ? 'ti-sun' : 'ti-moon'}`} />
                                 <span>{isDark ? 'Açık Tema' : 'Koyu Tema'}</span>
                             </button>
@@ -298,6 +302,8 @@ const Navbar = () => {
             {createPortal(<UserDropdown isOpen={isUserOpen} onClose={() => setIsUserOpen(false)} />, document.body)}
         </>
     );
-};
+});
+
+Navbar.displayName = 'Navbar';
 
 export default Navbar;

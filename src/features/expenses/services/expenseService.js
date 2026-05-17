@@ -1,10 +1,5 @@
 import { api } from '../../../api/api';
 
-const randomDelay = (min = 300, max = 1000) => {
-    const ms = Math.floor(Math.random() * (max - min + 1) + min);
-    return new Promise(resolve => setTimeout(resolve, ms));
-};
-
 // Paginated veya düz array'den veriyi güvenle çıkar
 const extractList = (response) => {
     if (!response) return [];
@@ -45,7 +40,6 @@ export const expenseService = {
 
     // Takım bazında giderleri getir
     getExpensesByTeam: async (teamId, page = 1, limit = 20) => {
-        await randomDelay(400, 800);
         if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
 
         // Backend hazır olduğunda api.expenses.getAll({ teamId, page, pageSize: limit })
@@ -73,8 +67,6 @@ export const expenseService = {
 
     // Yeni gider oluşturma
     createExpense: async (payload) => {
-        await randomDelay(500, 1000);
-
         const body = new FormData();
         Object.keys(payload).forEach(key => {
             if (key === 'receipt' && payload[key] instanceof File) {
@@ -91,7 +83,6 @@ export const expenseService = {
 
     // Gider güncelleme (simülasyon)
     updateExpense: async (id, payload) => {
-        await randomDelay(400, 800);
         // Gelecekte: return await api.fetch('EXPENSES', {}, { method: 'PUT', body: payload });
         console.log(`${id} ID'li kayıt güncelleniyor:`, payload);
         return { success: true };
@@ -99,7 +90,6 @@ export const expenseService = {
 
     // Takım bilgisini getir
     getTeamInfo: async (teamId) => {
-        await randomDelay(100, 300);
         const response = await api.teams.getAll({ pageSize: 500 });
         const allTeams = extractList(response);
         return allTeams.find(t => String(t.id) === String(teamId)) ?? null;
