@@ -140,17 +140,7 @@
     padding: 20px 28px;
     background: var(--bg-surface);
     border-top: 1px solid var(--border-subtle);
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
     flex-shrink: 0;
-}
-
-.as-footer > div {
-    display: flex;
-    width: 100%;
-    gap: 10px;
 }
 
 /* Responsive */
@@ -199,11 +189,6 @@
     .as-header { padding: 20px 18px 16px; }
     .as-body   { padding: 16px 18px; }
     .as-footer { padding: 14px 18px 20px; }
-
-    /* Footer butonları tam genişlik */
-    .as-footer > div { flex-direction: column; }
-    .as-footer > div > button,
-    .as-footer > div > a { width: 100%; justify-content: center; }
 }
 
 @media (max-width: 380px) {

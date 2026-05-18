@@ -13,7 +13,7 @@
 
 /* Sidebar */
 .arc-sidebar {
-    width: 220px;
+    width: 300px;
     flex-shrink: 0;
     background: var(--bg-sidebar);
     border-right: 1px solid var(--border-subtle);

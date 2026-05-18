@@ -30,6 +30,7 @@ html, body {
   color: var(--landing-text-primary) !important;
   font-family: var(--landing-font-body) !important;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
   min-height: 100dvh;
 }
 

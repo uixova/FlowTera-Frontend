@@ -7,6 +7,7 @@ import { useCurrency } from '../../context/CurrencyContext';
 import ArchiveGrid from './components/ArchiveGrid';
 import ArchiveTimeline from './components/ArchiveTimeline';
 import ActionSidebar from '../../components/navigation/ActionSidebar';
+import BackToTop from '../../components/ui/BackToTop';
 
 import PaginationFooter from '../../components/ui/PaginationFooter'; 
 import { usePagination } from '../../hooks/usePagination'; 
@@ -316,6 +317,10 @@ const Archive = () => {
             <ActionSidebar isOpen={filterOpen} onClose={() => setFilterOpen(false)} title="Filtrele & Sırala" width="280px">
                 {filterSidebarContent}
             </ActionSidebar>
+            <BackToTop 
+                scrollContainerSelector=".arc-scroll" 
+                scrollThreshold={300} 
+            />
         </div>
     );
 };

@@ -294,7 +294,7 @@
 /* Footer & Butonlar */
 .ex-panel-footer-alt {
     display: grid;
-    grid-template-columns: 1fr 1fr 1.4fr;
+    grid-template-columns: 1fr 1.4fr;
     gap: var(--space-3);
     width: 100%;
 }

@@ -10,6 +10,7 @@ import ActionSidebar from '../../components/navigation/ActionSidebar';
 import ExpenseFilter from './modals/ExpenseFilter';
 import ExpensesList from './components/ExpensesList';
 import Alert from '../../components/overlays/Alert';
+import Confirm from '../../components/overlays/Confirm';
 
 import { expenseService } from './services/expenseService';
 import { archiveService } from '../archive/services/archiveServices';
@@ -20,7 +21,7 @@ import { useModal } from '../../hooks/useModal';
 import { useTeam } from '../../context/TeamContext';
 
 const Expenses = () => {
-    const { alertConfig, showAlert, closeAlert } = useModal();
+    const { alertConfig, confirmConfig, showAlert, askConfirm, closeAlert, closeConfirm } = useModal();
     const { selectedCurrency, updateCurrency } = useCurrency();
     const { activeTeam, selectedTeamId } = useTeam();
 
@@ -74,19 +75,26 @@ const Expenses = () => {
         setTimeout(() => refreshData(), 0);
     };
 
-    const handleDelete = async (expense) => {
-        try {
-            await expenseService.deleteExpense(expense.id);
-            archiveService.invalidate();
-            setIsCreateOpen(false);
-            setIsEditMode(false);
-            setSelectedExpense(null);
-            showAlert('Başarılı', 'Gider başarıyla silindi.', 'success');
-            setTimeout(() => refreshData(), 0);
-        } catch (err) {
-            console.error('Silme başarısız:', err);
-            showAlert('Hata', 'Gider silinirken bir hata oluştu.', 'error');
-        }
+    const handleDelete = (expense) => {
+        askConfirm(
+            'Gideri Sil',
+            'Bu gideri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+            async () => {
+                try {
+                    await expenseService.deleteExpense(expense.id);
+                    archiveService.invalidate();
+                    setIsCreateOpen(false);
+                    setIsEditMode(false);
+                    setSelectedExpense(null);
+                    showAlert('Başarılı', 'Gider başarıyla silindi.', 'success');
+                    setTimeout(() => refreshData(), 0);
+                } catch (err) {
+                    console.error('Silme başarısız:', err);
+                    showAlert('Hata', 'Gider silinirken bir hata oluştu.', 'error');
+                }
+            },
+            'danger'
+        );
     };
 
     if (loading) return <Loader type="butterfly" />;
@@ -201,6 +209,7 @@ const Expenses = () => {
             />
 
             <Alert {...alertConfig} onClose={closeAlert} />
+            <Confirm {...confirmConfig} onClose={closeConfirm} />
         </div>
     );
 };

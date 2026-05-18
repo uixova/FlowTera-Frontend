@@ -95,5 +95,12 @@ export const tripsService = {
         // Gelecekte: return await api.fetch('TRIPS', {}, { method: 'PUT', body: tripData });
         console.log(`[API UPDATE] Trip ID: ${id}`, tripData);
         return { success: true };
+    },
+
+    // Seyahat silme
+    deleteTrip: async (id) => {
+        // Gelecekte: return await api.trips.delete(id);
+        console.log(`${id} ID'li seyahat siliniyor.`);
+        return { success: true };
     }
 };

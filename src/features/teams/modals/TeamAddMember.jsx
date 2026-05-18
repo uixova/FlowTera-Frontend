@@ -71,9 +71,9 @@ const AddMemberModal = ({ isOpen, onClose }) => {
         title="Add New Member" 
         width="460px"
         footer={
-          <div className="adm-panel-footer" style={{width: '100%', padding: 0, borderTop: 'none'}}>
-            <button className="adm-btn-cancel" onClick={onClose} style={{flex: 1}}>Vazgeç</button>
-            <button className="adm-btn-invite" onClick={handleInviteAttempt} style={{flex: 2}}>
+          <div className="adm-panel-footer">
+            <button className="adm-btn-cancel" onClick={onClose}>Vazgeç</button>
+            <button className="adm-btn-invite" onClick={handleInviteAttempt}>
               İstek Gönder
             </button>
           </div>

@@ -245,9 +245,9 @@ textarea:focus {
 /* Footer & Buttons */
 .tr-panel-footer-alt {
     display: grid;
-    grid-template-columns: 1fr 1fr 1.4fr;
+    grid-template-columns: 1fr 1.4fr;
     gap: var(--space-3);
-    width: 100% !important;
+    width: 100%;
 }
 
 .tr-panel-footer-alt:has(.tr-panel-btn.delete) {

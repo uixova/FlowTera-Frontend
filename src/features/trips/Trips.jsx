@@ -10,6 +10,7 @@ import ActionSidebar from '../../components/navigation/ActionSidebar';
 import TripFilter from './modals/TripFilter';
 import TripList from './components/TripList';
 import Alert from '../../components/overlays/Alert';
+import Confirm from '../../components/overlays/Confirm';
 
 import { tripsService } from './services/tripsService';
 import { archiveService } from '../archive/services/archiveServices';
@@ -22,7 +23,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { useTeam } from '../../context/TeamContext';
 
 const Trips = () => {
-    const { alertConfig, showAlert, closeAlert } = useModal();
+    const { alertConfig, confirmConfig, showAlert, askConfirm, closeAlert, closeConfirm } = useModal();
     const { selectedCurrency, updateCurrency }   = useCurrency();
     const { activeTeam, selectedTeamId }         = useTeam();
     const { currentUser }                        = useAuth();
@@ -92,19 +93,26 @@ const Trips = () => {
         setTimeout(() => refreshData(), 0);
     };
 
-    const handleDeleteTrip = async () => {
-        try {
-            await tripsService.deleteTrip(selectedTrip.id);
-            archiveService.invalidate();
-            setIsCreateOpen(false);
-            setIsEditMode(false);
-            setSelectedTrip(null);
-            showAlert('Silindi', 'Seyahat kaydı başarıyla silindi.', 'success');
-            setTimeout(() => refreshData(), 0);
-        } catch (err) {
-            console.error('Silme başarısız:', err);
-            showAlert('Hata', 'Seyahat silinirken bir hata oluştu.', 'error');
-        }
+    const handleDeleteTrip = () => {
+        askConfirm(
+            'Seyahati Sil',
+            'Bu seyahat kaydını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+            async () => {
+                try {
+                    await tripsService.deleteTrip(selectedTrip.id);
+                    archiveService.invalidate();
+                    setIsCreateOpen(false);
+                    setIsEditMode(false);
+                    setSelectedTrip(null);
+                    showAlert('Silindi', 'Seyahat kaydı başarıyla silindi.', 'success');
+                    setTimeout(() => refreshData(), 0);
+                } catch (err) {
+                    console.error('Silme başarısız:', err);
+                    showAlert('Hata', 'Seyahat silinirken bir hata oluştu.', 'error');
+                }
+            },
+            'danger'
+        );
     };
 
     if (loading) return <Loader type="butterfly" />;
@@ -227,6 +235,7 @@ const Trips = () => {
             />
 
             <Alert {...alertConfig} onClose={closeAlert} />
+            <Confirm {...confirmConfig} onClose={closeConfirm} />
         </div>
     );
 };

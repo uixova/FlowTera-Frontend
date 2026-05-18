@@ -72,7 +72,7 @@ const CreateRequestPanel = ({ isOpen, onClose, user, teamId }) => {
                 title="Yeni Talep Oluştur"
                 width="460px"
                 footer={
-                    <div className="crp-panel-footer" style={{display: 'flex', gap: '12px', width: '100%'}}>
+                    <div className="crp-panel-footer">
                         <button className="crp-btn-cancel" onClick={onClose} disabled={loading}>Vazgeç</button>
                         <button className="crp-btn-submit" onClick={handleSubmit} disabled={loading}>
                             {loading ? <i className="ti ti-loader-2 spin"></i> : 'Talebi İlet'}

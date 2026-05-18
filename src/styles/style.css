@@ -9,7 +9,7 @@
 
 body {
     min-height: 100dvh;
-    background: var(--bg-base); 
+    background: var(--bg-base) !important; 
     color: var(--text-primary);
 }
 

@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import './styles/GlobalFilter.css'; 
 import Loader from './components/ui/Loader';
+import BackToTop from './components/ui/BackToTop';
 
 // Context Providers
 import { ThemeProvider } from './context/ThemeContext';
@@ -144,6 +145,7 @@ function App() {
                   {/* 404 Sayfası */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+                <BackToTop />
               </Suspense>
             </CurrencyProvider>
           </SubscriptionProvider>

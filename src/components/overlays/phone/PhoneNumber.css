@@ -103,7 +103,7 @@
   position: absolute;
   top: calc(100% + var(--space-2));
   left: 0;
-  z-index: var(--z-dropdown);
+  z-index: 10001;
   width: 300px;
   max-width: 94vw;
   background: var(--bg-dropdown);

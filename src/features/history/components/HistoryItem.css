@@ -148,6 +148,10 @@
     flex-shrink: 0;
 }
 
+.hi-tag-base {
+    color: var(--text-primary);
+}
+
 .hi-time {
     font-size: 0.72rem;
     color: var(--text-muted);
@@ -174,7 +178,6 @@
 
 /* Accordion Content */
 .history-accordion-content {
-    background: rgba(0, 0, 0, 0.15);
     border-top: 1px solid var(--border-faint);
     max-height: 0;
     opacity: 0;

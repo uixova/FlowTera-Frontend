@@ -93,5 +93,12 @@ export const expenseService = {
         const response = await api.teams.getAll({ pageSize: 500 });
         const allTeams = extractList(response);
         return allTeams.find(t => String(t.id) === String(teamId)) ?? null;
+    },
+
+    // Gider silme
+    deleteExpense: async (id) => {
+        // Gelecekte: return await api.expenses.delete(id);
+        console.log(`${id} ID'li gider siliniyor.`);
+        return { success: true };
     }
 };

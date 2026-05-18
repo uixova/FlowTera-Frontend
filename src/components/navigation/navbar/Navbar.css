@@ -53,7 +53,7 @@ header.navbar-header {
     font-size: 1.2rem;
     font-weight: 800;
     letter-spacing: -0.5px;
-    background: linear-gradient(90deg, var(--accent-color), var(--_teal));
+    background: linear-gradient(90deg, var(--main-color), var(--_teal));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
