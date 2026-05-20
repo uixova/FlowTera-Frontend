@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useTeam } from '../../../context/TeamContext';
 import { expenseService } from '../services/expenseService';
-import { archiveService } from '../../archive/services/archiveServices';
 import './CreateExpense.css';
 
 const CATEGORIES = [
@@ -114,6 +113,7 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
             icon: isEdit ? editData.icon : 'ti-receipt',
             receipt: selectedFile || previewUrl,
         };
+
         try {
             if (isEdit) {
                 await expenseService.updateExpense(payload.id, payload);
@@ -121,12 +121,10 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                 await expenseService.createExpense(payload);
             }
 
-            archiveService.invalidate();
-
             if (onSuccess) onSuccess();
             onClose();
-        } catch (err) {
-            console.error('İşlem başarısız:', err);
+        } catch {
+            console.error('İşlem başarısız:');
         } finally {
             setIsSubmitting(false);
         }

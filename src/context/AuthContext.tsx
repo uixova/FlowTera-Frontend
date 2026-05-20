@@ -2,23 +2,44 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { api } from '../api/api';
 import { authService, VERIFIED_SIGNUP_KEY } from '../features/auth/services/authService';
 
-const AuthContext = createContext(null);
+interface AuthContextType {
+    currentUser: any | null;
+    currentUserId: string | null;
+    loading: boolean;
+    isAuthenticated: boolean;
+    login: (nextId: any, rememberMe?: boolean) => void;
+    loginWithCredentials: (email: string, password: string, rememberMe: boolean) => Promise<{ success: boolean }>;
+    logout: () => void;
+    roleNameForTeam: (teamId: any, type?: 'role' | 'plan') => string | null;
+    isAdmin: (teamId: any) => boolean;
+    authStep: string;
+    setAuthStep: React.Dispatch<React.SetStateAction<string>>;
+    authError: string | null;
+    setAuthError: React.Dispatch<React.SetStateAction<string | null>>;
+    pendingUser: any | null;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AUTH_USER_ID_KEY = 'auth_user_id';
 
-export const AuthProvider = ({ children }) => {
-    const [currentUserId, setCurrentUserId] = useState(() => {
-        // return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || null; id yi null dön
+interface AuthProviderProps {
+    children: React.ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+    const [currentUserId, setCurrentUserId] = useState<string | null>(() => {
+        // Orijinal kodundaki u1 mantığını aynen koruyoruz
         return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || "u1";
     });
-    const [currentUser, setCurrentUser] = useState(null);
-    const [teams, setTeams] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState<any | null>(null);
+    const [teams, setTeams] = useState<any[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
-    const [authStep, setAuthStep] = useState('credentials');
-    const [authError, setAuthError] = useState(null);
-    const [pendingUser, setPendingUser] = useState(null);
+    const [authStep, setAuthStep] = useState<string>('credentials');
+    const [authError, setAuthError] = useState<string | null>(null);
+    const [pendingUser, setPendingUser] = useState<any | null>(null);
 
-    const isLoggingOut = useRef(false);
+    const isLoggingOut = useRef<boolean>(false);
 
     const logout = useCallback(() => {
         isLoggingOut.current = true;
@@ -33,7 +54,7 @@ export const AuthProvider = ({ children }) => {
         isLoggingOut.current = false;
     }, []);
 
-    const fetchUser = useCallback(async (userId) => {
+    const fetchUser = useCallback(async (userId: string | null) => {
         if (!userId) {
             setLoading(false);
             return;
@@ -51,15 +72,15 @@ export const AuthProvider = ({ children }) => {
             const usersArray = Array.isArray(usersResult) ? usersResult : (usersResult?.data ?? []);
             const teamsArray = Array.isArray(teamsResult) ? teamsResult : (teamsResult?.data ?? []);
 
-            const user = usersArray.find(u => String(u.id) === String(userId));
+            const user = usersArray.find((u: any) => String(u.id) === String(userId));
 
             if (user) {
                 setCurrentUser(user);
                 const userTeamIds = new Set([
-                    ...(user.role?.map(r => String(r.teamId)) || []),
-                    ...(user.teams?.map(id => String(id)) || [])
+                    ...(user.role?.map((r: any) => String(r.teamId)) || []),
+                    ...(user.teams?.map((id: any) => String(id)) || [])
                 ]);
-                const userTeams = teamsArray.filter(t => userTeamIds.has(String(t.id)));
+                const userTeams = teamsArray.filter((t: any) => userTeamIds.has(String(t.id)));
                 setTeams(userTeams);
             } else {
                 // Signup akışından gelen geçici session kullanıcısı
@@ -95,7 +116,7 @@ export const AuthProvider = ({ children }) => {
         fetchUser(currentUserId);
     }, [currentUserId, fetchUser]);
 
-    const login = useCallback((nextId, rememberMe = false) => {
+    const login = useCallback((nextId: any, rememberMe = false) => {
         const stringId = String(nextId);
         localStorage.removeItem(AUTH_USER_ID_KEY);
         sessionStorage.removeItem(AUTH_USER_ID_KEY);
@@ -108,11 +129,13 @@ export const AuthProvider = ({ children }) => {
         setCurrentUserId(stringId);
     }, []);
 
-    const loginWithCredentials = useCallback(async (email, password, rememberMe) => {
+    const loginWithCredentials = useCallback(async (email: string, password: string, rememberMe: boolean) => {
         setAuthError(null);
         try {
             const result = await authService.loginWithEmail(email, password);
-            if (result.success) {
+        
+            // Hata buradaydı: result.user var mı diye kontrol etmemiz gerekiyor
+            if (result.success && result.user) {
                 setPendingUser({ ...result.user, rememberMe });
                 await authService.startLoginVerification({
                     email: result.user.email,
@@ -122,6 +145,7 @@ export const AuthProvider = ({ children }) => {
                 setAuthStep('verify');
                 return { success: true };
             }
+        
             setAuthError(result.message || 'E-posta veya şifre hatalı.');
             return { success: false };
         } catch (error) {
@@ -131,15 +155,15 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const roleNameForTeam = useCallback((teamId, type = 'role') => {
+    const roleNameForTeam = useCallback((teamId: any, type: 'role' | 'plan' = 'role'): string | null => {
         if (!currentUser || !teamId) return null;
 
         if (type === 'role') {
-            return currentUser.role?.find(r => String(r.teamId) === String(teamId))?.roleName || null;
+            return currentUser.role?.find((r: any) => String(r.teamId) === String(teamId))?.roleName || null;
         }
 
         if (type === 'plan') {
-            const team = teams.find(t => String(t.id) === String(teamId));
+            const team = teams.find((t: any) => String(t.id) === String(teamId));
             return team?.settings?.planContext?.planName || null;
         }
 
@@ -147,7 +171,7 @@ export const AuthProvider = ({ children }) => {
     }, [currentUser, teams]);
 
     const isAdmin = useCallback(
-        (teamId) => roleNameForTeam(teamId) === 'Admin',
+        (teamId: any): boolean => roleNameForTeam(teamId) === 'Admin',
         [roleNameForTeam]
     );
 

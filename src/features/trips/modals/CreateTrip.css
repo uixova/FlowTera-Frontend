@@ -324,6 +324,11 @@ textarea:focus {
     animation: tr-spin 0.7s linear infinite;
 }
 
+.tr-panel-footer-alt {
+    width: 100% !important;
+    display: grid !important;
+}
+
 @media (max-width: 480px) {
     .tr-date-row {
         flex-direction: column;

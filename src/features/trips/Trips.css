@@ -13,15 +13,17 @@
 .trip-table-wrapper {
     padding: 0 var(--space-5) var(--space-5);
     flex: 1;
+    width: 100% !important;
 }
 
 .trip-title-nav {
     display: grid;
-    grid-template-columns: 2.4fr 1.4fr 1.4fr 1.3fr 1.8fr 1.3fr 1.1fr 32px;
+    grid-template-columns: 2.4fr 1.4fr 1.4fr 1.3fr 1.8fr 1.3fr 1.1fr 32px !important;
     gap: var(--space-3);
     align-items: center;
     padding: var(--space-3) var(--space-5);
     margin-bottom: var(--space-2);
+    width: 100% !important;
 }
 
 .tr-title-span {
@@ -37,11 +39,12 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
+    width: 100% !important;
 }
 
 .trip-block {
-    display: grid;
-    grid-template-columns: 2.4fr 1.4fr 1.4fr 1.3fr 1.8fr 1.3fr 1.1fr 32px;
+    display: grid !important;
+    grid-template-columns: 2.4fr 1.4fr 1.4fr 1.3fr 1.8fr 1.3fr 1.1fr 32px !important;
     gap: var(--space-3);
     align-items: center;
     padding: 13px var(--space-5);
@@ -52,6 +55,7 @@
     transition: var(--transition-spring);
     position: relative;
     overflow: hidden;
+    width: 100% !important;
 }
 
 .trip-block::before {
@@ -147,7 +151,6 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    justify-self: end;
 }
 
 .tr-list-symbol {

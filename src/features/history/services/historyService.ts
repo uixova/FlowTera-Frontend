@@ -1,21 +1,33 @@
 import { api } from '../../../api/api';
+import { LogData } from '@/types/types';
 
-const toArray = (result) =>
+// Servisin geriye döneceği sayfalama yapısı için tip tanımı
+export interface HistoryResponse {
+    data: any[]; // TeamLogs içerisindeki log objelerinin tipi (örn: TeamLog[] veya any[])
+    hasMore: boolean;
+    totalCount: number;
+}
+
+const toArray = <T>(result: any): T[] =>
     Array.isArray(result) ? result : (result?.data ?? []);
 
 export const historyService = {
 
     // Takım bazlı geçmiş verilerini getirme
-    getHistoryByTeam: async (teamId, page = 1, limit = 20) => {
+    async getHistoryByTeam(
+        teamId: string | number, 
+        page: number = 1, 
+        limit: number = 20
+    ): Promise<HistoryResponse> {
         try {
             const response = await api.logs.getAll({ pageSize: 2000 });
-            const rawList  = toArray(response);
+            const rawList  = toArray<LogData>(response);
 
             // JSON yapısından TeamLogs konteynerini ayıkla
-            const container = rawList.find((item) => item.TeamLogs);
-            const allLogs   = container?.TeamLogs ?? [];
+            const container = rawList.find((item: any) => item.TeamLogs);
+            const allLogs: any[] = container?.TeamLogs ?? [];
 
-            const filtered  = allLogs.filter((log) => String(log.teamId) === String(teamId));
+            const filtered  = allLogs.filter((log: any) => String(log.teamId) === String(teamId));
 
             const start = (page - 1) * limit;
             const end   = start + limit;

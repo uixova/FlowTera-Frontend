@@ -1,6 +1,13 @@
 import { useMemo } from 'react';
 
-export const COUNTRIES = [
+export interface Country {
+  code: string;
+  name: string;
+  dial: string;
+  format: string;
+}
+
+export const COUNTRIES: Country[] = [
   { code: 'US', name: 'United States', dial: '+1', format: '(###) ###-####' },
   { code: 'GB', name: 'United Kingdom', dial: '+44', format: '#### ######' },
   { code: 'TR', name: 'Türkiye', dial: '+90', format: '### ### ## ##' },
@@ -36,16 +43,15 @@ export const COUNTRIES = [
   { code: 'KZ', name: 'Kazakhstan', dial: '+7', format: '### ###-##-##' },
 ];
 
-const LOCALE_TO_CODE = {
+const LOCALE_TO_CODE: Record<string, string> = {
   'tr': 'TR', 'en': 'US', 'de': 'DE', 'fr': 'FR', 'it': 'IT',
   'es': 'ES', 'nl': 'NL', 'ru': 'RU', 'az': 'AZ', 'kk': 'KZ',
   'uk': 'UA', 'pl': 'PL', 'pt': 'PT', 'ar': 'SA', 'zh': 'CN',
   'ja': 'JP', 'ko': 'KR', 'hi': 'IN'
 };
 
-const detectDefaultCountry = () => {
+const detectDefaultCountry = (): Country => {
   try {
-    // Kullanıcının tercih ettiği dilleri al
     const preferredLanguages = navigator.languages || [navigator.language || 'en-US'];
     
     for (const lang of preferredLanguages) {
@@ -53,13 +59,11 @@ const detectDefaultCountry = () => {
       const countryCode = region?.toUpperCase();
       const languageCode = primary.toLowerCase();
 
-      // Önce direkt bölge kodundan bulmaya çalış
       if (countryCode) {
         const found = COUNTRIES.find(c => c.code === countryCode);
         if (found) return found;
       }
 
-      // Bölge kodu yoksa veya listede değilse dile göre eşleştir
       const mapped = LOCALE_TO_CODE[languageCode];
       if (mapped) {
         const found = COUNTRIES.find(c => c.code === mapped);
@@ -73,6 +77,6 @@ const detectDefaultCountry = () => {
 };
 
 export const usePhoneCountry = () => {
-  const defaultCountry = useMemo(() => detectDefaultCountry(), []);
+  const defaultCountry = useMemo<Country>(() => detectDefaultCountry(), []);
   return { countries: COUNTRIES, defaultCountry };
 };

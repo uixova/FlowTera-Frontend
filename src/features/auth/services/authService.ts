@@ -1,4 +1,25 @@
 import { api } from '../../../api/api';
+import { User, Plan } from '@/types/types';
+
+// Form validasyonu ve kayıt işlemleri için arayüzler
+export interface SignupFormData {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
+    birthDate?: string;
+    address?: string;
+    password?: string;
+    plan?: Plan;
+    flow?: string;
+    [key: string]: any;
+}
+
+export interface ValidationResult {
+    isValid: boolean;
+    errors: Record<string, string>;
+    normalized: any;
+}
 
 const PENDING_SIGNUP_KEY         = 'auth_pending_signup';
 export const VERIFIED_SIGNUP_KEY = 'auth_verified_signup';
@@ -10,11 +31,11 @@ const phoneRegex = /^[\d+\s()-]{10,20}$/;
 const nameRegex  = /^[a-zA-ZcCgGiIoOsSuU\u00C7\u00E7\u011E\u011F\u0130\u0131\u00D6\u00F6\u015E\u015F\u00DC\u00FC\s'-]{2,60}$/;
 const dateRegex  = /^\d{4}-\d{2}-\d{2}$/;
 
-const sanitizeText  = (value) => value.trim().replace(/\s+/g, ' ');
-const sanitizePhone = (value) => value.replace(/[^\d+]/g, '');
-const sanitizeCode  = (value) => value.replace(/\D/g, '').slice(0, 6);
+const sanitizeText  = (value: string) => value.trim().replace(/\s+/g, ' ');
+const sanitizePhone = (value: string) => value.replace(/[^\d+]/g, '');
+const sanitizeCode  = (value: string) => value.replace(/\D/g, '').slice(0, 6);
 
-const calculateAge = (birthDate) => {
+const calculateAge = (birthDate: string): number => {
     const today = new Date();
     const born  = new Date(birthDate);
     let age     = today.getFullYear() - born.getFullYear();
@@ -24,14 +45,14 @@ const calculateAge = (birthDate) => {
     return age;
 };
 
-const toArray = (result) =>
+const toArray = <T>(result: any): T[] =>
     Array.isArray(result) ? result : (result?.data ?? []);
 
 export const authService = {
 
-    async loginWithEmail(email, password) {
+    async loginWithEmail(email: string, password: string): Promise<{ success: boolean; user?: User; message?: string }> {
         const result = await api.users.getAll();
-        const users  = toArray(result);
+        const users  = toArray<User>(result);
 
         const normalizedEmail = email.trim().toLowerCase();
         const user = users.find(
@@ -47,14 +68,14 @@ export const authService = {
         return { success: true, user };
     },
 
-    async getPlans() {
+    async getPlans(): Promise<Plan[]> {
         const result = await api.plans.getAll();
-        const plans  = toArray(result);
+        const plans  = toArray<Plan>(result);
         return [...plans].sort((a, b) => (a.order || 0) - (b.order || 0));
     },
 
-    validateSignupForm(formData) {
-        const errors   = {};
+    validateSignupForm(formData: SignupFormData): ValidationResult {
+        const errors: Record<string, string> = {};
         const fullName = sanitizeText(`${formData.firstName || ''} ${formData.lastName || ''}`);
         const email    = (formData.email || '').trim().toLowerCase();
         const phone    = sanitizePhone(formData.phone || '');
@@ -101,9 +122,9 @@ export const authService = {
         };
     },
 
-    async validateSignupAgainstUsers(formData) {
+    async validateSignupAgainstUsers(formData: SignupFormData): Promise<{ valid: boolean; message?: string; fields?: any }> {
         const result = await api.users.getAll();
-        const users  = toArray(result);
+        const users  = toArray<User>(result);
 
         const duplicate = users.find(
             (item) =>
@@ -127,7 +148,7 @@ export const authService = {
         return { valid: true };
     },
 
-    async startEmailVerification(payload) {
+    async startEmailVerification(payload: SignupFormData) {
         const verificationCode = '000000';
         const data = {
             ...payload,
@@ -144,7 +165,7 @@ export const authService = {
         };
     },
 
-    startLoginVerification(payload) {
+    startLoginVerification(payload: any) {
         const verificationCode = '000000';
         const data = {
             ...payload,
@@ -160,7 +181,7 @@ export const authService = {
         };
     },
 
-    verifyLoginCode(code) {
+    verifyLoginCode(code: string | number) {
         const pendingRaw = sessionStorage.getItem(PENDING_LOGIN_KEY);
         if (!pendingRaw)
             return { success: false, message: 'Giriş doğrulama oturumu bulunamadı.' };
@@ -178,15 +199,15 @@ export const authService = {
         return { success: true, userId: pending.userId, rememberMe: pending.rememberMe };
     },
 
-    async requestPasswordResetLink({ email, phone, channel }) {
+    async requestPasswordResetLink({ email, phone, channel }: { email: string; phone: string; channel: string }) {
         const result = await api.users.getAll();
-        const users  = toArray(result);
+        const users  = toArray<User>(result);
 
         const normalizedEmail = (email || '').trim().toLowerCase();
         const normalizedPhone = sanitizePhone(phone || '');
         const method          = channel === 'sms' ? 'sms' : 'email';
 
-        let foundUser = null;
+        let foundUser: User | undefined;
         if (method === 'email') {
             if (!emailRegex.test(normalizedEmail))
                 return { success: false, message: 'Geçerli e-posta gir.' };
@@ -212,7 +233,7 @@ export const authService = {
         };
     },
 
-    verifyEmailCode(code) {
+    verifyEmailCode(code: string | number) {
         const pendingRaw = sessionStorage.getItem(PENDING_SIGNUP_KEY);
         if (!pendingRaw)
             return { success: false, message: 'Doğrulama oturumu bulunamadı.' };
@@ -273,11 +294,11 @@ export const authService = {
         return { success: true, userDraft: pending };
     },
 
-    isFreePlan(plan) {
+    isFreePlan(plan: Plan) {
         return Number(plan?.price) === 0 || String(plan?.badge || '').toLowerCase() === 'free';
     },
 
-    sanitizeVerificationCodeInput(value) {
+    sanitizeVerificationCodeInput(value: string | number) {
         return sanitizeCode(String(value || ''));
     },
 };

@@ -3,7 +3,6 @@ import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useTeam } from '../../../context/TeamContext';
 import { tripsService } from '../services/tripsService';
-import { archiveService } from '../../archive/services/archiveServices';
 import './CreateTrip.css';
 
 const CATEGORIES = [
@@ -107,8 +106,6 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
             } else {
                 await tripsService.createTrip(payload);
             }
- 
-            archiveService.invalidate();
  
             if (onSuccess) onSuccess();
             onClose();

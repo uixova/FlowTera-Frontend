@@ -1,13 +1,25 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 
-const TeamContext = createContext();
+// Context için esnek bir tip tanımı
+interface TeamContextType {
+    selectedTeamId: string | null;
+    activeTeam: any; // İçerideki nesne yapısını bozmamak için esnek bıraktık
+    selectTeam: (teamId: any) => void;
+    clearTeam: () => void;
+}
+
+const TeamContext = createContext<TeamContextType | undefined>(undefined);
 
 const TEAM_ID_KEY    = 'tm_selected_id';
 const TEAMS_CACHE_KEY = 'tm_teams_cache';
 const VIEW_MODE_KEY  = 'tm_view_mode';
 
-export const TeamProvider = ({ children }) => {
-    const [selectedTeamId, setSelectedTeamId] = useState(
+interface TeamProviderProps {
+    children: React.ReactNode;
+}
+
+export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
+    const [selectedTeamId, setSelectedTeamId] = useState<string | null>(
         () => localStorage.getItem(TEAM_ID_KEY) || null
     );
 
@@ -18,14 +30,14 @@ export const TeamProvider = ({ children }) => {
             const rawCache = localStorage.getItem(TEAMS_CACHE_KEY);
             if (!rawCache) return null;
             const teams = JSON.parse(rawCache);
-            return teams.find(t => String(t.id) === String(selectedTeamId)) || null;
+            return teams.find((t: any) => String(t.id) === String(selectedTeamId)) || null;
         } catch (e) {
             console.error('Team Context Cache Parse Error:', e);
             return null;
         }
     }, [selectedTeamId]);
 
-    const selectTeam = useCallback((teamId) => {
+    const selectTeam = useCallback((teamId: any) => {
         const id = String(teamId);
         localStorage.setItem(TEAM_ID_KEY, id);
         localStorage.setItem(VIEW_MODE_KEY, 'main');
@@ -62,9 +74,8 @@ export const TeamProvider = ({ children }) => {
     );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useTeam = () => {
-    const context = useContext(TeamContext);
+    const context = useContext(TeamContext); 
     if (!context) {
         throw new Error('useTeam must be used within a TeamProvider');
     }

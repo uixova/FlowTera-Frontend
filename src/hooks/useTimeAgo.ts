@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 
-export const useTimeAgo = (dateString) => {
-    const [timeAgo, setTimeAgo] = useState('');
+export const useTimeAgo = (dateString: string | null | undefined): string => {
+    const [timeAgo, setTimeAgo] = useState<string>('');
 
     useEffect(() => {
         const calculateTime = () => {
-            if (!dateString) return;
+            if (!dateString) {
+                setTimeAgo('');
+                return;
+            }
 
             // DD/MM/YYYY formatını YYYY-MM-DD'ye çevirerek güvenli hale getiriyoruz
             let formattedDate = dateString;
@@ -22,7 +25,8 @@ export const useTimeAgo = (dateString) => {
                 return;
             }
 
-            const diffInSeconds = Math.floor((now - createdDate) / 1000);
+            // İki tarihi birbirinden çıkarırken .getTime() kullanarak TS'nin hata vermesini önlüyoruz
+            const diffInSeconds = Math.floor((now.getTime() - createdDate.getTime()) / 1000);
 
             if (diffInSeconds < 0) {
                 // Gelecek bir tarihse 

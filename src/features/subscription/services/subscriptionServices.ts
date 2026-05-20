@@ -1,15 +1,23 @@
 import { api } from '../../../api/api';
+import { User, Plan } from '@/types/types';
 
-const extractList = (response) => {
+export interface UserSubscriptionResult extends NonNullable<User['subscription']> {
+    planName: string;
+    planDetails: Plan | null;
+}
+
+// Paginated veya düz array'den veriyi güvenle çıkar
+const extractList = <T>(response: any): T[] => {
     if (!response) return [];
     if (Array.isArray(response)) return response;
     if (Array.isArray(response.data)) return response.data;
     return [];
 };
+
 export const subscriptionService = {
 
     // Mevcut kullanıcı aboneliğini getir
-    getUserSubscription: async (userId) => {
+    async getUserSubscription(userId: string | number): Promise<UserSubscriptionResult | null> {
         if (!userId) return null;
 
         const [usersResponse, plansResponse] = await Promise.all([
@@ -17,13 +25,13 @@ export const subscriptionService = {
             api.plans.getAll()
         ]);
 
-        const users = extractList(usersResponse);
+        const users = extractList<User>(usersResponse);
         const plans = Array.isArray(plansResponse)
-            ? plansResponse
-            : extractList(plansResponse);
+            ? (plansResponse as Plan[])
+            : extractList<Plan>(plansResponse);
 
         const user = users.find(u => String(u.id) === String(userId));
-        if (!user) return null;
+        if (!user || !user.subscription) return null;
 
         const userPlanId = user.subscription?.planId;
         const linkedPlan = plans.find(p => String(p.id) === String(userPlanId));
@@ -36,23 +44,23 @@ export const subscriptionService = {
     },
 
     // Tüm mevcut planları getir 
-    getAvailablePlans: async () => {
+    async getAvailablePlans(): Promise<Plan[]> {
         const response = await api.plans.getAll();
         const plans = Array.isArray(response)
-            ? response
-            : extractList(response);
-        return [...plans].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+            ? (response as Plan[])
+            : extractList<Plan>(response);
+        return [...plans].sort((a, b) => ((a as any).price ?? 0) - ((b as any).price ?? 0));
     },
 
     // Kullanıcının belirli bir feature'a erişimi var mı 
-    hasFeature: async (userId, featureKey) => {
+    async hasFeature(userId: string | number, featureKey: string): Promise<boolean> {
         if (!userId || !featureKey) return false;
-        const subscription = await subscriptionService.getUserSubscription(userId);
+        const subscription = await this.getUserSubscription(userId);
         return subscription?.feature_keys?.includes(featureKey) ?? false;
     },
 
     // Abonelik güncelleme (simülasyon) 
-    updateSubscription: async (userId, planId) => {
+    async updateSubscription(userId: string | number, planId: string | number): Promise<{ success: boolean; message: string }> {
         if (!userId || !planId) return { success: false, message: "Eksik parametre." };
         // Gelecekte: return await api.fetch('USERS', {}, { method: 'PATCH', body: { planId } });
         console.log(`[API UPDATE] User: ${userId} → Plan: ${planId}`);
@@ -60,7 +68,7 @@ export const subscriptionService = {
     },
 
     // Abonelik iptali (simülasyon) 
-    cancelSubscription: async (userId) => {
+    async cancelSubscription(userId: string | number): Promise<{ success: boolean; message: string }> {
         if (!userId) return { success: false, message: "Kullanıcı kimliği eksik." };
         // Gelecekte: return await api.fetch('USERS', {}, { method: 'DELETE' });
         console.log(`[API DELETE] User: ${userId} aboneliği iptal edildi.`);

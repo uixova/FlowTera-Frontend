@@ -89,6 +89,7 @@ const Profile = ({ user }) => {
                             value={phone} 
                             onChange={setPhone} 
                             placeholder="5xx xxx xx xx"
+                            authMode={true}
                         />
                     </div>
                 </div>

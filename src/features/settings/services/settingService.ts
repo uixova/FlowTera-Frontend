@@ -1,5 +1,5 @@
 import { api } from '../../../api/api';
-import type { PaginatedResponse, User, LogData } from '../../../api/api.types';
+import type { PaginatedResponse, User, LogData } from '../../../types/types';
 import type {
     SettingsUserResult,
     SettingsNotifications,

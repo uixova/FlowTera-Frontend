@@ -7,7 +7,7 @@ import type {
     LogData,
     Plan,
     PaginatedResponse,
-} from './api.types';
+} from '../types/types';
 
 // İçsel Tipler #######################################################################################
 

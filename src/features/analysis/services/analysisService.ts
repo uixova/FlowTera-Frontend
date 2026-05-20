@@ -1,6 +1,10 @@
 import { api } from '../../../api/api';
+import { Expense, Trip, Team } from '@/types/types';
 
-const extractList = (response) => {
+// Fonksiyon imzası: Harcama veya Seyahat nesnesini para birimine göre dönüştürür
+type ConvertFn = (item: Expense | Trip, currency: string) => number;
+
+const extractList = <T>(response: any): T[] => {
     if (!response) return [];
     if (Array.isArray(response)) return response;
     if (Array.isArray(response.data)) return response.data;
@@ -9,7 +13,7 @@ const extractList = (response) => {
 
 export const analysisService = {
 
-    getTeamAnalysis: async (teamId, viewMode = 'all', convertFn) => {
+    getTeamAnalysis: async (teamId: string | number, viewMode: 'all' | 'expenses' | 'trips' = 'all', convertFn: ConvertFn) => {
 
         const [expensesRes, tripsRes, teamsRes] = await Promise.all([
             api.expenses.getAll({ pageSize: 2000 }),
@@ -17,9 +21,9 @@ export const analysisService = {
             api.teams.getAll({ pageSize: 500 })
         ]);
 
-        const expenses = extractList(expensesRes);
-        const trips    = extractList(tripsRes);
-        const teams    = extractList(teamsRes);
+        const expenses = extractList<Expense>(expensesRes);
+        const trips    = extractList<Trip>(tripsRes);
+        const teams    = extractList<Team>(teamsRes);
 
         const currentTeam = teams.find(t => String(t.id) === String(teamId));
         const teamCurrency = currentTeam?.settings?.currency || 'USD';
@@ -28,15 +32,15 @@ export const analysisService = {
         const teamExpenses = expenses.filter(e => String(e.teamId) === String(teamId));
         const teamTrips    = trips.filter(t => String(t.teamId) === String(teamId));
 
-        const targetData =
+        const targetData: (Expense | Trip)[] =
             viewMode === 'expenses' ? teamExpenses :
             viewMode === 'trips'    ? teamTrips    :
                                      [...teamExpenses, ...teamTrips];
 
-        const getValue = (item) => convertFn(item, teamCurrency);
+        const getValue = (item: Expense | Trip) => convertFn(item, teamCurrency);
 
         // Güvenli tarih parse 
-        const parseDate = (str) => {
+        const parseDate = (str?: string) => {
             if (!str) return null;
             const parts = str.split('/').map(Number);
             if (parts.length !== 3) return null;
@@ -45,21 +49,20 @@ export const analysisService = {
             return { day: d, month: m - 1, year: y };
         };
 
-        const getDate = (item) => parseDate(item.date || item.startDate);
+        const getDate = (item: Expense | Trip) => parseDate(item.date || (item as Trip).startDate);
 
         // "YYYY-MM" formatında ay anahtarı
-        const monthKey = (d) =>
+        const monthKey = (d: { year: number; month: number }) =>
             `${d.year}-${String(d.month).padStart(2, '0')}`;
 
         const now = new Date();
-
         const currentKey = `${now.getFullYear()}-${String(now.getMonth()).padStart(2, '0')}`;
 
         const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
         const prevKey  = `${prevDate.getFullYear()}-${String(prevDate.getMonth()).padStart(2, '0')}`;
 
         // Aylık toplamlar
-        const monthlyMap = {};
+        const monthlyMap: Record<string, number> = {};
 
         targetData.forEach(item => {
             const d = getDate(item);
@@ -92,8 +95,8 @@ export const analysisService = {
         }, 0).toFixed(2));
 
         // Kategori dağılımı 
-        const categoryData = targetData.reduce((acc, item) => {
-            const name = item.category || item.destination || 'Diğer';
+        const categoryData: Array<{ name: string; value: number }> = targetData.reduce((acc: any[], item) => {
+            const name = (item as Expense).category || (item as Trip).destination || 'Diğer';
             const val  = getValue(item);
             const found = acc.find(i => i.name === name);
             if (found) {
@@ -105,7 +108,7 @@ export const analysisService = {
         }, []);
 
         // Cash flow (aylık) 
-        const cashFlowMap = {};
+        const cashFlowMap: Record<string, { month: string; amount: number; order: number }> = {};
 
         targetData.forEach(item => {
             const d = getDate(item);
@@ -129,7 +132,7 @@ export const analysisService = {
             .map(({ month, amount }) => ({ month, amount }));
 
         // Durum dağılımı
-        const normalize = (s) => s?.toLowerCase().replace(/\s/g, '');
+        const normalize = (s?: string) => s?.toLowerCase().replace(/\s/g, '');
 
         const statusCount = targetData.reduce(
             (acc, item) => {

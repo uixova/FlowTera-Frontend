@@ -1,4 +1,4 @@
-import type { UserLog, UserNotificationSettings } from '../../../api/api.types';
+import type { UserLog, UserNotificationSettings } from '../../../types/types';
 
 // Servis Dönüş Tipleri
 

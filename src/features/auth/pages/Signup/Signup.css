@@ -42,9 +42,10 @@
   margin-top: 6px;
 }
 
+/* Ad ve Soyad alanlarının yan yana durmasını sağlayan grid */
 .signup-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
@@ -71,7 +72,7 @@
   color: #e2e2e6;
 }
 
-/* Checkbox */
+/* Checkbox Alanları */
 .auth-checkboxes {
   display: flex;
   flex-direction: column;
@@ -138,6 +139,11 @@
   flex: 1;
 }
 
+.phone-field > div > div {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
 .auth-link {
   color: #4cc9f0;
   text-decoration: none;
@@ -155,35 +161,7 @@
   cursor: not-allowed;
 }
 
-.signup-form .pn-root {
-  margin-top: 4px;
-}
-
-.signup-form .pn-input-row {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  transition: all 0.2s ease;
-}
-
-.signup-form .pn-focused {
-  border-color: #4361ee !important;
-  background: rgba(67, 97, 238, 0.05);
-}
-
-.signup-form .pn-number-input {
-  color: #fff !important;
-}
-
-.signup-form .pn-dropdown {
-  background: #1a1a1f !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.signup-form .pn-option:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
-}
-
+/* Responsive Kırılımlar */
 @media (max-width: 900px) {
   .signup-card {
     padding: 24px 18px;

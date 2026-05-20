@@ -235,13 +235,12 @@ function SignupPage() {
                 {formErrors.email && <small className="field-error">{formErrors.email}</small>}
               </div>
 
-              <div className="auth-field">
+              <div className="auth-field phone-field">
                 <label htmlFor="phone">TELEFON</label>
                 <PhoneNumber 
                   value={formData.phone} 
                   onChange={handlePhoneChange} 
-                  error={formErrors.phone} 
-                  authMode={true}
+                  error={formErrors.phone}
                 />
               </div>
 

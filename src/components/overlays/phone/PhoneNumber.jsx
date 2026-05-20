@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { usePhoneCountry } from '../../../hooks/usePhoneCountry';
 import Flags from 'country-flag-icons/react/3x2';
 import './PhoneNumber.css';
@@ -39,6 +40,9 @@ const PhoneNumber = ({ value = '', onChange, error, authMode = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   
+  // Dropdown'ın ekrandaki yerini tutacak state
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+
   const getLocalNum = (val, country) => {
     const rawDigits = val.replace(/\D/g, '');
     if (val) {
@@ -51,21 +55,48 @@ const PhoneNumber = ({ value = '', onChange, error, authMode = false }) => {
   const [localNum, setLocalNum] = useState(() => getLocalNum(value, defaultCountry));
   const [isUp, setIsUp] = useState(false);
   const inputRef = useRef(null);
-
   const wrapRef = useRef(null);
   const searchRef = useRef(null);
 
-  const checkSpace = () => {
+  // Portal için konum hesaplama fonksiyonu
+  const updateDropdownPosition = useCallback(() => {
     if (wrapRef.current) {
       const rect = wrapRef.current.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
-      setIsUp(spaceBelow < 280);
+      const computedIsUp = spaceBelow < 280;
+      
+      setIsUp(computedIsUp);
+      
+      setCoords({
+        // Eğer yukarı doğru açılacaksa inputun üst çizgisinden yukarı taşırız, aşağıysa altından başlatırız
+        top: computedIsUp 
+          ? rect.top + window.scrollY 
+          : rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      });
     }
-  };
+  }, []);
+
+  // Dropdown açıkken pencere kaydırılırsa veya boyutu değişirse pozisyonu güncelle
+  useEffect(() => {
+    if (isOpen) {
+      updateDropdownPosition();
+      window.addEventListener('resize', updateDropdownPosition);
+      window.addEventListener('scroll', updateDropdownPosition, true); // capture: true modal/scroll içi durumlar için iyi olur
+    }
+    return () => {
+      window.removeEventListener('resize', updateDropdownPosition);
+      window.removeEventListener('scroll', updateDropdownPosition, true);
+    };
+  }, [isOpen, updateDropdownPosition]);
 
   useEffect(() => {
     const handler = (e) => {
       if (wrapRef.current && !wrapRef.current.contains(e.target)) {
+        // Eğer tıklanan yer açılan portal dropdown'ının içindeyse kapatma
+        if (e.target.closest('.pn-dropdown')) return;
+        
         setIsOpen(false);
         setSearch('');
       }
@@ -130,7 +161,7 @@ const PhoneNumber = ({ value = '', onChange, error, authMode = false }) => {
         <button
           type="button"
           className="pn-trigger"
-          onClick={() => { checkSpace(); setIsOpen((v) => !v); }}
+          onClick={() => setIsOpen((v) => !v)}
         >
           <div className="pn-flag-container">
             <FlagIcon code={selected.code} className="pn-svg-flag" />
@@ -152,8 +183,18 @@ const PhoneNumber = ({ value = '', onChange, error, authMode = false }) => {
         />
       </div>
 
-      {isOpen && (
-        <div className={`pn-dropdown ${isUp ? 'open-up' : ''}`}>
+      {/* PORTAL BURADA BAŞLIYOR */}
+      {isOpen && createPortal(
+        <div 
+          className={`pn-dropdown ${isUp ? 'open-up' : ''}`}
+          style={{
+            position: 'absolute',
+            top: `${coords.top}px`,
+            left: `${coords.left}px`,
+            width: `${coords.width}px`,
+            zIndex: 9999 // Üstte kalması için yüksek bir z-index
+          }}
+        >
           <div className="pn-search-wrap">
             <input
               ref={searchRef}
@@ -182,7 +223,8 @@ const PhoneNumber = ({ value = '', onChange, error, authMode = false }) => {
               ))
             )}
           </ul>
-        </div>
+        </div>,
+        document.body // DOM'da direkt body'nin altına ışınlıyoruz
       )}
 
       {error && (
@@ -194,6 +236,7 @@ const PhoneNumber = ({ value = '', onChange, error, authMode = false }) => {
           {error}
         </small>
       )}
+      
     </div>
   );
 };

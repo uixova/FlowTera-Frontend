@@ -1,7 +1,23 @@
 import { api } from '../../../api/api';
+import { Expense, Trip, Team, User } from '@/types/types';
 
-// Paginated veya düz array'den veriyi güvenle çıkar 
-const extractList = (response) => {
+// Dashboard'un geri döndüğü karmaşık veri yapısı için arayüz
+export interface DashboardData {
+    stats: {
+        pendingCount: number;
+        activeTrips: number;
+        totalExpenses: string;
+        rejectedCount: number;
+    };
+    monthlyTrend: Array<{ name: string; amount: number }>;
+    categoryDistribution: Array<{ name: string; value: number; color: string }>;
+    myActivities: Array<{ id: string; subject: string; type: string; teamName: string; category: string; amount: string; date: string }>;
+    typeComparison: Array<{ name: string; value: number }>;
+    teamSpending: Array<{ name: string; amount: number }>;
+    userTeams: Array<{ id: string; name: string }>;
+}
+
+const extractList = <T>(response: any): T[] => {
     if (!response) return [];
     if (Array.isArray(response)) return response;
     if (Array.isArray(response.data)) return response.data;
@@ -10,7 +26,7 @@ const extractList = (response) => {
 
 export const dashboardService = {
 
-    getDashboardStats: async (currentUserId) => {
+    getDashboardStats: async (currentUserId: string | number): Promise<DashboardData | null> => {
         try {
             const normalizedCurrentUserId = String(currentUserId);
 
@@ -21,16 +37,16 @@ export const dashboardService = {
                 api.users.getAll({ pageSize: 1000 })
             ]);
 
-            const expenses = extractList(expensesRes);
-            const trips    = extractList(tripsRes);
-            const allTeams = extractList(teamsRes);
-            const allUsers = extractList(usersRes);
+            const expenses = extractList<Expense>(expensesRes);
+            const trips    = extractList<Trip>(tripsRes);
+            const allTeams = extractList<Team>(teamsRes);
+            const allUsers = extractList<User>(usersRes);
 
             if (!expenses || !trips || !allTeams) return null;
 
             // Kullanıcının kendi verilerini filtreleme
-            const getOwnerId = (item) =>
-                item?.createdBy?.id ?? item?.userId ?? item?.submitterId ?? null;
+            const getOwnerId = (item: Expense | Trip) =>
+                item.createdBy?.id ?? (item as any).userId ?? (item as any).submitterId ?? null;
 
             const userExpenses = expenses.filter(
                 e => String(getOwnerId(e)) === normalizedCurrentUserId
@@ -40,7 +56,7 @@ export const dashboardService = {
             );
 
             // Takım ismini ID'den bul
-            const getTeamName = (teamId) => {
+            const getTeamName = (teamId: string | number) => {
                 const team = allTeams.find(t => String(t.id) === String(teamId));
                 return team ? team.name : "Bilinmeyen Takım";
             };
@@ -79,13 +95,13 @@ export const dashboardService = {
                 {
                     name: 'Trips',
                     value: parseFloat(userTrips.reduce(
-                        (sum, t) => sum + (parseFloat(t.amount) || 0), 0
+                        (sum, t) => sum + (parseFloat(String(t.amount)) || 0), 0
                     ).toFixed(2))
                 }
             ];
 
             // Takımlara göre harcama dağılımı
-            const teamSpending = userExpenses.reduce((acc, exp) => {
+            const teamSpending = userExpenses.reduce((acc: any[], exp) => {
                 const tName = getTeamName(exp.teamId);
                 const existing = acc.find(item => item.name === tName);
                 if (existing) {
@@ -97,7 +113,7 @@ export const dashboardService = {
             }, []);
 
             // Aylık harcama trendi
-            const monthlyTrend = userExpenses.reduce((acc, exp) => {
+            const monthlyTrend = userExpenses.reduce((acc: any[], exp) => {
                 if (!exp.date) return acc;
                 const parts = exp.date.split('/');
                 if (parts.length < 2) return acc;
@@ -112,11 +128,11 @@ export const dashboardService = {
                 }
                 return acc;
             }, []).sort(
-                (a, b) => new Date(`${a.name} 1`) - new Date(`${b.name} 1`)
+                (a: any, b: any) => new Date(`${a.name} 1`).getTime() - new Date(`${b.name} 1`).getTime()
             );
 
             // Kategori dağılımı 
-            const categoryMap = {
+            const categoryMap: Record<string, string> = {
                 'Infrastructure':   '#9d4edd',
                 'Food & Beverage':  '#4361ee',
                 'Office Equipment': '#e63946',
@@ -126,7 +142,7 @@ export const dashboardService = {
                 'Food':             '#4361ee'
             };
 
-            const categoryDistribution = userExpenses.reduce((acc, exp) => {
+            const categoryDistribution = userExpenses.reduce((acc: any[], exp) => {
                 const existing = acc.find(item => item.name === exp.category);
                 if (existing) {
                     existing.value = parseFloat((existing.value + (exp.amount ?? 0)).toFixed(2));
@@ -161,7 +177,7 @@ export const dashboardService = {
                     date: trip.date
                 }))
             ].sort((a, b) => {
-                const toMs = (dateStr) => {
+                const toMs = (dateStr: string) => {
                     if (!dateStr) return 0;
                     const parts = dateStr.split('/');
                     if (parts.length !== 3) return 0;

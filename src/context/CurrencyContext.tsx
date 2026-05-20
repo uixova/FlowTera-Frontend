@@ -1,22 +1,35 @@
 import React, { createContext, useState, useContext, useCallback, useMemo } from 'react';
 
-const CurrencyContext = createContext();
+interface CurrencyContextType {
+    selectedCurrency: string;
+    updateCurrency: (code: string) => void;
+    convert: (item: any, targetCurrency: string) => number;
+    format: (value: number, currency?: string) => string;
+    formatMonthYear: (date?: Date | string | null) => string;
+    symbol: string;
+}
 
-const CURRENCY_SYMBOLS = { USD: '$', TRY: '₺', EUR: '€', GBP: '£' };
+const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
+
+const CURRENCY_SYMBOLS: Record<string, string> = { USD: '$', TRY: '₺', EUR: '€', GBP: '£' };
 const CURRENCY_STORAGE_KEY = 'selectedCurrency';
 const RATES_STORAGE_KEY = 'tm_saved_rates';
 
-export const CurrencyProvider = ({ children }) => {
-    const [selectedCurrency, setSelectedCurrency] = useState(() => {
+interface CurrencyProviderProps {
+    children: React.ReactNode;
+}
+
+export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) => {
+    const [selectedCurrency, setSelectedCurrency] = useState<string>(() => {
         return sessionStorage.getItem(CURRENCY_STORAGE_KEY) || 'USD';
     });
 
-    const updateCurrency = useCallback((code) => {
+    const updateCurrency = useCallback((code: string) => {
         setSelectedCurrency(code);
         sessionStorage.setItem(CURRENCY_STORAGE_KEY, code);
     }, []);
 
-    const convert = useCallback((item, targetCurrency) => {
+    const convert = useCallback((item: any, targetCurrency: string): number => {
         const amount = parseFloat(item.amount) || 0;
         const itemCurrency = item.currency || 'USD';
 
@@ -42,15 +55,15 @@ export const CurrencyProvider = ({ children }) => {
         return amount;
     }, []);
 
-    const format = useCallback((value, currency) => {
+    const format = useCallback((value: number, currency?: string): string => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: currency || selectedCurrency,
         }).format(value || 0);
     }, [selectedCurrency]);
 
-    const formatMonthYear = useCallback((date) => {
-        const d = date instanceof Date ? date : new Date();
+    const formatMonthYear = useCallback((date?: Date | string | null): string => {
+        const d = date instanceof Date ? date : (date ? new Date(date) : new Date());
         return d.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
     }, []);
 
@@ -71,4 +84,10 @@ export const CurrencyProvider = ({ children }) => {
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useCurrency = () => useContext(CurrencyContext);
+export const useCurrency = () => {
+    const context = useContext(CurrencyContext);
+    if (!context) {
+        throw new Error('useCurrency must be used within a CurrencyProvider');
+    }
+    return context;
+};

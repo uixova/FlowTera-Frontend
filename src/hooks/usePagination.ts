@@ -1,14 +1,27 @@
 import { useState, useCallback, useEffect } from 'react';
 
-export const usePagination = (serviceMethod, externalId, limit = 20) => {
-    const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [loadingMore, setLoadingMore] = useState(false);
-    const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(false);
-    const [totalCount, setTotalCount] = useState(0);
+// Servis metodunun dışarıya döneceği response yapısı (senin paginated interface'inle uyumlu)
+interface PaginationResponse<T> {
+    data: T[];
+    hasMore: boolean;
+    total?: number;
+    totalCount?: number; 
+    [key: string]: any;
+}
 
-    const loadData = useCallback(async (targetPage, isFirstLoad = false) => {
+export const usePagination = <T>(
+    serviceMethod: (id: any, page: number, limit: number) => Promise<PaginationResponse<T>>,
+    externalId: any,
+    limit: number = 20
+) => {
+    const [data, setData] = useState<T[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [loadingMore, setLoadingMore] = useState<boolean>(false);
+    const [page, setPage] = useState<number>(1);
+    const [hasMore, setHasMore] = useState<boolean>(false);
+    const [totalCount, setTotalCount] = useState<number>(0);
+
+    const loadData = useCallback(async (targetPage: number, isFirstLoad: boolean = false) => {
         try {
             if (isFirstLoad) setLoading(true);
             else setLoadingMore(true);
@@ -23,7 +36,7 @@ export const usePagination = (serviceMethod, externalId, limit = 20) => {
             }
             
             setHasMore(response.hasMore);
-            setTotalCount(response.totalCount ?? 0);
+            setTotalCount(response.totalCount ?? response.total ?? 0);
         } catch (error) {
             console.error("Pagination Hook Error:", error);
         } finally {

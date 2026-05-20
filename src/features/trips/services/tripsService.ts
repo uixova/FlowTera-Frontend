@@ -1,7 +1,20 @@
 import { api } from '../../../api/api';
+import { Trip, User } from '@/types/types';
+import { dataEvents } from '../../../hooks/useDataRefresh';
 
-// Paginated veya düz array'den veriyi güvenle çıkar
-const extractList = (response) => {
+export interface EnrichedTrip extends Trip {
+    userName: string;
+    userAvatar: string | null;
+    userPlan: string;
+}
+
+interface TripFetchResult {
+    data: EnrichedTrip[];
+    hasMore: boolean;
+    totalCount: number;
+}
+
+const extractList = <T>(response: any): T[] => {
     if (!response) return [];
     if (Array.isArray(response)) return response;
     if (Array.isArray(response.data)) return response.data;
@@ -10,23 +23,22 @@ const extractList = (response) => {
 
 export const tripsService = {
 
-    // Seyahatleri kullanıcı verileriyle zenginleştir
-    enrichTripsWithUserData: async (trips) => {
-        if (!trips?.length) return trips ?? [];
+    enrichTripsWithUserData: async (trips: Trip[]): Promise<EnrichedTrip[]> => {
+        if (!trips?.length) return [];
 
         const usersResponse = await api.users.getAll({ pageSize: 1000 });
-        const users = extractList(usersResponse);
+        const users = extractList<User>(usersResponse);
 
         return trips.map(trip => {
             const ownerId =
                 trip.createdBy?.id ??
-                trip.userId ??
-                trip.ownerId ??
-                trip.createdById ??
+                (trip as any).userId ??
+                (trip as any).ownerId ??
+                (trip as any).createdById ??
                 null;
 
             const owner = ownerId
-                ? users.find(u => String(u.id) === String(ownerId))
+                ? users.find((u: User) => String(u.id) === String(ownerId))
                 : null;
 
             const isDeleted = Boolean(owner?.isDeleted);
@@ -42,14 +54,11 @@ export const tripsService = {
         });
     },
 
-    // Takım ID'sine göre seyahatleri getir 
-    getTripsByTeam: async (teamId, page = 1, limit = 20) => {
+    getTripsByTeam: async (teamId: string, page: number = 1, limit: number = 20): Promise<TripFetchResult> => {
         if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
 
-        // Backend hazır olduğunda teamId filtresi
-        // sunucu tarafına taşınacak: api.trips.getAll({ teamId, page, pageSize: limit })
         const response = await api.trips.getAll({ pageSize: 2000 });
-        const allTrips = extractList(response);
+        const allTrips = extractList<Trip>(response);
 
         if (!allTrips.length) return { data: [], hasMore: false, totalCount: 0 };
 
@@ -57,7 +66,6 @@ export const tripsService = {
             trip => String(trip.teamId).trim() === String(teamId).trim()
         );
 
-        // Servis katmanında sayfalama - Mock için tabiki
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
         const paginatedData = filtered.slice(startIndex, endIndex);
@@ -71,10 +79,11 @@ export const tripsService = {
         };
     },
 
-    // Seyahat ID'sine göre tek seyahati getir
-    getTripById: async (tripId) => {
+    getTripById: async (tripId: string): Promise<EnrichedTrip | null> => {
+        if (!tripId) return null;
+
         const response = await api.trips.getAll({ pageSize: 2000 });
-        const allTrips = extractList(response);
+        const allTrips = extractList<Trip>(response);
 
         const trip = allTrips.find(t => String(t.id) === String(tripId));
         if (!trip) return null;
@@ -83,24 +92,22 @@ export const tripsService = {
         return enriched[0] ?? null;
     },
 
-    // Yeni seyahat oluşturma (simülasyon)
-    createTrip: async (tripData) => {
-        // Gelecekte: return await api.fetch('TRIPS', {}, { method: 'POST', body: tripData });
+    // --- VERİ DEĞİŞTİREN İŞLEMLERDE NOTIFYCHANGE TETİKLENDİ ---
+    createTrip: async (tripData: Partial<Trip>): Promise<{ success: boolean; data: Partial<Trip> }> => {
         console.log("[API CREATE] New Trip Payload:", tripData);
+        dataEvents.notify(); // 🚀 Sistem artık seyahat eklendiğinden haberdar
         return { success: true, data: tripData };
     },
 
-    // Seyahat güncelleme (simülasyon)
-    updateTrip: async (id, tripData) => {
-        // Gelecekte: return await api.fetch('TRIPS', {}, { method: 'PUT', body: tripData });
+    updateTrip: async (id: string, tripData: Partial<Trip>): Promise<{ success: boolean }> => {
         console.log(`[API UPDATE] Trip ID: ${id}`, tripData);
+        dataEvents.notify(); // 🚀
         return { success: true };
     },
 
-    // Seyahat silme
-    deleteTrip: async (id) => {
-        // Gelecekte: return await api.trips.delete(id);
+    deleteTrip: async (id: string): Promise<{ success: boolean }> => {
         console.log(`${id} ID'li seyahat siliniyor.`);
+        dataEvents.notify(); // 🚀
         return { success: true };
     }
 };
