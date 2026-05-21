@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { api } from '../api/api';
 import { authService, VERIFIED_SIGNUP_KEY } from '../features/auth/services/authService';
+import { socketClient } from '../api/socketClient';
 
 interface AuthContextType {
     currentUser: any | null;
@@ -21,6 +22,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const AUTH_USER_ID_KEY = 'auth_user_id';
+const AUTH_TOKEN_KEY   = 'auth_token'; // Backend gelince JWT buradan okunur
 
 interface AuthProviderProps {
     children: React.ReactNode;
@@ -28,7 +30,6 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [currentUserId, setCurrentUserId] = useState<string | null>(() => {
-        // Orijinal kodundaki u1 mantığını aynen koruyoruz
         return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || "u1";
     });
     const [currentUser, setCurrentUser] = useState<any | null>(null);
@@ -43,7 +44,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const logout = useCallback(() => {
         isLoggingOut.current = true;
+
+        // WS bağlantısını kapat
+        socketClient.disconnect();
+
         localStorage.removeItem(AUTH_USER_ID_KEY);
+        localStorage.removeItem(AUTH_TOKEN_KEY);
         sessionStorage.removeItem(AUTH_USER_ID_KEY);
         localStorage.removeItem('tm_selected_id');
         setCurrentUserId(null);
@@ -82,6 +88,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 ]);
                 const userTeams = teamsArray.filter((t: any) => userTeamIds.has(String(t.id)));
                 setTeams(userTeams);
+
+                // Kullanıcı yüklendikten sonra WS bağlantısını kur
+                // Backend gelince token localStorage'dan okunacak, mock'ta userId yeterli
+                const token = localStorage.getItem(AUTH_TOKEN_KEY) || `mock_token_${userId}`;
+                socketClient.connect(token, userId);
+
+                // Kişisel bildirim odasına katıl
+                socketClient.joinRoom(`user:${userId}`);
             } else {
                 // Signup akışından gelen geçici session kullanıcısı
                 const rawSessionUser = sessionStorage.getItem(VERIFIED_SIGNUP_KEY);
@@ -98,7 +112,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     }
                 }
                 logout();
-                return; 
+                return;
             }
         } catch (error) {
             console.error('[AuthContext] fetchUser hatası:', error);
@@ -133,8 +147,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthError(null);
         try {
             const result = await authService.loginWithEmail(email, password);
-        
-            // Hata buradaydı: result.user var mı diye kontrol etmemiz gerekiyor
+
             if (result.success && result.user) {
                 setPendingUser({ ...result.user, rememberMe });
                 await authService.startLoginVerification({
@@ -145,7 +158,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 setAuthStep('verify');
                 return { success: true };
             }
-        
+
             setAuthError(result.message || 'E-posta veya şifre hatalı.');
             return { success: false };
         } catch (error) {
