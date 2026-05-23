@@ -1,20 +1,25 @@
 import React from 'react';
 
 const CATEGORIES = [
-    { value: '',          label: 'Tüm Kategoriler' },
-    { value: 'Business',  label: 'İş Gezisi'       },
-    { value: 'Vacation',  label: 'Tatil'            },
-    { value: 'Event',     label: 'Etkinlik'         },
-    { value: 'Other',     label: 'Diğer'            },
+    { value: '',           label: 'Tüm Kategoriler' },
+    { value: 'Business',   label: 'İş Gezisi'       },
+    { value: 'Vacation',   label: 'Tatil'           },
+    { value: 'Event',      label: 'Etkinlik'        },
+    { value: 'Conference', label: 'Konferans'       },
+    { value: 'Training',   label: 'Eğitim'          },
+    { value: 'Other',      label: 'Diğer'           },
 ];
 
 const VEHICLES = [
-    { value: '',       label: 'Tüm Araçlar' },
-    { value: 'Plane',  label: 'Uçak'        },
-    { value: 'Train',  label: 'Tren'        },
-    { value: 'Car',    label: 'Araba'       },
-    { value: 'Bus',    label: 'Otobüs'      },
-    { value: 'Ship',   label: 'Gemi'        },
+    { value: '',           label: 'Tüm Araçlar'    },
+    { value: 'Plane',      label: 'Uçak'           },
+    { value: 'Train',      label: 'Tren'           },
+    { value: 'Car',        label: 'Araba'          },
+    { value: 'Bus',        label: 'Otobüs'         },
+    { value: 'Ship',       label: 'Gemi'           },
+    { value: 'Taxi',       label: 'Taksi'          },
+    { value: 'Motorcycle', label: 'Motosiklet'     },
+    { value: 'Other',      label: 'Diğer'          },
 ];
 
 const STATUSES = [

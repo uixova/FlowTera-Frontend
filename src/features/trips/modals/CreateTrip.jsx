@@ -6,18 +6,23 @@ import { tripsService } from '../services/tripsService';
 import './CreateTrip.css';
 
 const CATEGORIES = [
-    { value: 'Business', label: 'İş Gezisi' },
-    { value: 'Vacation', label: 'Tatil'      },
-    { value: 'Event',    label: 'Etkinlik'   },
-    { value: 'Other',    label: 'Diğer'      },
+    { value: 'Business',   label: 'İş Gezisi'  },
+    { value: 'Vacation',   label: 'Tatil'       },
+    { value: 'Event',      label: 'Etkinlik'    },
+    { value: 'Conference', label: 'Konferans'   },
+    { value: 'Training',   label: 'Eğitim'      },
+    { value: 'Other',      label: 'Diğer'       },
 ];
 
 const VEHICLES = [
-    { value: 'Plane', label: 'Uçak'    },
-    { value: 'Train', label: 'Tren'    },
-    { value: 'Car',   label: 'Araba'   },
-    { value: 'Bus',   label: 'Otobüs'  },
-    { value: 'Ship',  label: 'Gemi'    },
+    { value: 'Plane',      label: 'Uçak'        },
+    { value: 'Train',      label: 'Tren'        },
+    { value: 'Car',        label: 'Araba'       },
+    { value: 'Bus',        label: 'Otobüs'      },
+    { value: 'Ship',       label: 'Gemi'        },
+    { value: 'Taxi',       label: 'Taksi'       },
+    { value: 'Motorcycle', label: 'Motosiklet'  },
+    { value: 'Other',      label: 'Diğer'       },
 ];
 
 const CURRENCIES = [

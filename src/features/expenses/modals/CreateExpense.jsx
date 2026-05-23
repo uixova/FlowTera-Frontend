@@ -5,19 +5,31 @@ import { expenseService } from '../services/expenseService';
 import './CreateExpense.css';
 
 const CATEGORIES = [
-    { value: 'Food',          label: 'Yiyecek & İçecek' },
-    { value: 'Transport',     label: 'Ulaşım'           },
-    { value: 'Accommodation', label: 'Konaklama'        },
-    { value: 'Health',        label: 'Sağlık'           },
-    { value: 'Entertainment', label: 'Eğlence'          },
-    { value: 'Office',        label: 'Ofis Malzemeleri' },
-    { value: 'Other',         label: 'Diğer'            },
+    { value: 'Food',          label: 'Yiyecek & İçecek'  },
+    { value: 'Transport',     label: 'Ulaşım'             },
+    { value: 'Accommodation', label: 'Konaklama'          },
+    { value: 'Health',        label: 'Sağlık'             },
+    { value: 'Entertainment', label: 'Eğlence'            },
+    { value: 'Office',        label: 'Ofis Malzemeleri'   },
+    { value: 'Education',     label: 'Eğitim'             },
+    { value: 'Technology',    label: 'Teknoloji'          },
+    { value: 'Shopping',      label: 'Alışveriş'          },
+    { value: 'Utilities',     label: 'Faturalar'          },
+    { value: 'Finance',       label: 'Finans & Sigorta'   },
+    { value: 'Events',        label: 'Etkinlik & Toplantı'},
+    { value: 'Marketing',     label: 'Pazarlama & Reklam' },
+    { value: 'Legal',         label: 'Hukuk & Danışmanlık'},
+    { value: 'Other',         label: 'Diğer'              },
 ];
 
 const METHODS = [
-    { value: 'Cash',          label: 'Nakit'           },
-    { value: 'Credit Card',   label: 'Kredi Kartı'     },
-    { value: 'Bank Transfer', label: 'Banka Transferi' },
+    { value: 'Cash',           label: 'Nakit'           },
+    { value: 'Credit Card',    label: 'Kredi Kartı'     },
+    { value: 'Bank Transfer',  label: 'Banka Transferi' },
+    { value: 'Debit Card',     label: 'Banka Kartı'     },
+    { value: 'Mobile Payment', label: 'Mobil Ödeme'     },
+    { value: 'Check',          label: 'Çek'             },
+    { value: 'Other',          label: 'Diğer'           },
 ];
 
 const CURRENCIES = [

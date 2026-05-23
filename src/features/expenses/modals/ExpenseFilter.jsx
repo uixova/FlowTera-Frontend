@@ -1,26 +1,40 @@
 import React from 'react';
 
 const CATEGORIES = [
-    { value: '',              label: 'Tüm Kategoriler' },
-    { value: 'Food',          label: 'Yiyecek & İçecek' },
-    { value: 'Transport',     label: 'Ulaşım' },
-    { value: 'Accommodation', label: 'Konaklama' },
-    { value: 'Health',        label: 'Sağlık' },
-    { value: 'Entertainment', label: 'Eğlence' },
+    { value: '',              label: 'Tüm Kategoriler'    },
+    { value: 'Food',          label: 'Yiyecek & İçecek'  },
+    { value: 'Transport',     label: 'Ulaşım'             },
+    { value: 'Accommodation', label: 'Konaklama'          },
+    { value: 'Health',        label: 'Sağlık'             },
+    { value: 'Entertainment', label: 'Eğlence'            },
+    { value: 'Office',        label: 'Ofis Malzemeleri'   },
+    { value: 'Education',     label: 'Eğitim'             },
+    { value: 'Technology',    label: 'Teknoloji'          },
+    { value: 'Shopping',      label: 'Alışveriş'          },
+    { value: 'Utilities',     label: 'Faturalar'          },
+    { value: 'Finance',       label: 'Finans & Sigorta'   },
+    { value: 'Events',        label: 'Etkinlik & Toplantı'},
+    { value: 'Marketing',     label: 'Pazarlama & Reklam' },
+    { value: 'Legal',         label: 'Hukuk & Danışmanlık'},
+    { value: 'Other',         label: 'Diğer'              },
 ];
 
 const STATUSES = [
     { value: '',         label: 'Tüm Durumlar' },
-    { value: 'Pending',  label: 'Beklemede' },
-    { value: 'Approved', label: 'Onaylandı' },
-    { value: 'Rejected', label: 'Reddedildi' },
+    { value: 'pending',  label: 'Beklemede'    },
+    { value: 'approved', label: 'Onaylandı'    },
+    { value: 'rejected', label: 'Reddedildi'   },
 ];
 
 const METHODS = [
-    { value: '',               label: 'Tüm Yöntemler' },
-    { value: 'Credit Card',    label: 'Kredi Kartı' },
-    { value: 'Cash',           label: 'Nakit' },
+    { value: '',               label: 'Tüm Yöntemler'  },
+    { value: 'Cash',           label: 'Nakit'           },
+    { value: 'Credit Card',    label: 'Kredi Kartı'     },
     { value: 'Bank Transfer',  label: 'Banka Transferi' },
+    { value: 'Debit Card',     label: 'Banka Kartı'     },
+    { value: 'Mobile Payment', label: 'Mobil Ödeme'     },
+    { value: 'Check',          label: 'Çek'             },
+    { value: 'Other',          label: 'Diğer'           },
 ];
 
 const FilterSelect = ({ label, name, value, onChange, options }) => (
