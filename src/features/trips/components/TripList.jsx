@@ -12,8 +12,8 @@ const STATUS_MAP = {
     rejected:  { label: 'Reddedildi',cls: 'status-rejected'  },
 };
 
-const TripRow = memo(({ trip, onOpenDetail, onEdit, onDeleteClick }) => {
-    const { canEdit, canDelete } = useActionPermissions(trip);
+const TripRow = memo(({ trip, onOpenDetail, onEdit }) => {
+    const { canEdit } = useActionPermissions(trip);
     const { convert, selectedCurrency, symbol } = useCurrency();
     
     const displayAmount = useMemo(() => convert(trip, selectedCurrency), [trip, selectedCurrency, convert]);
@@ -37,11 +37,6 @@ const TripRow = memo(({ trip, onOpenDetail, onEdit, onDeleteClick }) => {
         e.stopPropagation();
         onEdit(e, trip);
     }, [trip, onEdit]);
-
-    const handleDeleteClick = useCallback((e) => {
-        e.stopPropagation();
-        onDeleteClick(e, trip);
-    }, [trip, onDeleteClick]);
 
     return (
         <div className="trip-block" onClick={handleRowClick}>
@@ -90,15 +85,6 @@ const TripRow = memo(({ trip, onOpenDetail, onEdit, onDeleteClick }) => {
                         title="Düzenle"
                     >
                         <i className="ti ti-edit" />
-                    </button>
-                )}
-                {canDelete && (
-                    <button
-                        className="action-btn delete"
-                        onClick={handleDeleteClick}
-                        title="Sil"
-                    >
-                        <i className="ti ti-trash" />
                     </button>
                 )}
             </div>
