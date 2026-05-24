@@ -35,10 +35,11 @@ const Requests = () => {
     const [searchTerm,   setSearchTerm]   = useState('');
 
     // Güvenlik Kontrolü: Admin değilse sayfadan at
+    // null = auth henüz yüklenmedi, sadece başka bir role varsa redirect
     useEffect(() => {
         if (!authLoading && selectedTeamId) {
             const role = roleNameForTeam(selectedTeamId);
-            if (role !== 'Admin') {
+            if (role !== null && role !== 'Admin') {
                 console.warn('Yetkisiz erişim: Admin yetkisi gerekiyor.');
                 navigate('/team');
             }

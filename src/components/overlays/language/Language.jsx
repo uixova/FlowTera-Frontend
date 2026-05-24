@@ -21,7 +21,6 @@ const Language = ({ isOpen, onClose }) => {
 
   const handleLangSelect = (code) => {
     setSelectedLang(code);
-    console.log(`${code} seçildi`);
     setTimeout(() => {
       onClose();
     }, 200);

@@ -77,7 +77,7 @@ const TeamSettings = ({ team, onBack }) => {
           autoApprovedLimit: data.settings?.autoApprovedLimit || 0,
           currency: data.settings?.currency || 'USD'
         });
-        setPreview(data.image || 'https://via.placeholder.com/160?text=LOGO');
+        setPreview(data.image || '/Logo.png');
       }
     } catch (err) {
       console.error("Data Download Error:", err);
@@ -126,7 +126,14 @@ const TeamSettings = ({ team, onBack }) => {
           currency: formData.currency
         }
       };
-      if (logoFile) updatePayload.imageFile = logoFile;
+      // Upload team image to S3 first if a new logo was selected
+      if (logoFile) {
+        const imgResult = await teamsService.uploadTeamImage(selectedTeamId, logoFile);
+        if (imgResult.success && imgResult.url) {
+          setPreview(imgResult.url);
+          setLogoFile(null);
+        }
+      }
       const result = await teamsService.updateTeamSettings(selectedTeamId, updatePayload);
       if (result.success) {
         showAlert(

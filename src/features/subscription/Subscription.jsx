@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useSubscription } from '../../context/SubscriptionContext';
 import Loader from '../../components/ui/Loader';
 import './Subscription.css';
@@ -8,18 +9,13 @@ const MotionDiv = motion.div;
 
 const Subscription = () => {
     const { plans, currentPlan, loading } = useSubscription();
+    const navigate = useNavigate();
 
-    // Loader aktifse diğer işlemlere gerek yok
     if (loading) return <Loader type="butterfly" />;
 
     const handlePlanSelect = (planId, isCurrent) => {
         if (isCurrent) return;
-    
-        // Yeni sekme için URL oluşturma (Origin + path + query)
-        const url = `${window.location.origin}/payment?plan=${planId}`;
-    
-        // Güvenli bir şekilde yeni sekmede açar
-        window.open(url, '_blank', 'noopener,noreferrer');
+        navigate(`/payment?plan=${planId}`, { state: { fromSubscription: true } });
     };
 
     return (

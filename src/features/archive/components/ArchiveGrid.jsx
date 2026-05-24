@@ -1,9 +1,14 @@
 import React from 'react';
 import ImageBox from '../../../components/overlays/imageBox/ImageBox';
 
-// Status string'ini normalize eder — "On Road" → "onroad"
-const normalizeStatus = (status = '') =>
-    status.toLowerCase().replace(/\s+/g, '');
+const normalizeStatus = (status = '') => status.toLowerCase().replace(/\s+/g, '');
+
+const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+};
 
 const ArchiveGrid = ({ items, symbol }) => (
     <div className="arc-grid">
@@ -21,9 +26,9 @@ const ArchiveGrid = ({ items, symbol }) => (
                             {isExpense ? 'Harcama' : 'Seyahat'}
                         </span>
 
-                        {item.image ? (
-                            <ImageBox src={item.image} alt={item.title}>
-                                <img src={item.image} alt={item.title} loading="lazy" />
+                        {item.receipt ? (
+                            <ImageBox src={item.receipt} alt={item.title}>
+                                <img src={item.receipt} alt={item.title} loading="lazy" />
                             </ImageBox>
                         ) : (
                             <div className="arc-card-image-placeholder">
@@ -63,7 +68,7 @@ const ArchiveGrid = ({ items, symbol }) => (
                                 <i className="ti ti-user" />
                                 {item.createdBy?.name ?? item.user ?? '—'}
                             </span>
-                            <span className="arc-card-date">{item.date}</span>
+                            <span className="arc-card-date">{formatDate(item.date || item.startDate)}</span>
                         </div>
                     </div>
                 </div>

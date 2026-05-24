@@ -13,6 +13,10 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, 'src'),
       },
     },
+    esbuild: {
+      // Strip all console.* and debugger statements in production builds
+      drop: mode === 'production' ? ['console', 'debugger'] : [],
+    },
     server: {
       port: 3000,
       host: true,

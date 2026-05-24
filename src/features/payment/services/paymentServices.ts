@@ -20,16 +20,22 @@ export const paymentService = {
     // Ödeme işle — backend /payments/create-intent + simulate-success
     async processPayment(
         paymentData: PaymentPayload,
-        userId: string | number,
+        _userId: string | number,
         planId: string | number
     ): Promise<PaymentResult> {
         try {
-            if (!userId) throw new Error('Kullanıcı kimliği eksik.');
             if (!planId) throw new Error('Plan kimliği eksik.');
+
+            const intentRes = await restFetch<{ status: string; data: any }>(
+                `/payments/create-intent`,
+                { method: 'POST', body: { planId } }
+            );
+            const paymentIntentId = (intentRes as any).data?.paymentIntentId;
+            if (!paymentIntentId) throw new Error('Ödeme niyeti oluşturulamadı.');
 
             const result = await restFetch<{ status: string; data: any }>(
                 `/payments/simulate-success`,
-                { method: 'POST', body: { userId, planId, paymentData } }
+                { method: 'POST', body: { paymentIntentId } }
             );
 
             const lastFour = paymentData?.number

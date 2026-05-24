@@ -1,8 +1,3 @@
-// Native WebSocket istemcisi — socket.server.ts ile tam uyumlu
-// Backend: node-core-service/src/web_sockets/socket.server.ts (ws kütüphanesi)
-// Auth: ?token=JWT&teamId=xxx&role=Admin  (teamId zorunlu)
-// Mesaj formatı: { type: string, payload: any }
-
 type EventCallback<T = unknown> = (payload: T) => void;
 type Unsubscribe = () => void;
 
@@ -71,7 +66,6 @@ const _scheduleReconnect = (): void => {
     }
     const delay = BASE_DELAY_MS * Math.pow(2, _reconnectCount);
     _reconnectCount++;
-    console.log(`[Socket] ${delay}ms sonra yeniden bağlanılıyor (${_reconnectCount}/${MAX_RECONNECT})`);
     _reconnectTimer = setTimeout(_openSocket, delay);
 };
 
@@ -85,7 +79,6 @@ const _openSocket = (): void => {
 
     _ws.onopen = () => {
         _reconnectCount = 0;
-        console.log('[Socket] Bağlandı —', _teamId);
     };
 
     _ws.onmessage = (event: MessageEvent) => {
@@ -98,7 +91,7 @@ const _openSocket = (): void => {
     };
 
     _ws.onclose = (event: CloseEvent) => {
-        console.warn('[Socket] Bağlantı kesildi —', event.code, event.reason);
+        console.warn('[Socket] Bağlantı kesildi —', event.code);
         // 1008 = auth hatası (geçersiz/eksik token/teamId) — yeniden bağlanma
         if (_intentionalClose || event.code === 1008) return;
         _scheduleReconnect();
@@ -156,7 +149,6 @@ const disconnect = (): void => {
     _role           = 'Member';
     _listeners.clear();
     _intentionalClose = false;
-    console.log('[Socket] Bağlantı kapatıldı');
 };
 
 // Sunucuya mesaj gönderir

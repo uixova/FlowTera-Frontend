@@ -1,5 +1,5 @@
 import { api, restFetch } from '../../../api/api';
-import { Expense, User, Team } from '@/types/types';
+import { Expense, Team } from '@/types/types';
 import { dataEvents } from '../../../hooks/useDataRefresh';
 
 export interface EnrichedExpense extends Expense {
@@ -21,45 +21,36 @@ const extractList = <T>(response: any): T[] => {
     return [];
 };
 
+// S3 presigned upload: backend presigned URL al, dosyayı direkt S3'e yükle, key döner
+async function uploadReceiptFile(file: File, teamId: string): Promise<string> {
+    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+    const presignedRes = await restFetch<{ status: string; data: { uploadUrl: string; key: string } }>(
+        '/uploads/presigned',
+        { params: { ext, teamId } }
+    );
+    const { uploadUrl, key } = (presignedRes as any).data;
+    await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type || 'application/octet-stream' },
+        body: file,
+    });
+    return key;
+}
+
 export const expenseService = {
 
-    // Expense listesini kullanıcı verisiyle zenginleştir
-    async enrichExpensesWithUserData(expenses: Expense[]): Promise<EnrichedExpense[]> {
-        if (!expenses?.length) return [];
+    uploadReceiptFile,
 
-        const usersResponse = await api.users.getAll({ pageSize: 1000 });
-        const users         = extractList<User>(usersResponse);
-
-        return expenses.map(expense => {
-            const submitterId =
-                expense.createdBy?.id ??
-                (expense as any).userId ??
-                (expense as any).submitterId ??
-                null;
-
-            const userDetail = users.find(u => String(u.id) === String(submitterId));
-            const isDeleted  = Boolean(userDetail?.isDeleted);
-
-            return {
-                ...expense,
-                user:       isDeleted ? 'DeletedUser' : (expense.createdBy?.name || userDetail?.name || 'Unknown'),
-                userAvatar: isDeleted ? null           : (userDetail?.avatar ?? null),
-                userRole:   isDeleted ? 'free'         : (userDetail?.subscription?.plan ?? 'free'),
-            };
-        });
-    },
-
-    // Takım bazında giderleri getir (backend paginate eder)
+    // Takım bazında giderleri getir — backend EnrichedExpense döner
     async getExpensesByTeam(teamId: string | number, page = 1, limit = 20): Promise<ExpenseFetchResult> {
         if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
 
         const response = await api.expenses.getAll({ teamId: String(teamId), page, pageSize: limit });
-        const expenses = extractList<Expense>(response);
+        const expenses = extractList<EnrichedExpense>(response);
         const total    = (response as any)?.total ?? expenses.length;
-        const enriched = await expenseService.enrichExpensesWithUserData(expenses);
 
         return {
-            data:       enriched,
+            data:       expenses,
             hasMore:    (response as any)?.hasMore ?? page * limit < total,
             totalCount: total,
         };

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import { api } from '../api/api';
+import planFallback from '../data/plan.json';
 
 interface SubscriptionContextType {
     plans: any[];
@@ -20,22 +21,32 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
     const { currentUser } = useAuth() as any; // AuthContext'ten gelen veri için esnek koruma
     const [plans, setPlans] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error] = useState<string | null>(null);
 
-    const currentPlan = useMemo(
-        () => plans.find(p => p.id === currentUser?.subscription?.planId) ?? null,
-        [plans, currentUser?.subscription?.planId]
-    );
+    const currentPlan = useMemo(() => {
+        if (!plans.length || !currentUser?.subscription) return null;
+        const sub = currentUser.subscription;
+        // Match by planId, badge, or plan name (case-insensitive)
+        return plans.find(p =>
+            (sub.planId && p.id === sub.planId) ||
+            (sub.badge  && p.badge === sub.badge) ||
+            (sub.plan   && p.name.toLowerCase() === sub.plan.toLowerCase()) ||
+            (sub.plan   && p.badge?.toLowerCase() === sub.plan.toLowerCase())
+        ) ?? null;
+    }, [plans, currentUser?.subscription]);
 
     useEffect(() => {
         const fetchPlanData = async () => {
             try {
-                const res   = await api.plans.getAll();
-                const data  = (res as any)?.data ?? res;
-                if (Array.isArray(data)) setPlans(data.sort((a: any, b: any) => a.order - b.order));
-            } catch (err: any) {
-                console.error('Plan fetch error:', err);
-                setError(err?.message || 'Plan verisi alınamadı.');
+                const res  = await api.plans.getAll();
+                const data = (res as any)?.data ?? res;
+                if (Array.isArray(data) && data.length > 0) {
+                    setPlans(data.sort((a: any, b: any) => a.order - b.order));
+                } else {
+                    setPlans([...planFallback].sort((a, b) => (a.order || 0) - (b.order || 0)));
+                }
+            } catch {
+                setPlans([...planFallback].sort((a, b) => (a.order || 0) - (b.order || 0)));
             } finally {
                 setLoading(false);
             }

@@ -113,22 +113,34 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        const now = new Date();
-        const payload = {
-            ...form,
-            teamId: selectedTeamId,
-            id: isEdit ? editData.id : `exp-${Math.floor(Math.random() * 10000)}`,
-            status: isEdit ? editData.status : 'Pending',
-            timestamp: isEdit ? editData.timestamp : now.toISOString(),
-            date: isEdit ? editData.date : now.toLocaleDateString('tr-TR'),
-            desc: isEdit ? editData.desc : 'New expense entry via Flowtera UI',
-            icon: isEdit ? editData.icon : 'ti-receipt',
-            receipt: selectedFile || previewUrl,
-        };
-
         try {
+            let receiptKey = isEdit ? (editData.receipt || null) : null;
+            if (selectedFile) {
+                receiptKey = await expenseService.uploadReceiptFile(selectedFile, selectedTeamId);
+            }
+
+            const now = new Date();
+            // Capture live exchange rates at creation time for historical accuracy
+            let exchangeRates = { USD: 1 };
+            try {
+                const raw = localStorage.getItem('tm_saved_rates');
+                if (raw) exchangeRates = JSON.parse(raw);
+            } catch { /* use default */ }
+
+            const payload = {
+                ...form,
+                teamId:         selectedTeamId,
+                currencySymbol: CURRENCY_SYMBOLS[form.currency] || form.currency,
+                exchangeRates,
+                status:         isEdit ? editData.status : 'pending',
+                date:           isEdit ? editData.date   : now.toISOString(),
+                desc:           isEdit ? editData.desc   : '',
+                icon:           isEdit ? editData.icon   : 'ti-receipt',
+                receipt:        receiptKey,
+            };
+
             if (isEdit) {
-                await expenseService.updateExpense(payload.id, payload);
+                await expenseService.updateExpense(editData.id, payload);
             } else {
                 await expenseService.createExpense(payload);
             }

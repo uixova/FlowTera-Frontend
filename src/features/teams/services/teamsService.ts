@@ -149,9 +149,36 @@ export const teamsService = {
     },
 
     // Takım ayarlarını güncelle
+    async uploadTeamImage(teamId: string | number, file: File): Promise<{ success: boolean; url?: string }> {
+        try {
+            const ext = file.name.split('.').pop()?.toLowerCase() || 'png';
+            const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || '';
+            const presignRes = await fetch(`/api/v1/uploads/presigned-team-image?ext=${ext}&teamId=${teamId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!presignRes.ok) throw new Error('Presigned URL alınamadı.');
+            const { data } = await presignRes.json();
+            const uploadRes = await fetch(data.uploadUrl, {
+                method: 'PUT',
+                body: file,
+                headers: { 'Content-Type': file.type },
+            });
+            if (!uploadRes.ok) throw new Error('S3 yükleme başarısız.');
+            // Save image URL to team
+            await restFetch(`/teams/${teamId}`, { method: 'PATCH', body: { image: data.fileUrl } });
+            api.cache.invalidate('TEAMS');
+            return { success: true, url: data.fileUrl };
+        } catch (err: any) {
+            console.error('[uploadTeamImage]', err);
+            return { success: false };
+        }
+    },
+
     async updateTeamSettings(teamId: string | number, updatePayload: Partial<Team['settings']>): Promise<{ success: boolean; message: string }> {
         try {
-            await restFetch(`/teams/${teamId}/settings`, { method: 'PATCH', body: updatePayload });
+            // imageFile is a File object — strip it, handle separately
+            const { imageFile, ...rest } = updatePayload as any;
+            await restFetch(`/teams/${teamId}/settings`, { method: 'PATCH', body: rest });
             api.cache.invalidate('TEAMS');
             return { success: true, message: 'Ayarlar güncellendi.' };
         } catch (err: any) {

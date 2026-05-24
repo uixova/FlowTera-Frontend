@@ -32,6 +32,8 @@ const CURRENCIES = [
     { value: 'GBP', label: 'GBP £' },
 ];
 
+const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', TRY: '₺', GBP: '£' };
+
 const formatDateForInput = (dateStr) => {
     if (!dateStr) return '';
     if (dateStr.includes('-')) return dateStr;
@@ -87,22 +89,29 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
         e.preventDefault();
         setIsSubmitting(true);
 
-        const now     = new Date();
+        const now = new Date();
+        // Capture live exchange rates at creation time for historical accuracy
+        let exchangeRates = { USD: 1 };
+        try {
+            const raw = localStorage.getItem('tm_saved_rates');
+            if (raw) exchangeRates = JSON.parse(raw);
+        } catch { /* use default */ }
+
         const payload = {
-            id:          isEditMode ? editData.id : `tr-${Math.floor(Math.random() * 10000)}`,
-            teamId:      selectedTeamId,
-            title:       form.title,
-            category:    form.category,
-            vehicle:     form.vehicle,
-            destination: form.destination,
-            startDate:   form.startDate,
-            endDate:     form.endDate,
-            amount:      Number(form.amount),
-            currency:    form.currency,
-            desc:        form.desc,
-            status:      isEditMode ? editData.status      : 'Pending',
-            statusClass: isEditMode ? editData.statusClass : 'pending',
-            date:        isEditMode ? editData.date        : now.toLocaleDateString('tr-TR'),
+            teamId:         selectedTeamId,
+            title:          form.title,
+            category:       form.category,
+            vehicle:        form.vehicle,
+            destination:    form.destination,
+            startDate:      form.startDate,
+            endDate:        form.endDate,
+            amount:         Number(form.amount),
+            currency:       form.currency,
+            currencySymbol: CURRENCY_SYMBOLS[form.currency] || form.currency,
+            exchangeRates,
+            desc:           form.desc,
+            status:         isEditMode ? editData.status : 'pending',
+            date:           isEditMode ? editData.date   : now.toISOString(),
         };
 
         try {

@@ -12,6 +12,7 @@ import Activity     from './components/Activity';
 import Notification from './components/Notifications';
 
 import { useAuth }  from '../../context/AuthContext';
+import { useTeam }  from '../../context/TeamContext';
 import { useModal } from '../../hooks/useModal';
 import Confirm      from '../../components/overlays/Confirm';
 
@@ -26,6 +27,7 @@ const MENU_ITEMS = [
 const Settings = () => {
     const navigate                                        = useNavigate();
     const { currentUserId, loading: authLoading, logout } = useAuth();
+    const { selectedTeamId } = useTeam();
     const { confirmConfig, askConfirm, closeConfirm }     = useModal();
 
     const [activeSection,  setActiveSection]  = useState('st-profile');
@@ -49,7 +51,7 @@ const Settings = () => {
             try {
                 const [userData, userLogs, userNotifs] = await Promise.all([
                     settingsService.getCurrentUser(currentUserId),
-                    settingsService.getUserLogs(currentUserId),
+                    settingsService.getUserLogs(currentUserId, selectedTeamId),
                     settingsService.getUserNotifications(currentUserId),
                 ]);
                 setUser(userData);
@@ -63,7 +65,7 @@ const Settings = () => {
         };
 
         fetchData();
-    }, [currentUserId]);
+    }, [currentUserId, selectedTeamId]);
 
     // LOGOUT MANTIĞI
     const handleLogoutClick = () => {

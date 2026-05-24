@@ -153,7 +153,7 @@ const Analysis = () => {
                 statusData={analysisData?.statusData    || []}
             />
 
-            <ExportModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
+            <ExportModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} teamId={selectedTeamId} teamName={activeTeam?.name} />
         </div>
     );
 };

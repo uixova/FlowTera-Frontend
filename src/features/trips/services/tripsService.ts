@@ -1,5 +1,5 @@
 import { api, restFetch } from '../../../api/api';
-import { Trip, User } from '@/types/types';
+import { Trip } from '@/types/types';
 import { dataEvents } from '../../../hooks/useDataRefresh';
 
 export interface EnrichedTrip extends Trip {
@@ -23,44 +23,16 @@ const extractList = <T>(response: any): T[] => {
 
 export const tripsService = {
 
-    // Seyahatleri kullanıcı verisiyle zenginleştir
-    enrichTripsWithUserData: async (trips: Trip[]): Promise<EnrichedTrip[]> => {
-        if (!trips?.length) return [];
-
-        const usersResponse = await api.users.getAll({ pageSize: 1000 });
-        const users         = extractList<User>(usersResponse);
-
-        return trips.map(trip => {
-            const ownerId =
-                trip.createdBy?.id ??
-                (trip as any).userId ??
-                (trip as any).ownerId ??
-                (trip as any).createdById ??
-                null;
-
-            const owner     = ownerId ? users.find(u => String(u.id) === String(ownerId)) : null;
-            const isDeleted = Boolean(owner?.isDeleted);
-
-            return {
-                ...trip,
-                userName:   isDeleted ? 'DeletedUser' : (trip.createdBy?.name || owner?.name || 'Unknown Traveller'),
-                userAvatar: isDeleted ? null           : (owner?.avatar ?? null),
-                userPlan:   isDeleted ? 'free'         : (owner?.subscription?.plan ?? 'free'),
-            };
-        });
-    },
-
-    // Takım bazında seyahatleri getir (backend paginate eder)
+    // Takım bazında seyahatleri getir — backend EnrichedTrip döner
     getTripsByTeam: async (teamId: string, page = 1, limit = 20): Promise<TripFetchResult> => {
         if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
 
         const response = await api.trips.getAll({ teamId, page, pageSize: limit });
-        const trips    = extractList<Trip>(response);
+        const trips    = extractList<EnrichedTrip>(response);
         const total    = (response as any)?.total ?? trips.length;
-        const enriched = await tripsService.enrichTripsWithUserData(trips);
 
         return {
-            data:       enriched,
+            data:       trips,
             hasMore:    (response as any)?.hasMore ?? page * limit < total,
             totalCount: total,
         };
@@ -70,10 +42,8 @@ export const tripsService = {
     getTripById: async (tripId: string): Promise<EnrichedTrip | null> => {
         if (!tripId) return null;
         try {
-            const result   = await restFetch<{ status: string; data: Trip }>(`/trips/${tripId}`);
-            const trip     = (result as any).data ?? result;
-            const enriched = await tripsService.enrichTripsWithUserData([trip as Trip]);
-            return enriched[0] ?? null;
+            const result = await restFetch<{ status: string; data: EnrichedTrip }>(`/trips/${tripId}`);
+            return (result as any).data ?? null;
         } catch { return null; }
     },
 

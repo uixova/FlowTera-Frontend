@@ -106,7 +106,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 return;
             }
         } catch (error) {
-            console.error('[AuthContext] fetchUser hatası:', error);
+            console.error('[AuthContext] fetchUser hatası:', error instanceof Error ? error.message : String(error));
             setCurrentUser(null);
             setTeams([]);
             localStorage.removeItem(AUTH_USER_ID_KEY);
@@ -158,7 +158,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setAuthStep('verify');
             return { success: true, redirecting: false };
         } catch (error) {
-            console.error('[AuthContext] loginWithCredentials hatası:', error);
+            console.error('[AuthContext] loginWithCredentials hatası:', error instanceof Error ? error.message : String(error));
             setAuthError('Sistem bağlantı hatası.');
             return { success: false };
         }
@@ -168,7 +168,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (!currentUser || !teamId) return null;
 
         if (type === 'role') {
-            return currentUser.role?.find((r: any) => String(r.teamId) === String(teamId))?.roleName || null;
+            const entry = currentUser.role?.find((r: any) => String(r.teamId) === String(teamId));
+            if (!entry) return null;
+            // Backend may return roleName (capitalized) or role (lowercase) — handle both
+            if (entry.roleName) return entry.roleName;
+            if (entry.role) return entry.role.charAt(0).toUpperCase() + entry.role.slice(1);
+            return null;
         }
 
         if (type === 'plan') {

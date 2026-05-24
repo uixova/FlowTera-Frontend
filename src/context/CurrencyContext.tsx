@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useContext, useCallback, useMemo, useEffect } from 'react';
 
 interface CurrencyContextType {
     selectedCurrency: string;
@@ -11,9 +11,12 @@ interface CurrencyContextType {
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
-const CURRENCY_SYMBOLS: Record<string, string> = { USD: '$', TRY: '₺', EUR: '€', GBP: '£' };
+const CURRENCY_SYMBOLS: Record<string, string> = { USD: '$', TRY: '₺', EUR: '€', GBP: '£', JPY: '¥', CHF: 'Fr' };
 const CURRENCY_STORAGE_KEY = 'selectedCurrency';
-const RATES_STORAGE_KEY = 'tm_saved_rates';
+const RATES_STORAGE_KEY    = 'tm_saved_rates';
+const RATES_TTL_KEY        = 'tm_rates_ttl';
+const RATES_TTL_MS         = 4 * 60 * 60 * 1000; // 4 hours
+const RATES_API            = 'https://api.frankfurter.dev/v1/latest?base=USD';
 
 interface CurrencyProviderProps {
     children: React.ReactNode;
@@ -23,6 +26,27 @@ export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) 
     const [selectedCurrency, setSelectedCurrency] = useState<string>(() => {
         return sessionStorage.getItem(CURRENCY_STORAGE_KEY) || 'USD';
     });
+
+    // Fetch live exchange rates from Frankfurter (ECB data, no API key required)
+    useEffect(() => {
+        const shouldFetch = () => {
+            const ttl = localStorage.getItem(RATES_TTL_KEY);
+            return !ttl || Date.now() > parseInt(ttl, 10);
+        };
+
+        if (!shouldFetch()) return;
+
+        fetch(RATES_API)
+            .then(r => r.json())
+            .then(data => {
+                if (data?.rates) {
+                    const rates: Record<string, number> = { USD: 1, ...data.rates };
+                    localStorage.setItem(RATES_STORAGE_KEY, JSON.stringify(rates));
+                    localStorage.setItem(RATES_TTL_KEY, String(Date.now() + RATES_TTL_MS));
+                }
+            })
+            .catch(() => {/* silently fail — use cached or record rates */});
+    }, []);
 
     const updateCurrency = useCallback((code: string) => {
         setSelectedCurrency(code);
@@ -35,21 +59,23 @@ export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) 
 
         if (itemCurrency === targetCurrency) return amount;
 
-        // Önce kayıt içindeki kurları dene
+        // Build a merged rate table: global rates as base, record rates override (more precise)
+        let rates: Record<string, number> = { USD: 1 };
+        try {
+            const raw = localStorage.getItem(RATES_STORAGE_KEY);
+            if (raw) Object.assign(rates, JSON.parse(raw));
+        } catch { /* ignore */ }
+
+        // Record-level rates (stored at transaction time) take priority
         const recordRates = item.exchangeRates;
-        if (recordRates?.[itemCurrency] && recordRates?.[targetCurrency]) {
-            return (amount / recordRates[itemCurrency]) * recordRates[targetCurrency];
+        if (recordRates && typeof recordRates === 'object') {
+            Object.assign(rates, recordRates);
         }
 
-        try {
-            const rawRates = localStorage.getItem(RATES_STORAGE_KEY);
-            if (rawRates) {
-                const rates = JSON.parse(rawRates);
-                const amountInBase = amount / (rates[itemCurrency] || 1);
-                return amountInBase * (rates[targetCurrency] || 1);
-            }
-        } catch {
-            console.warn('Currency rates parse error — falling back to original amount.');
+        const fromRate = rates[itemCurrency];
+        const toRate   = rates[targetCurrency];
+        if (fromRate && toRate) {
+            return (amount / fromRate) * toRate;
         }
 
         return amount;

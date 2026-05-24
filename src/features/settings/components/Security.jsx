@@ -6,12 +6,31 @@ import Confirm from '../../../components/overlays/Confirm';
 import Alert from '../../../components/overlays/Alert';
 import { useAuth } from '../../../context/AuthContext';
 import { teamsService } from '../../teams/services/teamsService';
+import { settingsService } from '../services/settingService';
 
 const Security = () => {
-    const [twoFA,   setTwoFA]   = useState(false);
-    const [loading, setLoading] = useState(false);
-    const navigate              = useNavigate();
-    const { logout, currentUser } = useAuth(); 
+    const [twoFA,     setTwoFA]     = useState(false);
+    const [loading,   setLoading]   = useState(false);
+    const [pwLoading, setPwLoading] = useState(false);
+    const [pwMsg,     setPwMsg]     = useState({ text: '', ok: true });
+    const [pwForm,    setPwForm]    = useState({ currentPassword: '', newPassword: '' });
+    const navigate                  = useNavigate();
+    const { logout, currentUser, currentUserId } = useAuth();
+
+    const handlePwChange = (e) => {
+        const { name, value } = e.target;
+        setPwForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handlePasswordSave = async () => {
+        if (!currentUserId || !pwForm.currentPassword || !pwForm.newPassword) return;
+        setPwLoading(true);
+        setPwMsg({ text: '', ok: true });
+        const result = await settingsService.updatePassword(currentUserId, pwForm);
+        setPwLoading(false);
+        setPwMsg({ text: result.success ? 'Şifre güncellendi.' : (result.message || 'Hata oluştu.'), ok: result.success });
+        if (result.success) setPwForm({ currentPassword: '', newPassword: '' });
+    };
 
     // Modal Hook Entegrasyonu
     const {
@@ -65,8 +84,11 @@ const Security = () => {
         try {
             setLoading(true);
 
-            // 1. Backend isteğini atıyoruz settingsService.deleteAccount()
-            // const result = await settingsService.deleteAccount();
+            const result = await settingsService.deleteAccount(currentUserId);
+            if (!result.success) {
+                showAlert('Hata', result.message || 'Hesap silinemedi.', 'error');
+                return;
+            }
 
             // 2. Onay modalını kapat
             closeConfirm();
@@ -132,16 +154,33 @@ const Security = () => {
                 <div className="st-form-grid">
                     <div className="st-input-group">
                         <label>Güncel Şifren</label>
-                        <input type="password" placeholder="••••••••" />
+                        <input
+                            type="password"
+                            name="currentPassword"
+                            value={pwForm.currentPassword}
+                            onChange={handlePwChange}
+                            placeholder="••••••••"
+                        />
                     </div>
                     <div className="st-input-group">
                         <label>Yeni Şifren</label>
-                        <input type="password" placeholder="Min. 8 karakter" />
+                        <input
+                            type="password"
+                            name="newPassword"
+                            value={pwForm.newPassword}
+                            onChange={handlePwChange}
+                            placeholder="Min. 8 karakter"
+                        />
                     </div>
                 </div>
-                <button className="st-btn-save security-btn">
-                    <i className="ti ti-device-floppy" />
-                    Şifreyi Güncelle
+                {pwMsg.text && (
+                    <p style={{ fontSize: '0.82rem', color: pwMsg.ok ? 'var(--green)' : 'var(--red-alt)', marginBottom: '8px' }}>
+                        {pwMsg.text}
+                    </p>
+                )}
+                <button className="st-btn-save security-btn" onClick={handlePasswordSave} disabled={pwLoading}>
+                    <i className={`ti ${pwLoading ? 'ti-loader-2' : 'ti-device-floppy'}`} />
+                    {pwLoading ? 'Kaydediliyor...' : 'Şifreyi Güncelle'}
                 </button>
             </div>
 

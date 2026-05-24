@@ -55,11 +55,12 @@ export const notificationService = {
     },
 
     // Talebe cevap ver (admin)
-    respondToRequest: async (id: string, action: 'approved' | 'rejected', _teamId: string): Promise<boolean> => {
+    respondToRequest: async (id: string, action: 'approved' | 'rejected', teamId: string): Promise<boolean> => {
         try {
             await restFetch(`/requests/${id}/respond`, {
                 method: 'PATCH',
-                body:   { status: action },
+                body:   { action },
+                params: { teamId },
             });
             api.notifications.invalidate();
             return true;

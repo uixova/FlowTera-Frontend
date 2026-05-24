@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../../../context/AuthContext';
+import { settingsService } from '../services/settingService';
 import './Notifications.css';
 
 const NOTIF_ITEMS = [
@@ -23,10 +25,23 @@ const NOTIF_ITEMS = [
 ];
 
 const Notification = ({ notifConfig, setNotifConfig }) => {
+    const { currentUserId } = useAuth();
+    const [saving, setSaving] = useState(false);
+    const [saveMsg, setSaveMsg] = useState('');
+
     if (!notifConfig) return null;
 
     const handleToggle = (key) =>
         setNotifConfig((prev) => ({ ...prev, [key]: !prev[key] }));
+
+    const handleSave = async () => {
+        if (!currentUserId) return;
+        setSaving(true);
+        const result = await settingsService.updateNotifications(currentUserId, notifConfig);
+        setSaving(false);
+        setSaveMsg(result.success ? 'Kaydedildi.' : 'Hata oluştu.');
+        setTimeout(() => setSaveMsg(''), 3000);
+    };
 
     return (
         <div className="st-content-section">
@@ -62,10 +77,12 @@ const Notification = ({ notifConfig, setNotifConfig }) => {
                 ))}
 
                 <div className="notif-footer">
-                    <span className="notif-footer-hint">Değişiklikler anlık olarak kaydedilir</span>
-                    <button className="st-btn-save">
-                        <i className="ti ti-device-floppy" />
-                        Kaydet
+                    <span className="notif-footer-hint">
+                        {saveMsg || 'Değişiklikleri kaydetmek için butona basın'}
+                    </span>
+                    <button className="st-btn-save" onClick={handleSave} disabled={saving}>
+                        <i className={`ti ${saving ? 'ti-loader-2' : 'ti-device-floppy'}`} />
+                        {saving ? 'Kaydediliyor...' : 'Kaydet'}
                     </button>
                 </div>
             </div>

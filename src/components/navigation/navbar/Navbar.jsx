@@ -66,7 +66,10 @@ const Navbar = React.memo(() => {
     const canAccessRequests = checkAccess('manage_requests');
     const canAccessArchive  = checkAccess('view_archive');
     const isAdmin           = teamRoleData?.roleName?.toLowerCase() === 'admin';
-    const isEnterprise      = !authLoading && selectedTeamId && currentPlan === 'enterprise';
+    // Enterprise: team planContext badge OR user's own subscription badge
+    const userSubBadge = currentUser?.subscription?.badge?.toLowerCase();
+    const isEnterprise = !authLoading && selectedTeamId &&
+        (currentPlan === 'enterprise' || userSubBadge === 'enterprise');
     const isDark            = theme.mode === 'dark';
 
     // Rota Koruması
@@ -214,7 +217,7 @@ const Navbar = React.memo(() => {
 
                         <div className="head-user-profile" onClick={handleUserClick}>
                             <div className="head-profile-img">
-                                <img src={currentUser?.avatar || UserImage} alt="Profile" />
+                                <img src={currentUser?.avatar || UserImage} alt="Profile" onError={(e) => { e.currentTarget.src = UserImage; }} />
                             </div>
                         </div>
 
@@ -273,7 +276,7 @@ const Navbar = React.memo(() => {
 
                         <div className="nav-drawer-footer">
                             <div className="nav-drawer-avatar">
-                                <img src={currentUser?.avatar || UserImage} alt="Profile" />
+                                <img src={currentUser?.avatar || UserImage} alt="Profile" onError={(e) => { e.currentTarget.src = UserImage; }} />
                             </div>
                             <div className="nav-drawer-user-info">
                                 <div className="nav-drawer-user-name">

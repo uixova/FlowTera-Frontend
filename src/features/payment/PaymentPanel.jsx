@@ -56,22 +56,25 @@ const PaymentPanel = () => {
         setLoading(true);
         
         const result = await paymentService.processPayment(
-            cardData, 
-            currentUser?.uid || 'guest', 
+            cardData,
+            currentUser?.id || '',
             selectedPlan?.id
         );
 
         if (result.success) {
+            // Yeni kayıt akışı: sessionStorage'daki taslak kullanıcıyı tamamla
             const paidSignup = authService.finalizePaidRegistrationAfterPayment();
             if (paidSignup.success && paidSignup.userDraft?.id) {
-                login(paidSignup.userDraft.id, true);
+                await login(paidSignup.userDraft.id, true);
+            } else if (currentUser?.id) {
+                // Mevcut kullanıcı plan yükseltme: kullanıcı verisini yenile
+                await login(currentUser.id);
             }
 
-            // Başarılı olduğunda uyarıyı göster ve kullanıcı OK dediğinde sekmeyi kapat
             showAlert(
-                "Başarılı", 
-                "Paketiniz aktif edildi! Ana sayfaniza yonlendiriliyorsunuz.", 
-                "success", 
+                "Başarılı",
+                "Paketiniz aktif edildi! Ana sayfaniza yonlendiriliyorsunuz.",
+                "success",
                 () => {
                     window.location.href = '/home';
                 }

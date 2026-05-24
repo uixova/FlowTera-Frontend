@@ -42,7 +42,8 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  
+  const [searchQuery, setSearchQuery] = useState('');
+
   const [members, setMembers] = useState(() => {
     if (!teamId) return null;
     return teamMembersCache.get(String(teamId)) ?? null;
@@ -170,7 +171,7 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
         showSearch={true}
         showCreate={canAddMember} 
         onCreate={() => setIsAddModalOpen(true)}
-        onSearch={(val) => console.log("Member search:", val)}
+        onSearch={(val) => setSearchQuery(val)}
         buttons={[
           { 
             icon: 'ti ti-list', 
@@ -191,7 +192,14 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
       <hr className='sub-nav-divider' />
 
       <div className="team-grid-container">
-        {members.map(member => {
+        {(searchQuery
+          ? members.filter(m =>
+              m.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              m.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              m.roleName?.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+          : members
+        ).map(member => {
           const isMe = String(member.id) === String(currentUserId);
           return (
             <div className="team-card" key={member.id}>
@@ -226,7 +234,7 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
                 {member.isDeleted ? (
                   <div className="tm-user-avatar-deleted" aria-hidden="true"><i className="ti ti-trash"></i></div>
                 ) : (
-                  <img src={member.avatar} alt={member.name} />
+                  <img src={member.avatar || '/Logo.png'} alt={member.name} onError={(e) => { e.currentTarget.src = '/Logo.png'; }} />
                 )}
                 <h3>{member.name}</h3>
                 {!member.isDeleted && (isAdmin || isMe) && (

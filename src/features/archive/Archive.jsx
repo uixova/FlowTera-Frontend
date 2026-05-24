@@ -76,7 +76,7 @@ const Archive = () => {
         approved: allItems.filter(i => i.status?.toLowerCase() === 'approved').length,
         pending:  allItems.filter(i => ['pending', 'on road'].includes(i.status?.toLowerCase())).length,
         rejected: allItems.filter(i => i.status?.toLowerCase() === 'rejected').length,
-        invoices: allItems.filter(i => i.image).length,
+        invoices: allItems.filter(i => i.receipt).length,
     }), [allItems]);
 
     const filtered = useMemo(() => {
@@ -87,13 +87,13 @@ const Archive = () => {
             case 'approved': items = items.filter(i => i.status?.toLowerCase() === 'approved'); break;
             case 'pending':  items = items.filter(i => ['pending', 'on road'].includes(i.status?.toLowerCase())); break;
             case 'rejected': items = items.filter(i => i.status?.toLowerCase() === 'rejected'); break;
-            case 'invoices': items = items.filter(i => i.image); break;
+            case 'invoices': items = items.filter(i => i.receipt); break;
             default: break;
         }
         return [...items].sort((a, b) => {
             if (sort === 'amount') return (b.amount ?? 0) - (a.amount ?? 0);
-            const dateA = new Date(a.date?.split('/').reverse().join('-') || 0);
-            const dateB = new Date(b.date?.split('/').reverse().join('-') || 0);
+            const dateA = new Date(a.date || a.startDate || 0).getTime();
+            const dateB = new Date(b.date || b.startDate || 0).getTime();
             return sort === 'oldest' ? dateA - dateB : dateB - dateA;
         });
     }, [allItems, activeTab, sort]);

@@ -10,7 +10,8 @@ const UserPlan = ({ user }) => {
     const { currentPlan, loading } = useSubscription();
 
     if (loading) return <div className="st-loader">Yükleniyor...</div>;
-    if (!user || !currentPlan) return null;
+    if (!user) return null;
+    if (!currentPlan) return <div className="st-loader">Plan bilgisi yüklenemedi.</div>;
 
     // Kullanım verileri
     const currentUsage    = user.subscription?.usage?.ocr || 0;
@@ -62,14 +63,18 @@ const UserPlan = ({ user }) => {
                                 <i className="ti ti-users-group" />
                                 Takım Limiti
                             </span>
-                            <span className="plan-limit-val">{currentPlan.Promise?.teamLimit}</span>
+                            <span className="plan-limit-val">
+                                {(currentPlan.promise || currentPlan.Promise)?.teamLimit || '—'}
+                            </span>
                         </div>
                         <div className="plan-limit-row">
                             <span className="plan-limit-label">
                                 <i className="ti ti-user" />
                                 Üye Limiti
                             </span>
-                            <span className="plan-limit-val">{currentPlan.Promise?.TeamMemberLimit}</span>
+                            <span className="plan-limit-val">
+                                {(currentPlan.promise || currentPlan.Promise)?.TeamMemberLimit || '—'}
+                            </span>
                         </div>
                     </div>
 

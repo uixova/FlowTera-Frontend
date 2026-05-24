@@ -50,7 +50,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                             <i className="ti ti-trash"></i>
                         </div>
                     ) : (
-                        <img src={user?.avatar || 'https://via.placeholder.com/40'} alt="User" />
+                        <img src={user?.avatar || '/Logo.png'} alt="User" onError={(e) => { e.currentTarget.src = '/Logo.png'; }} />
                     )}
                 </div>
                 <div className="user-meta">

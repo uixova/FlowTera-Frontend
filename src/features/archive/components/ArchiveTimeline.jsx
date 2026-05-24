@@ -1,18 +1,23 @@
 import React, { useMemo } from 'react';
 import ImageBox from '../../../components/overlays/imageBox/ImageBox';
 
-// "08/03/2026" → "Mart 2026" grubu için Date nesnesi
-const parseDate = (dateStr = '') => {
-    const [day, month, year] = dateStr.split('/');
-    if (!day || !month || !year) return null;
-    return new Date(`${year}-${month}-${day}`);
+// Handles ISO 8601 and legacy DD/MM/YYYY
+const toDate = (dateStr = '') => {
+    if (!dateStr) return null;
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
 };
 
-// Tarih gruplama başlığı
 const formatGroupLabel = (dateStr) => {
-    const d = parseDate(dateStr);
+    const d = toDate(dateStr);
     if (!d) return dateStr;
     return d.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
+};
+
+const formatDisplayDate = (dateStr) => {
+    const d = toDate(dateStr);
+    if (!d) return dateStr;
+    return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
 // Status normalize
@@ -23,11 +28,11 @@ const ArchiveTimeline = ({ items, symbol }) => {
     const groups = useMemo(() => {
         const map = new Map();
         items.forEach(item => {
-            const label = formatGroupLabel(item.date);
+            const label = formatGroupLabel(item.date || item.startDate);
             if (!map.has(label)) map.set(label, []);
             map.get(label).push(item);
         });
-        return Array.from(map.entries()); 
+        return Array.from(map.entries());
     }, [items]);
 
     return (
@@ -110,7 +115,9 @@ const ArchiveTimeline = ({ items, symbol }) => {
                                         <span className={`arc-status-dot ${statusClass}`}>
                                             {item.status}
                                         </span>
-                                        <span className="arc-row-date">{item.date}</span>
+                                        <span className="arc-row-date">
+                                            {formatDisplayDate(item.date || item.startDate)}
+                                        </span>
                                     </div>
                                 </div>
                             );
