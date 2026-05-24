@@ -95,7 +95,13 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                                     <div className="timeline-content">
                                         <div className="timeline-header">
                                             <span className="timeline-title">{log.action}</span>
-                                            <span className="timeline-date">{log.time}</span>
+                                            <span className="timeline-date">
+                                                {log.createdAt || log.timestamp
+                                                    ? new Date(log.createdAt || log.timestamp).toLocaleString('tr-TR')
+                                                    : log.date
+                                                        ? `${log.date}${log.time ? ' ' + log.time : ''}`
+                                                        : '—'}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

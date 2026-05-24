@@ -1,5 +1,5 @@
-import { api } from '../../../api/api';
-import { User, Team, Plan, TeamMemberLog, LogData } from '@/types/types';
+import { api, restFetch } from '../../../api/api';
+import { Team, Plan, TeamMemberLog } from '@/types/types';
 
 export interface EnrichedTeam extends Omit<Team, 'members'> {
     members: number;
@@ -23,14 +23,11 @@ export interface TeamSettingsResult extends Team {
     planDetails: Plan | null;
 }
 
-// Dışarıdan import edilen cache'ler için tip tanımlamaları
 export const teamMembersCache = new Map<string, NormalizedMember[]>();
 export const teamMembersRequestCache = new Map<string, any>();
 
-// Rol öncelik haritası için tip güvenliği
-const ROLE_PRIORITY: Record<string, number> = { "Admin": 1, "Moderator": 2, "Member": 3 };
+const ROLE_PRIORITY: Record<string, number> = { Admin: 1, Moderator: 2, Member: 3 };
 
-// Paginated veya düz array'den veriyi güvenle çıkar
 const extractList = <T>(response: any): T[] => {
     if (!response) return [];
     if (Array.isArray(response)) return response;
@@ -38,7 +35,6 @@ const extractList = <T>(response: any): T[] => {
     return [];
 };
 
-// Cache invalidasyonu - clearMemberCache ile dışarıdan tetiklenebilir.
 export const clearMemberCache = (teamId: string | number): void => {
     if (!teamId) return;
     const key = String(teamId);
@@ -48,184 +44,177 @@ export const clearMemberCache = (teamId: string | number): void => {
 
 export const teamsService = {
 
-    // Tüm takımları getirme - kullanıcıya göre filtreleyerek
-    async getTeams(currentUser: User): Promise<EnrichedTeam[]> {
-        if (!currentUser?.teams?.length) return [];
-
-        // Büyük veri setlerinde tek sayfaya sığmayabileceğinden pageSize'ı
-        // yüksek tutuyoruz; backend gelince sunucu taraflı filtre eklenecek.
+    // Kullanıcının takımlarını getir — backend JWT'den filtreler
+    async getTeams(): Promise<EnrichedTeam[]> {
         const response = await api.teams.getAll({ pageSize: 500 });
         const allTeams = extractList<Team>(response);
 
-        const userTeamIds = new Set(currentUser.teams.map((id) => String(id)));
-
         return allTeams
-            .filter(team =>
-                team.isDeleted !== true &&
-                userTeamIds.has(String(team.id))
-            )
+            .filter(team => team.isDeleted !== true)
             .map(team => ({
                 ...team,
-                // Her iki formata karşı defensive
                 members: Array.isArray(team.members)
                     ? team.members.length
-                    : ((team as any).membersCount ?? 0)
+                    : ((team as any).membersCount ?? 0),
             }));
     },
 
-    // Takım üyelerini getirme
+    // Takım üyelerini getir
     async getTeamMembers(teamId: string | number): Promise<NormalizedMember[]> {
         if (!teamId) return [];
 
-        const [teamsResponse, usersResponse] = await Promise.all([
-            api.teams.getAll({ pageSize: 500 }),
-            api.users.getAll({ pageSize: 1000 })
-        ]);
+        const data    = await restFetch<{ status: string; data: any[] }>(`/teams/${teamId}/members`);
+        const members = extractList<any>(data);
 
-        const allTeams = extractList<Team>(teamsResponse);
-        const allUsers = extractList<User>(usersResponse);
-
-        const teamData = allTeams.find(t => String(t.id) === String(teamId));
-        const teamMembersRaw = Array.isArray(teamData?.members) ? teamData.members : [];
-
-        // Lookup için Map — büyük user listelerinde find() döngüsünden çok daha hızlı
-        const userMap = new Map<string, User>(allUsers.map(u => [String(u.id), u]));
-
-        const normalized: NormalizedMember[] = teamMembersRaw.map((tm: any) => {
-            const isDeleted   = Boolean(tm?.isDeleted);
-            const fullUserData = userMap.get(String(tm.id));
-            const specificTeamRole = fullUserData?.role?.find(
-                (r) => String(r.teamId) === String(teamId)
+        return members
+            .map((m: any) => ({
+                id:          String(m.id),
+                name:        m.isDeleted ? 'DeletedUser' : (m.name   || 'Unknown'),
+                avatar:      m.isDeleted ? null          : (m.avatar || null),
+                email:       m.isDeleted ? ''            : (m.email  || ''),
+                isDeleted:   Boolean(m.isDeleted),
+                lastLogin:   m.lastLogin ?? null,
+                roleName:    m.roleName    || 'Member',
+                permissions: m.permissions || [],
+            }))
+            .sort((a: NormalizedMember, b: NormalizedMember) =>
+                (ROLE_PRIORITY[a.roleName] ?? 99) - (ROLE_PRIORITY[b.roleName] ?? 99)
             );
-
-            return {
-                id:          String(tm.id),
-                name:        isDeleted ? "DeletedUser" : (tm.name        || fullUserData?.name        || "Unknown"),
-                avatar:      isDeleted ? null          : (tm.avatar      || fullUserData?.avatar      || null),
-                email:       isDeleted ? ''            : (tm.email       || fullUserData?.email       || ''),
-                isDeleted,
-                lastLogin:   tm?.lastLogin   ?? fullUserData?.lastLogin   ?? null,
-                roleName:    specificTeamRole?.roleName    || tm?.roleName    || "Member",
-                permissions: specificTeamRole?.permissions || tm?.permissions || []
-            };
-        });
-
-        return normalized.sort(
-            (a, b) => (ROLE_PRIORITY[a.roleName] ?? 99) - (ROLE_PRIORITY[b.roleName] ?? 99)
-        );
     },
 
-    // Kullanıcı loglarını getirme
+    // Takıma ait logları getir, kullanıcıya göre filtrele
     async getUserLogs(userId: string | number, teamId: string | number): Promise<TeamMemberLog[]> {
         if (!userId || !teamId) return [];
 
-        const logsResponse = await api.logs.getAll({ pageSize: 2000 });
-        const rawList = extractList<LogData>(logsResponse);
+        const data = await restFetch<{ status: string; data: any[] }>(
+            `/logs`,
+            { params: { teamId: String(teamId) } }
+        );
+        const logs = extractList<any>(data);
 
-        // JSON yapısına göre TeamMemberLogs konteynerini bul
-        const teamMemberLogContainer = rawList.find(item => item.TeamMemberLogs);
-        const allLogs = teamMemberLogContainer?.TeamMemberLogs ?? [];
-
-        return allLogs
-            .filter((log) => {
-                const logUserId = log?.createdBy?.id ?? (log as any).userId;
-                return (
-                    String(logUserId) === String(userId) &&
-                    String(log.teamId) === String(teamId)
-                );
+        return logs
+            .filter((log: any) => {
+                const logUserId = log?.createdBy?.id ?? log?.userId;
+                return String(logUserId) === String(userId);
             })
-            .map((log) => ({
-                ...log,
-                details: log.details ?? (log as any).action ?? ''
-            }))
-            .sort((a, b) => {
-                const dateA = new Date(`${a.date} ${a.time}`).getTime();
-                const dateB = new Date(`${b.date} ${b.time}`).getTime();
-                return dateB - dateA;
+            .map((log: any) => ({ ...log, details: log.details ?? log.action ?? '' }))
+            .sort((a: any, b: any) => {
+                const ts = (log: any) => {
+                    const raw = log.createdAt ?? log.timestamp ?? (log.date ? `${log.date}${log.time ? ' ' + log.time : ''}` : null);
+                    return raw ? new Date(raw).getTime() : 0;
+                };
+                return ts(b) - ts(a);
             });
     },
 
-    // Takım ayarlarını getirme
+    // Takım ayarlarını getir (plan bilgisiyle zenginleştirilmiş)
     async getTeamSettings(teamId: string | number): Promise<TeamSettingsResult | null> {
         if (!teamId) return null;
 
-        const [teamsResponse, usersResponse, plansResponse] = await Promise.all([
+        const [teamsResponse, plansResponse] = await Promise.all([
             api.teams.getAll({ pageSize: 500 }),
-            api.users.getAll({ pageSize: 1000 }),
-            api.plans.getAll()
+            api.plans.getAll(),
         ]);
 
         const allTeams = extractList<Team>(teamsResponse);
-        const allUsers = extractList<User>(usersResponse);
-        // Plans paginated değil; düz array ya da obje olabilir
-        const allPlans = Array.isArray(plansResponse) ? plansResponse : extractList<Plan>(plansResponse);
+        const allPlans = extractList<Plan>(plansResponse);
 
         const team = allTeams.find(t => String(t.id) === String(teamId));
         if (!team) return null;
 
-        // 1. Takımın içine gömülü planId'yi alıyoruz
         const teamPlanContext = team.settings?.planContext || {};
-        const teamPlanId      = teamPlanContext.planId;
+        const linkedPlan      = allPlans.find(p => String(p.id) === String(teamPlanContext.planId));
 
-        // 2. Bu ID ile plan.json içinden ilgili planı buluyoruz
-        const linkedPlan = allPlans.find(p => String(p.id) === String(teamPlanId));
-
-        // 3. Owner (Kurucu) verisini hala çekiyoruz ama sadece "Upgrade" kontrolü için
-        const ownerUser = allUsers.find(u => String(u.id) === String(team.ownerId));
-
-        const baseFeatures: string[] = linkedPlan?.feature_keys || [];
-        const baseMaxLimit = linkedPlan?.Promise?.TeamMemberLimit
-            ? parseInt(linkedPlan.Promise.TeamMemberLimit, 10)
-            : (teamPlanContext.maxMembersAllowed || 5);
-
-        const ownerFeatures: string[] = ownerUser?.subscription?.feature_keys || [];
-        const ownerMaxLimit = ownerUser?.subscription?.maxMembersPerTeam || 0;
-
-        // Set kullanarak duplicate feature key'leri temizle
-        const finalFeatures = Array.from(new Set([...baseFeatures, ...ownerFeatures]));
-        const finalMaxLimit = Math.max(baseMaxLimit, ownerMaxLimit);
+        const maxLimit = (linkedPlan as any)?.maxMembersPerTeam || teamPlanContext.maxMembersAllowed || 5;
+        const features = linkedPlan?.feature_keys || [];
 
         return {
             ...team,
-            adminPlanLimit: finalMaxLimit,
-            ownerPlanType:  linkedPlan?.name || teamPlanContext.planName || 'Free',
-            availableFeatures: finalFeatures,
-            planDetails: linkedPlan || null
+            adminPlanLimit:    maxLimit,
+            ownerPlanType:     linkedPlan?.name || teamPlanContext.planName || 'Free',
+            availableFeatures: features,
+            planDetails:       linkedPlan || null,
         };
     },
 
-    // Rol güncelleme (simülasyon)
-    async updateUserRole(userId: string | number, teamId: string | number, newRoleName: string): Promise<{ success: boolean; message: string }> {
-        console.log(`[API UPDATE] User: ${userId}, Team: ${teamId}, New Role: ${newRoleName}`);
-        return { success: true, message: "Role updated successfully" };
+    // Rol güncelle
+    async updateUserRole(userId: string | number, teamId: string | number, payload: Record<string, unknown>): Promise<{ success: boolean; message: string }> {
+        try {
+            await restFetch(`/teams/${teamId}/members/${userId}`, { method: 'PUT', body: payload });
+            clearMemberCache(teamId);
+            return { success: true, message: 'Rol güncellendi.' };
+        } catch (err: any) {
+            return { success: false, message: err.message || 'Rol güncellenemedi.' };
+        }
     },
 
-    // Takım ayarlarını güncelleme (simülasyon)
+    // Takım ayarlarını güncelle
     async updateTeamSettings(teamId: string | number, updatePayload: Partial<Team['settings']>): Promise<{ success: boolean; message: string }> {
-        console.log(`[API UPDATE] Team: ${teamId} için ayarlar güncellendi.`, updatePayload);
-        return { success: true, message: "Ayarlar başarıyla güncellendi." };
+        try {
+            await restFetch(`/teams/${teamId}/settings`, { method: 'PATCH', body: updatePayload });
+            api.cache.invalidate('TEAMS');
+            return { success: true, message: 'Ayarlar güncellendi.' };
+        } catch (err: any) {
+            return { success: false, message: err.message || 'Ayarlar güncellenemedi.' };
+        }
     },
 
-    // Gerçek API'de DELETE /teams/:id olacak; şimdilik simülasyon.
+    // Takım sil
     async deleteTeam(teamId: string | number): Promise<{ success: boolean; message: string }> {
-        console.log(`[API DELETE] Team: ${teamId} silme isteği gönderildi.`);
-        // Cache'i temizle — silinen takımın verisi önbellekte kalmasın
-        clearMemberCache(teamId);
-        return { success: true, message: "Takım silme işlemi başlatıldı." };
+        try {
+            await restFetch(`/teams/${teamId}`, { method: 'DELETE' });
+            clearMemberCache(teamId);
+            api.cache.invalidate('TEAMS');
+            return { success: true, message: 'Takım silindi.' };
+        } catch (err: any) {
+            return { success: false, message: err.message || 'Takım silinemedi.' };
+        }
     },
 
-    // Üye çıkarma simülasyonu; backend gelince api.fetch('TEAMS', ..., { method: 'DELETE' }) olacak.
+    // Üye çıkar
     async removeMember(teamId: string | number, userId: string | number): Promise<{ success: boolean }> {
-        console.log(`[API DELETE] Team: ${teamId}, User: ${userId} çıkarıldı.`);
-        // Cache'i invalidate et — üye listesi güncel kalsın
-        clearMemberCache(teamId);
-        return { success: true };
+        try {
+            await restFetch(`/teams/${teamId}/members/${userId}`, { method: 'DELETE' });
+            clearMemberCache(teamId);
+            api.cache.invalidate('TEAMS');
+            return { success: true };
+        } catch {
+            return { success: false };
+        }
     },
 
-    // Basit takım listesini getirme
+    // Yeni takım oluştur
+    async createTeam(payload: Record<string, unknown>): Promise<{ success: boolean; team?: Team; message?: string }> {
+        try {
+            const result = await restFetch<{ status: string; data: Team }>('/teams', {
+                method: 'POST',
+                body:   payload,
+            });
+            api.cache.invalidate('TEAMS');
+            return { success: true, team: (result as any).data ?? (result as any) };
+        } catch (err: any) {
+            return { success: false, message: err.message || 'Takım oluşturulamadı.' };
+        }
+    },
+
+    // Üye davet et
+    async inviteMember(teamId: string | number, identifier: string, role: string, restrictions: string[]): Promise<{ success: boolean; message?: string }> {
+        try {
+            await restFetch(`/teams/${teamId}/members`, {
+                method: 'POST',
+                body:   { identifier, role, restrictions },
+            });
+            clearMemberCache(teamId);
+            return { success: true };
+        } catch (err: any) {
+            return { success: false, message: err.message || 'Üye davet edilemedi.' };
+        }
+    },
+
+    // Sıralanmış takım listesi
     async getSimpleTeams(): Promise<Team[]> {
         const response = await api.teams.getAll({ pageSize: 500 });
-        const teams = extractList<Team>(response);
+        const teams    = extractList<Team>(response);
         return [...teams].sort((a, b) => a.name.localeCompare(b.name));
-    }
+    },
 };

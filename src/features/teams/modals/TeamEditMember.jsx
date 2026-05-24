@@ -6,7 +6,7 @@ import { useModal } from '../../../hooks/useModal';
 import { usePermissions } from '../../../hooks/usePermissions'; 
 import Confirm from '../../../components/overlays/Confirm'; 
 
-const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
+const EditRoleModal = ({ isOpen, onClose, user, teamId, onSuccess }) => {
     const [selectedRole, setSelectedRole] = useState('member');
     const [isUpdating, setIsUpdating] = useState(false);
 
@@ -33,22 +33,23 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId }) => {
         }
     }, [user, isOpen, setRestrictedPerms]);
 
-    // Asıl güncelleme işlemini yapan fonksiyonu ayırdık
+    // Asıl güncelleme işlemini yapan fonksiyon
     const executeUpdate = useCallback(async () => {
         if (!user?.id || !teamId) return;
         try {
             setIsUpdating(true);
             await teamsService.updateUserRole(user.id, teamId, {
                 role: selectedRole,
-                restrictions: restrictedPerms 
+                restrictions: restrictedPerms,
             });
-            onClose(); 
+            if (onSuccess) onSuccess(selectedRole, restrictedPerms);
+            onClose();
         } catch (error) {
             console.error("Update error:", error);
         } finally {
             setIsUpdating(false);
         }
-    }, [user?.id, teamId, selectedRole, restrictedPerms, onClose]);
+    }, [user?.id, teamId, selectedRole, restrictedPerms, onClose, onSuccess]);
 
     // Güncelleme butonuna basıldığında çalışan kontrol mekanizması
     const handleUpdateAttempt = () => {

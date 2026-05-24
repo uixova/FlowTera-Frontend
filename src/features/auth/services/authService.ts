@@ -1,7 +1,6 @@
 import { api } from '../../../api/api';
-import { User, Plan } from '@/types/types';
+import { Plan } from '@/types/types';
 
-// Form validasyonu ve kayıt işlemleri için arayüzler
 export interface SignupFormData {
     firstName?: string;
     lastName?: string;
@@ -21,14 +20,15 @@ export interface ValidationResult {
     normalized: any;
 }
 
-const PENDING_SIGNUP_KEY         = 'auth_pending_signup';
+export const PENDING_SIGNUP_KEY  = 'auth_pending_signup';
 export const VERIFIED_SIGNUP_KEY = 'auth_verified_signup';
-const PENDING_PAYMENT_SIGNUP_KEY = 'auth_pending_payment_signup';
 const PENDING_LOGIN_KEY          = 'auth_pending_login';
+
+const AUTH_API = '/api/v1/auth';
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^[\d+\s()-]{10,20}$/;
-const nameRegex  = /^[a-zA-ZcCgGiIoOsSuU\u00C7\u00E7\u011E\u011F\u0130\u0131\u00D6\u00F6\u015E\u015F\u00DC\u00FC\s'-]{2,60}$/;
+const nameRegex  = /^[a-zA-ZcCgGiIoOsSuUÇçĞğİıÖöŞşÜü\s'-]{2,60}$/;
 const dateRegex  = /^\d{4}-\d{2}-\d{2}$/;
 
 const sanitizeText  = (value: string) => value.trim().replace(/\s+/g, ' ');
@@ -45,33 +45,71 @@ const calculateAge = (birthDate: string): number => {
     return age;
 };
 
-const toArray = <T>(result: any): T[] =>
-    Array.isArray(result) ? result : (result?.data ?? []);
+// Auth endpoint'lerine direkt fetch (her zaman backend)
+const authFetch = async (path: string, body: object): Promise<any> => {
+    const res = await fetch(`${AUTH_API}${path}`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.message || `HTTP ${res.status}`);
+    return data;
+};
 
 export const authService = {
 
-    async loginWithEmail(email: string, password: string): Promise<{ success: boolean; user?: User; message?: string }> {
-        const result = await api.users.getAll();
-        const users  = toArray<User>(result);
-
-        const normalizedEmail = email.trim().toLowerCase();
-        const user = users.find(
-            (item) =>
-                item?.email?.trim().toLowerCase() === normalizedEmail &&
-                item?.password === password
-        );
-
-        if (!user) {
-            return { success: false, message: 'E-posta veya şifre hatalı.' };
+    // Login Adım 1 — kimlik doğrula; SKIP_OTP=true ise token direkt, OTP ise needsOtp:true
+    async loginWithEmail(email: string, password: string): Promise<{
+        success:   boolean;
+        token?:    string;
+        user?:     any;
+        needsOtp?: boolean;
+        email?:    string;
+        userId?:   string;
+        message?:  string;
+    }> {
+        try {
+            const data = await authFetch('/login', { email, password });
+            if (data.token && data.user) {
+                return { success: true, token: data.token, user: data.user };
+            }
+            return { success: true, needsOtp: true, email: data.email, userId: data.userId, message: data.message };
+        } catch (err: any) {
+            return { success: false, message: err.message || 'E-posta veya şifre hatalı.' };
         }
+    },
 
-        return { success: true, user };
+    // Login Adım 2 — OTP kodu doğrula, token al
+    async verifyLoginOtp(email: string, code: string): Promise<{
+        success:  boolean;
+        token?:   string;
+        user?:    any;
+        message?: string;
+    }> {
+        try {
+            const data = await authFetch('/verify', { email, code: sanitizeCode(String(code)) });
+            return { success: true, token: data.token, user: data.user };
+        } catch (err: any) {
+            return { success: false, message: err.message || 'Kod hatalı.' };
+        }
+    },
+
+    // Login OTP yeniden gönder
+    async resendLoginOtp(email: string, password: string): Promise<{ success: boolean; message?: string }> {
+        try {
+            const data = await authFetch('/login', { email, password });
+            if (data.token) return { success: true, message: 'Giriş başarılı.' };
+            return { success: true, message: 'Yeni doğrulama kodu gönderildi.' };
+        } catch (err: any) {
+            return { success: false, message: err.message || 'Kod gönderilemedi.' };
+        }
     },
 
     async getPlans(): Promise<Plan[]> {
         const result = await api.plans.getAll();
-        const plans  = toArray<Plan>(result);
-        return [...plans].sort((a, b) => (a.order || 0) - (b.order || 0));
+        const plans  = (result as any)?.data ?? (Array.isArray(result) ? result : []);
+        return [...plans].sort((a: Plan, b: Plan) => (a.order || 0) - (b.order || 0));
     },
 
     validateSignupForm(formData: SignupFormData): ValidationResult {
@@ -89,7 +127,7 @@ export const authService = {
         if (!emailRegex.test(email))
             errors.email = 'Geçerli bir e-posta adresi gir.';
 
-        if (!phoneRegex.test(phone))
+        if (phone && !phoneRegex.test(phone))
             errors.phone = 'Telefon numarası 10-20 karakter aralığında olmalı.';
 
         const birthDate = (formData.birthDate || '').trim();
@@ -122,62 +160,54 @@ export const authService = {
         };
     },
 
-    async validateSignupAgainstUsers(formData: SignupFormData): Promise<{ valid: boolean; message?: string; fields?: any }> {
-        const result = await api.users.getAll();
-        const users  = toArray<User>(result);
-
-        const duplicate = users.find(
-            (item) =>
-                item?.email?.trim().toLowerCase() === formData.email ||
-                (item?.phone || '').replace(/[^\d+]/g, '') === formData.phone
-        );
-
-        if (duplicate) {
-            return {
-                valid: false,
-                message: 'Bu e-posta veya telefon zaten kayıtlı.',
-                fields: {
-                    email: duplicate?.email?.trim().toLowerCase() === formData.email
-                        ? 'Bu e-posta zaten kayıtlı.' : '',
-                    phone: (duplicate?.phone || '').replace(/[^\d+]/g, '') === formData.phone
-                        ? 'Bu telefon zaten kayıtlı.' : '',
-                },
-            };
-        }
-
+    // Backend /auth/signup/initiate e-posta + kullanıcı adı çakışmasını kontrol eder
+    async validateSignupAgainstUsers(_formData: SignupFormData): Promise<{ valid: boolean; message?: string; fields?: any }> {
         return { valid: true };
     },
 
+    // SIGNUP — Adım 1: Backend'e gönder
     async startEmailVerification(payload: SignupFormData) {
-        const verificationCode = '000000';
-        const data = {
-            ...payload,
-            flow: payload.flow || 'free',
-            verificationCode,
-            requestedAt: new Date().toISOString(),
-        };
-        sessionStorage.setItem(PENDING_SIGNUP_KEY, JSON.stringify(data));
+        try {
+            const result = await authFetch('/signup/initiate', {
+                firstName: payload.firstName,
+                lastName:  payload.lastName,
+                name:      payload.name,
+                email:     payload.email,
+                phone:     payload.phone    || null,
+                birthDate: payload.birthDate || null,
+                address:   payload.address  || null,
+                password:  payload.password,
+                plan:      payload.plan     || null,
+                flow:      payload.flow     || 'free',
+            });
 
-        return {
-            success:  true,
-            message:  `Doğrulama kodu ${payload.email} adresine gönderildi (simulasyon).`,
-            codeHint: verificationCode,
-        };
+            sessionStorage.setItem(PENDING_SIGNUP_KEY, JSON.stringify({
+                email: payload.email,
+                plan:  payload.plan,
+                flow:  payload.flow || 'free',
+            }));
+
+            // SKIP_EMAIL_OTP=true: backend kullanıcıyı direkt oluşturdu, token döndü
+            if (result.token && result.user) {
+                sessionStorage.setItem(VERIFIED_SIGNUP_KEY, JSON.stringify(result.user));
+                localStorage.setItem('auth_token', result.token);
+                return { success: true, message: result.message, token: result.token, user: result.user };
+            }
+
+            return { success: true, message: result.message || `Doğrulama kodu ${payload.email} adresine gönderildi.` };
+        } catch (err: any) {
+            return { success: false, message: err.message || 'Kayıt başlatılamadı.' };
+        }
     },
 
     startLoginVerification(payload: any) {
-        const verificationCode = '000000';
-        const data = {
+        sessionStorage.setItem(PENDING_LOGIN_KEY, JSON.stringify({
             ...payload,
-            verificationCode,
             requestedAt: new Date().toISOString(),
-        };
-        sessionStorage.setItem(PENDING_LOGIN_KEY, JSON.stringify(data));
-
+        }));
         return {
-            success:  true,
-            message:  `Giriş kodu ${payload.email} adresine gönderildi (simulasyon).`,
-            codeHint: verificationCode,
+            success: true,
+            message: `Giriş kodu ${payload.email} adresine gönderildi.`,
         };
     },
 
@@ -192,48 +222,27 @@ export const authService = {
         if (safeCode.length !== 6)
             return { success: false, message: 'Kod 6 haneli olmalı.' };
 
-        if (safeCode !== pending.verificationCode)
-            return { success: false, message: 'Doğrulama kodu hatalı.' };
-
         sessionStorage.removeItem(PENDING_LOGIN_KEY);
         return { success: true, userId: pending.userId, rememberMe: pending.rememberMe };
     },
 
-    async requestPasswordResetLink({ email, phone, channel }: { email: string; phone: string; channel: string }) {
-        const result = await api.users.getAll();
-        const users  = toArray<User>(result);
+    async requestPasswordResetLink({ email, channel }: { email: string; phone?: string; channel: string }) {
+        const method           = channel === 'sms' ? 'sms' : 'email';
+        const normalizedEmail  = (email || '').trim().toLowerCase();
 
-        const normalizedEmail = (email || '').trim().toLowerCase();
-        const normalizedPhone = sanitizePhone(phone || '');
-        const method          = channel === 'sms' ? 'sms' : 'email';
+        if (!emailRegex.test(normalizedEmail))
+            return { success: false, message: 'Geçerli e-posta gir.' };
 
-        let foundUser: User | undefined;
-        if (method === 'email') {
-            if (!emailRegex.test(normalizedEmail))
-                return { success: false, message: 'Geçerli e-posta gir.' };
-            foundUser = users.find((item) => item?.email?.trim().toLowerCase() === normalizedEmail);
-        } else {
-            if (!phoneRegex.test(normalizedPhone))
-                return { success: false, message: 'Geçerli telefon gir.' };
-            foundUser = users.find((item) => sanitizePhone(item?.phone || '') === normalizedPhone);
+        try {
+            const data = await authFetch('/forgot-password', { email: normalizedEmail, channel: method });
+            return { success: true, message: data.message };
+        } catch (err: any) {
+            return { success: false, message: err.message || 'Şifre sıfırlama gönderilemedi.' };
         }
-
-        if (!foundUser)
-            return { success: false, message: 'Bu bilgiyle eşleşen kullanıcı bulunamadı.' };
-
-        const token    = `reset-${Date.now()}`;
-        const fakeLink = `${window.location.origin}/reset-password?token=${token}`;
-        const destination = method === 'sms' ? foundUser.phone : foundUser.email;
-
-        return {
-            success:     true,
-            message:     `${method === 'sms' ? 'SMS' : 'E-posta'} ile şifre sıfırlama bağlantısı gönderildi (simülasyon).`,
-            destination,
-            link:        fakeLink,
-        };
     },
 
-    verifyEmailCode(code: string | number) {
+    // SIGNUP — Adım 2: OTP doğrula
+    async verifyEmailCode(code: string | number) {
         const pendingRaw = sessionStorage.getItem(PENDING_SIGNUP_KEY);
         if (!pendingRaw)
             return { success: false, message: 'Doğrulama oturumu bulunamadı.' };
@@ -244,41 +253,29 @@ export const authService = {
         if (safeCode.length !== 6)
             return { success: false, message: 'Kod 6 haneli olmalı.' };
 
-        if (safeCode !== pending.verificationCode)
-            return { success: false, message: 'Doğrulama kodu hatalı.' };
+        try {
+            const result = await authFetch('/signup/verify', {
+                email: pending.email,
+                code:  safeCode,
+            });
 
-        const userDraft = {
-            id:       `temp-${Date.now()}`,
-            name:     pending.name,
-            username: pending.email.split('@')[0],
-            email:    pending.email,
-            phone:    pending.phone,
-            age:      pending.age,
-            address:  pending.address,
-            password: pending.password,
-            joinedDate: new Date().toISOString().slice(0, 10),
-            subscription: {
-                planId:             pending.plan.id,
-                plan:               pending.plan.name.toLowerCase(),
-                maxTeams:           pending.plan?.Promise?.teamLimit          || '2 takım',
-                maxMembersPerTeam:  pending.plan?.Promise?.TeamMemberLimit    || '5 üye',
-                usage: { ocr: 0, aiAnaliz: 0 },
-            },
-        };
+            sessionStorage.removeItem(PENDING_SIGNUP_KEY);
 
-        sessionStorage.removeItem(PENDING_SIGNUP_KEY);
+            const userDraft = result.user || null;
+            const token     = result.token || null;
 
-        if (pending.flow === 'paid') {
-            sessionStorage.setItem(PENDING_PAYMENT_SIGNUP_KEY, JSON.stringify(userDraft));
-            return { success: true, userDraft, requiresPayment: true };
+            if (userDraft) sessionStorage.setItem(VERIFIED_SIGNUP_KEY, JSON.stringify(userDraft));
+            if (token)     localStorage.setItem('auth_token', token);
+
+            const requiresPayment = pending.flow === 'paid';
+            return { success: true, userDraft, requiresPayment, token };
+        } catch (err: any) {
+            return { success: false, message: err.message || 'Doğrulama başarısız.' };
         }
-
-        sessionStorage.setItem(VERIFIED_SIGNUP_KEY, JSON.stringify(userDraft));
-        return { success: true, userDraft, requiresPayment: false };
     },
 
     getPendingPaymentSignup() {
-        const raw = sessionStorage.getItem(PENDING_PAYMENT_SIGNUP_KEY);
+        const raw = sessionStorage.getItem('auth_pending_payment_signup');
         if (!raw) return null;
         try { return JSON.parse(raw); }
         catch { return null; }
@@ -290,7 +287,7 @@ export const authService = {
             return { success: false, message: 'Bekleyen ödeme kaydı bulunamadı.' };
 
         sessionStorage.setItem(VERIFIED_SIGNUP_KEY, JSON.stringify(pending));
-        sessionStorage.removeItem(PENDING_PAYMENT_SIGNUP_KEY);
+        sessionStorage.removeItem('auth_pending_payment_signup');
         return { success: true, userDraft: pending };
     },
 

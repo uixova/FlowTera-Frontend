@@ -2,9 +2,10 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import './CreateTeamPanel.css';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useSubscription } from '../../../context/SubscriptionContext';
-import { useAuth } from '../../../context/AuthContext';
+
 import { useModal } from '../../../hooks/useModal';
 import Alert from '../../../components/overlays/Alert';
+import { teamsService } from '../services/teamsService';
 
 const INITIAL_FORM_STATE = {
   teamName: '',
@@ -21,14 +22,12 @@ const INITIAL_FORM_STATE = {
 const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/160?text=TEAM';
 
 const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
-  const { currentUser } = useAuth();
+
   const { currentPlan } = useSubscription();
   const { alertConfig, showAlert, closeAlert } = useModal();
 
-  // JSON'daki "5 üye" veya "20 üye" stringini sayıya çeviriyoruz
   const planMaxMembers = useMemo(() => {
-    const limitStr = currentPlan?.Promise?.TeamMemberLimit || "5";
-    return parseInt(limitStr.replace(/[^0-9]/g, '')) || 5;
+    return currentPlan?.maxMembersPerTeam || 5;
   }, [currentPlan]);
 
   const hasAutomation = useMemo(() => {
@@ -101,18 +100,28 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
 
     setIsSubmitting(true);
     try {
-      // Api simülasyonu
-      const payload = { 
-      ...formData, 
-      logo: preview,
-      createdBy: currentUser?.uid, 
-      planId: currentPlan?.id 
-    };
-    
-    console.log("Team Creating...", payload);
+      const payload = {
+        name:              formData.teamName,
+        category:          formData.category,
+        currency:          formData.currency,
+        workspaceType:     formData.workspaceType,
+        planId:            currentPlan?.id || null,
+        settings: {
+          privacy:           formData.privacy,
+          maxExpenseLimit:   formData.maxExpenseLimit,
+          memberLimit:       formData.memberLimit,
+          autoApproved:      formData.autoApproved,
+          autoApprovedLimit: formData.autoApprovedLimit,
+        },
+      };
+      const result = await teamsService.createTeam(payload);
+      if (!result.success) {
+        showAlert("Hata", result.message || "Takım oluşturulamadı.", "error");
+        return;
+      }
       if (onSuccess) onSuccess();
-      onClose(); 
-    } catch{
+      onClose();
+    } catch {
       showAlert("Hata", "Takım oluşturulurken teknik bir sorun oluştu.", "error");
     } finally {
       setIsSubmitting(false);

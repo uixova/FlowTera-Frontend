@@ -1,16 +1,13 @@
-import { api } from '../../../api/api';
-import { Plan } from '@/types/types';
+import { restFetch } from '../../../api/api';
 
-// Ödeme formu payload'u için tip tanımı
 export interface PaymentPayload {
     number?: string | number;
     name?: string;
     expiry?: string;
     cvc?: string | number;
-    [key: string]: any; // Diğer olası form alanları için esneklik
+    [key: string]: any;
 }
 
-// Geri dönüş tipi arayüzü
 export interface PaymentResult {
     success: boolean;
     message: string;
@@ -18,63 +15,46 @@ export interface PaymentResult {
     details?: string;
 }
 
-// Paginated veya düz array'den veriyi güvenle çıkar
-const extractList = <T>(response: any): T[] => {
-    if (!response) return [];
-    if (Array.isArray(response)) return response;
-    if (Array.isArray(response.data)) return response.data;
-    return [];
-};
-
 export const paymentService = {
 
-    // Ödemeyi işle 
+    // Ödeme işle — backend /payments/create-intent + simulate-success
     async processPayment(
-        paymentData: PaymentPayload, 
-        userId: string | number, 
+        paymentData: PaymentPayload,
+        userId: string | number,
         planId: string | number
     ): Promise<PaymentResult> {
         try {
-            if (!userId) throw new Error("Kullanıcı kimliği eksik.");
-            if (!planId) throw new Error("Plan kimliği eksik.");
+            if (!userId) throw new Error('Kullanıcı kimliği eksik.');
+            if (!planId) throw new Error('Plan kimliği eksik.');
 
-            console.log(`${userId} için ${planId} ödemesi alınıyor...`);
-
-            const response = await api.plans.getAll();
-            const plans = extractList<Plan>(response);
-
-            if (!plans.length) throw new Error("Plan verileri doğrulanamadı.");
-
-            const targetPlan = plans.find(p => String(p.id) === String(planId));
-            if (!targetPlan) throw new Error(`"${planId}" planı bulunamadı.`);
+            const result = await restFetch<{ status: string; data: any }>(
+                `/payments/simulate-success`,
+                { method: 'POST', body: { userId, planId, paymentData } }
+            );
 
             const lastFour = paymentData?.number
                 ? String(paymentData.number).slice(-4)
                 : '****';
 
-            // Gerçek API gelince buraya api.fetch() çağrısı eklenecek
             return {
-                success: true,
-                message: "Abonelik aktif edildi!",
-                planName: targetPlan.name,
-                details: lastFour
+                success:  true,
+                message:  'Abonelik aktif edildi!',
+                planName: (result as any).data?.planName || '',
+                details:  lastFour,
             };
         } catch (error: any) {
-            console.error("Ödeme İşlem Hatası:", error.message);
-            return { success: false, message: "Ödeme başarısız: " + error.message };
+            return { success: false, message: 'Ödeme başarısız: ' + error.message };
         }
     },
 
-    // Yeni kullanıcı için ön kayıt doğrulaması 
+    // Kayıt öncesi ödeme doğrulama
     async validateRegistrationPayment(tempId: string | number): Promise<{ valid: boolean }> {
+        if (!tempId) return { valid: false };
         try {
-            if (!tempId) throw new Error("Geçici kayıt ID eksik.");
-            console.log(`Geçici kayıt ID doğrulanıyor: ${tempId}`);
-            // Gelecekte: const check = await api.fetch('VALIDATE', { tempId });
+            await restFetch(`/payments/validate`, { params: { tempId: String(tempId) } });
             return { valid: true };
-        } catch (error) {
-            console.error("Doğrulama hatası:", error);
+        } catch {
             return { valid: false };
         }
-    }
+    },
 };

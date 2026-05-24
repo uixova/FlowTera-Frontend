@@ -1,19 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './Features.css';
+import { featuresData } from '@/data/featuresData';
 
 const Features = () => {
-  const [features, setFeatures] = useState([]);
-
-  useEffect(() => {
-    fetch('/data/features.json')
-      .then(res => res.json())
-      .then(data => {
-        setFeatures(data);
-      })
-      .catch(err => {
-        console.error("Özellikler yüklenemedi:", err);
-      });
-  }, []);
+  const features = featuresData;
 
   return (
     <div className="features-bento">

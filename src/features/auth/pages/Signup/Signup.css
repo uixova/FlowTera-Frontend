@@ -4,81 +4,92 @@
 
 .signup-card {
   width: 100%;
-  max-width: 760px;
   padding: 30px;
   border-radius: 26px;
 }
 
+/* Step progress bar */
 .signup-progress {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  margin: -8px 0 16px;
+  margin: -8px 0 24px;
 }
 
 .signup-progress span {
-  height: 8px;
+  height: 4px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   color: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   font-size: 0;
+  transition: background 0.3s ease;
+}
+
+.signup-progress span.done {
+  background: rgba(14, 212, 90, 0.35);
 }
 
 .signup-progress span.active {
   background: linear-gradient(120deg, #0ed45a, #2eff7a);
 }
 
+/* Form container — no extra padding, card already has it */
 .signup-form {
-  border-radius: 22px;
-  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
 .signup-form .field-error {
   color: #ff8d8d;
   font-size: 0.75rem;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
-/* Ad ve Soyad alanlarının yan yana durmasını sağlayan grid */
+/* First name + last name grid */
 .signup-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 
+/* Plan/verify step wrapper */
 .signup-step-two {
-  border-radius: 22px;
-  padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+/* Back button */
 .signup-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: transparent;
   color: #b8b8bf;
   padding: 10px 14px;
   border-radius: 10px;
   cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
   width: fit-content;
+  transition: all 0.2s ease;
 }
 
 .signup-back-btn:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.22);
   color: #e2e2e6;
+  background: rgba(255, 255, 255, 0.04);
 }
 
-/* Checkbox Alanları */
+/* Agreement checkboxes */
 .auth-checkboxes {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin: 8px 0 4px;
-  padding: 12px 0;
+  margin: 4px 0 0;
+  padding: 16px 0 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -88,20 +99,21 @@
   gap: 10px;
   cursor: pointer;
   font-size: 0.8rem;
-  color: #aaa;
-  line-height: 1.4;
+  color: #888;
+  line-height: 1.5;
   transition: color 0.2s ease;
+  user-select: none;
 }
 
 .auth-checkbox-label:hover {
-  color: #ccc;
+  color: #bbb;
 }
 
 .auth-checkbox-label.checked {
-  color: #fff;
+  color: #d0d0d4;
 }
 
-.auth-checkbox-label input[type="checkbox"] {
+.auth-checkbox-label input[type='checkbox'] {
   display: none;
 }
 
@@ -110,58 +122,70 @@
   height: 18px;
   min-width: 18px;
   min-height: 18px;
-  border: 2px solid #555;
-  border-radius: 4px;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
   margin-top: 1px;
+  flex-shrink: 0;
 }
 
 .auth-checkbox-label:hover .checkbox-custom {
-  border-color: #777;
+  border-color: rgba(14, 212, 90, 0.4);
 }
 
 .auth-checkbox-label.checked .checkbox-custom {
-  background: #4361ee;
-  border-color: #4361ee;
+  background: #0ed45a;
+  border-color: #0ed45a;
 }
 
 .auth-checkbox-label.checked .checkbox-custom::after {
-  content: '\2713';
-  color: #fff;
-  font-size: 12px;
-  font-weight: bold;
+  content: '';
+  width: 4px;
+  height: 8px;
+  border: 2px solid #051a0d;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg) translateY(-1px);
+  display: block;
 }
 
 .checkbox-text {
   flex: 1;
 }
 
-.phone-field > div > div {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-}
-
+/* Auth link inside checkbox text */
 .auth-link {
-  color: #4cc9f0;
+  color: #0ed45a;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
 }
 
 .auth-link:hover {
-  color: #7dd3fc;
-  text-decoration: underline;
+  color: #2eff7a;
 }
 
+/* Phone field dark style override */
+.phone-field > div > div {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Date input color fix */
+input[type='date'] {
+  color-scheme: dark;
+}
+
+/* Disabled submit */
 .auth-submit-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Responsive Kırılımlar */
+/* Responsive */
 @media (max-width: 900px) {
   .signup-card {
     padding: 24px 18px;
@@ -181,22 +205,16 @@
 
   .signup-progress {
     gap: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 18px;
   }
 
-  .signup-progress span {
-    height: 6px;
-  }
-
-  .signup-form,
-  .signup-step-two {
-    padding: 12px 8px;
-    gap: 10px;
+  .signup-form {
+    gap: 14px;
   }
 
   .auth-checkboxes {
     gap: 10px;
-    padding: 10px 0;
+    padding-top: 12px;
   }
 
   .auth-checkbox-label {
@@ -207,12 +225,11 @@
 @media (max-width: 480px) {
   .signup-grid {
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 14px;
   }
 
   .signup-back-btn {
     width: 100%;
-    text-align: center;
     justify-content: center;
     padding: 12px;
   }

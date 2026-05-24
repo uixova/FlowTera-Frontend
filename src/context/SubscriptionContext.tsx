@@ -30,8 +30,9 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
     useEffect(() => {
         const fetchPlanData = async () => {
             try {
-                const data = await api.plans.getAll();
-                if (data) setPlans(data.sort((a: any, b: any) => a.order - b.order));
+                const res   = await api.plans.getAll();
+                const data  = (res as any)?.data ?? res;
+                if (Array.isArray(data)) setPlans(data.sort((a: any, b: any) => a.order - b.order));
             } catch (err: any) {
                 console.error('Plan fetch error:', err);
                 setError(err?.message || 'Plan verisi alınamadı.');

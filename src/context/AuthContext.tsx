@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { api } from '../api/api';
+import { api, restFetch } from '../api/api';
 import { authService, VERIFIED_SIGNUP_KEY } from '../features/auth/services/authService';
 import { socketClient } from '../api/socketClient';
 
 interface AuthContextType {
     currentUser: any | null;
     currentUserId: string | null;
+    teams: any[];
     loading: boolean;
     isAuthenticated: boolean;
     login: (nextId: any, rememberMe?: boolean) => void;
@@ -30,7 +31,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [currentUserId, setCurrentUserId] = useState<string | null>(() => {
-        return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || "u1";
+        return sessionStorage.getItem(AUTH_USER_ID_KEY) || localStorage.getItem(AUTH_USER_ID_KEY) || null;
     });
     const [currentUser, setCurrentUser] = useState<any | null>(null);
     const [teams, setTeams] = useState<any[]>([]);
@@ -70,34 +71,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         setLoading(true);
         try {
-            const [usersResult, teamsResult] = await Promise.all([
-                api.users.getAll({ pageSize: 1000 }),
+            // REST: kullanıcıyı direkt ID ile çek, takımları ayrı endpoint'ten al
+            const [userResult, teamsResult] = await Promise.all([
+                restFetch<{ status: string; data: any }>(`/users/${userId}`),
                 api.teams.getAll({ pageSize: 500 }),
             ]);
 
-            const usersArray = Array.isArray(usersResult) ? usersResult : (usersResult?.data ?? []);
-            const teamsArray = Array.isArray(teamsResult) ? teamsResult : (teamsResult?.data ?? []);
-
-            const user = usersArray.find((u: any) => String(u.id) === String(userId));
+            const user       = (userResult as any).data ?? userResult;
+            const teamsArray = Array.isArray(teamsResult) ? teamsResult : ((teamsResult as any)?.data ?? []);
 
             if (user) {
                 setCurrentUser(user);
-                const userTeamIds = new Set([
-                    ...(user.role?.map((r: any) => String(r.teamId)) || []),
-                    ...(user.teams?.map((id: any) => String(id)) || [])
-                ]);
-                const userTeams = teamsArray.filter((t: any) => userTeamIds.has(String(t.id)));
-                setTeams(userTeams);
+                setTeams(teamsArray);
 
-                // Kullanıcı yüklendikten sonra WS bağlantısını kur
-                // Backend gelince token localStorage'dan okunacak, mock'ta userId yeterli
-                const token = localStorage.getItem(AUTH_TOKEN_KEY) || `mock_token_${userId}`;
-                socketClient.connect(token, userId);
-
-                // Kişisel bildirim odasına katıl
-                socketClient.joinRoom(`user:${userId}`);
+                const token      = localStorage.getItem(AUTH_TOKEN_KEY) || sessionStorage.getItem(AUTH_TOKEN_KEY) || '';
+                const storedTeam = localStorage.getItem('tm_selected_id') || '';
+                socketClient.setCredentials(token, userId);
+                if (storedTeam) socketClient.connect(token, userId, storedTeam);
             } else {
-                // Signup akışından gelen geçici session kullanıcısı
                 const rawSessionUser = sessionStorage.getItem(VERIFIED_SIGNUP_KEY);
                 if (rawSessionUser) {
                     try {
@@ -148,25 +139,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         try {
             const result = await authService.loginWithEmail(email, password);
 
-            if (result.success && result.user) {
-                setPendingUser({ ...result.user, rememberMe });
-                await authService.startLoginVerification({
-                    email: result.user.email,
-                    userId: result.user.id,
-                    rememberMe,
-                });
-                setAuthStep('verify');
-                return { success: true };
+            if (!result.success) {
+                setAuthError(result.message || 'E-posta veya şifre hatalı.');
+                return { success: false };
             }
 
-            setAuthError(result.message || 'E-posta veya şifre hatalı.');
-            return { success: false };
+            // SKIP_EMAIL_OTP=true: token direkt döndü
+            if (result.token && result.user) {
+                if (rememberMe) localStorage.setItem(AUTH_TOKEN_KEY, result.token);
+                else            sessionStorage.setItem(AUTH_TOKEN_KEY, result.token);
+                login(result.user.id, rememberMe);
+                return { success: true, redirecting: true };
+            }
+
+            // OTP akışı: verify ekranına geç
+            setPendingUser({ email: result.email, userId: result.userId, rememberMe });
+            authService.startLoginVerification({ email: result.email, userId: result.userId, rememberMe });
+            setAuthStep('verify');
+            return { success: true, redirecting: false };
         } catch (error) {
             console.error('[AuthContext] loginWithCredentials hatası:', error);
             setAuthError('Sistem bağlantı hatası.');
             return { success: false };
         }
-    }, []);
+    }, [login]);
 
     const roleNameForTeam = useCallback((teamId: any, type: 'role' | 'plan' = 'role'): string | null => {
         if (!currentUser || !teamId) return null;
@@ -191,6 +187,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const value = useMemo(() => ({
         currentUser,
         currentUserId,
+        teams,
         loading,
         isAuthenticated: !!currentUser,
         login,
@@ -204,7 +201,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setAuthError,
         pendingUser,
     }), [
-        currentUser, currentUserId, loading,
+        currentUser, currentUserId, teams, loading,
         login, loginWithCredentials, logout,
         roleNameForTeam, isAdmin,
         authStep, authError, pendingUser,

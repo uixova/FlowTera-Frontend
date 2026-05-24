@@ -29,7 +29,11 @@ const TeamCard = ({ team, onSelect }) => {
                     <h4>{team.name}</h4>
                     <div className="tm-sel-meta">
                         <i className="ti ti-calendar-event" />
-                        <span>{team.createdAt}</span>
+                        <span>
+                            {team.createdAt
+                                ? new Date(team.createdAt).toLocaleDateString('tr-TR')
+                                : '—'}
+                        </span>
                     </div>
                 </div>
             </div>

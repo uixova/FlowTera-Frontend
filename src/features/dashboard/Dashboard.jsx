@@ -24,10 +24,10 @@ const Dashboard = () => {
 
     // Context verileri
     const { hasFeature, loading: subLoading } = useSubscription();
-    const { selectedTeamId } = useTeam(); 
-    const { currentUser, currentUserId, loading: authLoading } = useAuth();
+    const { selectedTeamId } = useTeam();
+    const { currentUser, currentUserId, teams: authTeams, loading: authLoading } = useAuth();
     const { hasPermission } = usePermissions();
-    
+
     const [stats, setStats] = useState({ pendingCount: 0, activeTrips: 0, totalExpenses: 0, rejectedCount: 0 });
     const [myActivities, setMyActivities] = useState([]);
     const [chartData, setChartData] = useState({ trend: [], distribution: [] });
@@ -82,20 +82,20 @@ const Dashboard = () => {
         openModalCallback(true);
     };
 
-    // Veri çekme fonksiyonu 
+    // Veri çekme fonksiyonu
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
                 if (!currentUserId) return;
-                const data = await dashboardService.getDashboardStats(currentUserId);
+                const data = await dashboardService.getDashboardStats(currentUserId, selectedTeamId || null, authTeams);
                 if (data) {
                     setStats(data.stats);
                     setMyActivities(data.myActivities);
-                    setChartData({ 
-                        trend: data.monthlyTrend, 
+                    setChartData({
+                        trend:      data.monthlyTrend,
                         distribution: data.categoryDistribution,
-                        typeComp: data.typeComparison,
-                        teamSpend: data.teamSpending
+                        typeComp:   data.typeComparison,
+                        teamSpend:  data.teamSpending,
                     });
                     setUserTeams(data.userTeams);
                 }
@@ -106,7 +106,7 @@ const Dashboard = () => {
             }
         };
         if (!authLoading) fetchDashboardData();
-    }, [currentUserId, authLoading]); 
+    }, [currentUserId, selectedTeamId, authTeams, authLoading]);
 
     // Bütün loading süreçlerini burada bekliyoruz
     if (loading || authLoading || subLoading) return <Loader type="butterfly" />;

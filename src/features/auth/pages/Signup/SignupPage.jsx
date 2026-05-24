@@ -1,68 +1,64 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../../context/AuthContext';
 import { authService } from '../../services/authService';
 import Mail from '../../components/Mail';
 import SelectSubscription from '../../section/SelectSubscription';
-import PhoneNumber from '../../../../components/overlays/phone/PhoneNumber'; 
+import PhoneNumber from '../../../../components/overlays/phone/PhoneNumber';
 import './Signup.css';
 
 const initialForm = {
   firstName: '',
-  lastName: '',
-  email: '',
-  phone: '',
+  lastName:  '',
+  email:     '',
+  phone:     '',
   birthDate: '',
-  address: '',
-  password: ''
+  address:   '',
+  password:  '',
 };
 
 const initialCheckboxes = {
   termsAccepted: false,
-  kvkkAccepted: false
+  kvkkAccepted:  false,
 };
 
 function SignupPage() {
   const navigate = useNavigate();
-  const [step, setStep] = useState('form');
-  const [formData, setFormData] = useState(initialForm);
-  const [formErrors, setFormErrors] = useState({});
-  const [plans, setPlans] = useState([]);
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  const { login } = useAuth();
+
+  const [step, setStep]                     = useState('form');
+  const [formData, setFormData]             = useState(initialForm);
+  const [formErrors, setFormErrors]         = useState({});
+  const [plans, setPlans]                   = useState([]);
+  const [selectedPlan, setSelectedPlan]     = useState(null);
   const [verificationCode, setVerificationCode] = useState('');
-  const [statusMessage, setStatusMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [checkboxes, setCheckboxes] = useState(initialCheckboxes);
+  const [statusMessage, setStatusMessage]   = useState('');
+  const [errorMessage, setErrorMessage]     = useState('');
+  const [isSubmitting, setIsSubmitting]     = useState(false);
+  const [checkboxes, setCheckboxes]         = useState(initialCheckboxes);
 
   useEffect(() => {
     authService.getPlans().then(setPlans);
   }, []);
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (formErrors[name]) {
-      setFormErrors((prev) => ({ ...prev, [name]: '' }));
-    }
+    if (formErrors[name]) setFormErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  // PhoneNumber bileşeni için
   const handlePhoneChange = (formattedValue) => {
     setFormData((prev) => ({ ...prev, phone: formattedValue }));
-    if (formErrors.phone) {
-      setFormErrors((prev) => ({ ...prev, phone: '' }));
-    }
+    if (formErrors.phone) setFormErrors((prev) => ({ ...prev, phone: '' }));
   };
 
   const handleCheckboxChange = (name) => {
     setCheckboxes((prev) => ({ ...prev, [name]: !prev[name] }));
-    if (formErrors[name]) {
-      setFormErrors((prev) => ({ ...prev, [name]: '' }));
-    }
+    if (formErrors[name]) setFormErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const goToPlanStep = async (event) => {
-    event.preventDefault();
+  const goToPlanStep = async (e) => {
+    e.preventDefault();
     setErrorMessage('');
     setStatusMessage('');
 
@@ -74,9 +70,7 @@ function SignupPage() {
 
     const duplicateCheck = await authService.validateSignupAgainstUsers(validation.normalized);
     if (!duplicateCheck.valid) {
-      if (duplicateCheck.fields) {
-        setFormErrors((prev) => ({ ...prev, ...duplicateCheck.fields }));
-      }
+      if (duplicateCheck.fields) setFormErrors((prev) => ({ ...prev, ...duplicateCheck.fields }));
       setErrorMessage(duplicateCheck.message);
       return;
     }
@@ -97,15 +91,22 @@ function SignupPage() {
     setIsSubmitting(true);
 
     try {
-      const payload = {
-        ...formData,
-        plan: selectedPlan,
-        flow: authService.isFreePlan(selectedPlan) ? 'free' : 'paid'
-      };
+      const flow    = authService.isFreePlan(selectedPlan) ? 'free' : 'paid';
+      const payload = { ...formData, plan: selectedPlan, flow };
 
       const started = await authService.startEmailVerification(payload);
       if (!started.success) {
         setErrorMessage(started.message);
+        return;
+      }
+
+      if (started.token && started.user) {
+        if (flow === 'paid') {
+          setStatusMessage('Hesabın hazırlandı. Ödeme adımına yönlendiriliyorsun.');
+          setTimeout(() => navigate('/payment', { state: { fromSubscription: true, planId: selectedPlan.id } }), 400);
+        } else {
+          login(started.user.id, false);
+        }
         return;
       }
 
@@ -116,22 +117,30 @@ function SignupPage() {
     }
   };
 
-  const handleVerifyAndContinue = () => {
+  const handleVerifyAndContinue = async () => {
     setErrorMessage('');
-    const verify = authService.verifyEmailCode(verificationCode);
-    if (!verify.success) {
-      setErrorMessage(verify.message);
-      return;
-    }
+    setIsSubmitting(true);
+    try {
+      const verify = await authService.verifyEmailCode(verificationCode);
+      if (!verify.success) {
+        setErrorMessage(verify.message || 'Doğrulama başarısız.');
+        return;
+      }
 
-    if (verify.requiresPayment) {
-      setStatusMessage('E-posta doğrulandı. Ödeme adımına yönlendiriliyorsun.');
-      setTimeout(() => navigate(`/payment?plan=${selectedPlan.id}`), 500);
-      return;
-    }
+      if (verify.requiresPayment) {
+        setStatusMessage('E-posta doğrulandı. Ödeme adımına yönlendiriliyorsun.');
+        setTimeout(() => navigate('/payment', { state: { fromSubscription: true, planId: selectedPlan?.id } }), 400);
+        return;
+      }
 
-    setStatusMessage('Hesabın hazır. Giriş ekranına yönlendiriliyorsun.');
-    setTimeout(() => navigate('/login'), 800);
+      if (verify.userDraft?.id) {
+        login(verify.userDraft.id, false);
+      } else {
+        navigate('/login');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleResendCode = async () => {
@@ -142,12 +151,24 @@ function SignupPage() {
       const result = await authService.startEmailVerification({
         ...formData,
         plan: selectedPlan,
-        flow: authService.isFreePlan(selectedPlan) ? 'free' : 'paid'
+        flow: authService.isFreePlan(selectedPlan) ? 'free' : 'paid',
       });
       if (result.success) setStatusMessage(result.message);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const stepTitles = {
+    form:   'Hesap Oluştur',
+    plan:   'Plan Seçimi',
+    verify: 'E-posta Doğrulaması',
+  };
+
+  const stepDescs = {
+    form:   'Bilgilerini gir, hesabını hazırla ve devam et.',
+    plan:   'Plan seçimini tamamla, sonra doğrulama ile ilerle.',
+    verify: 'Kayıt güvenliği için kod doğrulamasını tamamla.',
   };
 
   return (
@@ -168,27 +189,16 @@ function SignupPage() {
               <i className="ti ti-home"></i>
             </Link>
           </div>
+
           <div className="auth-card-header">
-            <h1>
-              {step === 'form'
-                ? 'Hesap Olustur'
-                : step === 'plan'
-                ? 'Plan Seçimi'
-                : 'E-posta Doğrulaması'}
-            </h1>
-            <p>
-              {step === 'form'
-                ? 'Bilgilerini gir, hesabını hazırla ve devam et.'
-                : step === 'plan'
-                ? 'Plan seçimini tamamla, sonra doğrulama ile ilerle.'
-                : 'Kayıt güvenligi için kod doğrulamasını tamamla.'}
-            </p>
+            <h1>{stepTitles[step]}</h1>
+            <p>{stepDescs[step]}</p>
           </div>
 
           <div className="signup-progress">
-            <span className={step === 'form' ? 'active' : ''}>1</span>
-            <span className={step === 'plan' ? 'active' : ''}>2</span>
-            <span className={step === 'verify' ? 'active' : ''}>3</span>
+            <span className={step === 'form'   ? 'active' : step === 'plan' || step === 'verify' ? 'done' : ''}></span>
+            <span className={step === 'plan'   ? 'active' : step === 'verify' ? 'done' : ''}></span>
+            <span className={step === 'verify' ? 'active' : ''}></span>
           </div>
 
           {errorMessage && (
@@ -204,7 +214,7 @@ function SignupPage() {
             </div>
           )}
 
-          {step === 'form' ? (
+          {step === 'form' && (
             <form className="auth-form signup-form" onSubmit={goToPlanStep}>
               <div className="signup-grid">
                 <div className="auth-field">
@@ -237,15 +247,15 @@ function SignupPage() {
 
               <div className="auth-field phone-field">
                 <label htmlFor="phone">TELEFON</label>
-                <PhoneNumber 
-                  value={formData.phone} 
-                  onChange={handlePhoneChange} 
+                <PhoneNumber
+                  value={formData.phone}
+                  onChange={handlePhoneChange}
                   error={formErrors.phone}
                 />
               </div>
 
               <div className="auth-field">
-                <label htmlFor="birthDate">DOğUM TARİHİ</label>
+                <label htmlFor="birthDate">DOĞUM TARİHİ</label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-calendar-user auth-input-icon"></i>
                   <input id="birthDate" name="birthDate" type="date" value={formData.birthDate} onChange={handleInputChange} />
@@ -263,15 +273,14 @@ function SignupPage() {
               </div>
 
               <div className="auth-field">
-                <label htmlFor="password">SIFRE</label>
+                <label htmlFor="password">ŞİFRE</label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-lock auth-input-icon"></i>
-                  <input id="password" name="password" type="password" value={formData.password} onChange={handleInputChange} placeholder="Minimum 8 karakter" />
+                  <input id="password" name="password" type="password" value={formData.password} onChange={handleInputChange} placeholder="En az 8 karakter" />
                 </div>
                 {formErrors.password && <small className="field-error">{formErrors.password}</small>}
               </div>
 
-              {/* SÖZLEŞME VE KVKK ONAY CHECKBOX'LARI */}
               <div className="auth-checkboxes">
                 <label className={`auth-checkbox-label ${checkboxes.termsAccepted ? 'checked' : ''}`}>
                   <input
@@ -307,12 +316,12 @@ function SignupPage() {
                 type="submit"
                 disabled={!checkboxes.termsAccepted || !checkboxes.kvkkAccepted}
               >
-                Next <i className="ti ti-arrow-right"></i>
+                İleri <i className="ti ti-arrow-right"></i>
               </button>
             </form>
-          ) : null}
+          )}
 
-          {step === 'plan' ? (
+          {step === 'plan' && (
             <div className="signup-step-two">
               <SelectSubscription
                 plans={plans}
@@ -321,14 +330,13 @@ function SignupPage() {
                 onContinue={handleStartVerification}
                 loading={isSubmitting}
               />
-
               <button type="button" className="signup-back-btn" onClick={() => setStep('form')}>
-                <i className="ti ti-arrow-left"></i> Bilgilere dön
+                <i className="ti ti-arrow-left"></i> Bilgilere Dön
               </button>
             </div>
-          ) : null}
+          )}
 
-          {step === 'verify' ? (
+          {step === 'verify' && (
             <div className="signup-step-two">
               <Mail
                 email={formData.email}
@@ -343,11 +351,13 @@ function SignupPage() {
                 <i className="ti ti-arrow-left"></i> Plana Dön
               </button>
             </div>
-          ) : null}
+          )}
 
-          <div className="auth-switch">
-            Zaten hesabın var mi? <Link to="/login">Giriş Yap</Link>
-          </div>
+          {step === 'form' && (
+            <div className="auth-switch">
+              Zaten hesabın var mı? <Link to="/login">Giriş Yap</Link>
+            </div>
+          )}
         </div>
       </div>
     </div>

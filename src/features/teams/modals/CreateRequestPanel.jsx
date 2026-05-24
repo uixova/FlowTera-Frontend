@@ -6,7 +6,7 @@ import Confirm from '../../../components/overlays/Confirm';
 import Alert from '../../../components/overlays/Alert';
 import './CreateRequestPanel.css';
 
-const CreateRequestPanel = ({ isOpen, onClose, user, teamId }) => {
+const CreateRequestPanel = ({ isOpen, onClose, teamId }) => {
     const [loading, setLoading] = useState(false);
     const { confirmConfig, askConfirm, closeConfirm, alertConfig, showAlert, closeAlert } = useModal();
     
@@ -25,16 +25,11 @@ const CreateRequestPanel = ({ isOpen, onClose, user, teamId }) => {
         setLoading(true);
         try {
             const requestPayload = {
-                id: `nt_req_${Date.now()}`, 
-                type: "request",
-                teamId: teamId || "global",
+                type:     "request",
+                teamId:   teamId || null,
                 category: formData.category,
-                user: user?.name || "Bilinmeyen Kullanıcı",
-                title: formData.title,
-                detail: formData.detail,
-                date: new Date().toISOString(),
-                status: "pending",
-                path: `/${formData.category}` 
+                title:    formData.title,
+                detail:   formData.detail,
             };
 
             const success = await notificationService.createRequest(requestPayload);

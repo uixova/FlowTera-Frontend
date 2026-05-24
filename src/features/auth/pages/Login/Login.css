@@ -402,13 +402,24 @@
 }
 
 .login-verify-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: transparent;
   color: #bbb;
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
   width: fit-content;
+  transition: all 0.2s ease;
+}
+.login-verify-back:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #e2e2e6;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 @media (max-width: 540px) {

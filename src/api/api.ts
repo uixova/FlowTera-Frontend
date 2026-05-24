@@ -3,13 +3,12 @@ import type {
     Trip,
     User,
     Team,
-    NotificationData,
     LogData,
     Plan,
     PaginatedResponse,
 } from '../types/types';
 
-// İçsel Tipler #######################################################################################
+// Types 
 
 type ResourceKey = keyof typeof ENDPOINTS;
 
@@ -22,7 +21,6 @@ interface RequestParams {
 interface RequestOptions {
     forceRefresh?: boolean;
     ttl?:          number;
-    paginated?:    boolean;
     method?:       'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
     body?:         unknown;
 }
@@ -33,38 +31,29 @@ interface CacheEntry<T> {
     ttl:       number;
 }
 
-// Env & Config #######################################################################################
+// Config 
 
-const BASE_URL   = import.meta.env.VITE_API_BASE_URL || '/data';
-const API_PREFIX = import.meta.env.VITE_API_PREFIX   || '/api/v1'; // backend gelince bu devreye girer
-const IS_MOCK    = import.meta.env.VITE_USE_MOCK !== 'false'; // .env den kontrol
+const API_PREFIX = import.meta.env.VITE_API_PREFIX || '/api/v1';
 
 const REQUEST_TIMEOUT_MS = 12_000;
 const DEFAULT_PAGE_SIZE  = 20;
-const DEFAULT_TTL_MS     = 5 * 60 * 1000; // 5 dakika
+const DEFAULT_TTL_MS     = 5 * 60 * 1000;
 const MAX_RETRIES        = 3;
-const RETRY_BASE_DELAY   = 1000; // 1 saniye
+const RETRY_BASE_DELAY   = 1000;
 
-// Endpoint Tanımları
-// Mock - REST dönüşümü tek yerden yönetilir; backend gelince sadece IS_MOCK değişir.
 const ENDPOINTS = {
-    TEAMS:         { mock: `${BASE_URL}/teams.json`,        rest: `${API_PREFIX}/teams`         },
-    USERS:         { mock: `${BASE_URL}/user.json`,         rest: `${API_PREFIX}/users`         },
-    NOTIFICATIONS: { mock: `${BASE_URL}/notification.json`, rest: `${API_PREFIX}/notifications` },
-    EXPENSES:      { mock: `${BASE_URL}/expenses.json`,     rest: `${API_PREFIX}/expenses`      },
-    TRIPS:         { mock: `${BASE_URL}/trips.json`,        rest: `${API_PREFIX}/trips`         },
-    LOGS:          { mock: `${BASE_URL}/logs.json`,         rest: `${API_PREFIX}/logs`          },
-    PLANS:         { mock: `${BASE_URL}/plan.json`,         rest: `${API_PREFIX}/plans`         },
-    ARCHIVE:       { mock: `${BASE_URL}/expenses.json`,     rest: `${API_PREFIX}/archive`       },
+    TEAMS:         `${API_PREFIX}/teams`,
+    USERS:         `${API_PREFIX}/users`,
+    NOTIFICATIONS: `${API_PREFIX}/notifications`,
+    EXPENSES:      `${API_PREFIX}/expenses`,
+    TRIPS:         `${API_PREFIX}/trips`,
+    LOGS:          `${API_PREFIX}/logs`,
+    PLANS:         `${API_PREFIX}/plans`,
+    ARCHIVE:       `${API_PREFIX}/archive`,
 } as const;
 
 const resolveUrl = (key: ResourceKey, params: RequestParams = {}): string => {
-    const endpoint = ENDPOINTS[key];
-
-    if (IS_MOCK) return endpoint.mock;
-
-    // REST modunda query string oluştur
-    const url = new URL(endpoint.rest, window.location.origin);
+    const url = new URL(ENDPOINTS[key], window.location.origin);
     const { page, pageSize, ...filters } = params;
     if (page)     url.searchParams.set('page',     String(page));
     if (pageSize) url.searchParams.set('pageSize', String(pageSize));
@@ -74,7 +63,7 @@ const resolveUrl = (key: ResourceKey, params: RequestParams = {}): string => {
     return url.toString();
 };
 
-// TTL Cache #######################################################################################
+// Cache 
 
 class TtlCache {
     readonly #store = new Map<string, CacheEntry<unknown>>();
@@ -104,7 +93,6 @@ class TtlCache {
     }
 
     invalidate(resource: ResourceKey): void {
-        // Bir kaynağa ait tüm sayfa cache'lerini temizle
         const prefix = `${resource}`;
         for (const key of this.#store.keys()) {
             if (key.startsWith(prefix)) this.#store.delete(key);
@@ -113,7 +101,6 @@ class TtlCache {
 
     clear(): void { this.#store.clear(); }
 
-    // Süresi geçmiş tüm girişleri toplu temizle (GC)
     gc(): void {
         const now = Date.now();
         for (const [key, entry] of this.#store.entries()) {
@@ -123,12 +110,11 @@ class TtlCache {
 }
 
 const cache    = new TtlCache();
-const inflight = new Map<string, Promise<unknown>>(); // aynı isteğin çift gitmesini engeller
+const inflight = new Map<string, Promise<unknown>>();
 
-// Periyodik GC - her 10 dakikada bir
 setInterval(() => cache.gc(), 10 * 60 * 1000);
 
-// Temel Fetch #######################################################################################
+// Fetch 
 
 const fetchWithTimeout = (url: string, options: RequestInit = {}, timeoutMs = REQUEST_TIMEOUT_MS): Promise<Response> => {
     const controller = new AbortController();
@@ -146,24 +132,10 @@ const shouldRetry = (error: Error & { status?: number }, attempt: number): boole
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Sayfalama Yardımcısı (Mock + REST)
-// Mock modda backend sayfalamayı taklit eder.
-// REST modda backend zaten { data, total, page, pageSize } döner.
-const paginateMock = <T>(rawData: T | T[], page = 1, pageSize = DEFAULT_PAGE_SIZE): PaginatedResponse<T> => {
-    const array: T[] = Array.isArray(rawData) ? rawData : Object.values(rawData as object);
-    const total      = array.length;
-    const start      = (page - 1) * pageSize;
-    return {
-        data:       array.slice(start, start + pageSize),
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize),
-        hasMore:    start + pageSize < total,
-    };
-};
+const getAuthToken = (): string =>
+    localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || '';
 
-// Merkezi İstek Yapısı #######################################################################################
+// Core Request 
 
 const request = async <T = unknown>(
     resourceKey: ResourceKey,
@@ -173,62 +145,58 @@ const request = async <T = unknown>(
     const {
         forceRefresh = false,
         ttl          = DEFAULT_TTL_MS,
-        paginated    = false,
         method       = 'GET',
         body,
     } = options;
 
-    // Cache kontrolü
     if (!forceRefresh && method === 'GET') {
         const cached = cache.get<T>(resourceKey, params);
         if (cached !== null) return cached;
     }
 
-    // Inflight dedup
     const inflightKey = `${resourceKey}:${JSON.stringify(params)}`;
     if (method === 'GET' && inflight.has(inflightKey)) {
         return inflight.get(inflightKey) as Promise<T>;
     }
 
-    const url = resolveUrl(resourceKey, params);
+    const url   = resolveUrl(resourceKey, params);
+    const token = getAuthToken();
 
     const fetchOptions: RequestInit = {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         ...(body ? { body: JSON.stringify(body) } : {}),
     };
 
     const executeRequest = async (attempt: number = 0): Promise<T> => {
         try {
             const response = await fetchWithTimeout(url, fetchOptions);
-            
+
             if (!response.ok) {
-                const err = Object.assign(new Error(`HTTP ${response.status}`), {
-                    status: response.status,
-                    url,
-                });
+                const errData = await response.json().catch(() => ({})) as Record<string, unknown>;
+                const err = Object.assign(
+                    new Error((errData['message'] as string) || `HTTP ${response.status}`),
+                    { status: response.status, url }
+                );
                 throw err;
             }
 
-            const raw: unknown = await response.json();
+            const raw = await response.json() as T;
 
-            // Yanıtı normalize et
-            const result: T = paginated
-                ? (IS_MOCK ? paginateMock(raw as T | T[], params.page, params.pageSize) : raw) as T
-                : raw as T;
-
-            // Cache'e yaz
             if (method === 'GET') {
-                cache.set<T>(resourceKey, params, result, ttl);
+                cache.set<T>(resourceKey, params, raw, ttl);
             }
 
-            return result;
+            return raw;
         } catch (error: unknown) {
             const err = error as Error & { status?: number };
-            
+
             if (shouldRetry(err, attempt)) {
                 const delay = RETRY_BASE_DELAY * Math.pow(2, attempt);
-                console.warn(`[API] Retrying [${resourceKey}] attempt ${attempt + 1}/${MAX_RETRIES} in ${delay}ms`);
+                console.warn(`[API] Retry [${resourceKey}] attempt ${attempt + 1}/${MAX_RETRIES} in ${delay}ms`);
                 await wait(delay);
                 return executeRequest(attempt + 1);
             }
@@ -242,135 +210,124 @@ const request = async <T = unknown>(
         }
     };
 
-    const promise = executeRequest().finally(() => {
-        inflight.delete(inflightKey);
-    });
-
+    const promise = executeRequest().finally(() => inflight.delete(inflightKey));
     if (method === 'GET') inflight.set(inflightKey, promise);
     return promise;
 };
 
-// Public API #######################################################################################
+// restFetch — kimlik doğrulamalı doğrudan REST çağrısı 
+
+export const restFetch = async <T = unknown>(
+    path: string,
+    options: {
+        method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+        body?:   unknown;
+        params?: Record<string, string | number | boolean | undefined | null>;
+    } = {}
+): Promise<T> => {
+    const { method = 'GET', body, params } = options;
+
+    const url = new URL(`${API_PREFIX}${path}`, window.location.origin);
+    if (params) {
+        Object.entries(params).forEach(([k, v]) => {
+            if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, String(v));
+        });
+    }
+
+    const token = getAuthToken();
+
+    const response = await fetchWithTimeout(url.toString(), {
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
+    });
+
+    const data = await response.json() as Record<string, unknown>;
+    if (!response.ok || data['status'] === 'ERROR') {
+        throw new Error((data['message'] as string) || `HTTP ${response.status}`);
+    }
+    return data as unknown as T;
+};
+
+// Public API 
 
 export const api = {
 
-    // Genel kaynak çekici (gerekirse doğrudan kullanılabilir)
     fetch: <T = unknown>(key: ResourceKey, params?: RequestParams, opts?: RequestOptions) =>
         request<T>(key, params, opts),
 
-    // TEAMS
     teams: {
-        // Sayfalı liste
         getAll: (params: RequestParams = {}, opts: RequestOptions = {}) =>
-            request<PaginatedResponse<Team>>('TEAMS', params, { paginated: true, ...opts }),
+            request<PaginatedResponse<Team>>('TEAMS', params, opts),
 
-        // Tek takım — REST'te /teams/:id, mock'ta liste içinden filtreler
-        getById: async (id: string, opts: RequestOptions = {}): Promise<Team | null> => {
-            const result = await request<PaginatedResponse<Team> | Team[]>('TEAMS', {}, opts);
-            const list   = IS_MOCK
-                ? (Array.isArray(result) ? result : (result as PaginatedResponse<Team>).data)
-                : result as Team[];
-            return list?.find(t => String(t.id) === String(id)) ?? null;
+        getById: async (id: string): Promise<Team | null> => {
+            const result = await request<PaginatedResponse<Team>>('TEAMS', {});
+            return result?.data?.find(t => String(t.id) === String(id)) ?? null;
         },
     },
 
-    // USERS
     users: {
         getAll: (params: RequestParams = {}, opts: RequestOptions = {}) =>
-            request<PaginatedResponse<User>>('USERS', params, { paginated: true, ...opts }),
+            request<PaginatedResponse<User>>('USERS', params, opts),
 
-        getById: async (id: string, opts: RequestOptions = {}): Promise<User | null> => {
-            const result = await request<PaginatedResponse<User> | User[]>('USERS', {}, opts);
-            const list   = IS_MOCK
-                ? (Array.isArray(result) ? result : (result as PaginatedResponse<User>).data)
-                : result as User[];
-            return list?.find(u => String(u.id) === String(id)) ?? null;
+        getById: async (id: string): Promise<User | null> => {
+            try {
+                const result = await restFetch<{ status: string; data: User }>(`/users/${id}`);
+                return (result as any).data ?? null;
+            } catch { return null; }
         },
     },
 
-    // EXPENSES
     expenses: {
         getAll: (params: RequestParams = {}, opts: RequestOptions = {}) =>
-            request<PaginatedResponse<Expense>>('EXPENSES', { pageSize: DEFAULT_PAGE_SIZE, ...params }, {
-                paginated: true,
-                ...opts,
-            }),
+            request<PaginatedResponse<Expense>>('EXPENSES', { pageSize: DEFAULT_PAGE_SIZE, ...params }, opts),
 
-        // Belirli bir sayfayı önbelleğe almadan çek
         refresh: (params: RequestParams = {}) =>
-            request<PaginatedResponse<Expense>>('EXPENSES', { pageSize: DEFAULT_PAGE_SIZE, ...params }, {
-                paginated:    true,
-                forceRefresh: true,
-            }),
+            request<PaginatedResponse<Expense>>('EXPENSES', { pageSize: DEFAULT_PAGE_SIZE, ...params }, { forceRefresh: true }),
 
-        // Cache'i temizler
         invalidate: () => cache.invalidate('EXPENSES'),
     },
 
-    // TRIPS
     trips: {
         getAll: (params: RequestParams = {}, opts: RequestOptions = {}) =>
-            request<PaginatedResponse<Trip>>('TRIPS', { pageSize: DEFAULT_PAGE_SIZE, ...params }, {
-                paginated: true,
-                ...opts,
-            }),
+            request<PaginatedResponse<Trip>>('TRIPS', { pageSize: DEFAULT_PAGE_SIZE, ...params }, opts),
         invalidate: () => cache.invalidate('TRIPS'),
     },
 
-    // ARCHIVE
-    // Kullanıcı arşive girdiğinde tetiklenir.
-    // Expenses'e geçince aynı cache kullanılır, TTL içindeyse refetch yok.
     archive: {
         getAll: (params: RequestParams = {}, opts: RequestOptions = {}) =>
             request<PaginatedResponse<Expense>>('ARCHIVE', { page: 1, pageSize: 30, ...params }, {
-                paginated: true,
-                ttl:       10 * 60 * 1000, // Arşiv için 10 dk TTL
+                ttl: 10 * 60 * 1000,
                 ...opts,
             }),
         invalidate: () => cache.invalidate('ARCHIVE'),
     },
 
-    // LOGS
     logs: {
         getAll: (params: RequestParams = {}, opts: RequestOptions = {}) =>
-            request<PaginatedResponse<LogData>>('LOGS', { pageSize: DEFAULT_PAGE_SIZE, ...params }, {
-                paginated: true,
-                ...opts,
-            }),
+            request<PaginatedResponse<LogData>>('LOGS', { pageSize: DEFAULT_PAGE_SIZE, ...params }, opts),
         invalidate: () => cache.invalidate('LOGS'),
     },
 
-    // NOTIFICATIONS
-    // Kısa TTL
     notifications: {
         getAll: (params: RequestParams = {}, opts: RequestOptions = {}) =>
-            request<NotificationData>('NOTIFICATIONS', params, {
-                paginated: false,
-                ttl:       60 * 1000, // 1 dakika
-                ...opts,
-            }),
+            request<any>('NOTIFICATIONS', params, { ttl: 60 * 1000, ...opts }),
         invalidate: () => cache.invalidate('NOTIFICATIONS'),
     },
 
-    // PLANS (Statik veri — çok uzun TTL)
     plans: {
         getAll: (opts: RequestOptions = {}) =>
-            request<Plan[]>('PLANS', {}, {
-                ttl: 60 * 60 * 1000, // 1 saat
-                ...opts,
-            }),
+            request<{ status: string; data: Plan[] }>('PLANS', {}, { ttl: 60 * 60 * 1000, ...opts }),
     },
 
-    // Cache Yönetimi
     cache: {
-        // Belirli bir kaynağın tüm cache sayfalarını temizle.
-        // key null ise hepsini temizle
         invalidate: (key: ResourceKey | null = null) => {
             if (key) cache.invalidate(key);
             else cache.clear();
         },
-
-        // Manuel GC tetikleyici
         gc: () => cache.gc(),
     },
 };

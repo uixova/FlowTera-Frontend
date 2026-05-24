@@ -1,25 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import planData from '../../../data/plan.json';
 
 const Subs = () => {
-  const [plans, setPlans] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('/data/plan.json')
-      .then((res) => res.json())
-      .then((data) => {
-        setPlans(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Planlar yüklenirken patladık amk:", err);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) {
-    return <div className="loading-spinner">Planlar Yükleniyor...</div>;
-  }
+  const plans = [...planData].sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
     <div className="pricing-grid">

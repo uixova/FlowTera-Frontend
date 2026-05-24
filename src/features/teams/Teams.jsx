@@ -27,7 +27,7 @@ const Teams = () => {
       if (!currentUser) return;
       try {
         setLoading(true);
-        const data = await teamsService.getTeams(currentUser);
+        const data = await teamsService.getTeams();
         setTeams(data || []);
       } finally {
         setLoading(false);
@@ -121,7 +121,7 @@ const Teams = () => {
         isOpen={isCreateOpen} 
         onClose={() => setIsCreateOpen(false)} 
         onSuccess={async () => {
-          const data = await teamsService.getTeams(currentUser);
+          const data = await teamsService.getTeams();
           setTeams(data || []);
         }}
       />

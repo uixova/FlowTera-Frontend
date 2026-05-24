@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import './FAQ.css';
+import { faqData } from '@/data/faqData';
 
 const CATEGORIES = [
   { id: 'all',          label: 'Tümü',           icon: 'ti-layout-grid' },
@@ -10,24 +11,12 @@ const CATEGORIES = [
 ];
 
 const FAQ = () => {
-    const [questions, setQuestions] = useState([]);
-    const [activeId, setActiveId]     = useState(null);
-    const [activeTab, setActiveTab]   = useState('all');
-    const [search, setSearch]         = useState('');
-
-    useEffect(() => {
-        fetch('/data/faq.json') 
-            .then(res => res.json())
-            .then(data => {
-        setQuestions(data);
-        })
-        .catch(err => {
-            console.error("FAQ yüklenemedi:", err);
-        });
-    }, []);
+    const [activeId, setActiveId]   = useState(null);
+    const [activeTab, setActiveTab] = useState('all');
+    const [search, setSearch]       = useState('');
 
     const filtered = useMemo(() => {
-        return questions.filter((item) => {
+        return faqData.filter((item) => {
         const matchCat = activeTab === 'all' || item.cat === activeTab;
         const searchLower = search.toLowerCase();
         const matchSearch = !search
@@ -35,7 +24,7 @@ const FAQ = () => {
             || item.a.toLowerCase().includes(searchLower);
             return matchCat && matchSearch;
         });
-    }, [questions, activeTab, search]);
+    }, [activeTab, search]);
 
   const toggle = (id) => setActiveId((prev) => (prev === id ? null : id));
 

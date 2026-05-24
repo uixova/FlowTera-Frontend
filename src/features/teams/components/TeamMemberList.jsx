@@ -92,6 +92,11 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
 
   const executeDeleteMember = async (user) => {
     try {
+      const result = await teamsService.removeMember(teamId, user.id);
+      if (!result.success) {
+        showAlert("Hata", "Üye çıkarılırken bir sorun oluştu.", "error");
+        return;
+      }
       const updatedMembers = members.filter(m => m.id !== user.id);
       setMembers(updatedMembers);
       teamMembersCache.set(String(teamId), updatedMembers);
@@ -252,14 +257,35 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
         )}
       </div>
 
-      <EditRoleModal 
-        key={selectedUser ? `edit-${selectedUser.id}` : 'edit-none'} 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
+      <EditRoleModal
+        key={selectedUser ? `edit-${selectedUser.id}` : 'edit-none'}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
         user={selectedUser}
         teamId={teamId}
+        onSuccess={(updatedRole, updatedRestrictions) => {
+          if (!selectedUser) return;
+          const updated = (members || []).map(m =>
+            m.id === selectedUser.id
+              ? { ...m, roleName: updatedRole, permissions: updatedRestrictions }
+              : m
+          );
+          setMembers(updated);
+          teamMembersCache.set(String(teamId), updated);
+        }}
       />
-      <AddMemberModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+      <AddMemberModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        teamId={teamId}
+        onSuccess={(newMember) => {
+          if (newMember) {
+            const updated = [...(members || []), newMember];
+            setMembers(updated);
+            teamMembersCache.set(String(teamId), updated);
+          }
+        }}
+      />
       <TeamLogModal 
         key={selectedUser ? `log-${selectedUser.id}` : 'log-none'}
         isOpen={isLogModalOpen} 
@@ -267,10 +293,9 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
         user={selectedUser} 
         teamId={teamId}
       />
-      <CreateRequestPanel 
-        isOpen={isRequestModalOpen} 
+      <CreateRequestPanel
+        isOpen={isRequestModalOpen}
         onClose={() => setIsRequestModalOpen(false)}
-        user={currentUser}
         teamId={teamId}
       />
       <Confirm {...confirmConfig} onClose={closeConfirm} />

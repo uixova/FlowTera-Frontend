@@ -2,26 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './Help.css';
 import HelpSidebar from './components/Helpsidebar';
 import HelpContent from './components/Helpcontent';
-import Loader from '../../components/ui/Loader';
 import ActionSidebar from '../../components/navigation/ActionSidebar';
+import { helpData } from '@/data/helpData';
 
 const Help = () => {
-    const [data,          setData]          = useState(null);
-    const [loading,       setLoading]       = useState(true);
-    const [activeId,      setActiveId]      = useState(null);
+    const data                              = helpData;
+    const [activeId,      setActiveId]      = useState(helpData.categories?.[0]?.id ?? null);
     const [search,        setSearch]        = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-    useEffect(() => {
-        fetch('/data/help.data.json')
-            .then(r => r.json())
-            .then(json => {
-                setData(json);
-                setActiveId(json.categories?.[0]?.id ?? null);
-            })
-            .catch(err => console.error('[Help] Veri yüklenemedi:', err))
-            .finally(() => setLoading(false));
-    }, []);
 
     // Sayfa açılışında app-container padding'ini kaldır
     useEffect(() => {
@@ -69,9 +57,6 @@ const Help = () => {
         setSearch('');
         setIsSidebarOpen(false);
     };
-
-    if (loading) return <Loader type="butterfly" />;
-    if (!data)   return null;
 
     return (
         <div className="help-page">
