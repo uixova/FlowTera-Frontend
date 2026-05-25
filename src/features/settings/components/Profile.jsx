@@ -7,6 +7,7 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const Profile = ({ user }) => {
     const fileInputRef                        = useRef(null);
+    const [showId,        setShowId]          = useState(false);
     const [selectedFile,  setSelectedFile]    = useState(null);
     const [avatarPreview, setAvatarPreview]   = useState(user?.avatar || '');
     const [avatarError,   setAvatarError]     = useState('');
@@ -112,7 +113,19 @@ const Profile = ({ user }) => {
                 <div className="st-form-grid">
                     <div className="st-input-group static-field">
                         <label>Kullanıcı ID</label>
-                        <div className="static-value">{user.id}</div>
+                        <div className="static-value" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ flex: 1, letterSpacing: showId ? 'normal' : '0.1em', filter: showId ? 'none' : 'blur(5px)', userSelect: showId ? 'text' : 'none', transition: 'filter 0.2s' }}>
+                                {user.id}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() => setShowId(v => !v)}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-2)', padding: '2px 4px', flexShrink: 0 }}
+                                title={showId ? 'Gizle' : 'Göster'}
+                            >
+                                <i className={`ti ${showId ? 'ti-eye-off' : 'ti-eye'}`} />
+                            </button>
+                        </div>
                     </div>
                     <div className="st-input-group static-field">
                         <label>Katılma Tarihi</label>

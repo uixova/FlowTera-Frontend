@@ -19,11 +19,15 @@ import { useFilter } from '../../hooks/useFilter';
 import { useCurrency } from '../../context/CurrencyContext';
 import { useModal } from '../../hooks/useModal';
 import { useTeam } from '../../context/TeamContext';
+import { useAuth } from '../../context/AuthContext';
+import { isDemoUser } from '../../utils/demo';
 
 const Expenses = () => {
     const { alertConfig, confirmConfig, showAlert, askConfirm, closeAlert, closeConfirm } = useModal();
     const { selectedCurrency, updateCurrency } = useCurrency();
     const { activeTeam, selectedTeamId } = useTeam();
+    const { currentUser } = useAuth();
+    const isDemo = isDemoUser(currentUser?.email);
 
     const [isCreateOpen,  setIsCreateOpen]  = useState(false);
     const [isDetailOpen,  setIsDetailOpen]  = useState(false);
@@ -117,6 +121,10 @@ const Expenses = () => {
                 searchValue={searchTerm}
                 createLabel="Harcama Oluştur"
                 onCreate={() => {
+                    if (isDemo) {
+                        showAlert("Demo Modu", "Harcama eklemek için kayıt olun veya giriş yapın.", "info");
+                        return;
+                    }
                     setIsEditMode(false);
                     setSelectedExpense(null);
                     setIsCreateOpen(true);

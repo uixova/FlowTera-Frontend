@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import FAQ from './components/FAQ';
 import Features from './components/Features';
 import Subs from './components/Subs';
@@ -45,6 +45,7 @@ const FeedItem = ({ icon, text, amount, time, type, delay }) => (
 
 
 const Landing = () => {
+  const navigate = useNavigate();
   const statsRef = useRef(null);
   const [statsVisible, setStatsVisible] = useState(false);
   const originalThemeRef = useRef(null);
@@ -100,9 +101,10 @@ const Landing = () => {
           <a href="#pricing">Fiyatlar</a>
           <a href="#faq">FAQ & SSS</a>
           <div className="nav-divider"></div>
+          <button className="nav-demo-btn" onClick={() => navigate('/login?demo=1')}>Demo Dene</button>
           <Link to="/login" className="nav-login-btn">Giriş Yap</Link>
           <Link to="/signup" className="nav-register-btn">
-            Ücretsiz Başla 
+            Ücretsiz Başla
           </Link>
         </div>
       </nav>
@@ -126,8 +128,8 @@ const Landing = () => {
             <Link to="/signup" className="primary-btn">
               Hemen Deneyin <i className="ti ti-arrow-narrow-right"></i>
             </Link>
-            <button className="secondary-btn">
-              <i className="ti ti-player-play"></i> Demoyu İzle
+            <button className="secondary-btn" onClick={() => navigate('/login?demo=1')}>
+              <i className="ti ti-player-play"></i> Demo Deneyin
             </button>
           </div>
         </div>
@@ -371,11 +373,11 @@ const Landing = () => {
           <h2>Finansal Akışınızı Bugün Dönüştürün</h2>
           <p>14 gün ücretsiz. Kurulum yok. Kredi kartı gerekmez.</p>
           <div className="cta-actions">
-            <button className="primary-btn large">
+            <Link to="/signup" className="primary-btn large">
               Ücretsiz Başla <i className="ti ti-arrow-narrow-right"></i>
-            </button>
-            <button className="secondary-btn large">
-              Demo İste <i className="ti ti-calendar"></i>
+            </Link>
+            <button className="secondary-btn large" onClick={() => navigate('/login?demo=1')}>
+              Demo Deneyin <i className="ti ti-eye"></i>
             </button>
           </div>
         </div>

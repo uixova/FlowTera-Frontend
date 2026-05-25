@@ -20,6 +20,18 @@
     animation: fadeInCurrency var(--transition-spring);
 }
 
+.currency-list {
+    max-height: 260px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-default) transparent;
+}
+
+.currency-list::-webkit-scrollbar { width: 4px; }
+.currency-list::-webkit-scrollbar-track { background: transparent; }
+.currency-list::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 2px; }
+
 .currency-modal-header {
     padding: var(--space-2) var(--space-3);
     border-bottom: 1px solid var(--border-faint);

@@ -112,7 +112,7 @@ export const teamsService = {
         if (!teamId) return null;
 
         const [teamsResponse, plansResponse] = await Promise.all([
-            api.teams.getAll({ pageSize: 500 }),
+            api.teams.getAll({ pageSize: 500 }, { forceRefresh: true }),
             api.plans.getAll(),
         ]);
 
@@ -125,7 +125,9 @@ export const teamsService = {
         const teamPlanContext = team.settings?.planContext || {};
         const linkedPlan      = allPlans.find(p => String(p.id) === String(teamPlanContext.planId));
 
-        const maxLimit = (linkedPlan as any)?.maxMembersPerTeam || teamPlanContext.maxMembersAllowed || 5;
+        const maxLimit = linkedPlan?.Promise
+            ? parseInt((linkedPlan.Promise as any).TeamMemberLimit || '5', 10)
+            : (teamPlanContext.maxMembersAllowed || 5);
         const features = linkedPlan?.feature_keys || [];
 
         return {

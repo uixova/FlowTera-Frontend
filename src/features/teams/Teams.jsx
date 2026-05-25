@@ -112,7 +112,14 @@ const Teams = () => {
                 setTimeout(() => setViewMode('main'), 0);
                 return null;
             }
-            return <TeamSettings team={activeTeam} onBack={() => setViewMode('main')} />;
+            return <TeamSettings
+                team={activeTeam}
+                onBack={() => setViewMode('main')}
+                onSuccess={async () => {
+                    const data = await teamsService.getTeams();
+                    setTeams(data || []);
+                }}
+            />;
           })()}
         </>
       )}

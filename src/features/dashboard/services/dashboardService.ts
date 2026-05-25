@@ -1,5 +1,7 @@
 import { api } from '../../../api/api';
 import { Expense, Trip, Team } from '@/types/types';
+import { isDemoMode } from '../../../utils/demo';
+import demoDashboard from '../../../data/demo-dashboard.json';
 
 export interface DashboardData {
     stats: {
@@ -58,17 +60,34 @@ export const dashboardService = {
         try {
             const userTeams = teams.map(t => ({ id: String(t.id), name: t.name }));
 
-            if (!selectedTeamId) return EMPTY_RESULT(userTeams);
+            if (isDemoMode()) {
+                return { ...(demoDashboard as unknown as DashboardData), userTeams };
+            }
+
+            if (userTeams.length === 0) return EMPTY_RESULT([]);
 
             const normalizedUserId = String(currentUserId);
 
-            const [expensesRes, tripsRes] = await Promise.all([
-                api.expenses.getAll({ teamId: selectedTeamId, pageSize: 200 }),
-                api.trips.getAll({ teamId: selectedTeamId, pageSize: 200 }),
+            // teamGuard requires teamId — fetch per-team then merge when no team selected
+            const teamIds = selectedTeamId
+                ? [selectedTeamId]
+                : userTeams.map(t => t.id);
+
+            const [allExpensesArrays, allTripsArrays] = await Promise.all([
+                Promise.all(teamIds.map(tid =>
+                    api.expenses.getAll({ teamId: tid, pageSize: 200 })
+                        .then(r => extractList<Expense>(r))
+                        .catch(() => [] as Expense[])
+                )),
+                Promise.all(teamIds.map(tid =>
+                    api.trips.getAll({ teamId: tid, pageSize: 200 })
+                        .then(r => extractList<Trip>(r))
+                        .catch(() => [] as Trip[])
+                )),
             ]);
 
-            const expenses = extractList<Expense>(expensesRes);
-            const trips    = extractList<Trip>(tripsRes);
+            const expenses = allExpensesArrays.flat();
+            const trips    = allTripsArrays.flat();
 
             const getOwnerId = (item: any): string | null =>
                 item.createdBy?.id ?? item.userId ?? item.submitterId ?? null;

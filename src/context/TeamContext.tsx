@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { socketClient } from '../api/socketClient';
+import { isDemoMode } from '../utils/demo';
+
+const teamStore = () => isDemoMode() ? sessionStorage : localStorage;
 
 interface TeamContextType {
     selectedTeamId: string | null;
@@ -22,7 +25,7 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
     const { teams } = useAuth();
 
     const [selectedTeamId, setSelectedTeamId] = useState<string | null>(
-        () => localStorage.getItem(TEAM_ID_KEY) || null
+        () => teamStore().getItem(TEAM_ID_KEY) || null
     );
 
     const activeTeam = useMemo(() => {
@@ -32,8 +35,8 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
 
     const selectTeam = useCallback((teamId: any) => {
         const id = String(teamId);
-        localStorage.setItem(TEAM_ID_KEY, id);
-        localStorage.setItem(VIEW_MODE_KEY, 'main');
+        teamStore().setItem(TEAM_ID_KEY, id);
+        teamStore().setItem(VIEW_MODE_KEY, 'main');
         setSelectedTeamId(id);
 
         // Takım değişiminde socket'i yeni teamId ile yeniden bağla
@@ -45,7 +48,9 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
 
     const clearTeam = useCallback(() => {
         localStorage.removeItem(TEAM_ID_KEY);
+        sessionStorage.removeItem(TEAM_ID_KEY);
         localStorage.removeItem(VIEW_MODE_KEY);
+        sessionStorage.removeItem(VIEW_MODE_KEY);
         setSelectedTeamId(null);
     }, []);
 

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useMemo, useContext } from 'react';
+import { isDemoMode } from '../utils/demo';
 
 // Tip Tanımlamaları
 export type ThemeMode = 'light' | 'dark';
@@ -44,9 +45,11 @@ const DEFAULT_THEME: ThemeState = {
     radius: 'soft' 
 };
 
+const themeStorage = () => isDemoMode() ? sessionStorage : localStorage;
+
 const loadPersistedTheme = (): ThemeState => {
     try {
-        const stored = localStorage.getItem(THEME_STORAGE_KEY);
+        const stored = (isDemoMode() ? sessionStorage : localStorage).getItem(THEME_STORAGE_KEY);
         if (stored) {
             return { ...DEFAULT_THEME, ...JSON.parse(stored) };
         }
@@ -77,7 +80,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         root.style.setProperty('--main-radius', RADIUS_MAP[theme.radius] ?? '8px');
 
         try {
-            localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(theme));
+            themeStorage().setItem(THEME_STORAGE_KEY, JSON.stringify(theme));
         } catch {
             // Storage dolu veya erişim engeli varsa sessizce başarısız olsun
         }

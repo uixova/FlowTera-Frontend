@@ -1,6 +1,8 @@
 import { api, restFetch } from '../../../api/api';
 import { Expense, Team } from '@/types/types';
 import { dataEvents } from '../../../hooks/useDataRefresh';
+import { isDemoMode } from '../../../utils/demo';
+import demoExpenses from '../../../data/demo-expenses.json';
 
 export interface EnrichedExpense extends Expense {
     user: string;
@@ -21,6 +23,22 @@ const extractList = <T>(response: any): T[] => {
     return [];
 };
 
+export interface ParsedInvoice {
+    merchant:       string | null;
+    amount:         number | null;
+    currency:       string | null;
+    date:           string | null;
+    time:           string | null;  // HH:MM — null when not found on receipt
+    category:       string | null;
+    payment_method: string | null;  // Cash / Credit Card / etc. — null when not detected
+    confidence:     number;
+}
+
+const API_PREFIX = import.meta.env.VITE_API_PREFIX || '/api/v1';
+
+const getAuthToken = () =>
+    localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || '';
+
 // S3 presigned upload: backend presigned URL al, dosyayı direkt S3'e yükle, key döner
 async function uploadReceiptFile(file: File, teamId: string): Promise<string> {
     const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
@@ -37,13 +55,44 @@ async function uploadReceiptFile(file: File, teamId: string): Promise<string> {
     return key;
 }
 
+// OCR: S3'e yüklenen fatura/fişi analiz et
+async function analyzeReceipt(key: string): Promise<ParsedInvoice> {
+    const res = await restFetch<{ status: string; data: ParsedInvoice }>(
+        '/uploads/analyze-receipt',
+        { method: 'POST', body: { key } }
+    );
+    return (res as any).data as ParsedInvoice;
+}
+
+// OCR: Dosyayı doğrudan gönder — S3 roundtrip yok, daha hızlı
+async function analyzeReceiptDirect(file: File): Promise<ParsedInvoice> {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch(`${API_PREFIX}/uploads/ocr-direct`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${getAuthToken()}` },
+        body: fd,
+    });
+    if (!res.ok) throw new Error(`OCR direct failed: ${res.status}`);
+    const json = await res.json() as { data: ParsedInvoice };
+    return json.data;
+}
+
 export const expenseService = {
 
     uploadReceiptFile,
+    analyzeReceipt,
+    analyzeReceiptDirect,
 
     // Takım bazında giderleri getir — backend EnrichedExpense döner
     async getExpensesByTeam(teamId: string | number, page = 1, limit = 20): Promise<ExpenseFetchResult> {
         if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
+
+        if (isDemoMode()) {
+            const all = demoExpenses as unknown as EnrichedExpense[];
+            const start = (page - 1) * limit;
+            return { data: all.slice(start, start + limit), hasMore: start + limit < all.length, totalCount: all.length };
+        }
 
         const response = await api.expenses.getAll({ teamId: String(teamId), page, pageSize: limit });
         const expenses = extractList<EnrichedExpense>(response);

@@ -1,0 +1,80 @@
+.demo-bar {
+    width: 100%;
+    background: linear-gradient(90deg, #7c3aed, #4f46e5);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 9px 20px;
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: var(--z-overlay, 900);
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+}
+
+.demo-bar-icon {
+    font-size: 1rem;
+    opacity: 0.9;
+    flex-shrink: 0;
+}
+
+.demo-bar-text {
+    opacity: 0.95;
+    letter-spacing: 0.01em;
+}
+
+.demo-bar-actions {
+    display: flex;
+    gap: 8px;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.demo-bar-btn {
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    font-family: var(--font-sans);
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.demo-bar-btn:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.demo-bar-btn--login {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.demo-bar-btn--signup {
+    background: #fff;
+    color: #4f46e5;
+}
+
+@media (max-width: 540px) {
+    .demo-bar {
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 8px 14px;
+        font-size: 0.75rem;
+    }
+    .demo-bar-text {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+    .demo-bar-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+}

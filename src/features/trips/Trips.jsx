@@ -21,12 +21,14 @@ import { useModal } from '../../hooks/useModal';
 import { useAuth } from '../../context/AuthContext';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useTeam } from '../../context/TeamContext';
+import { isDemoUser } from '../../utils/demo';
 
 const Trips = () => {
     const { alertConfig, confirmConfig, showAlert, askConfirm, closeAlert, closeConfirm } = useModal();
     const { selectedCurrency, updateCurrency }   = useCurrency();
     const { activeTeam, selectedTeamId }         = useTeam();
     const { currentUser }                        = useAuth();
+    const isDemo = isDemoUser(currentUser?.email);
     const { hasPermission }                      = usePermissions();
 
     const [isCreateOpen,  setIsCreateOpen]  = useState(false);
@@ -138,6 +140,10 @@ const Trips = () => {
                     createLabel="Gezi Oluştur"
                     onSearch={(val) => setSearchTerm(val)}
                     onCreate={() => {
+                        if (isDemo) {
+                            showAlert("Demo Modu", "Gezi eklemek için kayıt olun veya giriş yapın.", "info");
+                            return;
+                        }
                         setIsEditMode(false);
                         setSelectedTrip(null);
                         setIsCreateOpen(true);

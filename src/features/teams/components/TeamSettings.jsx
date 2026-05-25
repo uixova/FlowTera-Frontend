@@ -8,7 +8,7 @@ import { useModal } from '../../../hooks/useModal';
 import Alert from '../../../components/overlays/Alert';
 import Confirm from '../../../components/overlays/Confirm';
 
-const TeamSettings = ({ team, onBack }) => {
+const TeamSettings = ({ team, onBack, onSuccess }) => {
   const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
   const { currentUser: authUser, loading: authLoading } = useAuth();
   const { selectedTeamId } = useTeam();
@@ -136,12 +136,16 @@ const TeamSettings = ({ team, onBack }) => {
       }
       const result = await teamsService.updateTeamSettings(selectedTeamId, updatePayload);
       if (result.success) {
+        if (onSuccess) await onSuccess();   // re-fetch teams list so TeamCard reflects new image
+        await loadTeamData();              // reload form with saved values + fresh presigned image URL
         showAlert(
-          "Başarılı", 
+          "Başarılı",
           formData.status === 'maintenance' ? "Takım Bakım Moduna Alındı!" : "Ayarlar ve Logo Güncellendi.",
           "success"
         );
         setLogoFile(null);
+      } else {
+        showAlert("Hata", result.message || "Ayarlar kaydedilemedi. Admin yetkisi gerekli.", "error");
       }
     } catch (err) {
       console.error("Güncelleme hatası:", err);
@@ -234,7 +238,6 @@ const TeamSettings = ({ team, onBack }) => {
           <div className="tm-page-header">
             <div className="tm-header-left">
               <h1>Takım Ayarları</h1>
-              <span className="current-id-badge">ID: {selectedTeamId}</span>
             </div>
             <button className="tm-back-btn" onClick={onBack}>Takıma Dön</button>
           </div>

@@ -11,7 +11,11 @@ interface CurrencyContextType {
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
-const CURRENCY_SYMBOLS: Record<string, string> = { USD: '$', TRY: '₺', EUR: '€', GBP: '£', JPY: '¥', CHF: 'Fr' };
+const CURRENCY_SYMBOLS: Record<string, string> = {
+    USD: '$', EUR: '€', GBP: '£', TRY: '₺',
+    JPY: '¥', CHF: 'Fr', CAD: 'C$', AUD: 'A$',
+    CNY: '¥', INR: '₹',
+};
 const CURRENCY_STORAGE_KEY = 'selectedCurrency';
 const RATES_STORAGE_KEY    = 'tm_saved_rates';
 const RATES_TTL_KEY        = 'tm_rates_ttl';

@@ -4,6 +4,9 @@ import {
     NotificationRequest,
     NotificationInfo,
 } from '../types/types';
+import { isDemoMode } from '../utils/demo';
+import demoNotifications from '../data/demo-notifications.json';
+import demoRequests from '../data/demo-requests.json';
 
 const extractList = <T>(response: any): T[] => {
     if (!response) return [];
@@ -16,6 +19,7 @@ export const notificationService = {
 
     // ADMIN İÇİN: Talep listesi
     getTeamRequests: async (teamId: string): Promise<NotificationRequest[]> => {
+        if (isDemoMode()) return demoRequests as unknown as NotificationRequest[];
         try {
             const data = await restFetch<{ status: string; data: NotificationRequest[] }>(
                 `/requests`, { params: { teamId } }
@@ -26,6 +30,12 @@ export const notificationService = {
 
     // KULLANICI İÇİN: Bildirim listesi
     getUserNotifications: async (_currentUserId: string): Promise<{ invites: NotificationInfo[]; infos: NotificationInfo[] }> => {
+        if (isDemoMode()) {
+            return {
+                invites: demoNotifications.invites as unknown as NotificationInfo[],
+                infos:   demoNotifications.infos   as unknown as NotificationInfo[],
+            };
+        }
         try {
             const data = await restFetch<{ status: string; data: NotificationInfo[] }>(`/notifications`);
             const list = extractList<NotificationInfo>(data);
@@ -38,6 +48,7 @@ export const notificationService = {
 
     // Bildirim sil
     deleteNotification: async (id: string): Promise<boolean> => {
+        if (isDemoMode()) return true;
         try {
             await restFetch(`/notifications/${id}`, { method: 'DELETE' });
             api.notifications.invalidate();
@@ -47,6 +58,7 @@ export const notificationService = {
 
     // Tüm info bildirimlerini sil
     clearAllInfos: async (): Promise<boolean> => {
+        if (isDemoMode()) return true;
         try {
             await restFetch(`/notifications/clear-infos`, { method: 'DELETE' });
             api.notifications.invalidate();
@@ -56,6 +68,7 @@ export const notificationService = {
 
     // Talebe cevap ver (admin)
     respondToRequest: async (id: string, action: 'approved' | 'rejected', teamId: string): Promise<boolean> => {
+        if (isDemoMode()) return true;
         try {
             await restFetch(`/requests/${id}/respond`, {
                 method: 'PATCH',
@@ -69,6 +82,7 @@ export const notificationService = {
 
     // Yeni talep oluştur
     createRequest: async (payload: Partial<NotificationRequest>): Promise<boolean> => {
+        if (isDemoMode()) return true;
         try {
             await restFetch(`/requests`, { method: 'POST', body: payload });
             api.notifications.invalidate();

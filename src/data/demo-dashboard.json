@@ -1,0 +1,44 @@
+{
+  "stats": {
+    "pendingCount": 3,
+    "activeTrips": 1,
+    "totalExpenses": "14648.80",
+    "rejectedCount": 2
+  },
+  "monthlyTrend": [
+    { "name": "Jan", "amount": 1820.00 },
+    { "name": "Feb", "amount": 2450.00 },
+    { "name": "Mar", "amount": 6100.00 },
+    { "name": "Apr", "amount": 9340.00 },
+    { "name": "May", "amount": 14648.80 }
+  ],
+  "categoryDistribution": [
+    { "name": "Technology", "value": 453.30,  "color": "#9d4edd" },
+    { "name": "Food & Beverage", "value": 4725.00, "color": "#4361ee" },
+    { "name": "Transportation", "value": 935.50,  "color": "#0ed45a" },
+    { "name": "Accommodation",  "value": 1240.00, "color": "#4cc9f0" },
+    { "name": "Shopping",       "value": 6320.00, "color": "#e63946" }
+  ],
+  "myActivities": [
+    { "id": "demo-exp-001", "subject": "Yurt Dışı Konaklama",    "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Accommodation",   "amount": "$1,240.00", "date": "2025-05-20" },
+    { "id": "demo-exp-002", "subject": "Taksi - Havalimanı",     "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Transportation",  "amount": "₺285.50",  "date": "2025-05-19" },
+    { "id": "demo-exp-003", "subject": "Ekip Yemeği",            "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Food & Beverage", "amount": "₺3,850.00","date": "2025-05-18" },
+    { "id": "demo-trip-001","subject": "Berlin, Almanya",        "type": "Trip",    "teamName": "FlowTera Demo Takımı", "category": "İş Seyahati",     "amount": "approved", "date": "2025-05-20" },
+    { "id": "demo-exp-004", "subject": "Figma Pro Aboneliği",    "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Technology",      "amount": "$45.00",   "date": "2025-05-15" },
+    { "id": "demo-trip-002","subject": "Ankara, Türkiye",        "type": "Trip",    "teamName": "FlowTera Demo Takımı", "category": "İş Seyahati",     "amount": "pending",  "date": "2025-05-15" },
+    { "id": "demo-exp-006", "subject": "AWS Bulut Hizmetleri",   "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Technology",      "amount": "$320.80",  "date": "2025-05-10" },
+    { "id": "demo-exp-007", "subject": "Müşteri Kahvaltısı",     "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Food & Beverage", "amount": "₺875.00",  "date": "2025-05-08" },
+    { "id": "demo-trip-003","subject": "Amsterdam, Hollanda",    "type": "Trip",    "teamName": "FlowTera Demo Takımı", "category": "Konferans",       "amount": "approved", "date": "2025-04-10" },
+    { "id": "demo-exp-009", "subject": "Slack İş Paketi",        "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Technology",      "amount": "$87.50",   "date": "2025-04-28" }
+  ],
+  "typeComparison": [
+    { "name": "Expenses", "value": 14648.80 },
+    { "name": "Trips",    "value": 22740.00 }
+  ],
+  "teamSpending": [
+    { "name": "FlowTera Demo Takımı", "amount": 14648.80 }
+  ],
+  "userTeams": [
+    { "id": "demo-team-001", "name": "FlowTera Demo Takımı" }
+  ]
+}

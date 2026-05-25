@@ -1,6 +1,8 @@
 import { api, restFetch } from '../../../api/api';
 import { Trip } from '@/types/types';
 import { dataEvents } from '../../../hooks/useDataRefresh';
+import { isDemoMode } from '../../../utils/demo';
+import demoTrips from '../../../data/demo-trips.json';
 
 export interface EnrichedTrip extends Trip {
     userName: string;
@@ -26,6 +28,12 @@ export const tripsService = {
     // Takım bazında seyahatleri getir — backend EnrichedTrip döner
     getTripsByTeam: async (teamId: string, page = 1, limit = 20): Promise<TripFetchResult> => {
         if (!teamId) return { data: [], hasMore: false, totalCount: 0 };
+
+        if (isDemoMode()) {
+            const all = demoTrips as unknown as EnrichedTrip[];
+            const start = (page - 1) * limit;
+            return { data: all.slice(start, start + limit), hasMore: start + limit < all.length, totalCount: all.length };
+        }
 
         const response = await api.trips.getAll({ teamId, page, pageSize: limit });
         const trips    = extractList<EnrichedTrip>(response);

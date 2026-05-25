@@ -1,0 +1,68 @@
+[
+  {
+    "id": "demo-req-001",
+    "type": "join",
+    "teamId": "demo-team-001",
+    "category": "team",
+    "user": "Ahmet Yılmaz",
+    "title": "Takıma Katılma Talebi",
+    "detail": "FlowTera Demo Takımı'na katılmak istiyorum.",
+    "date": "2025-05-25T08:30:00.000Z",
+    "path": "/teams/demo-team-001",
+    "status": "pending",
+    "userId": "demo-ext-001"
+  },
+  {
+    "id": "demo-req-002",
+    "type": "expense",
+    "teamId": "demo-team-001",
+    "category": "expense",
+    "user": "Zeynep Kaya",
+    "title": "Gider Onay Talebi",
+    "detail": "Berlin iş seyahati — Ulaşım & Konaklama (1.240 USD)",
+    "date": "2025-05-24T14:00:00.000Z",
+    "path": "/expenses/demo-exp-001",
+    "status": "approved",
+    "userId": "demo-user-001"
+  },
+  {
+    "id": "demo-req-003",
+    "type": "travel",
+    "teamId": "demo-team-001",
+    "category": "travel",
+    "user": "Mert Demir",
+    "title": "Seyahat Onay Talebi",
+    "detail": "Paris — Müşteri Ziyareti (3 gün)",
+    "date": "2025-05-22T10:15:00.000Z",
+    "path": "/trips/demo-trip-002",
+    "status": "approved",
+    "userId": "demo-ext-002"
+  },
+  {
+    "id": "demo-req-004",
+    "type": "expense",
+    "teamId": "demo-team-001",
+    "category": "expense",
+    "user": "Selin Arslan",
+    "title": "Gider Onay Talebi",
+    "detail": "Ofis malzemeleri alımı (320 EUR)",
+    "date": "2025-05-21T09:00:00.000Z",
+    "path": "/expenses/demo-exp-003",
+    "status": "rejected",
+    "userId": "demo-ext-003",
+    "rejectionReason": "Bütçe limiti aşıldı. Bir sonraki çeyrekte yeniden talep edilebilir."
+  },
+  {
+    "id": "demo-req-005",
+    "type": "join",
+    "teamId": "demo-team-001",
+    "category": "team",
+    "user": "Can Öztürk",
+    "title": "Takıma Katılma Talebi",
+    "detail": "Geliştirici olarak takıma katılmak istiyorum.",
+    "date": "2025-05-20T16:45:00.000Z",
+    "path": "/teams/demo-team-001",
+    "status": "pending",
+    "userId": "demo-ext-004"
+  }
+]

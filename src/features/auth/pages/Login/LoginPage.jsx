@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../../../context/AuthContext';
 import { authService } from '../../services/authService';
 import Mail from '../../components/Mail';
@@ -18,6 +18,9 @@ const LoginPage = () => {
   } = useAuth();
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isDemoLogin = searchParams.get('demo') === '1';
+  const demoAttempted = useRef(false);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,6 +33,19 @@ const LoginPage = () => {
   useEffect(() => {
     setAuthError(null);
   }, [setAuthError]);
+
+  useEffect(() => {
+    if (!isDemoLogin || demoAttempted.current || loading) return;
+    demoAttempted.current = true;
+    const demoEmail = import.meta.env.VITE_DEMO_EMAIL || 'demo@flowtera.app';
+    const demoPwd   = import.meta.env.VITE_DEMO_PASSWORD || '';
+    if (!demoPwd) return;
+    setIsSubmitting(true);
+    loginWithCredentials(demoEmail, demoPwd, false).then((result) => {
+      if (result.success && result.redirecting) navigate('/home', { replace: true });
+      setIsSubmitting(false);
+    });
+  }, [isDemoLogin, loading, loginWithCredentials, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -112,6 +128,13 @@ const LoginPage = () => {
                 : 'Finansal akışını yönetmek için giriş yap.'}
             </p>
           </div>
+
+          {isDemoLogin && isSubmitting && (
+            <div className="auth-success">
+              <i className="ti ti-rocket"></i>
+              Demo hesabına giriş yapılıyor...
+            </div>
+          )}
 
           {authError && (
             <div className="auth-error">

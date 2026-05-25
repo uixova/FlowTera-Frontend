@@ -9,6 +9,7 @@ const ActionSidebar = memo(({
     children,
     footer,
     width = '520px',
+    preventOverlayClose = false,
 }) => {
     const [mounted, setMounted] = useState(isOpen);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -59,7 +60,7 @@ const ActionSidebar = memo(({
 
     return createPortal(
         <div className={`as-wrapper ${isAnimating ? 'is-active' : ''}`} role="dialog" aria-modal="true">
-            <div className="as-overlay" onClick={onClose} />
+            <div className="as-overlay" onClick={preventOverlayClose ? undefined : onClose} />
             <div 
                 className="as-panel" 
                 ref={panelRef}

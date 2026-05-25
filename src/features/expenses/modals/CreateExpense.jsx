@@ -41,11 +41,8 @@ const CURRENCIES = [
 
 const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', TRY: '₺', GBP: '£' };
 
-const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
-    const isEdit     = !!editData;
-    const displayDate = editData
-        ? editData.date
-        : new Date().toLocaleDateString('tr-TR');
+const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill }) => {
+    const isEdit = !!editData;
 
     const { selectedTeamId } = useTeam();
     const [selectedFile, setSelectedFile] = useState(null);
@@ -61,6 +58,8 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
         paymentMethod: 'Cash',
         amount: '',
         currency: 'USD',
+        date: '',
+        time: '',
         isReported: true,
     });
 
@@ -69,22 +68,36 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
         if (!isOpen) return;
         if (isEdit && editData) {
             setForm({
-                title: editData.title || '',
-                category: editData.category || 'Food',
-                merchant: editData.merchant || '',
+                title:         editData.title         || '',
+                category:      editData.category      || 'Food',
+                merchant:      editData.merchant      || '',
                 paymentMethod: editData.paymentMethod || 'Cash',
-                amount: editData.amount || '',
-                currency: editData.currency || 'USD',
-                isReported: editData.isReported  ?? true,
+                amount:        editData.amount        || '',
+                currency:      editData.currency      || 'USD',
+                date:          editData.date          || '',
+                isReported:    editData.isReported    ?? true,
             });
             setPreviewUrl(editData.receipt || null);
+        } else if (prefill) {
+            setForm({
+                title:         prefill.merchant       || '',
+                category:      prefill.category       || 'Food',
+                merchant:      prefill.merchant       || '',
+                paymentMethod: prefill.paymentMethod  || 'Cash',
+                amount:        prefill.amount         || '',
+                currency:      prefill.currency       || 'USD',
+                date:          prefill.date           || '',
+                time:          prefill.time           || '',
+                isReported:    true,
+            });
+            setPreviewUrl(null);
         } else {
-            setForm({ title: '', category: 'Food', merchant: '', paymentMethod: 'Cash', amount: '', currency: 'USD', isReported: true });
+            setForm({ title: '', category: 'Food', merchant: '', paymentMethod: 'Cash', amount: '', currency: 'USD', date: '', time: '', isReported: true });
             setPreviewUrl(null);
         }
         setSelectedFile(null);
         setCurrencyOpen(false);
-    }, [isOpen, isEdit, editData]);
+    }, [isOpen, isEdit, editData, prefill]);
 
     // Dışarı tıklayınca currency popup'ı kapat
     useEffect(() => {
@@ -127,13 +140,24 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                 if (raw) exchangeRates = JSON.parse(raw);
             } catch { /* use default */ }
 
+            // edit → keep DB date | prefill → combine OCR date + time | else → now
+            let resolvedDate;
+            if (isEdit) {
+                resolvedDate = editData.date;
+            } else if (form.date) {
+                const timeStr = form.time ? `T${form.time}:00` : 'T00:00:00';
+                resolvedDate  = new Date(`${form.date}${timeStr}`).toISOString();
+            } else {
+                resolvedDate = now.toISOString();
+            }
+
             const payload = {
                 ...form,
                 teamId:         selectedTeamId,
                 currencySymbol: CURRENCY_SYMBOLS[form.currency] || form.currency,
                 exchangeRates,
                 status:         isEdit ? editData.status : 'pending',
-                date:           isEdit ? editData.date   : now.toISOString(),
+                date:           resolvedDate,
                 desc:           isEdit ? editData.desc   : '',
                 icon:           isEdit ? editData.icon   : 'ti-receipt',
                 receipt:        receiptKey,
@@ -155,6 +179,12 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
     };
 
     const selectedCurrencySymbol = CURRENCY_SYMBOLS[form.currency] || '';
+
+    const displayDate = isEdit
+        ? new Date(editData.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+        : form.date
+            ? new Date(form.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+            : new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 
     const sidebarTitle = (
         <div className="ex-panel-title">

@@ -20,6 +20,8 @@ import PassPage from './features/auth/pages/Password/PassPage';
 // Diğer Bileşenler
 import NotFound from './features/error/NotFound';
 import Navbar from './components/navigation/navbar/Navbar';
+import DemoBar from './components/ui/DemoBar';
+import { isDemoUser } from './utils/demo';
 import Dashboard from './features/dashboard/Dashboard';
 import TeamSelection from './features/teams/Teams';
 
@@ -84,14 +86,19 @@ const FlowGuard = ({ children, requiredKey }) => {
     return children;
 };
 
-const AppLayout = () => (
-    <div className="app-wrapper">
-        <Navbar />
-        <main className="app-container">
-            <Outlet />
-        </main>
-    </div>
-);
+const AppLayout = () => {
+    const { currentUser } = useAuth();
+    const isDemo = isDemoUser(currentUser?.email);
+    return (
+        <div className="app-wrapper">
+            {isDemo && <DemoBar />}
+            <Navbar />
+            <main className="app-container">
+                <Outlet />
+            </main>
+        </div>
+    );
+};
 
 function App() {
   return (

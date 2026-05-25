@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/ui/Loader';
 import { useAuth } from '../../context/AuthContext';
+import { isDemoUser } from '../../utils/demo';
 import { useSubscription } from '../../context/SubscriptionContext';
 import { useTeam } from '../../context/TeamContext'; 
 import './Dashboard.css';
@@ -38,9 +39,23 @@ const Dashboard = () => {
     const [isTripOpen, setIsTripOpen] = useState(false);
     const [isOCROpen, setIsOCROpen] = useState(false);
     const [isReportOpen, setIsReportOpen] = useState(false);
+    const [ocrPrefill, setOcrPrefill] = useState(null);
+
+    const isDemo = isDemoUser(currentUser?.email);
 
     // handleQuickAction için context'teki selectedTeamId'yi kullanıyoruz.
     const handleQuickAction = (openModalCallback, type) => {
+        // Demo hesapta tüm yazma işlemleri engellenir
+        if (isDemo) {
+            showAlert(
+                "Demo Modu",
+                "Bu özelliği kullanmak için kayıt olun veya giriş yapın.",
+                "info",
+                () => navigate('/signup')
+            );
+            return;
+        }
+
         if (!selectedTeamId) {
             showAlert(
                 "Takım Seçilmedi", 
@@ -160,12 +175,13 @@ const Dashboard = () => {
             </div>
 
             {/* Modallar */}
-            <CreateExpense 
-                isOpen={isExpenseOpen} 
-                onClose={() => setIsExpenseOpen(false)} 
-                isDashboard={true} 
-                selectedTeamId={selectedTeamId} 
+            <CreateExpense
+                isOpen={isExpenseOpen}
+                onClose={() => { setIsExpenseOpen(false); setOcrPrefill(null); }}
+                isDashboard={true}
+                selectedTeamId={selectedTeamId}
                 teams={userTeams}
+                prefill={ocrPrefill}
             />
 
             <CreateTrips 
@@ -176,10 +192,15 @@ const Dashboard = () => {
                 teams={userTeams}
             />
 
-            <OCRSidebar 
-                isOpen={isOCROpen} 
-                onClose={() => setIsOCROpen(false)} 
+            <OCRSidebar
+                isOpen={isOCROpen}
+                onClose={() => setIsOCROpen(false)}
                 selectedTeamId={selectedTeamId}
+                onApply={(data) => {
+                    setOcrPrefill(data);
+                    setIsOCROpen(false);
+                    setIsExpenseOpen(true);
+                }}
             />
             
             <CreateReport 

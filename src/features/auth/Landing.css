@@ -142,6 +142,20 @@ footer { position: relative; z-index: 1; }
 
 .nav-divider { width: 1px; height: 20px; background: var(--landing-border-white); margin: 0 4px; }
 
+.nav-demo-btn {
+  background: transparent;
+  border: 1px solid var(--landing-text-muted);
+  color: var(--landing-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: var(--landing-radius-sm);
+  cursor: pointer;
+  transition: color 0.25s, border-color 0.25s;
+  white-space: nowrap;
+}
+.nav-demo-btn:hover { color: var(--landing-text-primary); border-color: var(--landing-text-primary); }
+
 .nav-login-btn {
   color: var(--landing-text-muted);
   font-size: 0.875rem;
@@ -984,7 +998,7 @@ footer { position: relative; z-index: 1; }
 
 @media (max-width: 900px) {
   .landing-nav { padding: 12px 4%; }
-  .nav-links a:not(.nav-login-btn):not(.nav-register-btn) {  display: none;  }
+  .nav-links a:not(.nav-login-btn):not(.nav-register-btn), .nav-demo-btn { display: none; }
   .nav-divider { display: none; }
   .nav-links { gap: 8px; }
   .nav-login-btn { padding: 6px 10px; font-size: 0.8rem; }

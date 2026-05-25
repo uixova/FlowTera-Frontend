@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { api, restFetch } from '../api/api';
 import { authService, VERIFIED_SIGNUP_KEY } from '../features/auth/services/authService';
 import { socketClient } from '../api/socketClient';
+import { isDemoUser } from '../utils/demo';
 
 interface AuthContextType {
     currentUser: any | null;
@@ -52,6 +53,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         localStorage.removeItem(AUTH_USER_ID_KEY);
         localStorage.removeItem(AUTH_TOKEN_KEY);
         sessionStorage.removeItem(AUTH_USER_ID_KEY);
+        sessionStorage.removeItem('is_demo');
         localStorage.removeItem('tm_selected_id');
         setCurrentUserId(null);
         setCurrentUser(null);
@@ -83,6 +85,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (user) {
                 setCurrentUser(user);
                 setTeams(teamsArray);
+
+                // Safety: ensure is_demo matches actual user identity
+                if (!isDemoUser(user.email)) sessionStorage.removeItem('is_demo');
 
                 const token      = localStorage.getItem(AUTH_TOKEN_KEY) || sessionStorage.getItem(AUTH_TOKEN_KEY) || '';
                 const storedTeam = localStorage.getItem('tm_selected_id') || '';
@@ -148,6 +153,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             if (result.token && result.user) {
                 if (rememberMe) localStorage.setItem(AUTH_TOKEN_KEY, result.token);
                 else            sessionStorage.setItem(AUTH_TOKEN_KEY, result.token);
+                if (isDemoUser(email)) sessionStorage.setItem('is_demo', 'true');
+                else                   sessionStorage.removeItem('is_demo');
                 login(result.user.id, rememberMe);
                 return { success: true, redirecting: true };
             }
