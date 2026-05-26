@@ -121,6 +121,14 @@ input[type=number] {
     animation: spin 1s linear infinite;
 }
 
+.full-screen-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    width: 100%;
+}
+
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }

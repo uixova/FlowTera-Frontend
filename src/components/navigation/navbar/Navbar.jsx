@@ -15,16 +15,17 @@ import Notification    from '../../overlays/notification/Notification';
 import UserDropdown    from '../../overlays/userDropdown/UserDropdown';
 import Language        from '../../overlays/language/Language';
 import TeamSelectModal from '../../overlays/teamSelectModal/TeamSelectModal';
+import Confirm        from '../../overlays/Confirm';
 
 const Navbar = React.memo(() => {
-    const { roleNameForTeam, loading: authLoading, currentUser } = useAuth();
+    const { roleNameForTeam, loading: authLoading, currentUser, logout } = useAuth();
     const { selectedTeamId, selectTeam } = useTeam();
     const { theme, toggleMode } = useTheme();
 
     const navigate = useNavigate();
     const location = useLocation();
     const { hasFeature } = useSubscription();
-    const { showAlert }  = useModal();
+    const { showAlert, askConfirm, closeConfirm, confirmConfig } = useModal();
 
     const [isThemeOpen,        setIsThemeOpen]        = useState(false);
     const [isUserOpen,         setIsUserOpen]         = useState(false);
@@ -292,6 +293,20 @@ const Navbar = React.memo(() => {
                             >
                                 <i className="ti ti-settings" />
                             </button>
+                            <button
+                                className="nav-drawer-logout-btn"
+                                onClick={() => {
+                                    setIsDrawerOpen(false);
+                                    askConfirm(
+                                        "Çıkış Yap",
+                                        "Oturumunuzu kapatmak istediğinizden emin misiniz?",
+                                        () => { logout(); window.location.href = '/login'; },
+                                        "warning"
+                                    );
+                                }}
+                            >
+                                <i className="ti ti-logout" />
+                            </button>
                         </div>
                     </div>
                 </div>,
@@ -302,6 +317,7 @@ const Navbar = React.memo(() => {
             {createPortal(<Notification isOpen={isNotificationOpen} onClose={() => setIsNotificationOpen(false)} userRole={isAdmin ? 'admin' : 'user'} />, document.body)}
             {createPortal(<Language isOpen={isLangOpen} onClose={() => setIsLangOpen(false)} />, document.body)}
             {createPortal(<TeamSelectModal isOpen={isTeamOpen} onClose={() => setIsTeamOpen(false)} onSelectTeam={handleTeamChange} currentTeamId={selectedTeamId} />, document.body)}
+            {createPortal(<Confirm {...confirmConfig} onClose={closeConfirm} onConfirm={confirmConfig.onConfirm} />, document.body)}
             {createPortal(<UserDropdown isOpen={isUserOpen} onClose={() => setIsUserOpen(false)} />, document.body)}
         </>
     );

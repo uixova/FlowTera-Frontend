@@ -3,6 +3,8 @@ import { api, restFetch } from '../api/api';
 import { authService, VERIFIED_SIGNUP_KEY } from '../features/auth/services/authService';
 import { socketClient } from '../api/socketClient';
 import { isDemoUser } from '../utils/demo';
+import demoUserStatic from '../data/demo-user.json';
+import demoTeamsStatic from '../data/demo-teams.json';
 
 interface AuthContextType {
     currentUser: any | null;
@@ -55,6 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         sessionStorage.removeItem(AUTH_USER_ID_KEY);
         sessionStorage.removeItem('is_demo');
         localStorage.removeItem('tm_selected_id');
+        sessionStorage.removeItem('tm_selected_id');
         setCurrentUserId(null);
         setCurrentUser(null);
         setTeams([]);
@@ -70,6 +73,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
 
         if (isLoggingOut.current) return;
+
+        // Demo mode — skip backend entirely, use local JSON
+        // Both conditions must be true to prevent stale is_demo from affecting real users
+        if (sessionStorage.getItem('is_demo') === 'true' && userId === 'demo-user-001') {
+            setCurrentUser(demoUserStatic);
+            setTeams(demoTeamsStatic as any[]);
+            setLoading(false);
+            return;
+        }
+
+        // Clear any stale demo flag for non-demo users
+        sessionStorage.removeItem('is_demo');
 
         setLoading(true);
         try {
@@ -141,6 +156,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const loginWithCredentials = useCallback(async (email: string, password: string, rememberMe: boolean) => {
         setAuthError(null);
+
+        // Demo account — skip backend entirely
+        if (isDemoUser(email)) {
+            sessionStorage.setItem('is_demo', 'true');
+            sessionStorage.setItem('tm_selected_id', 'demo-team-001');
+            login('demo-user-001', false);
+            return { success: true, redirecting: true };
+        }
+
         try {
             const result = await authService.loginWithEmail(email, password);
 

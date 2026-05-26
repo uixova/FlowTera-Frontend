@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './ExportData.css';
 import { restFetch } from '../../../api/api';
+import { isDemoMode } from '../../../utils/demo';
 
 const ExportModal = ({ isOpen, onClose, teamId, teamName }) => {
     const [format, setFormat] = useState('csv');
@@ -10,6 +11,7 @@ const ExportModal = ({ isOpen, onClose, teamId, teamName }) => {
     if (!isOpen) return null;
 
     const handleDownload = async () => {
+        if (isDemoMode()) { setError('Demo modda rapor indirilemez.'); return; }
         if (!teamId) { setError('Takım seçili değil.'); return; }
         setLoading(true);
         setError('');

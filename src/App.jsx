@@ -9,7 +9,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { CurrencyProvider } from './context/CurrencyContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
-import { TeamProvider } from './context/TeamContext';
+import { TeamProvider, useTeam } from './context/TeamContext';
 
 // Auth Sayfaları
 import Landing from './features/auth/Landing';
@@ -22,10 +22,10 @@ import NotFound from './features/error/NotFound';
 import Navbar from './components/navigation/navbar/Navbar';
 import DemoBar from './components/ui/DemoBar';
 import { isDemoUser } from './utils/demo';
-import Dashboard from './features/dashboard/Dashboard';
-import TeamSelection from './features/teams/Teams';
 
 // Lazy Load Sayfaları
+const Dashboard     = lazy(() => import('./features/dashboard/Dashboard'));
+const TeamSelection = lazy(() => import('./features/teams/Teams'));
 const Expenses = lazy(() => import('./features/expenses/Expenses'));
 const Trips = lazy(() => import('./features/trips/Trips'));
 const Analysis = lazy(() => import('./features/analysis/Analysis'));
@@ -38,17 +38,16 @@ const PaymentPanel = lazy(() => import('./features/payment/PaymentPanel'));
 const Help = lazy(() => import('./features/help/Help'));
 
 const ProtectedRoute = () => {
-    const { currentUser, loading } = useAuth(); 
+    const { currentUser, loading } = useAuth();
     const location = useLocation();
-    
-    if (loading) return null;
 
-    // CurrentUser yoksa ama bir şekilde girmeye çalışıyorsa login e atar ve state i temizler
+    if (loading) return <div className="full-screen-loader"><Loader type="butterfly" /></div>;
+
     if (!currentUser) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
-    
-    return <Outlet />; 
+
+    return <Outlet />;
 };
 
 const PublicRoute = () => {
@@ -66,12 +65,12 @@ const PublicRoute = () => {
 
 const AdminRoute = () => {
     const { isAdmin, currentUser } = useAuth();
-    const selectedTeamId = localStorage.getItem('tm_selected_id');
-    
+    const { selectedTeamId } = useTeam();
+
     if (!currentUser) return <Navigate to="/login" replace />;
     if (!isAdmin(selectedTeamId)) return <Navigate to="/home" replace />;
-    
-    return <Outlet />; 
+
+    return <Outlet />;
 };
 
 // URL ile direkt girişi engelleyen koruma 
@@ -90,7 +89,7 @@ const AppLayout = () => {
     const { currentUser } = useAuth();
     const isDemo = isDemoUser(currentUser?.email);
     return (
-        <div className="app-wrapper">
+        <div className={`app-wrapper${isDemo ? ' has-demo-bar' : ''}`}>
             {isDemo && <DemoBar />}
             <Navbar />
             <main className="app-container">
@@ -107,7 +106,7 @@ function App() {
         <TeamProvider>
           <SubscriptionProvider> 
             <CurrencyProvider> 
-              <Suspense fallback={null}>
+              <Suspense fallback={<div className="full-screen-loader"><Loader type="butterfly" /></div>}>
                 <Routes>
                   {/* Landing - Herkese açık */}
                   <Route path="/" element={<Landing />} />

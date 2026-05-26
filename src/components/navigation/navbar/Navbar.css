@@ -254,7 +254,7 @@ header.navbar-header {
     display: none;
     position: fixed;
     inset: 0;
-    z-index: calc(var(--z-navbar) + 10);
+    z-index: var(--z-modal);
     pointer-events: none;
 }
 
@@ -507,6 +507,27 @@ header.navbar-header {
     color: var(--accent-color);
 }
 
+.nav-drawer-logout-btn {
+    width: 32px;
+    height: 32px;
+    background: var(--white-a3);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.nav-drawer-logout-btn:hover {
+    background: var(--status-danger-bg);
+    border-color: var(--status-danger-border);
+    color: var(--status-danger);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .nav-links-center ul li a { padding: 7px 10px; font-size: 0; gap: 0; }
@@ -533,4 +554,11 @@ header.navbar-header {
 @media (max-width: 380px) {
     header.navbar-header { padding: 10px 12px; }
     .head-profile-img { width: 30px; height: 30px; }
+}
+
+/* Sticky offset when DemoBar is visible */
+.has-demo-bar header.navbar-header { top: 38px; }
+
+@media (max-width: 540px) {
+    .has-demo-bar header.navbar-header { top: 70px; }
 }

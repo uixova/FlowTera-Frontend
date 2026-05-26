@@ -22,3 +22,8 @@ export function isDemoUser(email?: string | null): boolean {
 export function isDemoMode(): boolean {
     return sessionStorage.getItem('is_demo') === 'true';
 }
+
+/** True if the error was thrown by the API demo write guard. */
+export function isDemoWriteError(err: unknown): boolean {
+    return (err as any)?.code === 'DEMO_WRITE_BLOCKED';
+}

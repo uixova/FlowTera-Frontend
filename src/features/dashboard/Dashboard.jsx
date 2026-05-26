@@ -26,7 +26,7 @@ const Dashboard = () => {
     // Context verileri
     const { hasFeature, loading: subLoading } = useSubscription();
     const { selectedTeamId } = useTeam();
-    const { currentUser, currentUserId, teams: authTeams, loading: authLoading } = useAuth();
+    const { currentUser, currentUserId, teams: authTeams, loading: authLoading, logout } = useAuth();
     const { hasPermission } = usePermissions();
 
     const [stats, setStats] = useState({ pendingCount: 0, activeTrips: 0, totalExpenses: 0, rejectedCount: 0 });
@@ -49,9 +49,8 @@ const Dashboard = () => {
         if (isDemo) {
             showAlert(
                 "Demo Modu",
-                "Bu özelliği kullanmak için kayıt olun veya giriş yapın.",
-                "info",
-                () => navigate('/signup')
+                "Bu özelliği kullanmak için DemoBar'daki 'Ücretsiz Kayıt' butonunu kullanabilirsiniz.",
+                "info"
             );
             return;
         }

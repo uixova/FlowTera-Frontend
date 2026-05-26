@@ -2,39 +2,31 @@
   "infos": [
     {
       "id": "demo-notif-001",
-      "type": "info",
-      "title": "Hoş Geldiniz!",
-      "message": "FlowTera Demo'ya hoş geldiniz. Tüm özellikler aktif.",
-      "createdAt": "2025-05-25T09:00:00.000Z",
-      "isRead": false
+      "text": "FlowTera Demo'ya hoş geldiniz. Tüm özellikler aktif.",
+      "date": "2025-05-25T09:00:00.000Z",
+      "category": "info"
     },
     {
       "id": "demo-notif-002",
-      "type": "info",
-      "title": "OCR Tarama Hazır",
-      "message": "Akıllı fatura tarama özelliği aktif. Fişlerinizi yükleyin.",
-      "createdAt": "2025-05-24T14:30:00.000Z",
-      "isRead": true
+      "text": "Akıllı fatura tarama özelliği aktif. Fişlerinizi yükleyin.",
+      "date": "2025-05-24T14:30:00.000Z",
+      "category": "success"
     },
     {
       "id": "demo-notif-003",
-      "type": "info",
-      "title": "Gider Onaylandı",
-      "message": "Berlin iş seyahati harcamanız onaylandı.",
-      "createdAt": "2025-05-20T11:00:00.000Z",
-      "isRead": true
+      "text": "Berlin iş seyahati harcamanız onaylandı.",
+      "date": "2025-05-20T11:00:00.000Z",
+      "category": "success"
     }
   ],
   "invites": [
     {
       "id": "demo-invite-001",
       "type": "invite",
-      "title": "Takım Daveti",
-      "message": "FlowTera Demo Takımı'na Admin olarak davet edildiniz.",
       "teamId": "demo-team-001",
       "teamName": "FlowTera Demo Takımı",
-      "createdAt": "2025-05-23T10:00:00.000Z",
-      "isRead": true
+      "teamLogo": null,
+      "sender": "Admin"
     }
   ]
 }

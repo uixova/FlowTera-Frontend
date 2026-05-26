@@ -1,4 +1,6 @@
 import { api } from '../../../api/api';
+import { isDemoMode } from '../../../utils/demo';
+import demoLogsStatic from '../../../data/demo-logs.json';
 
 export interface HistoryResponse {
     data: any[];
@@ -13,6 +15,16 @@ export const historyService = {
         page: number = 1,
         limit: number = 20
     ): Promise<HistoryResponse> {
+        if (isDemoMode()) {
+            const start  = (page - 1) * limit;
+            const sliced = demoLogsStatic.slice(start, start + limit);
+            return {
+                data:       sliced,
+                hasMore:    start + limit < demoLogsStatic.length,
+                totalCount: demoLogsStatic.length,
+            };
+        }
+
         try {
             const response = await api.logs.getAll({ teamId: String(teamId), page, pageSize: limit });
 

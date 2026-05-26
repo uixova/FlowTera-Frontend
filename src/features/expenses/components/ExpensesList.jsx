@@ -5,7 +5,7 @@ import { useCurrency } from '../../../context/CurrencyContext';
 const STATUS_MAP = {
     approved: { label: 'Onaylandı', cls: 'approved', icon: 'ti-circle-check' },
     pending:  { label: 'Beklemede', cls: 'pending',  icon: 'ti-clock-hour-4'  },
-    rejected: { label: 'Reddedildi', cls: 'rejected', icon: 'ti-circle-x-filled'     },
+    rejected: { label: 'Reddedildi', cls: 'rejected', icon: 'ti-circle-x'     },
 };
 
 const ExpenseRow = memo(({ expense, onOpenDetail, onEdit }) => {

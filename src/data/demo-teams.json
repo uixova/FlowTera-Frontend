@@ -1,0 +1,18 @@
+[
+  {
+    "id": "demo-team-001",
+    "name": "FlowTera Demo Takımı",
+    "logo": null,
+    "settings": {
+      "planContext": {
+        "planName": "enterprise"
+      }
+    },
+    "members": [
+      {
+        "userId": "demo-user-001",
+        "roleName": "Admin"
+      }
+    ]
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "demo-log-001",
+    "user": "Demo Kullanıcı",
+    "action": "Gider oluşturuldu",
+    "target": "Berlin İş Seyahati",
+    "role": "admin",
+    "badge": "Admin",
+    "icon": "ti-receipt-2",
+    "iconClass": "expense",
+    "tag": "Gider",
+    "tagClass": "tag-expense",
+    "createdAt": "2025-05-25T09:00:00.000Z",
+    "date": "2025-05-25T09:00:00.000Z",
+    "details": { "tutar": "4800 USD", "kategori": "İş Seyahati" }
+  },
+  {
+    "id": "demo-log-002",
+    "user": "Demo Kullanıcı",
+    "action": "Gezi oluşturuldu",
+    "target": "Teknik Konferans",
+    "role": "admin",
+    "badge": "Admin",
+    "icon": "ti-plane-departure",
+    "iconClass": "trip",
+    "tag": "Seyahat",
+    "tagClass": "tag-trip",
+    "createdAt": "2025-05-20T11:00:00.000Z",
+    "date": "2025-05-20T11:00:00.000Z",
+    "details": { "varış": "Amsterdam, Hollanda", "araç": "Uçak" }
+  },
+  {
+    "id": "demo-log-003",
+    "user": "Demo Kullanıcı",
+    "action": "Gider onaylandı",
+    "target": "Q2 Satış Zirvesi",
+    "role": "admin",
+    "badge": "Admin",
+    "icon": "ti-circle-check",
+    "iconClass": "approved",
+    "tag": "Onaylı",
+    "tagClass": "tag-approved",
+    "createdAt": "2025-05-15T14:30:00.000Z",
+    "date": "2025-05-15T14:30:00.000Z",
+    "details": { "tutar": "1250 TRY", "onaylayan": "Demo Kullanıcı" }
+  },
+  {
+    "id": "demo-log-004",
+    "user": "Demo Kullanıcı",
+    "action": "Gider reddedildi",
+    "target": "Ortaklık Görüşmesi",
+    "role": "admin",
+    "badge": "Admin",
+    "icon": "ti-circle-x",
+    "iconClass": "rejected",
+    "tag": "Reddedildi",
+    "tagClass": "tag-rejected",
+    "createdAt": "2025-04-10T09:15:00.000Z",
+    "date": "2025-04-10T09:15:00.000Z",
+    "details": { "neden": "Bütçe aşımı", "tutar": "7500 USD" }
+  }
+]

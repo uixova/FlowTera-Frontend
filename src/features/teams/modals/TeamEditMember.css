@@ -254,3 +254,7 @@
     cursor: not-allowed;
     filter: saturate(0.5);
 }
+
+@media (max-width: 480px) {
+    .tm-modal-footer-grid { grid-template-columns: 1fr; }
+}

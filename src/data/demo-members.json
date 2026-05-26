@@ -1,0 +1,12 @@
+[
+  {
+    "id": "demo-user-001",
+    "name": "Demo Kullanıcı",
+    "email": "demo@flowtera.app",
+    "avatar": null,
+    "roleName": "Admin",
+    "permissions": [],
+    "lastLogin": "2025-05-25T10:00:00.000Z",
+    "isDeleted": false
+  }
+]

@@ -86,6 +86,7 @@
     "teamId": "demo-team-001",
     "userId": "demo-user-001",
     "note": "Fatura yok — red sebebi",
+    "rejectionReason": "Harcamaya ait fatura veya fiş belgesi sisteme yüklenmemiş. Belge eklenerek yeniden gönderilebilir.",
     "receiptUrl": null,
     "createdBy": { "id": "demo-user-001", "name": "Demo Kullanıcı" }
   },

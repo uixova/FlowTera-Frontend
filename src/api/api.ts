@@ -7,6 +7,7 @@ import type {
     Plan,
     PaginatedResponse,
 } from '../types/types';
+import { isDemoMode } from '../utils/demo';
 
 // Types 
 
@@ -149,6 +150,10 @@ const request = async <T = unknown>(
         body,
     } = options;
 
+    if (isDemoMode() && method !== 'GET') {
+        throw Object.assign(new Error('Demo modunda yazma işlemi engellenmiştir.'), { status: 403, code: 'DEMO_WRITE_BLOCKED' });
+    }
+
     if (!forceRefresh && method === 'GET') {
         const cached = cache.get<T>(resourceKey, params);
         if (cached !== null) return cached;
@@ -226,6 +231,10 @@ export const restFetch = async <T = unknown>(
     } = {}
 ): Promise<T> => {
     const { method = 'GET', body, params } = options;
+
+    if (isDemoMode() && method !== 'GET') {
+        throw Object.assign(new Error('Demo modunda yazma işlemi engellenmiştir.'), { status: 403, code: 'DEMO_WRITE_BLOCKED' });
+    }
 
     const url = new URL(`${API_PREFIX}${path}`, window.location.origin);
     if (params) {

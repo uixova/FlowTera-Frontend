@@ -1,4 +1,7 @@
 import { restFetch } from '../../../api/api';
+import { isDemoMode } from '../../../utils/demo';
+import demoUserStatic from '../../../data/demo-user.json';
+import demoLogsStatic from '../../../data/demo-logs.json';
 import type {
     SettingsUserResult,
     SettingsNotifications,
@@ -14,6 +17,7 @@ export const settingsService = {
 
     getCurrentUser: async (userId: string): Promise<GetCurrentUserResult> => {
         if (!userId) return null;
+        if (isDemoMode()) return demoUserStatic as unknown as SettingsUserResult;
         try {
             const result = await restFetch<{ status: string; data: any }>(`/users/${userId}`);
             return (result as any).data as SettingsUserResult ?? null;
@@ -22,6 +26,7 @@ export const settingsService = {
 
     getUserNotifications: async (userId: string): Promise<GetUserNotificationsResult> => {
         if (!userId) return null;
+        if (isDemoMode()) return { email: false, sms: false, push: false } satisfies SettingsNotifications;
         try {
             const result = await restFetch<{ status: string; data: any }>(`/users/${userId}`);
             const user   = (result as any).data;
@@ -35,6 +40,12 @@ export const settingsService = {
     // Returns TeamLogs for the given team mapped so Activity.jsx works (timestamp = createdAt)
     getUserLogs: async (userId: string, teamId?: string): Promise<GetUserLogsResult> => {
         if (!userId || !teamId) return [];
+        if (isDemoMode()) {
+            return demoLogsStatic.map(log => ({
+                ...log,
+                timestamp: log.createdAt,
+            })) as unknown as SettingsUserLog[];
+        }
         try {
             const result = await restFetch<{ status: string; data: any[] }>(
                 `/logs`, { params: { teamId, pageSize: 50 } }

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { socketClient } from '../api/socketClient';
 import { isDemoMode } from '../utils/demo';
@@ -27,6 +27,7 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
     const [selectedTeamId, setSelectedTeamId] = useState<string | null>(
         () => teamStore().getItem(TEAM_ID_KEY) || null
     );
+    const hasAutoSelected = useRef(false);
 
     const activeTeam = useMemo(() => {
         if (!selectedTeamId || !teams.length) return null;
@@ -53,6 +54,18 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
         sessionStorage.removeItem(VIEW_MODE_KEY);
         setSelectedTeamId(null);
     }, []);
+
+    // Demo modda ilk girişte demo-team-001'i otomatik seç (sadece bir kez, manuel temizlemeye müdahale etme)
+    useEffect(() => {
+        if (!isDemoMode()) return;
+        if (selectedTeamId) { hasAutoSelected.current = true; return; }
+        if (hasAutoSelected.current) return;
+        const demoTeam = teams.find((t: any) => t.id === 'demo-team-001');
+        if (!demoTeam) return;
+        sessionStorage.setItem(TEAM_ID_KEY, 'demo-team-001');
+        setSelectedTeamId('demo-team-001');
+        hasAutoSelected.current = true;
+    }, [teams, selectedTeamId]);
 
     // Sekmeler arası senkronizasyon
     useEffect(() => {

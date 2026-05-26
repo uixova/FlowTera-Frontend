@@ -1,0 +1,18 @@
+{
+  "id": "demo-user-001",
+  "email": "demo@flowtera.app",
+  "name": "Demo Kullanıcı",
+  "username": "demo",
+  "avatar": null,
+  "subscription": {
+    "plan": "Enterprise",
+    "badge": "enterprise"
+  },
+  "role": [
+    {
+      "teamId": "demo-team-001",
+      "roleName": "Admin",
+      "permissions": []
+    }
+  ]
+}

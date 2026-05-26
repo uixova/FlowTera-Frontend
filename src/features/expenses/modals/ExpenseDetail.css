@@ -306,3 +306,21 @@
     border-top: 1px solid var(--border-divider);
     margin: 0;
 }
+
+@media (max-width: 480px) {
+    .ex-panel-content-internal { padding: 16px 16px 24px; }
+
+    .ex-financial-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .ex-status-group { align-items: flex-start; }
+
+    .ex-info-list { grid-template-columns: 1fr; }
+
+    .ex-info-item.full-width { grid-column: span 1; }
+
+    .ex-price-val { font-size: var(--text-2xl); }
+}

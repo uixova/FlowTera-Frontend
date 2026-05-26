@@ -1,5 +1,8 @@
 import { api } from '../../../api/api';
 import { Expense, Trip, Team } from '@/types/types';
+import { isDemoMode } from '../../../utils/demo';
+import demoExpensesStatic from '../../../data/demo-expenses.json';
+import demoTripsStatic from '../../../data/demo-trips.json';
 
 type ConvertFn = (item: Expense | Trip, currency: string) => number;
 
@@ -22,18 +25,27 @@ export const analysisService = {
 
     getTeamAnalysis: async (teamId: string | number, viewMode: 'all' | 'expenses' | 'trips' = 'all', convertFn: ConvertFn) => {
 
-        const [expensesRes, tripsRes, teamsRes] = await Promise.all([
-            api.expenses.getAll({ teamId: String(teamId), pageSize: 2000 }),
-            api.trips.getAll({ teamId: String(teamId), pageSize: 2000 }),
-            api.teams.getAll({ pageSize: 500 }),
-        ]);
+        let expenses: Expense[];
+        let trips: Trip[];
+        let teamCurrency: string;
 
-        const expenses = extractList<Expense>(expensesRes);
-        const trips    = extractList<Trip>(tripsRes);
-        const teams    = extractList<Team>(teamsRes);
+        if (isDemoMode()) {
+            expenses     = demoExpensesStatic as unknown as Expense[];
+            trips        = demoTripsStatic    as unknown as Trip[];
+            teamCurrency = 'USD';
+        } else {
+            const [expensesRes, tripsRes, teamsRes] = await Promise.all([
+                api.expenses.getAll({ teamId: String(teamId), pageSize: 2000 }),
+                api.trips.getAll({ teamId: String(teamId), pageSize: 2000 }),
+                api.teams.getAll({ pageSize: 500 }),
+            ]);
 
-        const currentTeam  = teams.find(t => String(t.id) === String(teamId));
-        const teamCurrency = currentTeam?.settings?.currency || 'USD';
+            expenses = extractList<Expense>(expensesRes);
+            trips    = extractList<Trip>(tripsRes);
+            const teams       = extractList<Team>(teamsRes);
+            const currentTeam = teams.find(t => String(t.id) === String(teamId));
+            teamCurrency      = currentTeam?.settings?.currency || 'USD';
+        }
 
         const targetData: (Expense | Trip)[] =
             viewMode === 'expenses' ? expenses :

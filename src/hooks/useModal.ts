@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 // Modal tipleri için ortak bir tip tanımı
 type ModalType = 'info' | 'warning' | 'success' | 'error' | string;
@@ -20,6 +20,8 @@ interface ConfirmConfig {
 }
 
 export const useModal = () => {
+    const alertCallbackRef = useRef<(() => void) | null>(null);
+
     // Alert State'i
     const [alertConfig, setAlertConfig] = useState<AlertConfig>({
         isOpen: false,
@@ -40,17 +42,18 @@ export const useModal = () => {
 
     // Alert'i tetikleyen fonksiyon
     const showAlert = useCallback((
-        title: string, 
-        message: string, 
-        type: ModalType = 'info', 
+        title: string,
+        message: string,
+        type: ModalType = 'info',
         callback: (() => void) | null = null
     ) => {
+        alertCallbackRef.current = callback;
         setAlertConfig({
             isOpen: true,
             title,
             message,
             type,
-            onClose: callback
+            onClose: null,
         });
     }, []);
 
@@ -72,10 +75,10 @@ export const useModal = () => {
 
     // Kapatma fonksiyonları
     const closeAlert = useCallback(() => {
-        setAlertConfig(prev => {
-            if (prev.onClose) prev.onClose();
-            return { ...prev, isOpen: false };
-        });
+        const cb = alertCallbackRef.current;
+        alertCallbackRef.current = null;
+        setAlertConfig(prev => ({ ...prev, isOpen: false }));
+        if (cb) cb();
     }, []);
 
     const closeConfirm = useCallback(() => {

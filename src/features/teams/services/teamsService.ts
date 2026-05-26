@@ -1,5 +1,8 @@
 import { api, restFetch } from '../../../api/api';
 import { Team, Plan, TeamMemberLog } from '@/types/types';
+import { isDemoMode } from '../../../utils/demo';
+import demoTeamsStatic from '../../../data/demo-teams.json';
+import demoMembersStatic from '../../../data/demo-members.json';
 
 export interface EnrichedTeam extends Omit<Team, 'members'> {
     members: number;
@@ -46,6 +49,13 @@ export const teamsService = {
 
     // Kullanıcının takımlarını getir — backend JWT'den filtreler
     async getTeams(): Promise<EnrichedTeam[]> {
+        if (isDemoMode()) {
+            return demoTeamsStatic.map(team => ({
+                ...team,
+                members: team.members.length,
+            })) as unknown as EnrichedTeam[];
+        }
+
         const response = await api.teams.getAll({ pageSize: 500 });
         const allTeams = extractList<Team>(response);
 
@@ -62,6 +72,7 @@ export const teamsService = {
     // Takım üyelerini getir
     async getTeamMembers(teamId: string | number): Promise<NormalizedMember[]> {
         if (!teamId) return [];
+        if (isDemoMode()) return demoMembersStatic as NormalizedMember[];
 
         const data    = await restFetch<{ status: string; data: any[] }>(`/teams/${teamId}/members`);
         const members = extractList<any>(data);

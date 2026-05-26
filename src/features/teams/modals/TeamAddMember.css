@@ -274,3 +274,7 @@
     gap: var(--space-3);
     width: 100%;
 }
+
+@media (max-width: 480px) {
+    .adm-panel-footer { grid-template-columns: 1fr; }
+}
