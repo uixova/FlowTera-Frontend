@@ -33,6 +33,7 @@ let _ws:               WebSocket | null = null;
 let _reconnectTimer:   ReturnType<typeof setTimeout> | null = null;
 let _reconnectCount    = 0;
 let _intentionalClose  = false;
+let _generation        = 0; // Increments on each intentional reconnect — old onclose handlers use stale gen → skip
 
 // Kimlik bilgileri — reconnect için saklanır
 let _token:  string = '';
@@ -75,10 +76,14 @@ const _openSocket = (): void => {
         return;
     }
 
+    const myGen = _generation; // Capture current generation — stale onclose handlers ignored
+
     _ws = new WebSocket(_buildUrl());
 
     _ws.onopen = () => {
+        if (myGen !== _generation) return; // Superseded by newer connection
         _reconnectCount = 0;
+        console.info('[Socket] Bağlantı kuruldu — userId:', _userId, 'teamId:', _teamId);
     };
 
     _ws.onmessage = (event: MessageEvent) => {
@@ -91,6 +96,8 @@ const _openSocket = (): void => {
     };
 
     _ws.onclose = (event: CloseEvent) => {
+        // Ignore if this is a stale connection (superseded by a newer one)
+        if (myGen !== _generation) return;
         console.warn('[Socket] Bağlantı kesildi —', event.code);
         // 1008 = auth hatası (geçersiz/eksik token/teamId) — yeniden bağlanma
         if (_intentionalClose || event.code === 1008) return;
@@ -98,6 +105,7 @@ const _openSocket = (): void => {
     };
 
     _ws.onerror = () => {
+        if (myGen !== _generation) return;
         console.error('[Socket] WebSocket bağlantı hatası');
     };
 };
@@ -114,10 +122,11 @@ const connect = (token: string, userId: string, teamId: string, role = 'Member')
     if (
         _ws &&
         (_ws.readyState === WebSocket.OPEN || _ws.readyState === WebSocket.CONNECTING) &&
-        _teamId === teamId && _token === token
+        _teamId === teamId && _token === token && _role === role
     ) return;
 
     _intentionalClose = true;
+    _generation++;                                           // Invalidate any pending onclose/onerror from old socket
     if (_reconnectTimer) { clearTimeout(_reconnectTimer); _reconnectTimer = null; }
     _ws?.close(1000, 'Yeniden bağlanılıyor');
     _intentionalClose = false;
@@ -139,6 +148,7 @@ const connectWithTeam = (teamId: string, role = 'Member'): void => {
 // Bağlantıyı kasıtlı olarak kapatır — logout'ta çağrılmalı
 const disconnect = (): void => {
     _intentionalClose = true;
+    _generation++;                                           // Invalidate pending handlers
     if (_reconnectTimer) { clearTimeout(_reconnectTimer); _reconnectTimer = null; }
     _ws?.close(1000, 'Kullanıcı çıkışı');
     _ws             = null;

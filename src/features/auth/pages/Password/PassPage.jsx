@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { authService } from '../../services/authService';
 import { useModal } from '../../../../hooks/useModal';
 import Alert from '../../../../components/overlays/Alert';
 import './Pass.css';
 
 const PassPage = () => {
+  const { t } = useTranslation('auth.password');
   const [form, setForm] = useState({ email: '', phone: '', channel: 'email' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,7 +31,7 @@ const PassPage = () => {
       }
 
       showAlert(
-        'Bağlantı Gönderildi',
+        t('link_sent_title'),
         `${result.message} Hedef: ${result.destination}`,
         'success',
         () => {
@@ -55,8 +57,8 @@ const PassPage = () => {
 
         <div className="auth-card pass-card">
           <div className="auth-card-header">
-            <h1>Şifre Sıfırlama</h1>
-            <p>E-posta ve telefon bilgini doğrula, sıfırlama linkini gonderelim.</p>
+            <h1>{t('reset_title')}</h1>
+            <p>{t('reset_subtitle')}</p>
           </div>
 
           {error ? (
@@ -73,20 +75,20 @@ const PassPage = () => {
                 className={form.channel === 'email' ? 'active' : ''}
                 onClick={() => setForm((prev) => ({ ...prev, channel: 'email' }))}
               >
-                E-posta ile Gönder
+                {t('via_email')}
               </button>
               <button
                 type="button"
                 className={form.channel === 'sms' ? 'active' : ''}
                 onClick={() => setForm((prev) => ({ ...prev, channel: 'sms' }))}
               >
-                SMS ile Gönder
+                {t('via_sms')}
               </button>
             </div>
 
             {form.channel === 'email' ? (
               <div className="auth-field">
-                <label htmlFor="email">E-POSTA ADRESİ</label>
+                <label htmlFor="email">{t('email_label')}</label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-mail auth-input-icon"></i>
                   <input
@@ -95,14 +97,14 @@ const PassPage = () => {
                     type="email"
                     value={form.email}
                     onChange={handleChange}
-                    placeholder="isim@sirket.com"
+                    placeholder={t('email_placeholder')}
                     required
                   />
                 </div>
               </div>
             ) : (
               <div className="auth-field">
-                <label htmlFor="phone">TELEFON NUMARASI</label>
+                <label htmlFor="phone">{t('phone_label')}</label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-phone auth-input-icon"></i>
                   <input
@@ -110,7 +112,7 @@ const PassPage = () => {
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
-                    placeholder="+90 5xx xxx xx xx"
+                    placeholder={t('phone_placeholder')}
                     required
                   />
                 </div>
@@ -118,12 +120,12 @@ const PassPage = () => {
             )}
 
             <button className="auth-submit-btn" type="submit" disabled={loading}>
-              {loading ? 'Gonderiliyor...' : 'Sifirlama Linki Gonder'}
+              {loading ? t('sending') : t('send_link_btn')}
             </button>
           </form>
 
           <div className="auth-switch">
-            Hesabını hatırladın mı? <Link to="/login">Giriş ekranına dön</Link>
+            {t('remember_account')} <Link to="/login">{t('back_to_login')}</Link>
           </div>
         </div>
       </div>

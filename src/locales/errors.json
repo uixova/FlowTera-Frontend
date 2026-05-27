@@ -1,0 +1,12 @@
+{
+  "notFound": {
+    "title": { "tr": "ARADIĞIN SAYFA TATİLE ÇIKTI", "en": "THE PAGE YOU WANT WENT ON VACATION" },
+    "subtitle": { "tr": "Aradığınız sayfa mevcut değil.", "en": "The page you're looking for doesn't exist." },
+    "go_home": { "tr": "ANASAYFAYA GERİ DÖN", "en": "BACK TO HOME" }
+  },
+  "unauthorized": {
+    "title": { "tr": "Yetkisiz Erişim", "en": "Unauthorized Access" },
+    "subtitle": { "tr": "Bu sayfaya erişim yetkiniz bulunmuyor.", "en": "You don't have permission to access this page." },
+    "go_back": { "tr": "Geri Dön", "en": "Go Back" }
+  }
+}

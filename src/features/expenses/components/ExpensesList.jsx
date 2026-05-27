@@ -1,24 +1,32 @@
 import React, { useCallback, memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useActionPermissions } from '../../../hooks/useActionPermissions';
 import { useCurrency } from '../../../context/CurrencyContext';
-
-const STATUS_MAP = {
-    approved: { label: 'Onaylandı', cls: 'approved', icon: 'ti-circle-check' },
-    pending:  { label: 'Beklemede', cls: 'pending',  icon: 'ti-clock-hour-4'  },
-    rejected: { label: 'Reddedildi', cls: 'rejected', icon: 'ti-circle-x'     },
-};
+import { useI18n } from '../../../utils/i18nHelpers';
 
 const ExpenseRow = memo(({ expense, onOpenDetail, onEdit }) => {
+    const { t } = useTranslation('expenses.list');
+    const { tCategory, tStatus } = useI18n();
     const { canEdit } = useActionPermissions(expense);
     const { convert, selectedCurrency, symbol } = useCurrency();
-    
+
     const displayAmount = useMemo(() => convert(expense, selectedCurrency), [expense, selectedCurrency, convert]);
-    
+
     const statusKey = expense.status?.toLowerCase();
-    const statusInfo = useMemo(() => 
-        STATUS_MAP[statusKey] || { label: expense.status, cls: statusKey, icon: 'ti-help-square-filled' }, 
-        [statusKey, expense.status]
-    );
+
+    const statusInfo = useMemo(() => {
+        const iconMap = {
+            approved: 'ti-circle-check',
+            pending:  'ti-clock-hour-4',
+            rejected: 'ti-circle-x',
+        };
+        return {
+            label: tStatus(statusKey || expense.status || ''),
+            cls:   statusKey || '',
+            icon:  iconMap[statusKey] || 'ti-help-square-filled',
+        };
+    }, [statusKey, expense.status, tStatus]);
+
     const isPending = statusKey === 'pending';
 
     const handleRowClick = useCallback((e) => {
@@ -46,7 +54,7 @@ const ExpenseRow = memo(({ expense, onOpenDetail, onEdit }) => {
                 </div>
             </div>
 
-            <span className="ex-category-tag">{expense.category}</span>
+            <span className="ex-category-tag">{tCategory(expense.category)}</span>
             <span className="ex-merchant-text">{expense.merchant}</span>
             <span className="ex-method-text">{expense.paymentMethod}</span>
 
@@ -68,7 +76,7 @@ const ExpenseRow = memo(({ expense, onOpenDetail, onEdit }) => {
                     <button
                         className="action-btn edit"
                         onClick={handleEditClick}
-                        title="Düzenle"
+                        title={t('edit', { ns: 'common.buttons' })}
                     >
                         <i className="ti ti-edit" />
                     </button>

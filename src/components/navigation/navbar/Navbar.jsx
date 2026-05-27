@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, startTransition } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import './Navbar.css';
 import UserImage from '../../../assets/images/user-profile.png';
 
@@ -18,6 +19,7 @@ import TeamSelectModal from '../../overlays/teamSelectModal/TeamSelectModal';
 import Confirm        from '../../overlays/Confirm';
 
 const Navbar = React.memo(() => {
+    const { t } = useTranslation('common.nav');
     const { roleNameForTeam, loading: authLoading, currentUser, logout } = useAuth();
     const { selectedTeamId, selectTeam } = useTeam();
     const { theme, toggleMode } = useTheme();
@@ -117,27 +119,27 @@ const Navbar = React.memo(() => {
     // Drawer'daki nav linkleri — tek yerde tanımlı, hem drawer hem desktop kullanır
     const navLinks = useMemo(() => (
         <>
-            <NavLink to="/home"><i className="ti ti-home" /> <span>Anasayfa</span></NavLink>
+            <NavLink to="/home"><i className="ti ti-home" /> <span>{t('home')}</span></NavLink>
             {selectedTeamId && (
                 <>
-                    <NavLink to="/expense"><i className="ti ti-calendar-dollar" /> <span>Giderler</span></NavLink>
-                    <NavLink to="/trips"><i className="ti ti-plane-departure" /> <span>Geziler</span></NavLink>
+                    <NavLink to="/expense"><i className="ti ti-calendar-dollar" /> <span>{t('expenses')}</span></NavLink>
+                    <NavLink to="/trips"><i className="ti ti-plane-departure" /> <span>{t('trips')}</span></NavLink>
                     {canAccessAnalysis && (
-                        <NavLink to="/analysis"><i className="ti ti-chart-pie" /> <span>Analiz</span></NavLink>
+                        <NavLink to="/analysis"><i className="ti ti-chart-pie" /> <span>{t('analysis')}</span></NavLink>
                     )}
-                    <NavLink to="/history"><i className="ti ti-history" /> <span>Geçmiş</span></NavLink>
+                    <NavLink to="/history"><i className="ti ti-history" /> <span>{t('history')}</span></NavLink>
                     {canAccessRequests && (
-                        <NavLink to="/requests"><i className="ti ti-pencil-question" /> <span>İstekler</span></NavLink>
+                        <NavLink to="/requests"><i className="ti ti-pencil-question" /> <span>{t('requests')}</span></NavLink>
                     )}
                     {canAccessArchive && isEnterprise && (
-                        <NavLink to="/archive"><i className="ti ti-archive" /> <span>Arşiv</span></NavLink>
+                        <NavLink to="/archive"><i className="ti ti-archive" /> <span>{t('archive')}</span></NavLink>
                     )}
                 </>
             )}
-            <NavLink to="/team"><i className="ti ti-users-group" /> <span>Takım</span></NavLink>
-            <NavLink to="/help"><i className="ti ti-help" /> <span>Yardım</span></NavLink>
+            <NavLink to="/team"><i className="ti ti-users-group" /> <span>{t('team')}</span></NavLink>
+            <NavLink to="/help"><i className="ti ti-help" /> <span>{t('help')}</span></NavLink>
         </>
-    ), [selectedTeamId, canAccessAnalysis, canAccessRequests, canAccessArchive, isEnterprise]);
+    ), [selectedTeamId, canAccessAnalysis, canAccessRequests, canAccessArchive, isEnterprise, t]);
 
     return (
         <>
@@ -152,25 +154,25 @@ const Navbar = React.memo(() => {
 
                     <nav className="nav-links-center">
                         <ul>
-                            <li><NavLink to="/home"><i className="ti ti-home" /> Anasayfa</NavLink></li>
+                            <li><NavLink to="/home"><i className="ti ti-home" /> {t('home')}</NavLink></li>
                             {selectedTeamId && (
                                 <>
-                                    <li><NavLink to="/expense"><i className="ti ti-calendar-dollar" /> Giderler</NavLink></li>
-                                    <li><NavLink to="/trips"><i className="ti ti-plane-departure" /> Geziler</NavLink></li>
+                                    <li><NavLink to="/expense"><i className="ti ti-calendar-dollar" /> {t('expenses')}</NavLink></li>
+                                    <li><NavLink to="/trips"><i className="ti ti-plane-departure" /> {t('trips')}</NavLink></li>
                                     {canAccessAnalysis && (
-                                        <li><NavLink to="/analysis"><i className="ti ti-chart-pie" /> Analiz</NavLink></li>
+                                        <li><NavLink to="/analysis"><i className="ti ti-chart-pie" /> {t('analysis')}</NavLink></li>
                                     )}
-                                    <li><NavLink to="/history"><i className="ti ti-history" /> Geçmiş</NavLink></li>
+                                    <li><NavLink to="/history"><i className="ti ti-history" /> {t('history')}</NavLink></li>
                                     {canAccessRequests && (
-                                        <li><NavLink to="/requests"><i className="ti ti-pencil-question" /> İstekler</NavLink></li>
+                                        <li><NavLink to="/requests"><i className="ti ti-pencil-question" /> {t('requests')}</NavLink></li>
                                     )}
                                     {canAccessArchive && isEnterprise && (
-                                        <li><NavLink to="/archive"><i className="ti ti-archive" /> Arşiv</NavLink></li>
+                                        <li><NavLink to="/archive"><i className="ti ti-archive" /> {t('archive')}</NavLink></li>
                                     )}
                                 </>
                             )}
-                            <li><NavLink to="/team"><i className="ti ti-users-group" /> Takım</NavLink></li>
-                            <li><NavLink to="/help"><i className="ti ti-help" /> Yardım</NavLink></li>
+                            <li><NavLink to="/team"><i className="ti ti-users-group" /> {t('team')}</NavLink></li>
+                            <li><NavLink to="/help"><i className="ti ti-help" /> {t('help')}</NavLink></li>
                         </ul>
                     </nav>
 
@@ -258,20 +260,20 @@ const Navbar = React.memo(() => {
                             <div className="nav-drawer-divider" />
                             <button className="nav-drawer-action-btn" onClick={handleToggleMode}>
                                 <i className={`ti ${isDark ? 'ti-sun' : 'ti-moon'}`} />
-                                <span>{isDark ? 'Açık Tema' : 'Koyu Tema'}</span>
+                                <span>{isDark ? t('light_theme', { defaultValue: 'Açık Tema' }) : t('dark_theme', { defaultValue: 'Koyu Tema' })}</span>
                             </button>
                             <button className="nav-drawer-action-btn" onClick={() => { setIsNotificationOpen(true); setIsDrawerOpen(false); }}>
                                 <i className="ti ti-bell" />
-                                <span>Bildirimler</span>
+                                <span>{t('notifications')}</span>
                                 <span className="nav-drawer-nt-dot" />
                             </button>
                             <button className="nav-drawer-action-btn" onClick={() => { setIsThemeOpen(true); setIsDrawerOpen(false); }}>
                                 <i className="ti ti-brush" />
-                                <span>Tema Paneli</span>
+                                <span>{t('theme_panel', { defaultValue: 'Tema Paneli' })}</span>
                             </button>
                             <button className='nav-drawer-action-btn' onClick={() => { setIsLangOpen(true); setIsDrawerOpen(false); }}>
                                 <i className="ti ti-world" />
-                                <span>Dil Paneli</span>
+                                <span>{t('lang_panel', { defaultValue: 'Dil Paneli' })}</span>
                             </button>
                         </nav>
 

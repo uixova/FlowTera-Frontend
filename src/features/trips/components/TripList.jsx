@@ -1,28 +1,25 @@
 import React, { useCallback, memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useActionPermissions } from '../../../hooks/useActionPermissions';
 import { useCurrency } from '../../../context/CurrencyContext';
 import { useModal } from '../../../hooks/useModal';
 import Confirm from '../../../components/overlays/Confirm';
-
-const STATUS_MAP = {
-    approved:  { label: 'Onaylandı', cls: 'status-approved' },
-    confirmed: { label: 'Onaylandı', cls: 'status-confirmed' },
-    pending:   { label: 'Beklemede', cls: 'status-pending'   },
-    onroad:    { label: 'Yolda',     cls: 'status-onroad'    },
-    rejected:  { label: 'Reddedildi',cls: 'status-rejected'  },
-};
+import { useI18n } from '../../../utils/i18nHelpers';
 
 const TripRow = memo(({ trip, onOpenDetail, onEdit }) => {
+    const { t: tBtn } = useTranslation('common.buttons');
     const { canEdit } = useActionPermissions(trip);
     const { convert, selectedCurrency, symbol } = useCurrency();
-    
+
     const displayAmount = useMemo(() => convert(trip, selectedCurrency), [trip, selectedCurrency, convert]);
-    
+
+    const { tStatus, tTripCategory } = useI18n();
     const statusKey = trip.statusClass?.toLowerCase() || trip.status?.toLowerCase();
-    const statusInfo = useMemo(() => 
-        STATUS_MAP[statusKey] || { label: trip.status, cls: `status-${statusKey}` }, 
-        [statusKey, trip.status]
-    );
+    const statusInfo = useMemo(() => ({
+        label: tStatus(statusKey) || trip.status,
+        cls:   `status-${statusKey}`,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }), [statusKey, trip.status]);
     const isPending = statusKey === 'pending';
 
     const handleRowClick = useCallback((e) => {
@@ -50,7 +47,7 @@ const TripRow = memo(({ trip, onOpenDetail, onEdit }) => {
                 </div>
             </div>
 
-            <span className="trip-category">{trip.category}</span>
+            <span className="trip-category">{tTripCategory(trip.category)}</span>
             <span className="trip-destination">{trip.destination}</span>
             <span className="trip-vehicle">{trip.vehicle}</span>
 
@@ -82,7 +79,7 @@ const TripRow = memo(({ trip, onOpenDetail, onEdit }) => {
                     <button
                         className="action-btn edit"
                         onClick={handleEditClick}
-                        title="Düzenle"
+                        title={tBtn('edit')}
                     >
                         <i className="ti ti-edit" />
                     </button>
@@ -95,17 +92,18 @@ const TripRow = memo(({ trip, onOpenDetail, onEdit }) => {
 TripRow.displayName = 'TripRow';
 
 const TripList = memo(({ data, onOpenDetail, onEdit, onDelete }) => {
+    const { t } = useTranslation('trips.list');
     const { confirmConfig, askConfirm, closeConfirm } = useModal();
 
     const handleDeleteClick = useCallback((e, trip) => {
         e.stopPropagation();
         askConfirm(
-            'Gezi Kaydını Sil',
-            `"${trip.title}" başlıklı gezi kaydını silmek istediğinize emin misiniz?`,
+            t('delete_title'),
+            t('delete_confirm_msg'),
             () => onDelete(e, trip.id),
             'danger'
         );
-    }, [askConfirm, onDelete]);
+    }, [askConfirm, onDelete, t]);
 
     return (
         <div className="trip-list-container">

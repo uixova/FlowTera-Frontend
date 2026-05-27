@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import Loader from '../../components/ui/Loader';
 import './Expenses.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
@@ -23,6 +24,10 @@ import { useAuth } from '../../context/AuthContext';
 import { isDemoUser } from '../../utils/demo';
 
 const Expenses = () => {
+    const { t } = useTranslation('expenses.list');
+    const { t: tBtn } = useTranslation('common.buttons');
+    const { t: tModals } = useTranslation('common.modals');
+    const { t: tErrors } = useTranslation('common.errors');
     const { alertConfig, confirmConfig, showAlert, askConfirm, closeAlert, closeConfirm } = useModal();
     const { selectedCurrency, updateCurrency } = useCurrency();
     const { activeTeam, selectedTeamId } = useTeam();
@@ -71,18 +76,18 @@ const Expenses = () => {
         ['title', 'merchant']
     );
 
-    const handleSuccess = (message = 'İşlem başarıyla gerçekleştirildi.') => {
+    const handleSuccess = () => {
         setIsCreateOpen(false);
         setIsEditMode(false);
         setSelectedExpense(null);
-        showAlert('Başarılı', message, 'success');
+        showAlert(tModals('success'), t('success_generic'), 'success');
         setTimeout(() => refreshData(), 0);
     };
 
     const handleDelete = (expense) => {
         askConfirm(
-            'Gideri Sil',
-            'Bu gideri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+            t('delete_title'),
+            t('delete_confirm_msg'),
             async () => {
                 try {
                     await expenseService.deleteExpense(expense.id);
@@ -90,11 +95,10 @@ const Expenses = () => {
                     setIsCreateOpen(false);
                     setIsEditMode(false);
                     setSelectedExpense(null);
-                    showAlert('Başarılı', 'Gider başarıyla silindi.', 'success');
+                    showAlert(tModals('success'), t('delete_success'), 'success');
                     setTimeout(() => refreshData(), 0);
-                } catch (err) {
-                    console.error('Silme başarısız:', err);
-                    showAlert('Hata', 'Gider silinirken bir hata oluştu.', 'error');
+                } catch {
+                    showAlert(tModals('error'), t('delete_error'), 'error');
                 }
             },
             'danger'
@@ -105,9 +109,9 @@ const Expenses = () => {
 
     const filterFooter = (
         <div className="as-filter-footer">
-            <button className="btn-clear" onClick={clearFilters}>Tümünü Temizle</button>
+            <button className="btn-clear" onClick={clearFilters}>{tBtn('reset')}</button>
             <button className="btn-apply" onClick={() => { applyFilters(); setIsFilterOpen(false); }}>
-                Filtreleri Uygula
+                {tBtn('apply')}
             </button>
         </div>
     );
@@ -115,14 +119,14 @@ const Expenses = () => {
     return (
         <div className="expense-page-container">
             <SubNavbar
-                pageName="Giderler"
+                pageName={t('page_title')}
                 showCurrency={true}
-                searchPlaceholder="Harcama ara..."
+                searchPlaceholder={t('search_placeholder')}
                 searchValue={searchTerm}
-                createLabel="Harcama Oluştur"
+                createLabel={tBtn('create_expense')}
                 onCreate={() => {
                     if (isDemo) {
-                        showAlert("Demo Modu", "Harcama eklemek için kayıt olun veya giriş yapın.", "info");
+                        showAlert(tErrors('demo_mode'), t('demo_create'), "info");
                         return;
                     }
                     setIsEditMode(false);
@@ -148,13 +152,13 @@ const Expenses = () => {
 
             <div className="expense-table-wrapper">
                 <div className="expense-title-nav">
-                    <span className="ex-title-span">Detaylar</span>
-                    <span className="ex-title-span">Kategori</span>
-                    <span className="ex-title-span">İşletme</span>
-                    <span className="ex-title-span">Ödeme</span>
-                    <span className="ex-title-span">Miktar</span>
-                    <span className="ex-title-span">Rapor</span>
-                    <span className="ex-title-span">Durum</span>
+                    <span className="ex-title-span">{t('col_details')}</span>
+                    <span className="ex-title-span">{t('col_category')}</span>
+                    <span className="ex-title-span">{t('col_merchant')}</span>
+                    <span className="ex-title-span">{t('col_payment')}</span>
+                    <span className="ex-title-span">{t('col_amount')}</span>
+                    <span className="ex-title-span">{t('col_report')}</span>
+                    <span className="ex-title-span">{t('col_status')}</span>
                     <span className="ex-title-span" />
                 </div>
 
@@ -164,7 +168,11 @@ const Expenses = () => {
                             data={filteredExpenses}
                             onOpenDetail={(ex) => { setSelectedExpense(ex); setIsDetailOpen(true); }}
                             onEdit={(e, ex) => {
-                                if(e) e.stopPropagation();
+                                if (e) e.stopPropagation();
+                                if (isDemo) {
+                                    showAlert(tErrors('demo_mode'), t('demo_edit'), "info");
+                                    return;
+                                }
                                 setSelectedExpense(ex);
                                 setIsEditMode(true);
                                 setIsCreateOpen(true);
@@ -180,14 +188,14 @@ const Expenses = () => {
                         />
                     </>
                 ) : (
-                    <div className="no-data-info">Kriterlerinize uyan hiçbir gider bulunamadı.</div>
+                    <div className="no-data-info">{t('no_expenses')}</div>
                 )}
             </div>
 
             <ActionSidebar
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}
-                title={<h2>Filtrele</h2>}
+                title={<h2>{tBtn('filter')}</h2>}
                 footer={filterFooter}
             >
                 <ExpenseFilter filters={tempFilters} setFilters={setTempFilters} />

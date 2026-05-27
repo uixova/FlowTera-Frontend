@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import Loader from '../../components/ui/Loader';
 import './Trips.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
@@ -24,6 +25,10 @@ import { useTeam } from '../../context/TeamContext';
 import { isDemoUser } from '../../utils/demo';
 
 const Trips = () => {
+    const { t } = useTranslation('trips.list');
+    const { t: tBtn } = useTranslation('common.buttons');
+    const { t: tModals } = useTranslation('common.modals');
+    const { t: tErrors } = useTranslation('common.errors');
     const { alertConfig, confirmConfig, showAlert, askConfirm, closeAlert, closeConfirm } = useModal();
     const { selectedCurrency, updateCurrency }   = useCurrency();
     const { activeTeam, selectedTeamId }         = useTeam();
@@ -81,10 +86,10 @@ const Trips = () => {
         try {
             await tripsService.deleteTrip(id);
             refreshData();
-            showAlert('Silindi', 'Seyahat kaydı başarıyla silindi.', 'success');
+            showAlert(tModals('success'), t('delete_success'), 'success');
         } catch (err) {
             console.error(err);
-            showAlert('Hata', 'Silme işlemi başarısız oldu.', 'error');
+            showAlert(tModals('error'), t('delete_error'), 'error');
         }
     };
 
@@ -92,13 +97,14 @@ const Trips = () => {
         setIsCreateOpen(false);
         setIsEditMode(false);
         setSelectedTrip(null);
+        showAlert(tModals('success'), t('success_generic'), 'success');
         setTimeout(() => refreshData(), 0);
     };
 
     const handleDeleteTrip = () => {
         askConfirm(
-            'Seyahati Sil',
-            'Bu seyahat kaydını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+            t('delete_title'),
+            t('delete_confirm_msg'),
             async () => {
                 try {
                     await tripsService.deleteTrip(selectedTrip.id);
@@ -106,11 +112,11 @@ const Trips = () => {
                     setIsCreateOpen(false);
                     setIsEditMode(false);
                     setSelectedTrip(null);
-                    showAlert('Silindi', 'Seyahat kaydı başarıyla silindi.', 'success');
+                    showAlert(tModals('success'), t('delete_success'), 'success');
                     setTimeout(() => refreshData(), 0);
                 } catch (err) {
                     console.error('Silme başarısız:', err);
-                    showAlert('Hata', 'Seyahat silinirken bir hata oluştu.', 'error');
+                    showAlert(tModals('error'), t('delete_error'), 'error');
                 }
             },
             'danger'
@@ -121,9 +127,9 @@ const Trips = () => {
 
     const filterFooter = (
         <div className="as-filter-footer">
-            <button className="btn-clear" onClick={clearFilters}>Tümünü Temizle</button>
+            <button className="btn-clear" onClick={clearFilters}>{tBtn('reset')}</button>
             <button className="btn-apply" onClick={() => { applyFilters(); setIsFilterOpen(false); }}>
-                Filtreleri Uygula
+                {tBtn('apply')}
             </button>
         </div>
     );
@@ -132,16 +138,16 @@ const Trips = () => {
         <div className="trips">
             <div className="trip-page">
                 <SubNavbar
-                    pageName="Geziler ve Seyahatler"
-                    searchPlaceholder="Gezi ara..."
+                    pageName={t('page_title')}
+                    searchPlaceholder={t('search_placeholder')}
                     searchValue={searchTerm}
                     showCurrency={true}
                     showCreate={canCreateTrip}
-                    createLabel="Gezi Oluştur"
+                    createLabel={tBtn('create_trip')}
                     onSearch={(val) => setSearchTerm(val)}
                     onCreate={() => {
                         if (isDemo) {
-                            showAlert("Demo Modu", "Gezi eklemek için kayıt olun veya giriş yapın.", "info");
+                            showAlert(tErrors('demo_mode'), t('demo_create'), "info");
                             return;
                         }
                         setIsEditMode(false);
@@ -166,13 +172,13 @@ const Trips = () => {
 
                 <div className="trip-table-wrapper">
                     <div className="trip-title-nav">
-                        <span className="tr-title-span">Gezi Detayları</span>
-                        <span className="tr-title-span">Kategori</span>
-                        <span className="tr-title-span">Varış Noktası</span>
-                        <span className="tr-title-span">Araç</span>
-                        <span className="tr-title-span">Tahmini Gider</span>
-                        <span className="tr-title-span">Süre</span>
-                        <span className="tr-title-span">Durum</span>
+                        <span className="tr-title-span">{t('col_details')}</span>
+                        <span className="tr-title-span">{t('col_category')}</span>
+                        <span className="tr-title-span">{t('col_destination')}</span>
+                        <span className="tr-title-span">{t('col_vehicle')}</span>
+                        <span className="tr-title-span">{t('col_amount')}</span>
+                        <span className="tr-title-span">{t('col_duration')}</span>
+                        <span className="tr-title-span">{t('col_status')}</span>
                         <span className="tr-title-span" />
                     </div>
 
@@ -183,6 +189,10 @@ const Trips = () => {
                                 onOpenDetail={(trip) => { setSelectedTrip(trip); setIsDetailOpen(true); }}
                                 onEdit={(e, trip) => {
                                     e?.stopPropagation();
+                                    if (isDemo) {
+                                        showAlert(tErrors('demo_mode'), t('demo_edit'), "info");
+                                        return;
+                                    }
                                     setSelectedTrip(trip);
                                     setIsEditMode(true);
                                     setIsCreateOpen(true);
@@ -200,8 +210,8 @@ const Trips = () => {
                     ) : (
                         <div className="no-data-info">
                             {searchTerm || Object.values(tempFilters).some(Boolean)
-                                ? 'Kriterlere uygun seyahat bulunamadı.'
-                                : 'Henüz seyahat kaydı bulunmuyor.'}
+                                ? t('no_trips')
+                                : t('no_trips_sub')}
                         </div>
                     )}
                 </div>
@@ -210,7 +220,7 @@ const Trips = () => {
             <ActionSidebar
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}
-                title={<h2>Filtrele</h2>}
+                title={<h2>{tBtn('filter')}</h2>}
                 footer={filterFooter}
             >
                 <TripFilter filters={tempFilters} setFilters={setTempFilters} />

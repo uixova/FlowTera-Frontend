@@ -1,20 +1,22 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './TeamCard.css';
 
 const TeamCard = ({ team, onSelect }) => {
-    // Bakım modunda olup olmadığını kontrol et
+    const { t, i18n } = useTranslation('teams');
+    const { t: tList } = useTranslation('teams.list');
     const isMaintenance = team.settings?.status === 'maintenance';
+    const dateLocale = i18n.language === 'tr' ? 'tr-TR' : 'en-US';
 
     return (
         <div
             className={`tm-sel-card ${isMaintenance ? 'maintenance-mode' : ''}`}
             onClick={onSelect}
         >
-            {/* Bakım Modu Badge'i - Sadece bakımdayken görünür */}
             {isMaintenance && (
                 <div className="tm-maintenance-badge">
                     <i className="ti ti-tool" />
-                    <span>Bakımda</span>
+                    <span>{t('maintenance_badge')}</span>
                 </div>
             )}
 
@@ -31,7 +33,7 @@ const TeamCard = ({ team, onSelect }) => {
                         <i className="ti ti-calendar-event" />
                         <span>
                             {team.createdAt
-                                ? new Date(team.createdAt).toLocaleDateString('tr-TR')
+                                ? new Date(team.createdAt).toLocaleDateString(dateLocale)
                                 : '—'}
                         </span>
                     </div>
@@ -43,10 +45,9 @@ const TeamCard = ({ team, onSelect }) => {
             <div className="tm-sel-card-bottom">
                 <div className="tm-sel-stats">
                     <i className="ti ti-users" />
-                    <span>{team.members} Üye</span>
+                    <span>{team.members} {tList('member_count_label')}</span>
                 </div>
                 <div className="tm-sel-arrow">
-                    {/* Bakım modundaysa ok yerine kilit ikonu */}
                     <i className={`ti ${isMaintenance ? 'ti-lock' : 'ti-chevron-right'}`} />
                 </div>
             </div>

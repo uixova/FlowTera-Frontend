@@ -1,29 +1,31 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Loader from '../../components/ui/Loader';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import { notificationService } from '../../services/notificationService';
+import { socketClient } from '../../api/socketClient';
 import { useAuth } from '../../context/AuthContext';
 import { useFilter } from '../../hooks/useFilter';
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useTeam } from '../../context/TeamContext';
 import './Requests.css';
 
-// Kategori Konfigürasyonu
-const CATEGORY_CONFIG = {
-    expense: { icon: 'ti-receipt-2',      label: 'Gider'    },
-    team:    { icon: 'ti-users-group',     label: 'Takım'    },
-    travel:  { icon: 'ti-plane-departure', label: 'Seyahat'  },
+// Icon maps — labels are resolved at render time via t()
+const CATEGORY_ICONS = {
+    expense: 'ti-receipt-2',
+    team:    'ti-users-group',
+    travel:  'ti-plane-departure',
 };
 
-// Sekme Konfigürasyonu
-const TABS = [
-    { key: 'pending',  label: 'Beklemede',  icon: 'ti-clock-pause'  },
-    { key: 'approved', label: 'Onaylandı',  icon: 'ti-circle-check' },
-    { key: 'rejected', label: 'Reddedildi', icon: 'ti-circle-x'     },
+const TAB_KEYS = [
+    { key: 'pending',  icon: 'ti-clock-pause'  },
+    { key: 'approved', icon: 'ti-circle-check' },
+    { key: 'rejected', icon: 'ti-circle-x'     },
 ];
 
 const Requests = () => {
+    const { t } = useTranslation('requests');
     const navigate = useNavigate();
     const { roleNameForTeam, loading: authLoading } = useAuth();
     const { selectedTeamId } = useTeam();
@@ -65,6 +67,14 @@ const Requests = () => {
         if (!authLoading && selectedTeamId) fetchRequests();
     }, [fetchRequests, authLoading, selectedTeamId]);
 
+    // WS: yeni talep veya durum değişimi → listeyi tazele
+    useEffect(() => {
+        const unsub = socketClient.on('request:update', () => {
+            if (selectedTeamId) fetchRequests();
+        });
+        return unsub;
+    }, [selectedTeamId, fetchRequests]);
+
     // Arama Filtrelemesi
     const { filteredData } = useFilter(requests, {}, ['user', 'title', 'detail'], searchTerm);
 
@@ -83,7 +93,7 @@ const Requests = () => {
     // Aksiyon Yönetimi (Onay / Red)
     const handleAction = async (id, status, reasonText = '') => {
         try {
-            await notificationService.respondToRequest(id, status, selectedTeamId);
+            await notificationService.respondToRequest(id, status, selectedTeamId, reasonText || undefined);
 
             // State'i local olarak güncelle
             setRequests(prev => prev.map(req =>
@@ -104,8 +114,8 @@ const Requests = () => {
     return (
         <div className="requests-page" key={selectedTeamId}>
             <SubNavbar
-                pageName="Talep Yönetimi"
-                searchPlaceholder="İstek ara..."
+                pageName={t('page_title')}
+                searchPlaceholder={t('search_placeholder')}
                 showSearch={true}
                 searchValue={searchTerm}
                 onSearch={(val) => setSearchTerm(val)}
@@ -116,14 +126,14 @@ const Requests = () => {
 
             {/* Sekmeler */}
             <div className="req-tabs">
-                {TABS.map(tab => (
+                {TAB_KEYS.map(tab => (
                     <button
                         key={tab.key}
                         className={activeTab === tab.key ? 'active' : ''}
                         onClick={() => setActiveTab(tab.key)}
                     >
                         <i className={`ti ${tab.icon}`} />
-                        {tab.label}
+                        {t(`tab_${tab.key}`)}
                         <span className="tab-count">{countByStatus[tab.key]}</span>
                     </button>
                 ))}
@@ -147,11 +157,7 @@ const Requests = () => {
                 ) : (
                     <div className="no-req">
                         <i className="ti ti-inbox-off" />
-                        <p>
-                            {searchTerm
-                                ? `"${searchTerm}" aramasına uygun sonuç bulunamadı.`
-                                : 'Henüz bir talep bulunmuyor.'}
-                        </p>
+                        <p>{t('no_requests')}</p>
                     </div>
                 )}
             </div>
@@ -159,10 +165,12 @@ const Requests = () => {
     );
 };
 
-// Alt Bileşen (Memory leak olmaması için dışarıda veya memo ile tanımlanabilir)
+// Alt Bileşen (Memory leak olmaması için dışarıda tanımlandı)
 const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReason }) => {
+    const { t } = useTranslation('requests');
     const timeDisplay = useTimeAgo(req.date);
-    const catConfig   = CATEGORY_CONFIG[req.category] || CATEGORY_CONFIG.expense;
+    const catIcon = CATEGORY_ICONS[req.category] || CATEGORY_ICONS.expense;
+    const catLabel = t(`cat_${req.category}`, { defaultValue: req.category });
 
     return (
         <div className={`req-modern-card status-${req.status || 'pending'}`}>
@@ -171,7 +179,7 @@ const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReas
             <div className="req-content">
                 <div className="req-left-side">
                     <div className={`req-icon-box ${req.category}`}>
-                        <i className={`ti ${catConfig.icon}`} />
+                        <i className={`ti ${catIcon}`} />
                     </div>
 
                     <div className="req-info">
@@ -180,7 +188,7 @@ const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReas
                             <span className="req-dot">•</span>
                             <span className="req-time">{timeDisplay}</span>
                             <span className={`req-category-tag ${req.category}`}>
-                                {catConfig.label}
+                                {catLabel}
                             </span>
                         </div>
 
@@ -197,7 +205,7 @@ const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReas
                         <div className="compact-reject-area">
                             <input
                                 type="text"
-                                placeholder="Red nedeni girin..."
+                                placeholder={t('reject_placeholder')}
                                 value={rejectReason.text}
                                 onChange={(e) => setRejectReason({ ...rejectReason, text: e.target.value })}
                                 autoFocus
@@ -208,30 +216,30 @@ const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReas
                                     onClick={() => handleAction(req.id, 'rejected', rejectReason.text)}
                                     disabled={!rejectReason.text.trim()}
                                 >
-                                    <i className="ti ti-check" /> Reddet
+                                    <i className="ti ti-check" /> {t('reject', { ns: 'common.buttons' })}
                                 </button>
                                 <button
                                     className="cancel"
                                     onClick={() => setRejectReason({ id: null, text: '' })}
                                 >
-                                    İptal
+                                    {t('cancel', { ns: 'common.buttons' })}
                                 </button>
                             </div>
                         </div>
                     ) : (
                         <div className="action-row">
                             <button className="btn-icon approve" onClick={() => handleAction(req.id, 'approved')}>
-                                <i className="ti ti-circle-check" /> Onayla
+                                <i className="ti ti-circle-check" /> {t('approve', { ns: 'common.buttons' })}
                             </button>
                             <button className="btn-icon reject" onClick={() => setRejectReason({ id: req.id, text: '' })}>
-                                <i className="ti ti-circle-x" /> Reddet
+                                <i className="ti ti-circle-x" /> {t('reject', { ns: 'common.buttons' })}
                             </button>
                         </div>
                     )
                 ) : (
                     <div className={`final-status-badge ${activeTab}`}>
                         <i className={`ti ${activeTab === 'approved' ? 'ti-circle-check' : 'ti-circle-x'}`} />
-                        {activeTab === 'approved' ? 'ONAYLANDI' : 'REDDEDİLDİ'}
+                        {activeTab === 'approved' ? t('tab_approved').toUpperCase() : t('tab_rejected').toUpperCase()}
                     </div>
                 )}
             </div>
@@ -240,7 +248,7 @@ const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReas
             {req.rejectionReason && (
                 <div className="req-reason-footer">
                     <i className="ti ti-info-circle" />
-                    <span><strong>Red Nedeni:</strong> {req.rejectionReason}</span>
+                    <span><strong>{t('reject_reason')}:</strong> {req.rejectionReason}</span>
                 </div>
             )}
         </div>

@@ -1,0 +1,13 @@
+{
+  "page_title": { "tr": "Talepler", "en": "Requests" },
+  "tab_pending": { "tr": "Beklemede", "en": "Pending" },
+  "tab_approved": { "tr": "Onaylandı", "en": "Approved" },
+  "tab_rejected": { "tr": "Reddedildi", "en": "Rejected" },
+  "cat_expense": { "tr": "Gider", "en": "Expense" },
+  "cat_team": { "tr": "Takım", "en": "Team" },
+  "cat_travel": { "tr": "Seyahat", "en": "Travel" },
+  "no_requests": { "tr": "Bu kategoride talep yok.", "en": "No requests in this category." },
+  "reject_reason": { "tr": "Red gerekçesi", "en": "Rejection reason" },
+  "reject_placeholder": { "tr": "Red gerekçesi (isteğe bağlı)...", "en": "Rejection reason (optional)..." },
+  "search_placeholder": { "tr": "İstek ara...", "en": "Search requests..." }
+}

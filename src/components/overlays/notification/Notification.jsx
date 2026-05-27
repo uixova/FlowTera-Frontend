@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import Loader from '../../ui/Loader';
 import { notificationService } from '../../../services/notificationService';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
@@ -7,6 +8,7 @@ import { useAuth } from '../../../context/AuthContext';
 import './Notification.css';
 
 const Notification = ({ isOpen, onClose }) => {
+    const { t } = useTranslation('common.notifications');
     const [infos, setInfos] = useState([]);
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -69,7 +71,7 @@ const Notification = ({ isOpen, onClose }) => {
             <div className="nt-panel-container" onClick={(e) => e.stopPropagation()}>
                 <div className="nt-header">
                     <div className="nt-header-title">
-                        <h3>Aktivite Merkezi</h3>
+                        <h3>{t('activity_center', 'Aktivite Merkezi')}</h3>
                         <span className="count-badge">
                             {loading ? "..." : (requests.length + infos.length)}
                         </span>
@@ -77,7 +79,7 @@ const Notification = ({ isOpen, onClose }) => {
                     <div className="nt-header-actions">
                         {infos.length > 0 && (
                             <button className="clear-all-btn" onClick={handleClearInfos}>
-                                Temizle
+                                {t('mark_all_read', 'Temizle')}
                             </button>
                         )}
                         <button className="nt-close-btn" onClick={onClose}>
@@ -93,7 +95,7 @@ const Notification = ({ isOpen, onClose }) => {
                         <>
                             {requests.length > 0 && (
                                 <section className="nt-section">
-                                    <div className="section-title"><span>Bekleyen Davetler</span></div>
+                                    <div className="section-title"><span>{t('team_invite', 'Bekleyen Davetler')}</span></div>
                                     <div className="nt-list">
                                         {requests.map(req => (
                                             <div key={req.id} className="nt-invite-card">
@@ -107,7 +109,7 @@ const Notification = ({ isOpen, onClose }) => {
                                                     </div>
                                                     <div className="invite-info">
                                                         <p className="invite-main-text">
-                                                            <strong>{req.sender}</strong> seni takıma çağırdı
+                                                            <strong>{req.sender}</strong> {t('member_joined', 'seni takıma çağırdı')}
                                                         </p>
                                                         <p className="invite-sub-text">{req.teamName}</p>
                                                     </div>
@@ -117,13 +119,13 @@ const Notification = ({ isOpen, onClose }) => {
                                                         className="btn-invite-accept"
                                                         onClick={() => handleAction(req.id, 'accept', req.teamId)}
                                                     >
-                                                        Kabul Et
+                                                        {t('request_approved', 'Kabul Et')}
                                                     </button>
                                                     <button
                                                         className="btn-invite-reject"
                                                         onClick={() => handleAction(req.id, 'reject', req.teamId)}
                                                     >
-                                                        Reddet
+                                                        {t('request_rejected', 'Reddet')}
                                                     </button>
                                                 </div>
                                             </div>
@@ -133,7 +135,7 @@ const Notification = ({ isOpen, onClose }) => {
                             )}
 
                             <section className="nt-section">
-                                <div className="section-title"><span>Son Bildirimler</span></div>
+                                <div className="section-title"><span>{t('no_notifications', 'Son Bildirimler')}</span></div>
                                 <div className="nt-list">
                                     {infos.length > 0 ? infos.map(nt => (
                                         <NotificationItem
@@ -141,7 +143,7 @@ const Notification = ({ isOpen, onClose }) => {
                                             nt={nt}
                                             onRemove={removeNotification}
                                         />
-                                    )) : <p className="no-data">Henüz bildirim yok.</p>}
+                                    )) : <p className="no-data">{t('no_notifications', 'Henüz bildirim yok.')}</p>}
                                 </div>
                             </section>
                         </>

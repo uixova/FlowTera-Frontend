@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../../context/AuthContext';
 import { authService } from '../../services/authService';
 import Mail from '../../components/Mail';
@@ -23,6 +24,7 @@ const initialCheckboxes = {
 };
 
 function SignupPage() {
+  const { t } = useTranslation('auth.signup');
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -82,7 +84,7 @@ function SignupPage() {
 
   const handleStartVerification = async () => {
     if (!selectedPlan) {
-      setErrorMessage('Lütfen bir plan seç.');
+      setErrorMessage(t('err_select_plan'));
       return;
     }
 
@@ -102,7 +104,7 @@ function SignupPage() {
 
       if (started.token && started.user) {
         if (flow === 'paid') {
-          setStatusMessage('Hesabın hazırlandı. Ödeme adımına yönlendiriliyorsun.');
+          setStatusMessage(t('status_payment_redirect'));
           setTimeout(() => navigate('/payment', { state: { fromSubscription: true, planId: selectedPlan.id } }), 400);
         } else {
           login(started.user.id, false);
@@ -123,12 +125,12 @@ function SignupPage() {
     try {
       const verify = await authService.verifyEmailCode(verificationCode);
       if (!verify.success) {
-        setErrorMessage(verify.message || 'Doğrulama başarısız.');
+        setErrorMessage(verify.message || t('err_verify_fail'));
         return;
       }
 
       if (verify.requiresPayment) {
-        setStatusMessage('E-posta doğrulandı. Ödeme adımına yönlendiriliyorsun.');
+        setStatusMessage(t('status_email_verified'));
         setTimeout(() => navigate('/payment', { state: { fromSubscription: true, planId: selectedPlan?.id } }), 400);
         return;
       }
@@ -160,15 +162,15 @@ function SignupPage() {
   };
 
   const stepTitles = {
-    form:   'Hesap Oluştur',
-    plan:   'Plan Seçimi',
-    verify: 'E-posta Doğrulaması',
+    form:   t('step_form_title'),
+    plan:   t('step_plan_title'),
+    verify: t('step_verify_title'),
   };
 
   const stepDescs = {
-    form:   'Bilgilerini gir, hesabını hazırla ve devam et.',
-    plan:   'Plan seçimini tamamla, sonra doğrulama ile ilerle.',
-    verify: 'Kayıt güvenliği için kod doğrulamasını tamamla.',
+    form:   t('step_form_desc'),
+    plan:   t('step_plan_desc'),
+    verify: t('step_verify_desc'),
   };
 
   return (
@@ -218,35 +220,35 @@ function SignupPage() {
             <form className="auth-form signup-form" onSubmit={goToPlanStep}>
               <div className="signup-grid">
                 <div className="auth-field">
-                  <label htmlFor="firstName">AD</label>
+                  <label htmlFor="firstName">{t('label_first_name')}</label>
                   <div className="auth-input-wrap">
                     <i className="ti ti-user auth-input-icon"></i>
-                    <input id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="Adın" />
+                    <input id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder={t('placeholder_first_name')} />
                   </div>
                   {formErrors.firstName && <small className="field-error">{formErrors.firstName}</small>}
                 </div>
 
                 <div className="auth-field">
-                  <label htmlFor="lastName">SOYAD</label>
+                  <label htmlFor="lastName">{t('label_last_name')}</label>
                   <div className="auth-input-wrap">
                     <i className="ti ti-user auth-input-icon"></i>
-                    <input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Soyadın" />
+                    <input id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder={t('placeholder_last_name')} />
                   </div>
                   {formErrors.lastName && <small className="field-error">{formErrors.lastName}</small>}
                 </div>
               </div>
 
               <div className="auth-field">
-                <label htmlFor="email">E-POSTA</label>
+                <label htmlFor="email">{t('label_email')}</label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-mail auth-input-icon"></i>
-                  <input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="isim@sirket.com" />
+                  <input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder={t('placeholder_email')} />
                 </div>
                 {formErrors.email && <small className="field-error">{formErrors.email}</small>}
               </div>
 
               <div className="auth-field phone-field">
-                <label htmlFor="phone">TELEFON</label>
+                <label htmlFor="phone">{t('label_phone')}</label>
                 <PhoneNumber
                   value={formData.phone}
                   onChange={handlePhoneChange}
@@ -255,7 +257,7 @@ function SignupPage() {
               </div>
 
               <div className="auth-field">
-                <label htmlFor="birthDate">DOĞUM TARİHİ</label>
+                <label htmlFor="birthDate">{t('label_birth_date')}</label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-calendar-user auth-input-icon"></i>
                   <input id="birthDate" name="birthDate" type="date" value={formData.birthDate} onChange={handleInputChange} />
@@ -264,19 +266,19 @@ function SignupPage() {
               </div>
 
               <div className="auth-field">
-                <label htmlFor="address">ADRES</label>
+                <label htmlFor="address">{t('label_address')}</label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-map-pin auth-input-icon"></i>
-                  <input id="address" name="address" value={formData.address} onChange={handleInputChange} placeholder="Açık adres bilgisi" />
+                  <input id="address" name="address" value={formData.address} onChange={handleInputChange} placeholder={t('placeholder_address')} />
                 </div>
                 {formErrors.address && <small className="field-error">{formErrors.address}</small>}
               </div>
 
               <div className="auth-field">
-                <label htmlFor="password">ŞİFRE</label>
+                <label htmlFor="password">{t('label_password')}</label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-lock auth-input-icon"></i>
-                  <input id="password" name="password" type="password" value={formData.password} onChange={handleInputChange} placeholder="En az 8 karakter" />
+                  <input id="password" name="password" type="password" value={formData.password} onChange={handleInputChange} placeholder={t('placeholder_password')} />
                 </div>
                 {formErrors.password && <small className="field-error">{formErrors.password}</small>}
               </div>
@@ -291,7 +293,7 @@ function SignupPage() {
                   />
                   <span className="checkbox-custom"></span>
                   <span className="checkbox-text">
-                    <Link to="/terms" target="_blank" className="auth-link">Mesafeli Satış Sözleşmesi</Link>'ni okudum ve onaylıyorum.
+                    <Link to="/terms" target="_blank" className="auth-link">{t('terms_link_text')}</Link>{t('terms_accept')}
                   </span>
                 </label>
                 {formErrors.termsAccepted && <small className="field-error">{formErrors.termsAccepted}</small>}
@@ -305,7 +307,7 @@ function SignupPage() {
                   />
                   <span className="checkbox-custom"></span>
                   <span className="checkbox-text">
-                    <Link to="/kvkk" target="_blank" className="auth-link">KVKK Aydınlatma Metni</Link>'ni okudum, kişisel verilerimin işlenmesine onay veriyorum.
+                    <Link to="/kvkk" target="_blank" className="auth-link">{t('kvkk_link_text')}</Link>{t('kvkk_accept')}
                   </span>
                 </label>
                 {formErrors.kvkkAccepted && <small className="field-error">{formErrors.kvkkAccepted}</small>}
@@ -316,7 +318,7 @@ function SignupPage() {
                 type="submit"
                 disabled={!checkboxes.termsAccepted || !checkboxes.kvkkAccepted}
               >
-                İleri <i className="ti ti-arrow-right"></i>
+                {t('next_btn')} <i className="ti ti-arrow-right"></i>
               </button>
             </form>
           )}
@@ -331,7 +333,7 @@ function SignupPage() {
                 loading={isSubmitting}
               />
               <button type="button" className="signup-back-btn" onClick={() => setStep('form')}>
-                <i className="ti ti-arrow-left"></i> Bilgilere Dön
+                <i className="ti ti-arrow-left"></i> {t('back_to_form')}
               </button>
             </div>
           )}
@@ -348,14 +350,14 @@ function SignupPage() {
                 hintVisible
               />
               <button type="button" className="signup-back-btn" onClick={() => setStep('plan')}>
-                <i className="ti ti-arrow-left"></i> Plana Dön
+                <i className="ti ti-arrow-left"></i> {t('back_to_plan')}
               </button>
             </div>
           )}
 
           {step === 'form' && (
             <div className="auth-switch">
-              Zaten hesabın var mı? <Link to="/login">Giriş Yap</Link>
+              {t('have_account')} <Link to="/login">{t('login_link')}</Link>
             </div>
           )}
         </div>

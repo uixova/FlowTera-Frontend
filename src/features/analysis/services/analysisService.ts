@@ -1,6 +1,7 @@
 import { api } from '../../../api/api';
 import { Expense, Trip, Team } from '@/types/types';
 import { isDemoMode } from '../../../utils/demo';
+import i18n from '../../../locales/i18n';
 import demoExpensesStatic from '../../../data/demo-expenses.json';
 import demoTripsStatic from '../../../data/demo-trips.json';
 
@@ -117,7 +118,7 @@ export const analysisService = {
             const val = getValue(item);
             if (!cashFlowMap[key]) {
                 cashFlowMap[key] = {
-                    month:  new Date(d.year, d.month).toLocaleString('tr-TR', { month: 'short' }),
+                    month:  new Date(d.year, d.month).toLocaleString(i18n.language === 'tr' ? 'tr-TR' : 'en-US', { month: 'short' }),
                     amount: 0,
                     order:  d.year * 12 + d.month,
                 };
@@ -144,9 +145,9 @@ export const analysisService = {
         );
 
         const statusData = [
-            { name: 'Onaylı',     value: statusCount.approved },
-            { name: 'Bekleyen',   value: statusCount.pending  },
-            { name: 'Reddedilen', value: statusCount.rejected },
+            { name: 'approved', value: statusCount.approved },
+            { name: 'pending',  value: statusCount.pending  },
+            { name: 'rejected', value: statusCount.rejected },
         ];
 
         return {

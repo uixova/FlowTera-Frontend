@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
-import { notificationService } from '../../../services/notificationService'; 
+import { notificationService } from '../../../services/notificationService';
 import { useModal } from '../../../hooks/useModal';
 import Confirm from '../../../components/overlays/Confirm';
 import Alert from '../../../components/overlays/Alert';
 import './CreateRequestPanel.css';
 
 const CreateRequestPanel = ({ isOpen, onClose, teamId }) => {
+    const { t } = useTranslation('teams.requestPanel');
+    const { t: tModals } = useTranslation('common.modals');
     const [loading, setLoading] = useState(false);
     const { confirmConfig, askConfirm, closeConfirm, alertConfig, showAlert, closeAlert } = useModal();
-    
+
     const [formData, setFormData] = useState({
-        category: 'personal', 
+        category: 'personal',
         title: '',
         detail: '',
     });
@@ -38,7 +41,7 @@ const CreateRequestPanel = ({ isOpen, onClose, teamId }) => {
                 onClose();
             }
         } catch {
-            showAlert("Hata", "Talep gönderilemedi.", "danger");
+            showAlert(tModals('error'), t('send_error'), "danger");
         } finally {
             setLoading(false);
         }
@@ -47,13 +50,13 @@ const CreateRequestPanel = ({ isOpen, onClose, teamId }) => {
     const handleSubmit = (e) => {
         if (e) e.preventDefault();
         if (!formData.title.trim() || !formData.detail.trim()) {
-            showAlert("Eksik Alan", "Lütfen başlık ve detay kısımlarını doldurun.", "warning");
+            showAlert(t('missing_fields_title'), t('missing_fields_msg'), "warning");
             return;
         }
 
         askConfirm(
-            "Talebi Onayla",
-            "Talebiniz ilgili yöneticilere iletilecektir. Emin misiniz?",
+            t('confirm_title'),
+            t('confirm_msg'),
             executeSubmit,
             "info"
         );
@@ -61,16 +64,16 @@ const CreateRequestPanel = ({ isOpen, onClose, teamId }) => {
 
     return (
         <>
-            <ActionSidebar 
-                isOpen={isOpen} 
-                onClose={onClose} 
-                title="Yeni Talep Oluştur"
+            <ActionSidebar
+                isOpen={isOpen}
+                onClose={onClose}
+                title={t('panel_title')}
                 width="460px"
                 footer={
                     <div className="crp-panel-footer">
-                        <button className="crp-btn-cancel" onClick={onClose} disabled={loading}>Vazgeç</button>
+                        <button className="crp-btn-cancel" onClick={onClose} disabled={loading}>{t('cancel_btn')}</button>
                         <button className="crp-btn-submit" onClick={handleSubmit} disabled={loading}>
-                            {loading ? <i className="ti ti-loader-2 spin"></i> : 'Talebi İlet'}
+                            {loading ? <i className="ti ti-loader-2 spin"></i> : t('submit_btn')}
                         </button>
                     </div>
                 }
@@ -78,43 +81,43 @@ const CreateRequestPanel = ({ isOpen, onClose, teamId }) => {
                 <div className="crp-panel-body">
                     <div className="crp-desc-box">
                         <i className="ti ti-info-circle"></i>
-                        <p>Maaş, izin veya donanım taleplerinizi buradan iletebilirsiniz.</p>
+                        <p>{t('desc_info')}</p>
                     </div>
 
                     <div className="crp-input-group">
-                        <label>Talep Türü</label>
+                        <label>{t('category_label')}</label>
                         <div className="crp-select-wrapper">
                             <i className="ti ti-category"></i>
                             <select name="category" value={formData.category} onChange={handleChange}>
-                                <option value="personal">Kişisel (Zam, İzin, Avans)</option>
-                                <option value="expense">Harcama Onayı</option>
-                                <option value="trip">Seyahat İzni</option>
-                                <option value="team">Ekip / Donanım Talebi</option>
+                                <option value="personal">{t('cat_personal')}</option>
+                                <option value="expense">{t('cat_expense')}</option>
+                                <option value="trip">{t('cat_trip')}</option>
+                                <option value="team">{t('cat_team')}</option>
                             </select>
                         </div>
                     </div>
 
                     <div className="crp-input-group">
-                        <label>Başlık</label>
-                        <input 
+                        <label>{t('title_label')}</label>
+                        <input
                             type="text"
                             name="title"
                             className="crp-standard-input"
                             value={formData.title}
                             onChange={handleChange}
-                            placeholder="Örn: 2026 Yılı Yıllık İzin Talebi"
+                            placeholder={t('title_placeholder')}
                             autoComplete="off"
                         />
                     </div>
 
                     <div className="crp-input-group">
-                        <label>Detaylar ve Gerekçe</label>
+                        <label>{t('detail_label')}</label>
                         <textarea
                             name="detail"
                             className="crp-textarea"
                             value={formData.detail}
                             onChange={handleChange}
-                            placeholder="Talebinizin detaylarını buraya yazın..."
+                            placeholder={t('detail_placeholder')}
                         />
                     </div>
                 </div>

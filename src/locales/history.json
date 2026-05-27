@@ -1,0 +1,45 @@
+{
+  "index": {
+    "page_title": { "tr": "Aktivite Geçmişi", "en": "Activity History" },
+    "no_history": { "tr": "Henüz aktivite geçmişi yok.", "en": "No activity history yet." },
+    "search_placeholder": { "tr": "Kullanıcı, işlem veya hedef ara...", "en": "Search user, action or target..." },
+    "list_label": { "tr": "İşlem Geçmişi", "en": "Activity Log" },
+    "action": { "tr": "İşlem", "en": "Action" },
+    "performed_by": { "tr": "Yapan", "en": "Performed By" }
+  },
+  "list": {
+    "expense_created": { "tr": "Gider oluşturuldu", "en": "Expense created" },
+    "expense_updated": { "tr": "Gider güncellendi", "en": "Expense updated" },
+    "expense_deleted": { "tr": "Gider silindi", "en": "Expense deleted" },
+    "expense_approved": { "tr": "Gider onaylandı", "en": "Expense approved" },
+    "expense_rejected": { "tr": "Gider reddedildi", "en": "Expense rejected" },
+    "trip_created": { "tr": "Gezi oluşturuldu", "en": "Trip created" },
+    "trip_updated": { "tr": "Gezi güncellendi", "en": "Trip updated" },
+    "trip_deleted": { "tr": "Gezi silindi", "en": "Trip deleted" },
+    "member_added": { "tr": "Üye eklendi", "en": "Member added" },
+    "member_removed": { "tr": "Üye çıkarıldı", "en": "Member removed" }
+  },
+  "filter": {
+    "title": { "tr": "Filtrele", "en": "Filter" },
+    "date_range": { "tr": "Tarih Aralığı", "en": "Date Range" },
+    "start_date": { "tr": "Başlangıç Tarihi", "en": "Start Date" },
+    "end_date": { "tr": "Bitiş Tarihi", "en": "End Date" },
+    "role_label": { "tr": "İşlemi Yapan (Rol)", "en": "Performed By (Role)" },
+    "all_roles": { "tr": "Tüm Roller", "en": "All Roles" },
+    "role_admin": { "tr": "Admin", "en": "Admin" },
+    "role_moderator": { "tr": "Moderatör", "en": "Moderator" },
+    "role_member": { "tr": "Üye", "en": "Member" },
+    "role_system": { "tr": "Sistem", "en": "System" },
+    "type_label": { "tr": "İşlem Türü", "en": "Action Type" },
+    "action_type": { "tr": "İşlem Türü", "en": "Action Type" },
+    "all_actions": { "tr": "Tüm İşlemler", "en": "All Actions" },
+    "type_expense_add": { "tr": "Harcama Eklendi", "en": "Expense Added" },
+    "type_system_update": { "tr": "Sistem Güncellemesi", "en": "System Update" },
+    "type_member_join": { "tr": "Yeni Üye Kaydı", "en": "New Member Joined" },
+    "type_trip_approval": { "tr": "Gezi Onayı", "en": "Trip Approval" },
+    "type_rejection": { "tr": "Reddedilen Talepler", "en": "Rejected Requests" },
+    "type_status_update": { "tr": "Durum Güncellemesi", "en": "Status Update" },
+    "target_label": { "tr": "Hedef Kullanıcı / İşlem", "en": "Target User / Action" },
+    "target_placeholder": { "tr": "Hedef ara...", "en": "Search target..." }
+  }
+}

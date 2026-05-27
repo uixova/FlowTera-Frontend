@@ -1,4 +1,5 @@
 import React, { useState, useCallback, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import './SubNavbar.css';
 import { useTeam } from '../../context/TeamContext';
 
@@ -16,7 +17,7 @@ const SubNavbar = memo(({
     showCreate = true,
 }) => {
     const { activeTeam } = useTeam();
-    // Mobilde sağ aksiyonları aç/kapat
+    const { t } = useTranslation('common.forms');
     const [isActionsOpen, setIsActionsOpen] = useState(false);
 
     const handleToggleActions = useCallback(() => {
@@ -74,7 +75,7 @@ const SubNavbar = memo(({
                         <i className="ti ti-search search-icon"></i>
                         <input
                             type="text"
-                            placeholder={searchPlaceholder || 'Ara…'}
+                            placeholder={searchPlaceholder || t('placeholder_search')}
                             value={searchValue}
                             onChange={handleSearchChange}
                         />
@@ -118,7 +119,7 @@ const SubNavbar = memo(({
                             <i className="ti ti-search search-icon"></i>
                             <input
                                 type="text"
-                                placeholder={searchPlaceholder || 'Ara…'}
+                                placeholder={searchPlaceholder || t('placeholder_search')}
                                 value={searchValue}
                                 onChange={(e) => onSearch && onSearch(e.target.value)}
                                 autoFocus

@@ -1,7 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import planData from '../../../data/plan.json';
 
 const Subs = () => {
+  const { t } = useTranslation('auth.subscription');
   const plans = [...planData].sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
@@ -9,7 +11,7 @@ const Subs = () => {
       {plans.length > 0 ? (
         plans.map((plan) => (
           <div key={plan.id} className={`pricing-card ${plan.popular ? 'highlighted' : ''}`}>
-            {plan.popular && <div className="pricing-badge">Popüler</div>}
+            {plan.popular && <div className="pricing-badge">{t('popular_badge')}</div>}
             
             <div className="pricing-icon">
               <i className={`ti ${plan.icon}`}></i>
@@ -23,7 +25,7 @@ const Subs = () => {
             <div className="pricing-price">
               <span className="price-currency">{plan.currency === 'USD' ? '$' : '₺'}</span>
               <span className="price-amount">{plan.price}</span>
-              <span className="price-period">/ay</span>
+              <span className="price-period">{t('period_monthly')}</span>
             </div>
 
             <ul className="pricing-features">
@@ -37,7 +39,7 @@ const Subs = () => {
           </div>
         ))
       ) : (
-        <p>Görüntülenecek plan bulunamadı.</p>
+        <p>{t('no_plans')}</p>
       )}
     </div>
   );

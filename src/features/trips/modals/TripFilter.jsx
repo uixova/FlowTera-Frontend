@@ -1,47 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useI18n } from '../../../utils/i18nHelpers';
 
-const CATEGORIES = [
-    { value: '',           label: 'Tüm Kategoriler' },
-    { value: 'Business',   label: 'İş Gezisi'       },
-    { value: 'Vacation',   label: 'Tatil'           },
-    { value: 'Event',      label: 'Etkinlik'        },
-    { value: 'Conference', label: 'Konferans'       },
-    { value: 'Training',   label: 'Eğitim'          },
-    { value: 'Other',      label: 'Diğer'           },
-];
-
-const VEHICLES = [
-    { value: '',           label: 'Tüm Araçlar'    },
-    { value: 'Plane',      label: 'Uçak'           },
-    { value: 'Train',      label: 'Tren'           },
-    { value: 'Car',        label: 'Araba'          },
-    { value: 'Bus',        label: 'Otobüs'         },
-    { value: 'Ship',       label: 'Gemi'           },
-    { value: 'Taxi',       label: 'Taksi'          },
-    { value: 'Motorcycle', label: 'Motosiklet'     },
-    { value: 'Other',      label: 'Diğer'          },
-];
-
-const STATUSES = [
-    { value: '',         label: 'Tüm Durumlar' },
-    { value: 'approved', label: 'Onaylandı'    },
-    { value: 'pending',  label: 'Beklemede'    },
-    { value: 'onroad',   label: 'Yolda'        },
-    { value: 'rejected', label: 'Reddedildi'   },
-];
-
-const FilterSelect = ({ label, name, value, onChange, options }) => (
-    <div className="filter-input-group">
-        <label>{label}</label>
-        <select name={name} value={value || ''} onChange={onChange}>
-            {options.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-        </select>
-    </div>
-);
+const TRIP_CATEGORY_VALUES = ['Business', 'Vacation', 'Event', 'Conference', 'Training', 'Other'];
+const VEHICLE_VALUES       = ['Plane', 'Train', 'Car', 'Bus', 'Ship', 'Taxi', 'Motorcycle', 'Other'];
+const STATUS_VALUES        = ['approved', 'pending', 'onroad', 'rejected'];
 
 const TripFilter = ({ filters, setFilters }) => {
+    const { t } = useTranslation('trips.filter');
+    const { tStatus, tTripCategory, tVehicle } = useI18n();
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFilters((prev) => ({ ...prev, [name]: value }));
@@ -51,7 +19,7 @@ const TripFilter = ({ filters, setFilters }) => {
         <div className="filter-sidebar-content">
             <div className="filter-amount-row">
                 <div className="filter-input-group">
-                    <label>Başlangıç Tarihi</label>
+                    <label>{t('start_date')}</label>
                     <input
                         type="date"
                         name="startDate"
@@ -60,7 +28,7 @@ const TripFilter = ({ filters, setFilters }) => {
                     />
                 </div>
                 <div className="filter-input-group">
-                    <label>Bitiş Tarihi</label>
+                    <label>{t('end_date')}</label>
                     <input
                         type="date"
                         name="endDate"
@@ -70,13 +38,39 @@ const TripFilter = ({ filters, setFilters }) => {
                 </div>
             </div>
 
-            <FilterSelect label="Kategori"    name="category" value={filters.category} onChange={handleChange} options={CATEGORIES} />
-            <FilterSelect label="Araç Türü"   name="vehicle"  value={filters.vehicle}  onChange={handleChange} options={VEHICLES} />
-            <FilterSelect label="Gezi Durumu" name="status"   value={filters.status}   onChange={handleChange} options={STATUSES} />
+            <div className="filter-input-group">
+                <label>{t('category_label')}</label>
+                <select name="category" value={filters.category || ''} onChange={handleChange}>
+                    <option value="">{t('all_categories')}</option>
+                    {TRIP_CATEGORY_VALUES.map((v) => (
+                        <option key={v} value={v}>{tTripCategory(v)}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="filter-input-group">
+                <label>{t('vehicle_label')}</label>
+                <select name="vehicle" value={filters.vehicle || ''} onChange={handleChange}>
+                    <option value="">{t('all_vehicles')}</option>
+                    {VEHICLE_VALUES.map((v) => (
+                        <option key={v} value={v}>{tVehicle(v)}</option>
+                    ))}
+                </select>
+            </div>
+
+            <div className="filter-input-group">
+                <label>{t('status_label')}</label>
+                <select name="status" value={filters.status || ''} onChange={handleChange}>
+                    <option value="">{t('all_statuses')}</option>
+                    {STATUS_VALUES.map((v) => (
+                        <option key={v} value={v}>{tStatus(v)}</option>
+                    ))}
+                </select>
+            </div>
 
             <div className="filter-amount-row">
                 <div className="filter-input-group">
-                    <label>Min Süre (Gün)</label>
+                    <label>{t('min_duration')}</label>
                     <input
                         type="number"
                         name="minDuration"
@@ -86,7 +80,7 @@ const TripFilter = ({ filters, setFilters }) => {
                     />
                 </div>
                 <div className="filter-input-group">
-                    <label>Max Süre (Gün)</label>
+                    <label>{t('max_duration')}</label>
                     <input
                         type="number"
                         name="maxDuration"

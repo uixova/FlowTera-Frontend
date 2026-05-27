@@ -55,6 +55,16 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
         setSelectedTeamId(null);
     }, []);
 
+    // Takım verisi gelince doğru rolle WS bağlantısını kur
+    // AuthContext ilk bağlantıyı 'Member' rolüyle açar; teams yüklenince gerçek rol ile yeniden bağlanır
+    useEffect(() => {
+        if (!selectedTeamId || !teams.length) return;
+        const role = teams.find((t: any) => String(t.id) === selectedTeamId)
+            ?.members?.find((m: any) => m.userId === localStorage.getItem('auth_user_id'))
+            ?.roleName ?? 'Member';
+        socketClient.connectWithTeam(selectedTeamId, role);
+    }, [teams, selectedTeamId]);
+
     // Demo modda ilk girişte demo-team-001'i otomatik seç (sadece bir kez, manuel temizlemeye müdahale etme)
     useEffect(() => {
         if (!isDemoMode()) return;

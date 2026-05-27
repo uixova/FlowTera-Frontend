@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { teamsService } from '../../../features/teams/services/teamsService';
 import { useAuth } from '../../../context/AuthContext';
 import { useTeam } from '../../../context/TeamContext';
@@ -10,6 +11,7 @@ const TeamSelectModal = ({ isOpen, onClose, currentTeamId }) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const { selectTeam } = useTeam();
+  const { t } = useTranslation('teams');
   const [teams, setTeams] = useState([]);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ const TeamSelectModal = ({ isOpen, onClose, currentTeamId }) => {
       <div className="team-dropdown-overlay" onClick={onClose} />
       <div className="team-dropdown-modal" onClick={(e) => e.stopPropagation()}>
         <div className="team-modal-header">
-          <span className="team-modal-header-label">Aktif Takımlar</span>
+          <span className="team-modal-header-label">{t('active_teams')}</span>
           <span className="team-modal-header-count">{teams.length}</span>
         </div>
 
@@ -78,7 +80,7 @@ const TeamSelectModal = ({ isOpen, onClose, currentTeamId }) => {
               </button>
             ))
           ) : (
-            <div className="team-no-data">Takım bulunamadı.</div>
+            <div className="team-no-data">{t('no_teams_found')}</div>
           )}
         </div>
 
@@ -87,8 +89,8 @@ const TeamSelectModal = ({ isOpen, onClose, currentTeamId }) => {
             className="add-team-small-btn"
             onClick={() => { onClose(); navigate('/team'); }}
           >
-            <i className="ti ti-plus"></i>
-            Yeni Takım Oluştur
+            <i className="ti ti-plus" />
+            {t('create_team_btn')}
           </button>
         </div>
       </div>

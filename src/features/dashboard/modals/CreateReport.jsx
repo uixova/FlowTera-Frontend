@@ -1,14 +1,16 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import './CreateReport.css';
 import { restFetch } from '../../../api/api';
 
 const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
+    const { t } = useTranslation('dashboard.report');
 
     const activeTeamName = useMemo(() => {
         const team = teams.find(t => String(t.id) === String(selectedTeamId));
-        return team ? team.name : 'Seçili Takım';
-    }, [teams, selectedTeamId]);
+        return team ? team.name : t('default_team');
+    }, [teams, selectedTeamId, t]);
 
     const [reportConfig, setReportConfig] = useState({
         name: '',
@@ -38,7 +40,7 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
             const expenses = (result?.data ?? []);
 
             if (!expenses.length) {
-                setGenError('Bu tarih aralığında harcama bulunamadı.');
+                setGenError(t('error_no_expenses'));
                 return;
             }
 
@@ -65,7 +67,7 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
             URL.revokeObjectURL(url);
             onClose();
         } catch (err) {
-            setGenError('Rapor oluşturulamadı: ' + (err?.message || 'Hata'));
+            setGenError(`${t('error_failed')}: ${err?.message || 'Hata'}`);
         } finally {
             setGenerating(false);
         }
@@ -78,7 +80,7 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
             disabled={generating || !selectedTeamId}
         >
             <i className={`ti ${generating ? 'ti-loader-2' : 'ti-file-download'}`} />
-            {generating ? 'Hazırlanıyor...' : 'CSV Raporu İndir'}
+            {generating ? t('btn_generating') : t('btn_download')}
         </button>
     );
 
@@ -86,7 +88,7 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
         <ActionSidebar
             isOpen={isOpen}
             onClose={onClose}
-            title={<h2>Dijital Rapor Hazırlayıcı</h2>}
+            title={<h2>{t('title')}</h2>}
             footer={footer}
             width="500px"
         >
@@ -104,8 +106,8 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
                         <i className="ti ti-file-download" />
                     </div>
                     <p>
-                        Seçilen tarih aralığındaki harcamalar <strong>CSV</strong> formatında indirilir.
-                        Takım: <strong>{activeTeamName}</strong>
+                        {t('info_csv')} <strong>CSV</strong> {t('info_format')}
+                        {' '}{t('info_team_label')} <strong>{activeTeamName}</strong>
                     </p>
                 </div>
 
@@ -114,18 +116,18 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
                         <i className="ti ti-briefcase" />
                     </div>
                     <div className="info-text">
-                        <span>Seçili Takım</span>
+                        <span>{t('selected_team_label')}</span>
                         <strong>{activeTeamName}</strong>
                     </div>
                 </div>
 
                 <div className="report-section">
-                    <label className="section-label">Rapor İsmi</label>
+                    <label className="section-label">{t('report_name_label')}</label>
                     <div className="input-with-icon">
                         <i className="ti ti-file-text" />
                         <input
                             type="text"
-                            placeholder="Rapor başlığı giriniz..."
+                            placeholder={t('report_name_placeholder')}
                             value={reportConfig.name}
                             onChange={(e) =>
                                 setReportConfig(prev => ({ ...prev, name: e.target.value }))
@@ -136,7 +138,7 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
 
                 <div className="report-section">
                     <div className="section-header">
-                        <label className="section-label">Zaman Aralığı</label>
+                        <label className="section-label">{t('time_range_label')}</label>
                         <div className="quick-dates">
                             <span onClick={() => setQuickDate(7)}>7G</span>
                             <span onClick={() => setQuickDate(30)}>30G</span>
@@ -145,7 +147,7 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
                     </div>
                     <div className="report-grid-2">
                         <div className="date-input-box">
-                            <small>Başlangıç</small>
+                            <small>{t('start_date')}</small>
                             <input
                                 type="date"
                                 value={reportConfig.startDate}
@@ -155,7 +157,7 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
                             />
                         </div>
                         <div className="date-input-box">
-                            <small>Bitiş</small>
+                            <small>{t('end_date')}</small>
                             <input
                                 type="date"
                                 value={reportConfig.endDate}
@@ -168,7 +170,7 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
                 </div>
 
                 <div className="report-section">
-                    <label className="section-label">İçerik Tercihleri</label>
+                    <label className="section-label">{t('content_prefs')}</label>
                     <div
                         className={`option-item${reportConfig.includeDocs ? ' active' : ''}`}
                         onClick={() =>
@@ -178,8 +180,8 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
                         <div className="option-info">
                             <i className="ti ti-camera" />
                             <div>
-                                <p>Fatura Kanıtlarını Ekle</p>
-                                <small>Tüm döküman görselleri PDF sonuna eklenir.</small>
+                                <p>{t('include_docs')}</p>
+                                <small>{t('include_docs_sub')}</small>
                             </div>
                         </div>
                         <div className="custom-switch" />

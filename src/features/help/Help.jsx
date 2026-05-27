@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import './Help.css';
 import HelpSidebar from './components/Helpsidebar';
 import HelpContent from './components/Helpcontent';
@@ -6,6 +7,7 @@ import ActionSidebar from '../../components/navigation/ActionSidebar';
 import { helpData } from '@/data/helpData';
 
 const Help = () => {
+    const { t } = useTranslation('help');
     const data                              = helpData;
     const [activeId,      setActiveId]      = useState(helpData.categories?.[0]?.id ?? null);
     const [search,        setSearch]        = useState('');
@@ -46,7 +48,7 @@ const Help = () => {
     const activeCategory = useMemo(() => {
         if (!data) return null;
         if (search.trim()) {
-            return { id: '__search', label: 'Arama Sonuçları', icon: 'ti-search', color: 'accent' };
+            return { id: '__search', label: t('search_results'), icon: 'ti-search', color: 'accent' };
         }
         return data.categories.find(c => c.id === activeId) ?? null;
     }, [data, activeId, search]);
@@ -80,7 +82,7 @@ const Help = () => {
                     onClick={() => setIsSidebarOpen(true)}
                 >
                     <i className="ti ti-layout-sidebar" />
-                    Yardım Merkezi
+                    {t('help_center')}
                     <i className="ti ti-chevron-down" style={{ marginLeft: 'auto', fontSize: '0.85rem', opacity: 0.6 }} />
                 </button>
 
@@ -95,7 +97,7 @@ const Help = () => {
             <ActionSidebar
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
-                title="Yardım Merkezi"
+                title={t('help_center')}
                 width="300px"
             >
                 <div className="help-mobile-sidebar-container">

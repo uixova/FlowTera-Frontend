@@ -1,38 +1,42 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useI18n } from '../../../utils/i18nHelpers';
 import './MyActivities.css';
 
 /* SOL PANEL — STATUS OVERVIEW */
 export const StatusOverview = ({ stats }) => {
+    const { t } = useTranslation('dashboard.overview');
+
     const items = useMemo(() => [
         {
             key:   'pending',
             icon:  'ti-clock-pause',
             type:  'pending',
-            label: 'Beklemede',
+            label: t('pending_count'),
             value: String(stats?.pendingCount  || 0).padStart(2, '0'),
         },
         {
             key:   'trips',
             icon:  'ti-plane-tilt',
             type:  'trip',
-            label: 'Aktif Geziler',
+            label: t('active_trips'),
             value: String(stats?.activeTrips   || 0).padStart(2, '0'),
         },
         {
             key:   'total',
             icon:  'ti-receipt-2',
             type:  'total',
-            label: 'Toplam Gider',
+            label: t('total_expenses'),
             value: `$${stats?.totalExpenses    || '0.00'}`,
         },
         {
             key:   'reject',
             icon:  'ti-circle-x',
             type:  'reject',
-            label: 'Reddedilen',
+            label: t('rejected'),
             value: String(stats?.rejectedCount || 0).padStart(2, '0'),
         },
-    ], [stats]);
+    ], [stats, t]);
 
     return (
         <div className="hm-status-grid">
@@ -55,6 +59,8 @@ export const StatusOverview = ({ stats }) => {
 
 /* SAĞ PANEL — RECENT ACTIVITIES */
 export const RecentActivities = ({ activities }) => {
+    const { t } = useTranslation('dashboard.activities');
+    const { tCategory } = useI18n();
     const count = activities?.length ?? 0;
 
     return (
@@ -66,10 +72,10 @@ export const RecentActivities = ({ activities }) => {
                     <div className="hm-panel-icon">
                         <i className="ti ti-activity" aria-hidden="true" />
                     </div>
-                    <h2>Son Aktivitelerim</h2>
+                    <h2>{t('my_activities')}</h2>
                 </div>
                 {count > 0 && (
-                    <span className="hm-panel-badge">{count} kayıt</span>
+                    <span className="hm-panel-badge">{count}</span>
                 )}
             </div>
 
@@ -77,11 +83,11 @@ export const RecentActivities = ({ activities }) => {
 
             {/* Tablo başlığı */}
             <div className="recent-grid-header" aria-hidden="true">
-                <span>Konu</span>
-                <span>Takım</span>
-                <span>Tür</span>
-                <span>Kategori</span>
-                <span className="col-right">Bilgi</span>
+                <span>{t('col_subject', 'Konu')}</span>
+                <span>{t('col_team', 'Takım')}</span>
+                <span>{t('col_type', 'Tür')}</span>
+                <span>{t('col_category', 'Kategori')}</span>
+                <span className="col-right">{t('col_info', 'Bilgi')}</span>
             </div>
 
             {/* Satırlar */}
@@ -102,9 +108,9 @@ export const RecentActivities = ({ activities }) => {
                                 </span>
                                 <span
                                     className={`badge badge-${item.category?.replace(/\s+/g, '-').toLowerCase()}`}
-                                    title={item.category}
+                                    title={tCategory(item.category)}
                                 >
-                                    {item.category}
+                                    {tCategory(item.category)}
                                 </span>
                                 <span className="col-amount">{item.amount}</span>
                             </div>
@@ -113,7 +119,7 @@ export const RecentActivities = ({ activities }) => {
                 ) : (
                     <div className="no-data" role="status">
                         <i className="ti ti-mood-empty" aria-hidden="true" />
-                        <span>Henüz bir aktiviteniz yok.</span>
+                        <span>{t('no_activities')}</span>
                     </div>
                 )}
             </div>

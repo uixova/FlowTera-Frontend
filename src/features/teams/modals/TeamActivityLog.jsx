@@ -1,12 +1,13 @@
 import React, { useState, useEffect, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import Loader from '../../../components/ui/Loader';
 import Input from '../../../components/ui/Input';
 import './TeamActivityLog.css';
-// API servislerini içe aktar
 import { teamsService } from '../services/teamsService';
 
 const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
+    const { t } = useTranslation('teams.activityLog');
     const [userLogs, setUserLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -54,7 +55,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                     )}
                 </div>
                 <div className="user-meta">
-                    <h3>{user?.name || 'Kullanıcı Aktivitesi'}</h3>
+                    <h3>{user?.name || t('user_activity_title')}</h3>
                     {!user?.isDeleted && user?.email ? <span>{user.email}</span> : null}
                 </div>
             </div>
@@ -74,7 +75,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                     <Input
                         className="tm-log-search-input"
                         icon="ti ti-search"
-                        placeholder="İşlemleri Filtrele..."
+                        placeholder={t('filter_placeholder')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -110,7 +111,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                     ) : (
                         <div className="no-activity">
                             <i className="ti ti-history"></i>
-                            <p>Bu kullanıcıya ait bir işlem geçmişi bulunamadı.</p>
+                            <p>{t('no_user_activity')}</p>
                         </div>
                     )}
                 </div>

@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PhoneNumber from '../../../components/overlays/phone/PhoneNumber';
 import { settingsService } from '../services/settingService';
 import './Profile.css';
@@ -6,6 +7,8 @@ import './Profile.css';
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const Profile = ({ user }) => {
+    const { t } = useTranslation('settings.profile');
+    const { t: tBtn } = useTranslation('common.buttons');
     const fileInputRef                        = useRef(null);
     const [showId,        setShowId]          = useState(false);
     const [selectedFile,  setSelectedFile]    = useState(null);
@@ -26,7 +29,7 @@ const Profile = ({ user }) => {
         const file = e.target.files?.[0];
         if (!file) return;
         if (!ALLOWED_TYPES.includes(file.type)) {
-            setAvatarError('Yalnızca JPG, PNG veya WEBP formatına izin verilir.');
+            setAvatarError(t('err_invalid_type'));
             e.target.value = '';
             return;
         }
@@ -45,7 +48,6 @@ const Profile = ({ user }) => {
         setSaving(true);
         setSaveMsg('');
 
-        // Upload avatar first if a new file was selected
         if (selectedFile) {
             setAvatarUploading(true);
             const uploadResult = await settingsService.uploadAvatar(user.id, selectedFile);
@@ -54,7 +56,7 @@ const Profile = ({ user }) => {
                 setAvatarPreview(uploadResult.url);
                 setSelectedFile(null);
             } else {
-                setAvatarError('Fotoğraf yüklenemedi.');
+                setAvatarError(t('err_upload_fail'));
                 setSaving(false);
                 return;
             }
@@ -67,7 +69,7 @@ const Profile = ({ user }) => {
             phone:    form.phone,
         });
         setSaving(false);
-        setSaveMsg(result.success ? 'Profil güncellendi.' : 'Güncelleme başarısız.');
+        setSaveMsg(result.success ? t('save_success') : t('save_error'));
         if (result.success) setTimeout(() => setSaveMsg(''), 3000);
     };
 
@@ -76,8 +78,8 @@ const Profile = ({ user }) => {
     return (
         <div className="st-content-section">
             <div className="st-header-box">
-                <h2>Profil Detayları</h2>
-                <p>Kişisel bilgiler ve profil kimliği.</p>
+                <h2>{t('title')}</h2>
+                <p>{t('subtitle')}</p>
             </div>
 
             <div className="st-card">
@@ -103,7 +105,7 @@ const Profile = ({ user }) => {
                         </div>
                         <div className="plan-pill">
                             <i className="ti ti-crown" />
-                            {user.subscription?.plan?.toUpperCase()} Hesap
+                            {user.subscription?.plan?.toUpperCase()} {t('account_label')}
                         </div>
                     </div>
                 </div>
@@ -112,7 +114,7 @@ const Profile = ({ user }) => {
 
                 <div className="st-form-grid">
                     <div className="st-input-group static-field">
-                        <label>Kullanıcı ID</label>
+                        <label>{t('user_id_label')}</label>
                         <div className="static-value" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <span style={{ flex: 1, letterSpacing: showId ? 'normal' : '0.1em', filter: showId ? 'none' : 'blur(5px)', userSelect: showId ? 'text' : 'none', transition: 'filter 0.2s' }}>
                                 {user.id}
@@ -121,31 +123,31 @@ const Profile = ({ user }) => {
                                 type="button"
                                 onClick={() => setShowId(v => !v)}
                                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-2)', padding: '2px 4px', flexShrink: 0 }}
-                                title={showId ? 'Gizle' : 'Göster'}
+                                title={showId ? t('hide') : t('show')}
                             >
                                 <i className={`ti ${showId ? 'ti-eye-off' : 'ti-eye'}`} />
                             </button>
                         </div>
                     </div>
                     <div className="st-input-group static-field">
-                        <label>Katılma Tarihi</label>
+                        <label>{t('joined_date')}</label>
                         <div className="static-value">{user.joinedDate}</div>
                     </div>
 
                     <div className="st-input-group">
-                        <label>Tam İsim</label>
-                        <input type="text" name="name" value={form.name} onChange={handleChange} placeholder="Adınız" />
+                        <label>{t('name')}</label>
+                        <input type="text" name="name" value={form.name} onChange={handleChange} placeholder={t('name_placeholder')} />
                     </div>
                     <div className="st-input-group">
-                        <label>Kullanıcı Adı</label>
+                        <label>{t('username_label')}</label>
                         <input type="text" name="username" value={form.username} onChange={handleChange} placeholder="kullanici_adi" />
                     </div>
                     <div className="st-input-group">
-                        <label>E-posta Adresi</label>
+                        <label>{t('email')}</label>
                         <input type="email" name="email" value={form.email} onChange={handleChange} placeholder="email@ornek.com" />
                     </div>
                     <div className="st-input-group">
-                        <label>Telefon Numarası</label>
+                        <label>{t('phone_label')}</label>
                         <PhoneNumber
                             value={form.phone}
                             onChange={(val) => setForm(prev => ({ ...prev, phone: val }))}
@@ -159,7 +161,7 @@ const Profile = ({ user }) => {
                     {saveMsg && <span className="st-save-msg">{saveMsg}</span>}
                     <button className="st-btn-save" onClick={handleSave} disabled={saving || avatarUploading}>
                         <i className={`ti ${(saving || avatarUploading) ? 'ti-loader-2' : 'ti-device-floppy'}`} />
-                        {avatarUploading ? 'Fotoğraf yükleniyor...' : saving ? 'Kaydediliyor...' : 'Profili Güncelle'}
+                        {avatarUploading ? tBtn('loading') : saving ? tBtn('saving') : tBtn('save_changes')}
                     </button>
                 </div>
             </div>

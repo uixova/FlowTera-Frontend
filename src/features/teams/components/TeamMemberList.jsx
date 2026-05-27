@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import Loader from '../../../components/ui/Loader';
 import './TeamMemberList.css'
 import SubNavbar from '../../../components/navigation/SubNavbar';
 import EditRoleModal from '../modals/TeamEditMember';
 import AddMemberModal from '../modals/TeamAddMember';
-import TeamLogModal from '../modals/TeamActivityLog'; 
+import TeamLogModal from '../modals/TeamActivityLog';
 import CreateRequestPanel from '../modals/CreateRequestPanel';
 
 import { teamsService, teamMembersCache, teamMembersRequestCache } from '../services/teamsService';
@@ -17,8 +18,11 @@ import Confirm from '../../../components/overlays/Confirm';
 import Alert from '../../../components/overlays/Alert';
 
 const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
+  const { t } = useTranslation('teams.members');
+  const { t: tBtn } = useTranslation('common.buttons');
+  const { t: tModals } = useTranslation('common.modals');
   const teamId = team?.id;
-  const teamName = team?.name || "Takım Detayları";
+  const teamName = team?.name || t('team_details');
   const { currentUserId, currentUser } = useAuth();
   const { hasPermission } = usePermissions();
   
@@ -95,24 +99,24 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
     try {
       const result = await teamsService.removeMember(teamId, user.id);
       if (!result.success) {
-        showAlert("Hata", "Üye çıkarılırken bir sorun oluştu.", "error");
+        showAlert(tModals('error'), t('remove_error'), "error");
         return;
       }
       const updatedMembers = members.filter(m => m.id !== user.id);
       setMembers(updatedMembers);
       teamMembersCache.set(String(teamId), updatedMembers);
       closeConfirm();
-      showAlert("Başarılı", `${user.name} takımdan başarıyla çıkarıldı.`, "success");
+      showAlert(tModals('success'), t('remove_success', { name: user.name }), "success");
     } catch (error) {
       console.error("Silme hatası:", error);
-      showAlert("Hata", "Üye çıkarılırken bir sorun oluştu.", "error");
+      showAlert(tModals('error'), t('remove_error'), "error");
     }
   };
 
   const handleDeleteClick = (user) => {
     askConfirm(
-      "Üyeyi Çıkar",
-      `${user.name} isimli üyeyi takımdan çıkarmak istediğinize emin misiniz?`,
+      t('remove_member_title'),
+      t('remove_member_confirm', { name: user.name }),
       () => executeDeleteMember(user),
       "danger"
     );
@@ -125,10 +129,10 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
 
     if (myRole === 'Admin' && !hasOtherAdmins) {
       if (members.length > 1) {
-        showAlert("Yetki Devri Gerekli", "Takımın tek admini sizsiniz. Ayrılmadan önce başka bir üyeye Admin yetkisi devretmelisiniz.", "warning");
+        showAlert(t('authority_required'), t('authority_required_msg'), "warning");
         return;
       } else {
-        askConfirm("Takımı Kapat", "Bu takımın tek üyesi sizsiniz. Ayrılırsanız takım kalıcı olarak silinecektir.", async () => {
+        askConfirm(t('close_team_title'), t('close_team_msg'), async () => {
           await teamsService.deleteTeam(teamId);
           onBack();
         }, "danger");
@@ -136,22 +140,22 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
       }
     }
 
-    const confirmMessage = myRole === 'Admin' 
-      ? "Takımdan ayrılmak istediğinize emin misiniz? Admin yetkiniz sonlanacaktır."
-      : "Takımdan ayrılmak istediğinize emin misiniz?";
+    const confirmMessage = myRole === 'Admin'
+      ? t('leave_confirm_admin')
+      : t('leave_confirm');
 
-    askConfirm("Takımdan Ayrıl", confirmMessage, async () => {
+    askConfirm(t('leave_title'), confirmMessage, async () => {
         try {
           if (canFreeExit) {
             await teamsService.removeMember(teamId, currentUserId);
-            showAlert("Ayrıldınız", "Takımdan başarıyla ayrıldınız.", "success");
+            showAlert(tModals('success'), t('leave_success'), "success");
             onBack();
           } else {
             await notificationService.sendLeaveRequest(teamId, currentUserId);
-            showAlert("İstek Gönderildi", "Ayrılma isteğiniz adminlere iletildi.", "info");
+            showAlert(tModals('info'), t('leave_request_sent'), "info");
           }
         } catch {
-          showAlert("Hata", "İşlem sırasında bir hata oluştu.", "error");
+          showAlert(tModals('error'), t('action_error'), "error");
         }
       }
     );
@@ -164,27 +168,27 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
 
   return (
     <div className="tm-member-list-page">
-      <SubNavbar 
+      <SubNavbar
         title={teamName}
-        searchPlaceholder="Üye ara..."
-        createLabel="Hızlı Ekleme"
+        searchPlaceholder={t('search_placeholder')}
+        createLabel={t('invite_member')}
         showSearch={true}
-        showCreate={canAddMember} 
+        showCreate={canAddMember}
         onCreate={() => setIsAddModalOpen(true)}
         onSearch={(val) => setSearchQuery(val)}
         buttons={[
-          { 
-            icon: 'ti ti-list', 
-            tooltip: 'Takım Listesi', 
-            onClick: onBack 
+          {
+            icon: 'ti ti-list',
+            tooltip: t('team_list_tooltip'),
+            onClick: onBack
           },
-            ...(canManageSettings ? [{ icon: 'ti ti-settings', tooltip: 'Ayarlar', onClick: () => onNavigate('settings') }] : []),
-          { 
-            icon: 'ti ti-file-plus', 
-            label: 'Talep Oluştur', 
+            ...(canManageSettings ? [{ icon: 'ti ti-settings', tooltip: t('settings_tooltip'), onClick: () => onNavigate('settings') }] : []),
+          {
+            icon: 'ti ti-file-plus',
+            label: t('create_request'),
             isSpecial: true,
-            tooltip: 'Yeni Talep', 
-            onClick: () => setIsRequestModalOpen(true) 
+            tooltip: t('create_request_tooltip'),
+            onClick: () => setIsRequestModalOpen(true)
           }
         ]}
       />
@@ -209,7 +213,7 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
                 </span>
                 <div className="tm-actions">
                   {isMe && (
-                    <button className="tm-action-btn leave-btn" onClick={handleLeaveTeam} title="Takımdan Ayrıl">
+                    <button className="tm-action-btn leave-btn" onClick={handleLeaveTeam} title={t('leave_team_tooltip')}>
                       <i className="ti ti-logout"></i>
                     </button>
                   )}
@@ -243,14 +247,14 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
               </div>
               <div className="tm-user-footer">
                 <div className="tm-stat">
-                  <span className="stat-label">Son Giriş</span>
+                  <span className="stat-label">{t('last_login')}</span>
                   <span className="stat-value">
                       {member.lastLogin ? new Date(member.lastLogin).toLocaleDateString('tr-TR') : 'Never'}
                   </span>
                 </div>
                 {canViewLogs && !member.isDeleted && (
                   <button className="view-full-logs-btn" onClick={() => handleLogClick(member)}>
-                    Tam Geçmiş Kaydı
+                    {tBtn('view')}
                   </button>
                 )}
               </div>
@@ -260,7 +264,7 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
         {canAddMember && (
           <div className="team-card add-member-card" onClick={() => setIsAddModalOpen(true)}>
             <div className="add-icon-wrapper"><i className="ti ti-plus"></i></div>
-            <span>Yeni Üye</span>
+            <span>{t('invite_member')}</span>
           </div>
         )}
       </div>

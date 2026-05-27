@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo, memo, lazy, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Loader from '../../components/ui/Loader';
 import { useAuth } from '../../context/AuthContext';
 import './Landing.css';
@@ -11,26 +12,6 @@ const Subs     = lazy(() => import('./components/Subs'));
 
 // Static outside component — never recreated
 const EXPENSE_DATA = [12, 19, 15, 27, 22, 34, 28, 42, 38, 51, 45, 60];
-
-const WORKFLOW_STEPS = [
-    { icon: 'ti-arrows-split', label: 'Çalışan',   sublabel: 'Talep Oluşturur',  color: '#0ed45a' },
-    { icon: 'ti-scan',         label: 'AI Engine',  sublabel: 'Analiz & Kontrol', color: '#888', highlight: true },
-    { icon: 'ti-user-check',   label: 'Yönetici',   sublabel: 'Gözden Geçirir',  color: '#00d2ff' },
-    { icon: 'ti-cloud-upload', label: 'Onay',        sublabel: 'Sisteme aktarım', color: '#a78bfa' },
-];
-
-const POLICY_RULES = [
-    { rule: 'Mükerrer Fiş → Otomatik Red',          active: true  },
-    { rule: 'Takım Bütçe Sınırı → Uyarı Gönder',   active: true  },
-    { rule: 'Mesai Dışı Harcama → Bayrakla',        active: true  },
-    { rule: 'Eksik Veri → Kullanıcıya Hatırlat',   active: false },
-];
-
-const FEED_ITEMS = [
-    { icon: 'ti-plane',    text: 'İstanbul → Berlin', amount: '+₺12.450', time: '2dk önce',  type: 'approved', delay: 0    },
-    { icon: 'ti-receipt',  text: 'Ofis Malzemeleri',  amount: '₺340',     time: '15dk önce', type: 'pending',  delay: 0.3  },
-    { icon: 'ti-building', text: 'Otel Rezervasyonu', amount: '₺8.200',   time: '1sa önce',  type: 'approved', delay: 0.6  },
-];
 
 // Memoized sub-components
 const Sparkline = memo(({ data, color }) => {
@@ -73,8 +54,29 @@ const SectionLoader = () => (
 );
 
 const Landing = () => {
+    const { t } = useTranslation('auth.landing');
     const navigate = useNavigate();
     const { loginWithCredentials } = useAuth();
+
+    const WORKFLOW_STEPS = [
+        { icon: 'ti-arrows-split', label: t('wfstep_employee'),  sublabel: t('wfstep_employee_sub'),  color: '#0ed45a' },
+        { icon: 'ti-scan',         label: t('wfstep_ai_label'),  sublabel: t('wfstep_ai_sub'),         color: '#888', highlight: true },
+        { icon: 'ti-user-check',   label: t('wfstep_manager'),   sublabel: t('wfstep_manager_sub'),    color: '#00d2ff' },
+        { icon: 'ti-cloud-upload', label: t('wfstep_approval'),  sublabel: t('wfstep_approval_sub'),   color: '#a78bfa' },
+    ];
+
+    const POLICY_RULES = [
+        { rule: t('policy_rule1'), active: true  },
+        { rule: t('policy_rule2'), active: true  },
+        { rule: t('policy_rule3'), active: true  },
+        { rule: t('policy_rule4'), active: false },
+    ];
+
+    const FEED_ITEMS = [
+        { icon: 'ti-plane',    text: t('feed_istanbul'), amount: '+₺12.450', time: t('feed_time_2min'),  type: 'approved', delay: 0    },
+        { icon: 'ti-receipt',  text: t('feed_office'),   amount: '₺340',     time: t('feed_time_15min'), type: 'pending',  delay: 0.3  },
+        { icon: 'ti-building', text: t('feed_hotel'),    amount: '₺8.200',   time: t('feed_time_1h'),    type: 'approved', delay: 0.6  },
+    ];
     const statsRef     = useRef(null);
     const [statsVisible, setStatsVisible] = useState(false);
     const [demoLoading, setDemoLoading]   = useState(false);
@@ -94,7 +96,7 @@ const Landing = () => {
     }, [demoLoading, loginWithCredentials, navigate]);
 
     useEffect(() => {
-        document.title = 'FlowTera | Finansal Akışın Yeni Nesli';
+        document.title = 'FlowTera';
         originalThemeRef.current = document.documentElement.getAttribute('data-theme');
         document.documentElement.removeAttribute('data-theme');
 
@@ -111,15 +113,23 @@ const Landing = () => {
         };
     }, []);
 
-    // Animate counters only when section becomes visible, respects reduced-motion
+    // Animate counters only when section becomes visible, respects reduced-motion 
+    
     useEffect(() => {
         if (!statsVisible) return;
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (prefersReduced) { setC1(997); setC2(24); setC3(50); return; }
+        let raf;
+        if (prefersReduced) {
+            raf = requestAnimationFrame(() => {
+                setC1(997);
+                setC2(24);
+                setC3(50);
+            });
+            return () => cancelAnimationFrame(raf);
+        }
 
         const duration = 2000;
         const startTime = performance.now();
-        let raf;
         const tick = (now) => {
             const t = Math.min((now - startTime) / duration, 1);
             const ease = 1 - Math.pow(1 - t, 3);
@@ -155,7 +165,7 @@ const Landing = () => {
             <div className="grid-overlay"   aria-hidden="true" />
 
             {/* Mobile Demo FAB */}
-            <button className="landing-demo-fab" onClick={handleDemoClick} disabled={demoLoading} aria-label="Demo modunu dene">
+            <button className="landing-demo-fab" onClick={handleDemoClick} disabled={demoLoading} aria-label={t('nav_demo')}>
                 <i className="ti ti-flask" />
                 <span>Demo</span>
             </button>
@@ -169,14 +179,14 @@ const Landing = () => {
                     <span className="app-name">FlowTera</span>
                 </div>
                 <div className="nav-links">
-                    <a href="#features">Yetenekler</a>
-                    <a href="#workflow">Akış Sistemi</a>
-                    <a href="#pricing">Fiyatlar</a>
-                    <a href="#faq">FAQ & SSS</a>
+                    <a href="#features">{t('nav_features')}</a>
+                    <a href="#workflow">{t('nav_workflow')}</a>
+                    <a href="#pricing">{t('nav_pricing')}</a>
+                    <a href="#faq">{t('nav_faq')}</a>
                     <div className="nav-divider" />
-                    <button className="nav-demo-btn" onClick={handleDemoClick} disabled={demoLoading}>Demo Dene</button>
-                    <Link to="/login"  className="nav-login-btn">Giriş Yap</Link>
-                    <Link to="/signup" className="nav-register-btn">Ücretsiz Başla</Link>
+                    <button className="nav-demo-btn" onClick={handleDemoClick} disabled={demoLoading}>{t('nav_demo')}</button>
+                    <Link to="/login"  className="nav-login-btn">{t('login_link')}</Link>
+                    <Link to="/signup" className="nav-register-btn">{t('signup_link')}</Link>
                 </div>
             </nav>
 
@@ -185,22 +195,19 @@ const Landing = () => {
                 <div className="hero-content">
                     <div className="hero-badge">
                         <span className="pulse-dot" />
-                        OCR & AI Destekli Fatura Yönetimi Açık Beta'da
+                        {t('hero_badge')}
                     </div>
                     <h1>
-                        Harcamalarınızı <br />
-                        <span className="gradient-text">Işık Hızında</span> Yönetin
+                        {t('hero_h1_1')} <br />
+                        <span className="gradient-text">{t('hero_h1_gradient')}</span> {t('hero_h1_2')}
                     </h1>
-                    <p>
-                        FlowTera; yapay zeka destekli expense analizi, takım bazlı yetki yönetimi
-                        ve kusursuz seyahat planlamasını tek bir akışta birleştirir.
-                    </p>
+                    <p>{t('hero_desc')}</p>
                     <div className="hero-actions">
                         <Link to="/signup" className="primary-btn">
-                            Hemen Deneyin <i className="ti ti-arrow-narrow-right" />
+                            {t('hero_cta')} <i className="ti ti-arrow-narrow-right" />
                         </Link>
                         <button className="secondary-btn" onClick={handleDemoClick} disabled={demoLoading}>
-                            <i className="ti ti-player-play" /> Demo Deneyin
+                            <i className="ti ti-player-play" /> {t('hero_demo')}
                         </button>
                     </div>
                 </div>
@@ -231,17 +238,17 @@ const Landing = () => {
                             <div className="mockup-main">
                                 <div className="kpi-row">
                                     <div className="kpi-card">
-                                        <span className="kpi-label">Bu Ay</span>
+                                        <span className="kpi-label">{t('kpi_this_month')}</span>
                                         <span className="kpi-value green">₺48.250</span>
                                         <span className="kpi-delta up"><i className="ti ti-trending-up" /> +12%</span>
                                     </div>
                                     <div className="kpi-card">
-                                        <span className="kpi-label">Bekleyen</span>
+                                        <span className="kpi-label">{t('kpi_pending')}</span>
                                         <span className="kpi-value yellow">₺7.800</span>
-                                        <span className="kpi-delta">3 talep</span>
+                                        <span className="kpi-delta">{t('kpi_requests')}</span>
                                     </div>
                                     <div className="kpi-card">
-                                        <span className="kpi-label">Onaylanan</span>
+                                        <span className="kpi-label">{t('kpi_approved')}</span>
                                         <span className="kpi-value cyan">142</span>
                                         <span className="kpi-delta up"><i className="ti ti-check" /></span>
                                     </div>
@@ -249,8 +256,8 @@ const Landing = () => {
 
                                 <div className="mockup-chart-area">
                                     <div className="chart-header">
-                                        <span>Harcama Trendi</span>
-                                        <span className="chart-badge">Son 12 Ay</span>
+                                        <span>{t('chart_spending_trend')}</span>
+                                        <span className="chart-badge">{t('chart_last_12')}</span>
                                     </div>
                                     {sparkline}
                                 </div>
@@ -263,22 +270,22 @@ const Landing = () => {
                     <div className="floating-card c1" aria-hidden="true">
                         <i className="ti ti-circle-check" style={{ color: '#0ed45a' }} />
                         <div>
-                            <div className="fc-title">+₺12.450 Onaylandı</div>
-                            <div className="fc-sub">Seyahat harcaması</div>
+                            <div className="fc-title">{t('fc1_title')}</div>
+                            <div className="fc-sub">{t('fc1_sub')}</div>
                         </div>
                     </div>
                     <div className="floating-card c2" aria-hidden="true">
                         <i className="ti ti-users" style={{ color: '#00d2ff' }} />
                         <div>
-                            <div className="fc-title">Pazarlama Aktif</div>
-                            <div className="fc-sub">8 üye çevrimiçi</div>
+                            <div className="fc-title">{t('fc2_title')}</div>
+                            <div className="fc-sub">{t('fc2_sub')}</div>
                         </div>
                     </div>
                     <div className="floating-card c3" aria-hidden="true">
                         <i className="ti ti-robot" style={{ color: '#a78bfa' }} />
                         <div>
-                            <div className="fc-title">AI Analizi</div>
-                            <div className="fc-sub">Fiş tanındı ✓</div>
+                            <div className="fc-title">{t('fc3_title')}</div>
+                            <div className="fc-sub">{t('fc3_sub')}</div>
                         </div>
                     </div>
                 </div>
@@ -289,31 +296,31 @@ const Landing = () => {
                 <div className="stat-card">
                     <div className="stat-icon"><i className="ti ti-eye-check" /></div>
                     <h3>%{c1 > 0 ? (c1 / 10).toFixed(1) : '0.0'}</h3>
-                    <p>OCR Doğruluğu</p>
+                    <p>{t('stat_ocr')}</p>
                 </div>
                 <div className="stat-card">
                     <div className="stat-icon"><i className="ti ti-bolt" /></div>
                     <h3>{c2 > 0 ? (c2 / 10).toFixed(1) : '0.0'}s</h3>
-                    <p>İşlem Hızı</p>
+                    <p>{t('stat_speed')}</p>
                 </div>
                 <div className="stat-card">
                     <div className="stat-icon"><i className="ti ti-building-skyscraper" /></div>
                     <h3>{c3}+</h3>
-                    <p>Aktif Takım</p>
+                    <p>{t('stat_teams')}</p>
                 </div>
                 <div className="stat-card">
                     <div className="stat-icon"><i className="ti ti-lock" /></div>
                     <h3>256-bit</h3>
-                    <p>Uçtan Uca Şifreleme</p>
+                    <p>{t('stat_encryption')}</p>
                 </div>
             </section>
 
             {/* FEATURES — lazy */}
             <section id="features" className="section-padding lz-section">
                 <div className="section-header">
-                    <span className="sub-title">Yetenekler</span>
-                    <h2>Karmaşıklığı Basitliğe Dönüştürün</h2>
-                    <p className="section-desc">Her büyüklükteki ekip için tasarlanmış, kurumsal güçte araçlar.</p>
+                    <span className="sub-title">{t('section_features_badge')}</span>
+                    <h2>{t('section_features_title')}</h2>
+                    <p className="section-desc">{t('section_features_desc')}</p>
                 </div>
                 <Suspense fallback={<SectionLoader />}>
                     <Features />
@@ -324,36 +331,36 @@ const Landing = () => {
             <section id="workflow" className="workflow-section lz-section">
                 <div className="workflow-container">
                     <div className="workflow-text">
-                        <span className="sub-title">Akıllı İş Akışı</span>
-                        <h2>Sıfır Sürtünme, Tam Kontrol</h2>
-                        <p>FlowTera, en karmaşık ekip yapılarını bile saniyeler içinde kurmanıza ve yönetmenize olanak tanır.</p>
+                        <span className="sub-title">{t('section_workflow_badge')}</span>
+                        <h2>{t('section_workflow_title')}</h2>
+                        <p>{t('section_workflow_desc')}</p>
                         <ul className="workflow-list">
                             <li>
                                 <div className="wf-icon-wrap"><i className="ti ti-capture" style={{ fontSize: '20px' }} /></div>
                                 <div>
-                                    <strong>Giriş ve AI Yakalama</strong>
-                                    <span>Herkes fişini yükler; AI dil, para birimi ve kategori ayrımını saniyeler içinde yapar.</span>
+                                    <strong>{t('wf_step1_title')}</strong>
+                                    <span>{t('wf_step1_desc')}</span>
                                 </div>
                             </li>
                             <li>
                                 <div className="wf-icon-wrap"><i className="ti ti-hierarchy-2" style={{ fontSize: '20px' }} /></div>
                                 <div>
-                                    <strong>Esnek Takım Mimarisi</strong>
-                                    <span>Ücretsiz planda bile sınırsız takıma katılın, her proje için ayrı onay zinciri kurun.</span>
+                                    <strong>{t('wf_step2_title')}</strong>
+                                    <span>{t('wf_step2_desc')}</span>
                                 </div>
                             </li>
                             <li>
                                 <div className="wf-icon-wrap"><i className="ti ti-shield-code" style={{ fontSize: '20px' }} /></div>
                                 <div>
-                                    <strong>Otonom Denetim</strong>
-                                    <span>Sistem, şirket kurallarını manuel kontrole gerek kalmadan 7/24 denetler.</span>
+                                    <strong>{t('wf_step3_title')}</strong>
+                                    <span>{t('wf_step3_desc')}</span>
                                 </div>
                             </li>
                             <li>
                                 <div className="wf-icon-wrap"><i className="ti ti-database-export" style={{ fontSize: '20px' }} /></div>
                                 <div>
-                                    <strong>Kesintisiz Senkronizasyon</strong>
-                                    <span>Onaylanan harcamalar anında muhasebe sisteminize veya banka kayıtlarınıza işlenir.</span>
+                                    <strong>{t('wf_step4_title')}</strong>
+                                    <span>{t('wf_step4_desc')}</span>
                                 </div>
                             </li>
                         </ul>
@@ -385,7 +392,7 @@ const Landing = () => {
                         <div className="policy-card">
                             <div className="policy-header">
                                 <i className="ti ti-settings-automation" style={{ color: '#0ed45a' }} />
-                                <span>Dinamik Politika Motoru</span>
+                                <span>{t('policy_engine')}</span>
                             </div>
                             <div className="policy-rules">
                                 {POLICY_RULES.map((r, i) => (
@@ -403,9 +410,9 @@ const Landing = () => {
             {/* PRICING — lazy */}
             <section id="pricing" className="pricing-section section-padding lz-section">
                 <div className="section-header">
-                    <span className="sub-title">Fiyatlandırma</span>
-                    <h2>Ekibinize Göre Büyüyen Planlar</h2>
-                    <p className="section-desc">Tüm planlarda 14 gün ücretsiz deneme. Kredi kartı gerekmez.</p>
+                    <span className="sub-title">{t('section_pricing_badge')}</span>
+                    <h2>{t('section_pricing_title')}</h2>
+                    <p className="section-desc">{t('section_pricing_desc')}</p>
                 </div>
                 <Suspense fallback={<SectionLoader />}>
                     <Subs />
@@ -423,14 +430,14 @@ const Landing = () => {
             <section className="cta-section lz-section">
                 <div className="cta-glow" aria-hidden="true" />
                 <div className="cta-content">
-                    <h2>Finansal Akışınızı Bugün Dönüştürün</h2>
-                    <p>14 gün ücretsiz. Kurulum yok. Kredi kartı gerekmez.</p>
+                    <h2>{t('cta_title')}</h2>
+                    <p>{t('cta_desc')}</p>
                     <div className="cta-actions">
                         <Link to="/signup" className="primary-btn large">
-                            Ücretsiz Başla <i className="ti ti-arrow-narrow-right" />
+                            {t('cta_start')} <i className="ti ti-arrow-narrow-right" />
                         </Link>
                         <button className="secondary-btn large" onClick={handleDemoClick} disabled={demoLoading}>
-                            Demo Deneyin <i className="ti ti-eye" />
+                            {t('cta_demo')} <i className="ti ti-eye" />
                         </button>
                     </div>
                 </div>
@@ -446,7 +453,7 @@ const Landing = () => {
                             </div>
                             <span>FlowTera</span>
                         </div>
-                        <p>Geleceğin finansal yönetim standartlarını bugünden belirleyin.</p>
+                        <p>{t('footer_tagline')}</p>
                         <div className="footer-social">
                             <a href="#" aria-label="Twitter"><i className="ti ti-brand-twitter" /></a>
                             <a href="#" aria-label="LinkedIn"><i className="ti ti-brand-linkedin" /></a>
@@ -455,33 +462,33 @@ const Landing = () => {
                     </div>
                     <div className="footer-links">
                         <div className="link-group">
-                            <h4>Ürün</h4>
-                            <a href="#">Özellikler</a>
-                            <a href="#">Fiyatlandırma</a>
-                            <a href="#">Güvenlik</a>
-                            <a href="#">API Dokümantasyon</a>
+                            <h4>{t('footer_product')}</h4>
+                            <a href="#">{t('footer_link_features')}</a>
+                            <a href="#">{t('footer_link_pricing')}</a>
+                            <a href="#">{t('footer_link_security')}</a>
+                            <a href="#">{t('footer_link_api')}</a>
                         </div>
                         <div className="link-group">
-                            <h4>Şirket</h4>
-                            <a href="#">Hakkımızda</a>
-                            <a href="#">Blog</a>
-                            <a href="#">Kariyer</a>
-                            <a href="#">Basın</a>
+                            <h4>{t('footer_company')}</h4>
+                            <a href="#">{t('footer_link_about')}</a>
+                            <a href="#">{t('footer_link_blog')}</a>
+                            <a href="#">{t('footer_link_careers')}</a>
+                            <a href="#">{t('footer_link_press')}</a>
                         </div>
                         <div className="link-group">
-                            <h4>Destek</h4>
-                            <a href="#">Yardım Merkezi</a>
-                            <a href="#">Durum Sayfası</a>
-                            <a href="#">İletişim</a>
+                            <h4>{t('footer_support')}</h4>
+                            <a href="#">{t('footer_link_help')}</a>
+                            <a href="#">{t('footer_link_status')}</a>
+                            <a href="#">{t('footer_link_contact')}</a>
                         </div>
                     </div>
                 </div>
                 <div className="footer-bottom">
-                    <p>&copy; 2026 FlowTera AI. Built for the future of teams.</p>
+                    <p>{t('footer_copyright')}</p>
                     <div className="footer-badges">
-                        <span className="footer-badge"><i className="ti ti-lock" /> SOC 2 Type II</span>
-                        <span className="footer-badge"><i className="ti ti-shield" /> GDPR Uyumlu</span>
-                        <span className="footer-badge"><i className="ti ti-certificate" /> ISO 27001</span>
+                        <span className="footer-badge"><i className="ti ti-lock" /> {t('footer_badge_soc')}</span>
+                        <span className="footer-badge"><i className="ti ti-shield" /> {t('footer_badge_gdpr')}</span>
+                        <span className="footer-badge"><i className="ti ti-certificate" /> {t('footer_badge_iso')}</span>
                     </div>
                 </div>
             </footer>

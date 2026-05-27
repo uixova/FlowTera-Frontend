@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../context/ThemeContext';
 import { useSubscription } from '../../../context/SubscriptionContext';
 import './ThemeModal.css';
 
 const ACCENT_COLORS = [
-    { value: '#0ed45a', label: 'Yeşil'     },
-    { value: '#00d2ff', label: 'Mavi'       },
-    { value: '#8338ec', label: 'Mor'        },
-    { value: '#ff006e', label: 'Pembe'      },
-    { value: '#fb5607', label: 'Turuncu'    },
-    { value: '#ffbe0b', label: 'Sarı'       },
-    { value: '#a78bfa', label: 'Lavanta'    },
-    { value: '#8cbed1', label: 'Açık Mavi'  },
+    { value: '#0ed45a', tKey: 'color_green'    },
+    { value: '#00d2ff', tKey: 'color_blue'     },
+    { value: '#8338ec', tKey: 'color_purple'   },
+    { value: '#ff006e', tKey: 'color_pink'     },
+    { value: '#fb5607', tKey: 'color_orange'   },
+    { value: '#ffbe0b', tKey: 'color_yellow'   },
+    { value: '#a78bfa', tKey: 'color_lavender' },
+    { value: '#8cbed1', tKey: 'color_sky'      },
 ];
 
-const RADIUS_OPTIONS = [
-    { key: 'sharp', label: 'Keskin'   },
-    { key: 'soft',  label: 'Yumuşak'  },
-    { key: 'round', label: 'Oval'     },
-    { key: 'ultra', label: 'Tam Oval' },
+const RADIUS_KEYS = [
+    { key: 'sharp', tKey: 'radius_sharp' },
+    { key: 'soft',  tKey: 'radius_soft'  },
+    { key: 'round', tKey: 'radius_round' },
+    { key: 'ultra', tKey: 'radius_ultra' },
 ];
 
 const DEFAULT_THEME = { mode: 'dark', accent: '#0ed45a', radius: 'soft' };
@@ -27,6 +28,7 @@ const DEFAULT_THEME = { mode: 'dark', accent: '#0ed45a', radius: 'soft' };
 const ThemeModal = ({ isOpen, onClose }) => {
     const { theme, setTheme } = useTheme();
     const { hasFeature } = useSubscription();
+    const { t } = useTranslation('common.theme');
 
     // Draft state — ThemeContext'e sadece Uygula butonunda yazılır
     const [draft, setDraft] = useState({ ...theme });
@@ -63,8 +65,8 @@ const ThemeModal = ({ isOpen, onClose }) => {
             >
                 <div className="tm-panel-header">
                     <div className="tm-header-text">
-                        <h3>Görünüm Ayarları</h3>
-                        <p>Sistemi kendine göre özelleştir</p>
+                        <h3>{t('title')}</h3>
+                        <p>{t('subtitle')}</p>
                     </div>
                     <button className="tm-panel-close" onClick={onClose}>
                         <i className="ti ti-x" />
@@ -72,9 +74,9 @@ const ThemeModal = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="tm-panel-body">
-                    {/* Arayüz Modu — tüm kullanıcılar değiştirebilir */}
+                    {/* Arayüz Modu */}
                     <div className="tm-panel-section">
-                        <label className="tm-section-label">Arayüz Modu</label>
+                        <label className="tm-section-label">{t('mode_label')}</label>
                         <div className="tm-mode-grid">
                             {['dark', 'light'].map(mode => (
                                 <div
@@ -83,7 +85,7 @@ const ThemeModal = ({ isOpen, onClose }) => {
                                     onClick={() => setDraft(p => ({ ...p, mode }))}
                                 >
                                     <div className={`tm-mode-preview ${mode}-preview`} />
-                                    <span>{mode === 'dark' ? 'Koyu Tema' : 'Açık Tema'}</span>
+                                    <span>{mode === 'dark' ? t('dark') : t('light')}</span>
                                 </div>
                             ))}
                         </div>
@@ -96,20 +98,20 @@ const ThemeModal = ({ isOpen, onClose }) => {
                                 <div className="tm-lock-icon">
                                     <i className="ti ti-lock" />
                                 </div>
-                                <span>Bu ayarlar Professional plan gerektirir</span>
+                                <span>{t('plan_required')}</span>
                             </div>
                         )}
 
                         {/* Vurgu Rengi */}
                         <div className="tm-panel-section">
-                            <label className="tm-section-label">Vurgu Rengi</label>
+                            <label className="tm-section-label">{t('accent_label')}</label>
                             <div className="tm-color-grid">
                                 {ACCENT_COLORS.map(c => (
                                     <div
                                         key={c.value}
                                         className={`tm-color-dot${draft.accent === c.value ? ' active' : ''}`}
                                         style={{ background: c.value }}
-                                        title={c.label}
+                                        title={t(c.tKey)}
                                         onClick={() => isAdvancedThemeEnabled && setDraft(p => ({ ...p, accent: c.value }))}
                                     >
                                         {draft.accent === c.value && <i className="ti ti-check" />}
@@ -126,9 +128,9 @@ const ThemeModal = ({ isOpen, onClose }) => {
 
                         {/* Kenar Yapısı */}
                         <div className="tm-panel-section">
-                            <label className="tm-section-label">Kenar Yapısı</label>
+                            <label className="tm-section-label">{t('radius_label')}</label>
                             <div className="tm-radius-grid">
-                                {RADIUS_OPTIONS.map(r => (
+                                {RADIUS_KEYS.map(r => (
                                     <button
                                         key={r.key}
                                         type="button"
@@ -136,7 +138,7 @@ const ThemeModal = ({ isOpen, onClose }) => {
                                         onClick={() => isAdvancedThemeEnabled && setDraft(p => ({ ...p, radius: r.key }))}
                                     >
                                         <span className="tm-radius-preview" data-radius={r.key} />
-                                        {r.label}
+                                        {t(r.tKey)}
                                     </button>
                                 ))}
                             </div>
@@ -147,10 +149,10 @@ const ThemeModal = ({ isOpen, onClose }) => {
                 <div className="tm-panel-footer">
                     <button type="button" className="tm-btn-reset" onClick={handleReset}>
                         <i className="ti ti-refresh" />
-                        Sıfırla
+                        {t('btn_reset')}
                     </button>
                     <button type="button" className="tm-btn-apply" onClick={handleApply}>
-                        Değişiklikleri Uygula
+                        {t('btn_apply')}
                     </button>
                 </div>
             </div>

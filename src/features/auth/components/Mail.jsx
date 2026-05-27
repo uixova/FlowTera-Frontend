@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { authService } from '../services/authService';
 import './Mail.css';
 
@@ -11,6 +12,7 @@ const Mail = ({
   loading,
   hintVisible = true
 }) => {
+  const { t } = useTranslation('auth.mail');
   const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
@@ -35,10 +37,10 @@ const Mail = ({
   return (
     <section className="mail-verify-panel" aria-live="polite">
       <div className="mail-verify-head">
-        <h3>E-posta Dogrulamasi</h3>
+        <h3>{t('verify_email')}</h3>
         <p>
-          E-postaniza gelen kodu kontrol ediniz ve asagidaki alana giriniz.
-          {hintVisible ? ' Test kodu: 000000' : ''}
+          {t('verify_subtitle')}
+          {hintVisible ? t('test_hint') : ''}
         </p>
       </div>
 
@@ -52,21 +54,21 @@ const Mail = ({
           value={code}
           onChange={handleChange}
           placeholder="* * * * * *"
-          aria-label="Dogrulama kodu"
+          aria-label={t('code_aria')}
         />
         <button type="button" onClick={onConfirm} disabled={loading || code.length !== 6}>
-          Kodu Onayla
+          {t('confirm_btn')}
         </button>
       </div>
 
       <div className="mail-verify-footer">
         <span>{email}</span>
-        <button 
-          type="button" 
-          onClick={handleResendClick} 
+        <button
+          type="button"
+          onClick={handleResendClick}
           disabled={loading || countdown > 0}
         >
-          {countdown > 0 ? `Tekrar Gonder (${countdown}s)` : 'Kodu Tekrar Gonder'}
+          {countdown > 0 ? t('resend_countdown', { count: countdown }) : t('resend_btn')}
         </button>
       </div>
     </section>

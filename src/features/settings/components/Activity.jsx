@@ -1,7 +1,11 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useI18n } from '../../../utils/i18nHelpers';
 import './Activity.css';
 
 const Activity = ({ logs }) => {
+    const { t } = useTranslation('settings.activity');
+    const { lang } = useI18n();
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 10;
 
@@ -34,8 +38,8 @@ const Activity = ({ logs }) => {
     return (
         <div className="st-content-section">
             <div className="st-header-box">
-                <h2>Aktivite Kayıtları</h2>
-                <p>Hesabınızın Flowtera modülleri boyunca yaptığı son işlemler.</p>
+                <h2>{t('title')}</h2>
+                <p>{t('subtitle')}</p>
             </div>
 
             <div className="st-card">
@@ -52,22 +56,22 @@ const Activity = ({ logs }) => {
                                     <div className="log-meta-row">
                                         <span className="log-date">
                                             <i className="ti ti-calendar-event" />
-                                            {new Date(log.timestamp).toLocaleString('tr-TR')}
+                                            {new Date(log.timestamp).toLocaleString(lang === 'tr' ? 'tr-TR' : 'en-US')}
                                         </span>
                                         <span className="log-device">
                                             <i className="ti ti-device-laptop" />
-                                            Sistem
+                                            {t('device_label')}
                                         </span>
                                     </div>
                                 </div>
 
-                                <span className="log-status-badge">Başarılı</span>
+                                <span className="log-status-badge">{t('status_success')}</span>
                             </div>
                         ))
                     ) : (
                         <div className="st-empty-logs">
                             <i className="ti ti-ghost" />
-                            <p>Henüz bir faaliyet kaydedilmedi.</p>
+                            <p>{t('no_activity')}</p>
                         </div>
                     )}
                 </div>
@@ -75,26 +79,26 @@ const Activity = ({ logs }) => {
                 {/* Sayfalama Kontrolleri */}
                 {totalPages > 1 && (
                     <div className="st-pagination-controls" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', padding: '10px 0', borderTop: '1px solid var(--border-color)' }}>
-                        <button 
-                            className="st-btn-outline" 
-                            onClick={handlePrevPage} 
+                        <button
+                            className="st-btn-outline"
+                            onClick={handlePrevPage}
                             disabled={safePage === 1}
                             style={{ opacity: safePage === 1 ? 0.5 : 1, cursor: safePage === 1 ? 'not-allowed' : 'pointer' }}
                         >
-                            <i className="ti ti-chevron-left" /> Önceki
+                            <i className="ti ti-chevron-left" /> {t('prev_btn')}
                         </button>
 
                         <span className="st-page-info" style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-                            Sayfa <strong>{safePage}</strong> / {totalPages}
+                            {t('page_info', { page: safePage, total: totalPages })}
                         </span>
 
-                        <button 
-                            className="st-btn-outline" 
-                            onClick={handleNextPage} 
+                        <button
+                            className="st-btn-outline"
+                            onClick={handleNextPage}
                             disabled={safePage === totalPages}
                             style={{ opacity: safePage === totalPages ? 0.5 : 1, cursor: safePage === totalPages ? 'not-allowed' : 'pointer' }}
                         >
-                            Sonraki <i className="ti ti-chevron-right" />
+                            {t('next_btn')} <i className="ti ti-chevron-right" />
                         </button>
                     </div>
                 )}

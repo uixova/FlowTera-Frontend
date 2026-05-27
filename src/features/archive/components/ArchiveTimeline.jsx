@@ -1,4 +1,6 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useI18n } from '../../../utils/i18nHelpers';
 import ImageBox from '../../../components/overlays/imageBox/ImageBox';
 
 // Handles ISO 8601 and legacy DD/MM/YYYY
@@ -25,6 +27,9 @@ const normalizeStatus = (status = '') =>
     status.toLowerCase().replace(/\s+/g, '');
 
 const ArchiveTimeline = ({ items, symbol }) => {
+    const { t } = useTranslation('archive');
+    const { tCategory, tStatus } = useI18n();
+
     const groups = useMemo(() => {
         const map = new Map();
         items.forEach(item => {
@@ -44,7 +49,7 @@ const ArchiveTimeline = ({ items, symbol }) => {
                     <div className="arc-timeline-date-header">
                         <span className="arc-timeline-date-label">{groupLabel}</span>
                         <div className="arc-timeline-date-line" />
-                        <span className="arc-timeline-date-label">{groupItems.length} kayıt</span>
+                        <span className="arc-timeline-date-label">{groupItems.length} {t('record_label')}</span>
                     </div>
 
                     {/* O aya ait kayıtlar */}
@@ -93,7 +98,7 @@ const ArchiveTimeline = ({ items, symbol }) => {
                                             {item.category && (
                                                 <span>
                                                     <i className="ti ti-tag" />
-                                                    {item.category}
+                                                    {tCategory(item.category)}
                                                 </span>
                                             )}
                                         </div>
@@ -101,7 +106,7 @@ const ArchiveTimeline = ({ items, symbol }) => {
 
                                     {/* Tip badge */}
                                     <span className={`arc-row-type ${item._type}`}>
-                                        {isExpense ? 'Harcama' : 'Seyahat'}
+                                        {isExpense ? t('type_expense') : t('type_trip')}
                                     </span>
 
                                     {/* Tutar */}
@@ -113,7 +118,7 @@ const ArchiveTimeline = ({ items, symbol }) => {
                                     {/* Durum + tarih */}
                                     <div className="arc-row-status">
                                         <span className={`arc-status-dot ${statusClass}`}>
-                                            {item.status}
+                                            {tStatus(item.status)}
                                         </span>
                                         <span className="arc-row-date">
                                             {formatDisplayDate(item.date || item.startDate)}

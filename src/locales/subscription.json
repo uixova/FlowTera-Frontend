@@ -1,0 +1,35 @@
+{
+  "index": {
+    "title": { "tr": "FlowTera Planları", "en": "FlowTera Plans" },
+    "subtitle": { "tr": "İhtiyaçlarınıza en uygun planı seçin, ekibinizi uçuşa geçirin.", "en": "Choose the plan that fits your needs and get your team moving." },
+    "popular_badge": { "tr": "En Popüler", "en": "Most Popular" },
+    "current_badge": { "tr": "Mevcut Planın", "en": "Current Plan" },
+    "free_label": { "tr": "Ücretsiz", "en": "Free" },
+    "period_monthly": { "tr": "/ay", "en": "/mo" },
+    "in_use": { "tr": "Kullanılıyor", "en": "In Use" },
+    "team_member_info": { "tr": "{{teamLimit}} Takım / {{memberLimit}} Üye", "en": "{{teamLimit}} Team / {{memberLimit}} Members" }
+  },
+  "payment": {
+    "title": { "tr": "Güvenli Ödeme", "en": "Secure Payment" },
+    "secure_text": { "tr": "256-bit SSL Güvenli Altyapı", "en": "256-bit SSL Secure Infrastructure" },
+    "label_card_number": { "tr": "Kart Numarası", "en": "Card Number" },
+    "label_card_name": { "tr": "Kart Üzerindeki İsim", "en": "Name on Card" },
+    "label_expiry": { "tr": "Son Kullanma", "en": "Expiry Date" },
+    "label_cvv": { "tr": "CVV", "en": "CVV" },
+    "placeholder_name": { "tr": "AD SOYAD", "en": "FULL NAME" },
+    "placeholder_expiry": { "tr": "AA/YY", "en": "MM/YY" },
+    "card_holder_label": { "tr": "KART SAHİBİ", "en": "CARD HOLDER" },
+    "card_holder_empty": { "tr": "AD SOYAD", "en": "FULL NAME" },
+    "card_expiry_label": { "tr": "S.K.T", "en": "EXP" },
+    "card_expiry_empty": { "tr": "AA/YY", "en": "MM/YY" },
+    "terms_conditions": { "tr": "Kullanım Koşulları", "en": "Terms of Service" },
+    "terms_and": { "tr": "ve", "en": "and" },
+    "terms_sales": { "tr": "Mesafeli Satış Sözleşmesi", "en": "Distance Sales Agreement" },
+    "terms_suffix": { "tr": "'ni okudum, onaylıyorum.", "en": " — I have read and accept." },
+    "loading": { "tr": "İşleniyor...", "en": "Processing..." },
+    "submit_btn": { "tr": "Ödemeyi Tamamla", "en": "Complete Payment" },
+    "success_title": { "tr": "Başarılı", "en": "Success" },
+    "success_msg": { "tr": "Paketiniz aktif edildi! Ana sayfanıza yönlendiriliyorsunuz.", "en": "Your plan has been activated! Redirecting to your home page." },
+    "error_title": { "tr": "Hata", "en": "Error" }
+  }
+}

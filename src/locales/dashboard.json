@@ -1,0 +1,59 @@
+{
+  "overview": {
+    "quick_access": { "tr": "Hızlı Erişim", "en": "Quick Access" },
+    "new_expense": { "tr": "Yeni Gider", "en": "New Expense" },
+    "add_invoice": { "tr": "Fatura Ekle", "en": "Add Invoice" },
+    "create_report": { "tr": "Rapor Oluştur", "en": "Create Report" },
+    "create_trip": { "tr": "Gezi Oluştur", "en": "Create Trip" },
+    "pending_count": { "tr": "Bekleyen Gider", "en": "Pending Expenses" },
+    "active_trips": { "tr": "Aktif Gezi", "en": "Active Trips" },
+    "total_expenses": { "tr": "Toplam Harcama", "en": "Total Spending" },
+    "rejected": { "tr": "Reddedilen", "en": "Rejected" },
+    "recent_activity": { "tr": "Son Aktiviteler", "en": "Recent Activity" },
+    "no_activity": { "tr": "Henüz aktivite yok.", "en": "No activity yet." }
+  },
+  "activities": {
+    "my_activities": { "tr": "Son Aktivitelerim", "en": "My Recent Activities" },
+    "no_activities": { "tr": "Henüz aktivite yok.", "en": "No activity yet." },
+    "status_overview": { "tr": "Durum Özeti", "en": "Status Overview" },
+    "col_subject": { "tr": "Konu", "en": "Subject" },
+    "col_team": { "tr": "Takım", "en": "Team" },
+    "col_type": { "tr": "Tür", "en": "Type" },
+    "col_category": { "tr": "Kategori", "en": "Category" },
+    "col_info": { "tr": "Bilgi", "en": "Info" },
+    "records": { "tr": "kayıt", "en": "records" }
+  },
+  "graphics": {
+    "spending_analytics": { "tr": "Harcama Analitiği", "en": "Spending Analytics" },
+    "trend_all_time": { "tr": "Trend (Tüm Zamanlar)", "en": "Trend (All Time)" },
+    "distribution": { "tr": "Kategori Dağılımı", "en": "Category Distribution" },
+    "by_count": { "tr": "Sayıya Göre", "en": "By Count" },
+    "type_comparison": { "tr": "Maliyet Türleri", "en": "Cost Types" },
+    "distribution_label": { "tr": "Dağılım", "en": "Distribution" },
+    "team_analysis": { "tr": "Takım Analizi", "en": "Team Analysis" },
+    "cost_label": { "tr": "Maliyet", "en": "Cost" },
+    "monthly_trend": { "tr": "Aylık Trend", "en": "Monthly Trend" },
+    "team_spending": { "tr": "Takım Harcamaları", "en": "Team Spending" },
+    "no_data": { "tr": "Grafik verisi yok.", "en": "No chart data." }
+  },
+  "report": {
+    "title": { "tr": "Dijital Rapor Hazırlayıcı", "en": "Digital Report Generator" },
+    "default_team": { "tr": "Seçili Takım", "en": "Selected Team" },
+    "info_csv": { "tr": "Seçilen tarih aralığındaki harcamalar", "en": "Expenses in the selected date range" },
+    "info_format": { "tr": "formatında indirilir.", "en": "will be downloaded." },
+    "info_team_label": { "tr": "Takım:", "en": "Team:" },
+    "selected_team_label": { "tr": "Seçili Takım", "en": "Selected Team" },
+    "report_name_label": { "tr": "Rapor İsmi", "en": "Report Name" },
+    "report_name_placeholder": { "tr": "Rapor başlığı giriniz...", "en": "Enter report title..." },
+    "time_range_label": { "tr": "Zaman Aralığı", "en": "Time Range" },
+    "start_date": { "tr": "Başlangıç", "en": "Start" },
+    "end_date": { "tr": "Bitiş", "en": "End" },
+    "content_prefs": { "tr": "İçerik Tercihleri", "en": "Content Preferences" },
+    "include_docs": { "tr": "Fatura Kanıtlarını Ekle", "en": "Include Receipt Proofs" },
+    "include_docs_sub": { "tr": "Tüm döküman görselleri PDF sonuna eklenir.", "en": "All document images will be appended to the PDF." },
+    "btn_generating": { "tr": "Hazırlanıyor...", "en": "Generating..." },
+    "btn_download": { "tr": "CSV Raporu İndir", "en": "Download CSV Report" },
+    "error_no_expenses": { "tr": "Bu tarih aralığında harcama bulunamadı.", "en": "No expenses found in this date range." },
+    "error_failed": { "tr": "Rapor oluşturulamadı", "en": "Report generation failed" }
+  }
+}

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../../context/AuthContext';
 import { authService } from '../../services/authService';
 import Mail from '../../components/Mail';
 import './Login.css';
 
 const LoginPage = () => {
+  const { t } = useTranslation('auth.login');
   const {
     loginWithCredentials,
     login,
@@ -55,7 +57,7 @@ const LoginPage = () => {
     const result = await loginWithCredentials(email, password, rememberMe);
 
     if (result.success && !result.redirecting) {
-      setStatus('Bilgiler doğrulandı. E-posta kodunu girerek devam et.');
+      setStatus(t('credentials_ok'));
     }
     setIsSubmitting(false);
   };
@@ -64,14 +66,14 @@ const LoginPage = () => {
     setAuthError(null);
     const safeCode = verificationCode.replace(/\D/g, '').slice(0, 6);
     if (safeCode.length !== 6) {
-      setAuthError('6 haneli kod gerekli.');
+      setAuthError(t('err_code_length'));
       return;
     }
     setIsSubmitting(true);
     try {
       const result = await authService.verifyLoginOtp(pendingUser?.email || email, safeCode);
       if (!result.success) {
-        setAuthError(result.message || 'Kod hatalı.');
+        setAuthError(result.message || t('err_code_invalid'));
         return;
       }
       const remember = pendingUser?.rememberMe ?? false;
@@ -80,7 +82,7 @@ const LoginPage = () => {
       login(result.user.id, remember);
       navigate('/home');
     } catch {
-      setAuthError('Doğrulama hatası. Lütfen tekrar dene.');
+      setAuthError(t('err_verify'));
     } finally {
       setIsSubmitting(false);
     }
@@ -92,8 +94,8 @@ const LoginPage = () => {
     setAuthError(null);
     setIsSubmitting(true);
     const result = await authService.resendLoginOtp(pendingUser.email || email, password);
-    if (result.success) setStatus(result.message || 'Yeni kod gönderildi.');
-    else                setAuthError(result.message || 'Kod gönderilemedi.');
+    if (result.success) setStatus(result.message || t('code_resent'));
+    else                setAuthError(result.message || t('err_resend'));
     setIsSubmitting(false);
   };
 
@@ -121,18 +123,18 @@ const LoginPage = () => {
           </div>
 
           <div className="auth-card-header">
-            <h1>{isVerifyStep ? 'E-posta Doğrula' : 'Tekrar Hoş Geldin'}</h1>
+            <h1>{isVerifyStep ? t('verify_title') : t('welcome_back')}</h1>
             <p>
               {isVerifyStep
-                ? `${pendingUser?.email || email} adresine kod gönderildi.`
-                : 'Finansal akışını yönetmek için giriş yap.'}
+                ? t('code_sent_to', { email: pendingUser?.email || email })
+                : t('welcome_subtitle')}
             </p>
           </div>
 
           {isDemoLogin && isSubmitting && (
             <div className="auth-success">
               <i className="ti ti-rocket"></i>
-              Demo hesabına giriş yapılıyor...
+              {t('demo_loading')}
             </div>
           )}
 
@@ -153,14 +155,14 @@ const LoginPage = () => {
           {!isVerifyStep ? (
             <form className="auth-form" onSubmit={handleSubmit}>
               <div className="auth-field">
-                <label htmlFor="email">E-POSTA ADRESİ</label>
+                <label htmlFor="email">{t('email_label')}</label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-mail auth-input-icon"></i>
                   <input
                     type="email"
                     id="email"
                     autoComplete="email"
-                    placeholder="isim@sirket.com"
+                    placeholder={t('email_placeholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -170,8 +172,8 @@ const LoginPage = () => {
 
               <div className="auth-field">
                 <label htmlFor="password">
-                  ŞİFRE
-                  <Link to="/forgot-password" className="auth-forgot">Şifremi Unuttum</Link>
+                  {t('password_label')}
+                  <Link to="/forgot-password" className="auth-forgot">{t('forgot_password')}</Link>
                 </label>
                 <div className="auth-input-wrap">
                   <i className="ti ti-lock auth-input-icon"></i>
@@ -203,7 +205,7 @@ const LoginPage = () => {
                     onChange={(e) => setRememberMe(e.target.checked)}
                   />
                   <span className="auth-checkmark"></span>
-                  Beni Hatırla
+                  {t('remember_me')}
                 </label>
               </div>
 
@@ -211,7 +213,7 @@ const LoginPage = () => {
                 {isSubmitting ? (
                   <div className="auth-spinner"></div>
                 ) : (
-                  <>Giriş Yap <i className="ti ti-arrow-right"></i></>
+                  <>{t('submit_btn')} <i className="ti ti-arrow-right"></i></>
                 )}
               </button>
             </form>
@@ -236,16 +238,16 @@ const LoginPage = () => {
                   setAuthError(null);
                 }}
               >
-                <i className="ti ti-arrow-left"></i> Bilgilere geri dön
+                <i className="ti ti-arrow-left"></i> {t('back_to_creds')}
               </button>
             </div>
           )}
 
           {!isVerifyStep && (
             <>
-              <div className="auth-divider"><span>VEYA</span></div>
+              <div className="auth-divider"><span>{t('divider')}</span></div>
               <div className="auth-switch">
-                Hesabın yok mu? <Link to="/signup">Ücretsiz Başla</Link>
+                {t('no_account')} <Link to="/signup">{t('start_free')}</Link>
               </div>
             </>
           )}

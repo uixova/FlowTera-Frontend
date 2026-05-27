@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import './Analysis.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import ExportModal from './components/ExportData';
@@ -8,13 +9,15 @@ import { analysisService } from './services/analysisService';
 import { useCurrency } from '../../context/CurrencyContext';
 import { useTeam } from '../../context/TeamContext';
 
-const VIEW_MODES = [
-    { key: 'all',      label: 'Tüm Veriler',    icon: 'ti-layers-intersect' },
-    { key: 'expenses', label: 'Gider Analizi',   icon: 'ti-receipt'          },
-    { key: 'trips',    label: 'Seyahat Analizi', icon: 'ti-plane-arrival'    },
+const VIEW_MODE_KEYS = [
+    { key: 'all',      tKey: 'all_data',         icon: 'ti-layers-intersect' },
+    { key: 'expenses', tKey: 'expense_analysis',  icon: 'ti-receipt'          },
+    { key: 'trips',    tKey: 'trip_analysis',     icon: 'ti-plane-arrival'    },
 ];
 
 const Analysis = () => {
+    const { t } = useTranslation('analysis');
+    const { t: tBtn } = useTranslation('common.buttons');
     const [isExportOpen, setIsExportOpen] = useState(false);
     const [loading,      setLoading]      = useState(true);
     const [analysisData, setAnalysisData] = useState(null);
@@ -55,8 +58,8 @@ const Analysis = () => {
     const trendIcon = numericGrowth === null ? 'ti-minus'
         : numericGrowth > 0 ? 'ti-trending-up' : numericGrowth < 0 ? 'ti-trending-down' : 'ti-minus';
 
-    const trendLabel = numericGrowth === null ? 'Karşılaştırma yok'
-        : numericGrowth > 0 ? 'Artış' : numericGrowth < 0 ? 'Azalış' : 'Değişim yok';
+    const trendLabel = numericGrowth === null ? t('trend_no_compare')
+        : numericGrowth > 0 ? t('trend_increase') : numericGrowth < 0 ? t('trend_decrease') : t('trend_no_change');
 
     const badgeClass = numericGrowth === null ? 'neutral'
         : numericGrowth > 0 ? 'up' : 'down';
@@ -64,23 +67,23 @@ const Analysis = () => {
     const cards = useMemo(() => [
         {
             icon:  'ti-chart-bar',
-            title: viewMode === 'all' ? 'Genel Toplam' : viewMode === 'expenses' ? 'Toplam Giderler' : 'Seyahat Maliyeti',
+            title: viewMode === 'all' ? t('card_total_all') : viewMode === 'expenses' ? t('card_total_expenses') : t('card_total_trips'),
             value: format(analysisData?.summary?.totalSpending, teamCurrency),
-            sub:   { class: trendClass, icon: trendIcon, text: trendLabel + ' (Önceki aya göre)', growth: numericGrowth },
+            sub:   { class: trendClass, icon: trendIcon, text: `${trendLabel} (${t('trend_vs_prev')})`, growth: numericGrowth },
             badge: { class: badgeClass, text: numericGrowth !== null ? `%${Math.abs(numericGrowth)}` : '—' },
         },
         {
             icon:  'ti-calendar-stats',
-            title: viewMode === 'all' ? 'Geçen Ayın Toplamı' : viewMode === 'expenses' ? 'Bu Ayki Giderler' : 'Bu Ayki Seyahatler',
+            title: viewMode === 'all' ? t('card_last_month') : viewMode === 'expenses' ? t('card_this_month_expenses') : t('card_this_month_trips'),
             value: viewMode === 'all'
                 ? format(analysisData?.summary?.lastMonthSpending  || 0, teamCurrency)
                 : format(analysisData?.summary?.currentMonthSpending || 0, teamCurrency),
-            sub:   { class: 'trend-neutral', icon: 'ti-clock', text: viewMode === 'all' ? 'Bir önceki dönem verisi' : `${formatMonthYear(now)} Dönemi` },
+            sub:   { class: 'trend-neutral', icon: 'ti-clock', text: viewMode === 'all' ? t('sub_prev_period') : t('sub_period', { period: formatMonthYear(now) }) },
             badge: null,
         },
         {
             icon:  viewMode === 'trips' ? 'ti-plane-tilt' : viewMode === 'expenses' ? 'ti-clock-pause' : 'ti-calendar-check',
-            title: viewMode === 'trips' ? 'Aktif Görevler' : viewMode === 'expenses' ? 'Onay Bekleyenler' : `${currentYear} Yılı Toplamı`,
+            title: viewMode === 'trips' ? t('card_active_tasks') : viewMode === 'expenses' ? t('card_pending') : t('card_yearly', { year: currentYear }),
             value: viewMode === 'trips'
                 ? (analysisData?.summary?.activeTrips ?? '—')
                 : viewMode === 'expenses'
@@ -89,37 +92,37 @@ const Analysis = () => {
             sub:   {
                 class: 'trend-neutral',
                 icon:  'ti-info-circle',
-                text:  viewMode === 'trips' ? 'Devam eden görevler' : viewMode === 'expenses' ? 'İnceleme bekleyen kayıtlar' : `${currentYear} yılına ait tüm harcamalar`
+                text:  viewMode === 'trips' ? t('sub_active_tasks') : viewMode === 'expenses' ? t('sub_pending') : t('sub_yearly', { year: currentYear })
             },
             badge: null,
         },
-    ], [analysisData, viewMode, teamCurrency, format, formatMonthYear, trendClass, trendIcon, trendLabel, numericGrowth, badgeClass, currentYear, now]);
+    ], [analysisData, viewMode, teamCurrency, format, formatMonthYear, trendClass, trendIcon, trendLabel, numericGrowth, badgeClass, currentYear, now, t]);
 
     if (loading) return <div className="full-screen-loader"><Loader type="butterfly" /></div>;
 
     return (
         <div className="analysis-page">
             <SubNavbar
-                pageName="Finansal Analiz"
-                createLabel="Rapor Oluştur"
+                pageName={t('page_title')}
+                createLabel={tBtn('create_report')}
                 showSearch={false}
                 onCreate={() => setIsExportOpen(true)}
                 buttons={[
-                    { icon: 'ti ti-refresh', tooltip: 'Verileri Tazele', onClick: fetchData }
+                    { icon: 'ti ti-refresh', tooltip: t('refresh_tooltip'), onClick: fetchData }
                 ]}
             />
 
             <hr className="sub-nav-divider" />
 
             <div className="an-view-tabs">
-                {VIEW_MODES.map(mode => (
+                {VIEW_MODE_KEYS.map(mode => (
                     <button
                         key={mode.key}
                         className={`an-tab${viewMode === mode.key ? ' active' : ''}`}
                         onClick={() => setViewMode(mode.key)}
                     >
                         <i className={`ti ${mode.icon}`} />
-                        {mode.label}
+                        {t(mode.tKey)}
                     </button>
                 ))}
             </div>

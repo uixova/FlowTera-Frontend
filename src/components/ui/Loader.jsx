@@ -1,7 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './Loader.css';
 
-const Loader = ({ type = 'butterfly', text = 'Yukleniyor...' }) => {
+const Loader = ({ type = 'butterfly', text }) => {
+  const { t } = useTranslation('common.buttons');
+  const label = text !== undefined ? text : t('loading');
+
   if (type === 'butterfly') {
     return (
       <div className="tr-loader-wrapper">
@@ -16,7 +20,7 @@ const Loader = ({ type = 'butterfly', text = 'Yukleniyor...' }) => {
             <path fill="#0ed45a" d="M15.105 35.155c-.42-.196-.627-.482-.902-1.253-.544-1.517-2.145-3.126-3.636-3.652-.69-.243-.887-.242-1.486.01-.617.26-1.342.278-1.798.045-.555-.283-1.76-2.262-3.476-5.708C2.628 22.232.984 18.575.455 17.144c-.236-.637-.237-.655-.237-2.485 0-2.164.01-2.209.9-4.013 1.011-2.049 2.53-4.189 4.185-5.9C7.679 2.293 9.783.995 12.49.313c.782-.197 1.554-.236 2.695-.137 1.619.14 2.38.38 2.882.909.21.22.246.321.243.684-.002.373-.122.67-.959 2.395-1.277 2.63-1.59 3.806-2.035 7.63-.111.951-.316 1.426-.809 1.87-.52.47-1.306.807-2.165.928l-.391.054.35.224c.897.574 1.58 1.674 1.834 2.956.193.969.12 2.791-.164 4.15-.222 1.061-.696 2.518-1.12 3.443-.336.735-.411 1.584-.203 2.3.505 1.738 2.056 3.692 3.736 4.705.693.417.938.83.874 1.476-.104 1.071-1.193 1.706-2.153 1.256z"></path>
           </svg>
         </div>
-        {text && <span className="tr-loader-text">{text}</span>}
+        {label && <span className="tr-loader-text">{label}</span>}
       </div>
     );
   }

@@ -1,42 +1,38 @@
 import React, { useState, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import Loader from '../../../components/ui/Loader';
 import { expenseService } from '../../expenses/services/expenseService';
+import { useI18n } from '../../../utils/i18nHelpers';
 import './OCR.css';
 
-const CATEGORIES = [
-    { value: 'Food',          label: 'Yiyecek & İçecek'   },
-    { value: 'Transport',     label: 'Ulaşım'              },
-    { value: 'Accommodation', label: 'Konaklama'           },
-    { value: 'Health',        label: 'Sağlık'              },
-    { value: 'Entertainment', label: 'Eğlence'             },
-    { value: 'Office',        label: 'Ofis Malzemeleri'    },
-    { value: 'Education',     label: 'Eğitim'              },
-    { value: 'Technology',    label: 'Teknoloji'           },
-    { value: 'Shopping',      label: 'Alışveriş'           },
-    { value: 'Utilities',     label: 'Faturalar'           },
-    { value: 'Finance',       label: 'Finans & Sigorta'    },
-    { value: 'Events',        label: 'Etkinlik & Toplantı' },
-    { value: 'Marketing',     label: 'Pazarlama & Reklam'  },
-    { value: 'Legal',         label: 'Hukuk & Danışmanlık' },
-    { value: 'Other',         label: 'Diğer'               },
+// S3'e yükle — promise döner, hata olursa null (fatura kayıt edilir ama görsel olmadan)
+async function uploadToS3(file, teamId) {
+    try {
+        return await expenseService.uploadReceiptFile(file, teamId);
+    } catch {
+        return null;
+    }
+}
+
+const CATEGORY_VALUES = [
+    'Food', 'Transport', 'Accommodation', 'Health', 'Entertainment',
+    'Office', 'Education', 'Technology', 'Shopping', 'Utilities',
+    'Finance', 'Events', 'Marketing', 'Legal', 'Other',
 ];
 
 const CURRENCIES = ['USD','EUR','TRY','GBP','JPY','CHF','CAD','AUD','CNY','INR'];
 
-const METHODS = [
-    { value: 'Cash',           label: 'Nakit'           },
-    { value: 'Credit Card',    label: 'Kredi Kartı'     },
-    { value: 'Bank Transfer',  label: 'Banka Transferi' },
-    { value: 'Debit Card',     label: 'Banka Kartı'     },
-    { value: 'Mobile Payment', label: 'Mobil Ödeme'     },
-    { value: 'Check',          label: 'Çek'             },
-    { value: 'Other',          label: 'Diğer'           },
+const METHOD_VALUES = [
+    'Cash', 'Credit Card', 'Bank Transfer', 'Debit Card',
+    'Mobile Payment', 'Check', 'Other',
 ];
 
 const EMPTY_FORM = { merchant: '', amount: '', currency: 'USD', date: '', time: '', category: 'Other', paymentMethod: '' };
 
 const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
+    const { t } = useTranslation('expenses.create');
+    const { tCategory, tPayment } = useI18n();
     const [preview,      setPreview]      = useState(null);
     const [isPdf,        setIsPdf]        = useState(false);
     const [fileName,     setFileName]     = useState('');
@@ -46,6 +42,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
     const [confidence,   setConfidence]   = useState(null);
     const [submitLoading, setSubmitLoading] = useState(false);
     const [submitMsg,    setSubmitMsg]    = useState('');
+    const [selectedFile, setSelectedFile] = useState(null);
     const fileRef = useRef(null);
 
     const reset = useCallback(() => {
@@ -57,6 +54,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
         setForm(EMPTY_FORM);
         setConfidence(null);
         setSubmitMsg('');
+        setSelectedFile(null);
         if (fileRef.current) fileRef.current.value = '';
     }, []);
 
@@ -69,12 +67,13 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
         const pdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
         setIsPdf(pdf);
         setFileName(file.name);
+        setSelectedFile(file);
         setPreview(pdf ? null : URL.createObjectURL(file));
         setErrorMsg('');
         setSubmitMsg('');
 
         if (!selectedTeamId) {
-            setErrorMsg('Takım seçili değil. Lütfen önce bir takım seçin.');
+            setErrorMsg(t('ocr_no_team'));
             setStatus('done');
             return;
         }
@@ -95,7 +94,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
             setConfidence(parsed.confidence ?? null);
             setStatus('done');
         } catch {
-            setErrorMsg('Fatura analiz edilemedi. Verileri manuel olarak düzenleyin veya farklı bir görsel deneyin.');
+            setErrorMsg(t('ocr_error'));
             setForm(EMPTY_FORM);
             setStatus('done');
         }
@@ -126,22 +125,30 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
         try {
             setSubmitLoading(true);
             setSubmitMsg('');
+
+            // Fatura görselini S3'e yükle (arka planda, başarısız olsa da devam et)
+            const receiptKey = selectedFile ? await uploadToS3(selectedFile, selectedTeamId) : null;
+
+            const titleVal    = form.merchant || `Fatura - ${form.date || new Date().toLocaleDateString('tr-TR')}`;
+            const merchantVal = form.merchant || titleVal;
             const result = await expenseService.createExpense({
-                title:         form.merchant || `Fatura - ${form.date || new Date().toLocaleDateString('tr-TR')}`,
+                title:         titleVal,
+                merchant:      merchantVal,
                 amount:        parseFloat(form.amount) || 0,
                 currency:      form.currency,
                 date:          form.date ? new Date(form.date).toISOString() : new Date().toISOString(),
                 category:      form.category,
                 paymentMethod: form.paymentMethod || 'Other',
+                receipt:       receiptKey,   // S3 key — null ise DB'de null kalır
                 teamId:        selectedTeamId,
             });
             if (result.success) {
                 handleClose();
             } else {
-                setSubmitMsg('Gider oluşturulamadı. Tekrar deneyin.');
+                setSubmitMsg(t('ocr_create_fail'));
             }
         } catch {
-            setSubmitMsg('Gider oluşturulamadı. Tekrar deneyin.');
+            setSubmitMsg(t('ocr_create_fail'));
         } finally {
             setSubmitLoading(false);
         }
@@ -157,7 +164,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                     onClick={reset}
                     disabled={submitLoading}
                 >
-                    <i className="ti ti-refresh"></i> Yeniden Tara
+                    <i className="ti ti-refresh"></i> {t('rescan', { ns: 'common.buttons' })}
                 </button>
                 {onApply && (
                     <button
@@ -166,7 +173,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                         onClick={handleApply}
                         disabled={submitLoading}
                     >
-                        <i className="ti ti-forms"></i> Forma Aktar
+                        <i className="ti ti-forms"></i> {t('forward_form', { ns: 'common.buttons' })}
                     </button>
                 )}
                 <button
@@ -176,8 +183,8 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                     disabled={submitLoading || !form.amount}
                 >
                     {submitLoading
-                        ? <><i className="ti ti-loader-2"></i> Kaydediliyor...</>
-                        : <><i className="ti ti-send"></i> Gönder</>
+                        ? <><i className="ti ti-loader-2"></i> {t('saving', { ns: 'common.buttons' })}</>
+                        : <><i className="ti ti-send"></i> {t('submit', { ns: 'common.buttons' })}</>
                     }
                 </button>
             </div>
@@ -188,7 +195,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
         <ActionSidebar
             isOpen={isOpen}
             onClose={handleClose}
-            title={<h2 className="ocr-sidebar-title">Akıllı OCR Tarama</h2>}
+            title={<h2 className="ocr-sidebar-title">{t('ocr_title')}</h2>}
             footer={footer}
             width="520px"
             preventOverlayClose={true}
@@ -212,9 +219,9 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                     >
                         <i className="ti ti-cloud-upload"></i>
                         <h3 className="dropzone-title">
-                            Fişinizi buraya bırakın ya da <span>göz atın</span>
+                            {t('ocr_drop_title')} <span>{t('ocr_drop_browse')}</span>
                         </h3>
-                        <small className="dropzone-subtitle">JPG, PNG, WEBP veya PDF · Maks 20MB</small>
+                        <small className="dropzone-subtitle">{t('ocr_drop_hint')}</small>
                     </div>
                 )}
 
@@ -236,7 +243,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                 {status === 'scanning' && (
                     <div className="ocr-scanning-state hm-card-style">
                         <Loader type="dots" />
-                        <span>Yapay zeka faturayı analiz ediyor...</span>
+                        <span>{t('ocr_scanning')}</span>
                     </div>
                 )}
 
@@ -253,9 +260,9 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                     <div className="ocr-info-banner hm-card-style">
                         <div className="ocr-banner-icon"><i className="ti ti-sparkles"></i></div>
                         <span>
-                            Yapay zeka verileri otomatik çıkardı. Lütfen kontrol edin.
+                            {t('ocr_success')}
                             {confidence != null && confidence > 0 && (
-                                <> · Güven: <strong>%{Math.round(confidence * 100)}</strong></>
+                                <> · {t('ocr_confidence')}: <strong>%{Math.round(confidence * 100)}</strong></>
                             )}
                         </span>
                     </div>
@@ -267,7 +274,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                         <div className="st-form-grid">
 
                             <div className="st-input-group full-width">
-                                <label>İşletme / Mağaza</label>
+                                <label>{t('ocr_merchant')}</label>
                                 <div className="input-wrapper">
                                     <i className="ti ti-building-store input-icon"></i>
                                     <input
@@ -275,13 +282,13 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                                         name="merchant"
                                         value={form.merchant}
                                         onChange={handleChange}
-                                        placeholder="Otomatik doldurulamadı — manuel girin"
+                                        placeholder={t('ocr_merchant_ph')}
                                     />
                                 </div>
                             </div>
 
                             <div className="st-input-group">
-                                <label>Toplam Tutar</label>
+                                <label>{t('ocr_amount')}</label>
                                 <div className="input-wrapper">
                                     <i className="ti ti-receipt-2 input-icon"></i>
                                     <input
@@ -297,7 +304,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                             </div>
 
                             <div className="st-input-group">
-                                <label>Para Birimi</label>
+                                <label>{t('ocr_currency')}</label>
                                 <div className="input-wrapper">
                                     <i className="ti ti-currency-dollar input-icon"></i>
                                     <select
@@ -313,7 +320,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                             </div>
 
                             <div className="st-input-group">
-                                <label>İşlem Tarihi</label>
+                                <label>{t('ocr_date')}</label>
                                 <div className="input-wrapper">
                                     <i className="ti ti-calendar input-icon"></i>
                                     <input
@@ -326,7 +333,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                             </div>
 
                             <div className="st-input-group">
-                                <label>İşlem Saati</label>
+                                <label>{t('ocr_time')}</label>
                                 <div className="input-wrapper">
                                     <i className="ti ti-clock input-icon"></i>
                                     <input
@@ -334,13 +341,13 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                                         name="time"
                                         value={form.time}
                                         onChange={handleChange}
-                                        placeholder="Saat bulunamadı"
+                                        placeholder={t('ocr_time_ph')}
                                     />
                                 </div>
                             </div>
 
                             <div className="st-input-group full-width">
-                                <label>Kategori</label>
+                                <label>{t('ocr_category')}</label>
                                 <div className="input-wrapper">
                                     <i className="ti ti-category input-icon"></i>
                                     <select
@@ -348,15 +355,15 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                                         value={form.category}
                                         onChange={handleChange}
                                     >
-                                        {CATEGORIES.map(cat => (
-                                            <option key={cat.value} value={cat.value}>{cat.label}</option>
+                                        {CATEGORY_VALUES.map(val => (
+                                            <option key={val} value={val}>{tCategory(val)}</option>
                                         ))}
                                     </select>
                                 </div>
                             </div>
 
                             <div className="st-input-group full-width">
-                                <label>Ödeme Şekli</label>
+                                <label>{t('ocr_method')}</label>
                                 <div className="input-wrapper">
                                     <i className="ti ti-credit-card input-icon"></i>
                                     <select
@@ -364,9 +371,9 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
                                         value={form.paymentMethod}
                                         onChange={handleChange}
                                     >
-                                        <option value="">— Tespit edilemedi —</option>
-                                        {METHODS.map(m => (
-                                            <option key={m.value} value={m.value}>{m.label}</option>
+                                        <option value="">{t('ocr_method_none')}</option>
+                                        {METHOD_VALUES.map(val => (
+                                            <option key={val} value={val}>{tPayment(val)}</option>
                                         ))}
                                     </select>
                                 </div>

@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import './TeamEditMember.css';
-import { teamsService } from '../services/teamsService'; 
-import { useModal } from '../../../hooks/useModal'; 
-import { usePermissions } from '../../../hooks/usePermissions'; 
+import { teamsService } from '../services/teamsService';
+import { useModal } from '../../../hooks/useModal';
+import { usePermissions } from '../../../hooks/usePermissions';
 import Confirm from '../../../components/overlays/Confirm'; 
 
 const EditRoleModal = ({ isOpen, onClose, user, teamId, onSuccess }) => {
+    const { t } = useTranslation('teams.editMember');
+    const { t: tBtn } = useTranslation('common.buttons');
     const [selectedRole, setSelectedRole] = useState('member');
     const [isUpdating, setIsUpdating] = useState(false);
 
@@ -56,11 +59,10 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId, onSuccess }) => {
         const isPromotingToAdmin = selectedRole === 'admin' && user.roleName?.toLowerCase() !== 'admin';
 
         if (isPromotingToAdmin) {
-            // Eğer admin yapılıyorsa confirm çıkart
             askConfirm(
-                "Yönetici Ataması",
-                `"${user.name}" isimli kullanıcıyı yönetici yapmak istediğinizden emin misiniz? Bu işlem kullanıcıya tüm yetkileri verecektir.`,
-                executeUpdate, // Onaylanırsa asıl güncellemeyi çalıştır
+                t('promote_title'),
+                t('promote_confirm', { name: user.name }),
+                executeUpdate,
                 "warning"
             );
         } else {
@@ -70,9 +72,9 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId, onSuccess }) => {
     };
 
     const roles = [
-        { id: 'admin', title: 'Admin', desc: 'Full access to all settings.', color: 'admin' },
-        { id: 'moderator', title: 'Moderator', desc: 'Can manage members and reports.', color: 'moderator' },
-        { id: 'member', title: 'Member', desc: 'Standard access. Personal logs only.', color: 'member' }
+        { id: 'admin', title: 'Admin', desc: t('role_admin_desc'), color: 'admin' },
+        { id: 'moderator', title: 'Moderator', desc: t('role_moderator_desc'), color: 'moderator' },
+        { id: 'member', title: 'Member', desc: t('role_member_desc'), color: 'member' }
     ];
 
     return (
@@ -84,16 +86,16 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId, onSuccess }) => {
                     <div className="tm-modal-user">
                         <div className="role-icon-box"><i className="ti ti-shield-lock"></i></div>
                         <div className="user-meta">
-                            <h3>Üye Rolünü Düzenle</h3>
+                            <h3>{t('panel_title')}</h3>
                             <p>{user?.name || 'User'} — {user?.roleName || 'Member'}</p>
                         </div>
                     </div>
                 }
                 footer={
                     <div className="tm-modal-footer-grid" style={{width: '100%', padding: 0, borderTop: 'none'}}>
-                        <button className="tm-cancel-btn" onClick={onClose} disabled={isUpdating} style={{flex: 1}}>Cancel</button>
+                        <button className="tm-cancel-btn" onClick={onClose} disabled={isUpdating} style={{flex: 1}}>{tBtn('cancel')}</button>
                         <button className="tm-save-role-btn" onClick={handleUpdateAttempt} disabled={isUpdating} style={{flex: 2}}>
-                            {isUpdating ? 'Güncelleniyor...' : 'Güncelle'}
+                            {isUpdating ? t('updating') : t('update_btn')}
                         </button>
                     </div>
                 }
@@ -147,7 +149,7 @@ const EditRoleModal = ({ isOpen, onClose, user, teamId, onSuccess }) => {
                                                 ))
                                             ) : (
                                                 <div className="admin-notice">
-                                                    <i className="ti ti-info-circle"></i> Yöneticiler kısıtlanamaz.
+                                                    <i className="ti ti-info-circle"></i> {t('admin_notice')}
                                                 </div>
                                             )}
                                         </div>

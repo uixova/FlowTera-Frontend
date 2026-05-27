@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './ExportData.css';
 import { restFetch } from '../../../api/api';
 import { isDemoMode } from '../../../utils/demo';
 
 const ExportModal = ({ isOpen, onClose, teamId, teamName }) => {
+    const { t } = useTranslation('analysis.export');
     const [format, setFormat] = useState('csv');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -11,16 +13,20 @@ const ExportModal = ({ isOpen, onClose, teamId, teamName }) => {
     if (!isOpen) return null;
 
     const handleDownload = async () => {
-        if (isDemoMode()) { setError('Demo modda rapor indirilemez.'); return; }
-        if (!teamId) { setError('Takım seçili değil.'); return; }
+        if (isDemoMode()) { setError(t('err_demo')); return; }
+        if (!teamId) { setError(t('err_no_team')); return; }
         setLoading(true);
         setError('');
         try {
             const result = await restFetch(`/expenses?teamId=${teamId}&pageSize=500`);
             const expenses = result?.data ?? [];
-            if (!expenses.length) { setError('Bu takımda henüz harcama kaydı yok.'); return; }
+            if (!expenses.length) { setError(t('err_no_data')); return; }
 
-            const headers = ['Tarih', 'Başlık', 'Kategori', 'Tüccar', 'Ödeme Yöntemi', 'Tutar', 'Para Birimi', 'Durum', 'Oluşturan'];
+            const headers = [
+                t('col_date'), t('col_title'), t('col_category'),
+                t('col_merchant'), t('col_payment'), t('col_amount'),
+                t('col_currency'), t('col_status'), t('col_creator'),
+            ];
             const rows = expenses.map((e) => [
                 new Date(e.date).toLocaleDateString('tr-TR'),
                 `"${(e.title         || '').replace(/"/g, '""')}"`,
@@ -38,12 +44,12 @@ const ExportModal = ({ isOpen, onClose, teamId, teamName }) => {
             const url    = URL.createObjectURL(blob);
             const anchor = document.createElement('a');
             anchor.href  = url;
-            anchor.download = `${teamName || 'Rapor'}_Harcamalar.csv`;
+            anchor.download = `${teamName || t('filename_report')}_${t('filename_expenses')}.csv`;
             anchor.click();
             URL.revokeObjectURL(url);
             onClose();
         } catch (err) {
-            setError('Rapor oluşturulamadı: ' + (err?.message || 'Hata'));
+            setError(t('err_generate') + ': ' + (err?.message || 'Error'));
         } finally {
             setLoading(false);
         }
@@ -58,7 +64,7 @@ const ExportModal = ({ isOpen, onClose, teamId, teamName }) => {
                         <div className="ex-title-icon">
                             <i className="ti ti-file-export" />
                         </div>
-                        <span>Rapor Oluştur</span>
+                        <span>{t('title')}</span>
                     </div>
                     <button className="ex-close" onClick={onClose}>
                         <i className="ti ti-x" />
@@ -74,7 +80,7 @@ const ExportModal = ({ isOpen, onClose, teamId, teamName }) => {
 
                     <div className="ex-document-preview">
                         <div className="ex-doc-header">
-                            <span>Flowtera finansal raporu</span>
+                            <span>{t('financial_report')}</span>
                             <span>{new Date().toLocaleDateString('tr-TR')}</span>
                         </div>
                         <div className="doc-line" />
@@ -84,7 +90,7 @@ const ExportModal = ({ isOpen, onClose, teamId, teamName }) => {
 
                     <div className="ex-options-grid">
                         {[
-                            { value: 'csv', icon: 'ti-file-text', label: 'CSV Dosyası' },
+                            { value: 'csv', icon: 'ti-file-text', label: t('csv_label') },
                         ].map(opt => (
                             <label key={opt.value} className="ex-option">
                                 <input
@@ -104,11 +110,11 @@ const ExportModal = ({ isOpen, onClose, teamId, teamName }) => {
                 </div>
 
                 <div className="ex-footer">
-                    <button className="ex-btn cancel" onClick={onClose} disabled={loading}>İptal</button>
+                    <button className="ex-btn cancel" onClick={onClose} disabled={loading}>{t('cancel_btn')}</button>
                     <button className="ex-btn download" onClick={handleDownload} disabled={loading}>
                         {loading
-                            ? <><i className="ti ti-loader-2" /> Hazırlanıyor...</>
-                            : <><i className="ti ti-download" /> İndir</>
+                            ? <><i className="ti ti-loader-2" /> {t('preparing')}</>
+                            : <><i className="ti ti-download" /> {t('download_btn')}</>
                         }
                     </button>
                 </div>

@@ -67,12 +67,12 @@ export const notificationService = {
     },
 
     // Talebe cevap ver (admin)
-    respondToRequest: async (id: string, action: 'approved' | 'rejected', teamId: string): Promise<boolean> => {
+    respondToRequest: async (id: string, action: 'approved' | 'rejected', teamId: string, rejectionReason?: string): Promise<boolean> => {
         if (isDemoMode()) return true;
         try {
             await restFetch(`/requests/${id}/respond`, {
                 method: 'PATCH',
-                body:   { action },
+                body:   { action, ...(rejectionReason ? { rejectionReason } : {}) },
                 params: { teamId },
             });
             api.notifications.invalidate();

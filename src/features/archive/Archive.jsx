@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import './Archive.css';
 import { archiveService } from './services/archiveServices';
 import Loader from '../../components/ui/Loader';
@@ -9,26 +10,27 @@ import ArchiveTimeline from './components/ArchiveTimeline';
 import ActionSidebar from '../../components/navigation/ActionSidebar';
 import BackToTop from '../../components/ui/BackToTop';
 
-import PaginationFooter from '../../components/ui/PaginationFooter'; 
-import { usePagination } from '../../hooks/usePagination'; 
+import PaginationFooter from '../../components/ui/PaginationFooter';
+import { usePagination } from '../../hooks/usePagination';
 
-const NAV_ITEMS = [
-    { id: 'all',      label: 'Tümü',          icon: 'ti-archive'         },
-    { id: 'expense',  label: 'Harcamalar',    icon: 'ti-credit-card'     },
-    { id: 'trip',     label: 'Seyahatler',    icon: 'ti-plane-departure' },
-    { id: 'approved', label: 'Onaylananlar',  icon: 'ti-circle-check'    },
-    { id: 'pending',  label: 'Bekleyenler',   icon: 'ti-clock'           },
-    { id: 'rejected', label: 'Reddedilenler', icon: 'ti-circle-x'        },
-    { id: 'invoices', label: 'Faturalar',     icon: 'ti-photo'           },
+const NAV_ITEM_DEFS = [
+    { id: 'all',      labelKey: 'nav_all',      icon: 'ti-archive'         },
+    { id: 'expense',  labelKey: 'nav_expense',  icon: 'ti-credit-card'     },
+    { id: 'trip',     labelKey: 'nav_trip',     icon: 'ti-plane-departure' },
+    { id: 'approved', labelKey: 'nav_approved', icon: 'ti-circle-check'    },
+    { id: 'pending',  labelKey: 'nav_pending',  icon: 'ti-clock'           },
+    { id: 'rejected', labelKey: 'nav_rejected', icon: 'ti-circle-x'        },
+    { id: 'invoices', labelKey: 'nav_invoices', icon: 'ti-photo'           },
 ];
 
-const SORT_ITEMS = [
-    { id: 'newest', label: 'En Yeni',     icon: 'ti-sort-descending' },
-    { id: 'oldest', label: 'En Eski',     icon: 'ti-sort-ascending'  },
-    { id: 'amount', label: 'Tutara Göre', icon: 'ti-coins'           },
+const SORT_ITEM_DEFS = [
+    { id: 'newest', labelKey: 'sort_newest', icon: 'ti-sort-descending' },
+    { id: 'oldest', labelKey: 'sort_oldest', icon: 'ti-sort-ascending'  },
+    { id: 'amount', labelKey: 'sort_amount', icon: 'ti-coins'           },
 ];
 
 const Archive = () => {
+    const { t } = useTranslation('archive');
     const { selectedTeamId } = useTeam();
     const { symbol }         = useCurrency();
 
@@ -149,9 +151,12 @@ const Archive = () => {
         </div>
     );
 
+    const NAV_ITEMS  = NAV_ITEM_DEFS.map(d => ({ ...d, label: t(d.labelKey) }));
+    const SORT_ITEMS = SORT_ITEM_DEFS.map(d => ({ ...d, label: t(d.labelKey) }));
+
     const filterSidebarContent = (
         <div className="arc-filter-sidebar-content">
-            <p className="arc-filter-section-label">Kategori</p>
+            <p className="arc-filter-section-label">{t('filter_cat')}</p>
             {NAV_ITEMS.map(item => (
                 <button
                     key={item.id}
@@ -168,7 +173,7 @@ const Archive = () => {
 
             <hr className="arc-sidebar-divider" style={{ margin: '16px 0' }} />
 
-            <p className="arc-filter-section-label">Sıralama</p>
+            <p className="arc-filter-section-label">{t('filter_sort')}</p>
             {SORT_ITEMS.map(s => (
                 <button
                     key={s.id}
@@ -185,7 +190,7 @@ const Archive = () => {
     return (
         <div className="arc-wrapper" key={selectedTeamId}>
             <aside className={`arc-sidebar${sidebarCollapsed ? ' is-collapsed' : ''}`}>
-                <span className="arc-sidebar-title">Arşiv</span>
+                <span className="arc-sidebar-title">{t('sidebar_title')}</span>
                 {NAV_ITEMS.map(item => (
                     <button
                         key={item.id}
@@ -200,7 +205,7 @@ const Archive = () => {
                     </button>
                 ))}
                 <hr className="arc-sidebar-divider" />
-                <span className="arc-sidebar-title">Sırala</span>
+                <span className="arc-sidebar-title">{t('sort_title')}</span>
                 {SORT_ITEMS.map(s => (
                     <button
                         key={s.id}
@@ -217,22 +222,22 @@ const Archive = () => {
                 <header className="arc-header">
                     <div className="arc-header-left">
                         <span className="arc-breadcrumb">
-                            Merkez <i className="ti ti-chevron-right" /> Arşiv
+                            {t('breadcrumb')} <i className="ti ti-chevron-right" /> {t('sidebar_title')}
                         </span>
                         <h1 className="arc-title">
-                            {NAV_ITEMS.find(n => n.id === activeTab)?.label ?? 'Arşiv'}
+                            {NAV_ITEMS.find(n => n.id === activeTab)?.label ?? t('sidebar_title')}
                         </h1>
-                        <p className="arc-subtitle">{filtered.length} kayıt listeleniyor</p>
+                        <p className="arc-subtitle">{filtered.length} {t('records_count')}</p>
                     </div>
 
                     <div className="arc-header-right">
                         <button className="arc-sidebar-toggle" onClick={() => setSidebarCollapsed(v => !v)}>
                             <i className={`ti ${sidebarCollapsed ? 'ti-layout-sidebar' : 'ti-layout-sidebar-left-collapse'}`} />
-                            <span>{sidebarCollapsed ? 'Filtreler' : 'Gizle'}</span>
+                            <span>{sidebarCollapsed ? t('btn_filters') : t('btn_hide')}</span>
                         </button>
                         <button className="arc-mobile-filter-btn" onClick={() => setFilterOpen(true)}>
                             <i className="ti ti-adjustments-horizontal" />
-                            <span>Filtrele</span>
+                            <span>{t('btn_filter')}</span>
                             {activeTab !== 'all' && <span className="arc-filter-active-dot" />}
                         </button>
                         <div className="arc-view-toggle">
@@ -245,38 +250,38 @@ const Archive = () => {
                         </div>
                         <button className="arc-action-btn" onClick={loadData}>
                             <i className="ti ti-refresh" />
-                            <span>Yenile</span>
+                            <span>{t('btn_refresh')}</span>
                         </button>
                     </div>
                 </header>
 
                 <div className="arc-stats-bar">
                     <div className="arc-stat-item">
-                        <span className="arc-stat-label">Toplam</span>
+                        <span className="arc-stat-label">{t('stat_total')}</span>
                         <span className="arc-stat-value accent">{allItems.length}</span>
                     </div>
                     <div className="arc-stat-item">
-                        <span className="arc-stat-label">Tutar</span>
+                        <span className="arc-stat-label">{t('stat_amount')}</span>
                         <span className="arc-stat-value">
                             {symbol}{stats.total.toLocaleString('tr-TR', { minimumFractionDigits: 0 })}
                         </span>
                     </div>
                     <div className="arc-stat-item">
-                        <span className="arc-stat-label">Onaylanan</span>
+                        <span className="arc-stat-label">{t('stat_approved')}</span>
                         <span className="arc-stat-value success">{counts.approved}</span>
                     </div>
                     <div className="arc-stat-item">
-                        <span className="arc-stat-label">Bekleyen</span>
+                        <span className="arc-stat-label">{t('stat_pending')}</span>
                         <span className="arc-stat-value warning">{counts.pending}</span>
                     </div>
                     <div className="arc-stat-item">
-                        <span className="arc-stat-label">Reddedilen</span>
+                        <span className="arc-stat-label">{t('stat_rejected')}</span>
                         <span className="arc-stat-value danger">{counts.rejected}</span>
                     </div>
                     <div className="arc-stat-item">
-                        <span className="arc-stat-label">Faturalı</span>
+                        <span className="arc-stat-label">{t('stat_invoiced')}</span>
                         <span className="arc-stat-value">{counts.invoices}</span>
-                        <span className="arc-stat-sub">görsel</span>
+                        <span className="arc-stat-sub">{t('stat_visual')}</span>
                     </div>
                 </div>
 
@@ -287,8 +292,8 @@ const Archive = () => {
                             <div className="arc-empty-icon">
                                 <i className="ti ti-archive-off" />
                             </div>
-                            <h3>Kayıt Bulunamadı</h3>
-                            <p>Bu filtrede gösterilecek arşiv kaydı yok.</p>
+                            <h3>{t('not_found')}</h3>
+                            <p>{t('not_found_sub')}</p>
                         </div>
                     ) : (
                         <>
@@ -300,13 +305,13 @@ const Archive = () => {
                             
                             {/* Pagination Butonu */}
                             {paginatedItems.length > 0 && (
-                                <PaginationFooter 
-                                    hasMore={hasMore} 
-                                    loadingMore={loadingMore} 
-                                    loadMore={loadMore} 
-                                    currentCount={paginatedItems.length} 
-                                    totalCount={totalCount} 
-                                    label="kayıt" 
+                                <PaginationFooter
+                                    hasMore={hasMore}
+                                    loadingMore={loadingMore}
+                                    loadMore={loadMore}
+                                    currentCount={paginatedItems.length}
+                                    totalCount={totalCount}
+                                    label={t('record_label')}
                                 />
                             )}
                         </>
@@ -314,7 +319,7 @@ const Archive = () => {
                 </div>
             </main>
 
-            <ActionSidebar isOpen={filterOpen} onClose={() => setFilterOpen(false)} title="Filtrele & Sırala" width="280px">
+            <ActionSidebar isOpen={filterOpen} onClose={() => setFilterOpen(false)} title={t('filter_title')} width="280px">
                 {filterSidebarContent}
             </ActionSidebar>
             <BackToTop 

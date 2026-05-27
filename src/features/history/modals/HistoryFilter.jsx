@@ -1,22 +1,5 @@
 import React from 'react';
-
-const ROLES = [
-    { value: '',          label: 'Tüm Roller'  },
-    { value: 'admin',     label: 'Admin'        },
-    { value: 'moderator', label: 'Moderatör'    },
-    { value: 'member',    label: 'Üye'          },
-    { value: 'system',    label: 'Sistem'       },
-];
-
-const TYPES = [
-    { value: '',               label: 'Tüm İşlemler'       },
-    { value: 'expense_add',    label: 'Harcama Eklendi'    },
-    { value: 'system_update',  label: 'Sistem Güncellemesi' },
-    { value: 'member_join',    label: 'Yeni Üye Kaydı'     },
-    { value: 'trip_approval',  label: 'Gezi Onayı'         },
-    { value: 'rejection',      label: 'Reddedilen Talepler' },
-    { value: 'status_update',  label: 'Durum Güncellemesi' },
-];
+import { useTranslation } from 'react-i18next';
 
 const FilterSelect = ({ label, name, value, onChange, options }) => (
     <div className="filter-input-group">
@@ -30,6 +13,26 @@ const FilterSelect = ({ label, name, value, onChange, options }) => (
 );
 
 const HistoryFilter = ({ filters, setFilters }) => {
+    const { t } = useTranslation('history.filter');
+
+    const ROLES = [
+        { value: '',          label: t('all_roles')      },
+        { value: 'admin',     label: t('role_admin')     },
+        { value: 'moderator', label: t('role_moderator') },
+        { value: 'member',    label: t('role_member')    },
+        { value: 'system',    label: t('role_system')    },
+    ];
+
+    const TYPES = [
+        { value: '',               label: t('all_actions')        },
+        { value: 'expense_add',    label: t('type_expense_add')   },
+        { value: 'system_update',  label: t('type_system_update') },
+        { value: 'member_join',    label: t('type_member_join')   },
+        { value: 'trip_approval',  label: t('type_trip_approval') },
+        { value: 'rejection',      label: t('type_rejection')     },
+        { value: 'status_update',  label: t('type_status_update') },
+    ];
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFilters((prev) => ({ ...prev, [name]: value }));
@@ -37,27 +40,26 @@ const HistoryFilter = ({ filters, setFilters }) => {
 
     return (
         <div className="filter-sidebar-content">
-            {/* Tarih Aralığı (ISO Formatı İçin) */}
             <div className="filter-amount-row">
                 <div className="filter-input-group">
-                    <label>Başlangıç Tarihi</label>
+                    <label>{t('start_date')}</label>
                     <input type="date" name="startDate" value={filters.startDate || ''} onChange={handleChange} />
                 </div>
                 <div className="filter-input-group">
-                    <label>Bitiş Tarihi</label>
+                    <label>{t('end_date')}</label>
                     <input type="date" name="endDate" value={filters.endDate || ''} onChange={handleChange} />
                 </div>
             </div>
 
-            <FilterSelect label="İşlemi Yapan (Rol)" name="role" value={filters.role} onChange={handleChange} options={ROLES} />
-            <FilterSelect label="İşlem Türü"         name="type" value={filters.type} onChange={handleChange} options={TYPES} />
+            <FilterSelect label={t('role_label')} name="role" value={filters.role} onChange={handleChange} options={ROLES} />
+            <FilterSelect label={t('type_label')} name="type" value={filters.type} onChange={handleChange} options={TYPES} />
 
             <div className="filter-input-group">
-                <label>Hedef Kullanıcı / İşlem</label>
+                <label>{t('target_label')}</label>
                 <input
                     type="text"
                     name="target"
-                    placeholder="Hedef ara..."
+                    placeholder={t('target_placeholder')}
                     value={filters.target || ''}
                     onChange={handleChange}
                 />

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useModal } from '../../../hooks/useModal';
 import { usePermissions } from '../../../hooks/usePermissions';
@@ -8,6 +9,8 @@ import Alert from '../../../components/overlays/Alert';
 import './TeamAddMember.css';
 
 const AddMemberModal = ({ isOpen, onClose, teamId, onSuccess }) => {
+  const { t } = useTranslation('teams.addMember');
+  const { t: tBtn } = useTranslation('common.buttons');
   const [identifier, setIdentifier] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,20 +86,20 @@ const AddMemberModal = ({ isOpen, onClose, teamId, onSuccess }) => {
       <ActionSidebar
         isOpen={isOpen}
         onClose={onClose}
-        title="Yeni Üye Ekle"
+        title={t('title')}
         width="460px"
         footer={
           <div className="adm-panel-footer">
-            <button className="adm-btn-cancel" onClick={onClose} disabled={isSubmitting}>Vazgeç</button>
+            <button className="adm-btn-cancel" onClick={onClose} disabled={isSubmitting}>{tBtn('cancel')}</button>
             <button className="adm-btn-invite" onClick={handleInviteAttempt} disabled={isSubmitting}>
-              {isSubmitting ? <i className="ti ti-loader-2 spin"></i> : 'İstek Gönder'}
+              {isSubmitting ? <i className="ti ti-loader-2 spin"></i> : tBtn('invite')}
             </button>
           </div>
         }
       >
         <div className="adm-panel-body-internal">
           <div className="adm-input-group">
-            <label>Email veya Kullanıcı ID'si</label>
+            <label>{t('email_label')}</label>
             <div className="adm-input-wrapper">
               <i className="ti ti-mail"></i>
               <input
@@ -109,7 +112,7 @@ const AddMemberModal = ({ isOpen, onClose, teamId, onSuccess }) => {
           </div>
 
           <div className="adm-role-section">
-            <label>Rol ve Kısıtlamaları Seç</label>
+            <label>{t('role_label')}</label>
             <div className="adm-role-list">
               {roles.map((role) => (
                 <div key={role.id} className="adm-role-group">

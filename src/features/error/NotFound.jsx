@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './NotFound.css';
 
 import Bg404 from '../../assets/images/404-bg.jpg';
@@ -8,6 +9,7 @@ import Text404 from '../../assets/images/404-text.png';
 
 const NotFound = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation('errors.notFound');
 
     return (
         <div className="not-found-wrapper">
@@ -63,9 +65,9 @@ const NotFound = () => {
             </div>
             
             <div className="not-found-content">
-                <h2>ARADIĞIN SAYFA TATİLE ÇIKTI</h2>
+                <h2>{t('title', 'ARADIĞIN SAYFA TATİLE ÇIKTI')}</h2>
                 <button className="back-home-btn" onClick={() => navigate('/home')}>
-                    ANASAYFAYA GERİ DÖN
+                    {t('go_home', 'ANASAYFAYA GERİ DÖN')}
                 </button>
             </div>
         </div>

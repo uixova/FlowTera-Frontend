@@ -1,16 +1,16 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './Charts.css';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, AreaChart, Area,
 } from 'recharts';
 
-// Pie Chart için renkli palet (Bunlar root değişkenlerinden geliyor)
 const PALETTE = [
-    'var(--accent-color)', 
-    'var(--_purple)', 
-    'var(--_blue)', 
-    'var(--_orange)', 
+    'var(--accent-color)',
+    'var(--_purple)',
+    'var(--_blue)',
+    'var(--_orange)',
     'var(--_lavender)',
     'var(--_teal)',
     'var(--_pink)',
@@ -46,16 +46,21 @@ const ChartHeader = ({ title, period }) => (
 );
 
 const AnalysisCharts = ({ categoryData = [], cashFlowData = [], statusData = [] }) => {
-    // ESLint hatasını önlemek için değişkenleri doğrudan kullanıyoruz veya siliyoruz
+    const { t } = useTranslation('analysis.charts');
+    const { t: tStatus } = useTranslation('status');
     const textColor = "var(--text-tertiary)";
     const systemAccent = "var(--accent-color)";
+
+    const translatedStatusData = statusData.map(item => ({
+        ...item,
+        name: tStatus(item.name, { defaultValue: item.name }),
+    }));
 
     return (
         <div className="analysis-charts-container">
 
-            {/* 1 — Kategori Dağılımı (Pie) */}
             <div className="chart-box">
-                <ChartHeader title="Harcama Dağılımı" period="Kategoriye Göre" />
+                <ChartHeader title={t('spending_dist')} period={t('by_category')} />
                 <ResponsiveContainer width="100%" height={250}>
                     <PieChart>
                         <Pie
@@ -75,23 +80,21 @@ const AnalysisCharts = ({ categoryData = [], cashFlowData = [], statusData = [] 
                 </ResponsiveContainer>
             </div>
 
-            {/* 2 — Aylık Para Akışı (Bar) */}
             <div className="chart-box">
-                <ChartHeader title="Aylık Para Akışı" period="Son 6 Ay" />
+                <ChartHeader title={t('cash_flow')} period={t('last_6_months')} />
                 <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={cashFlowData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border-faint)" vertical={false} />
                         <XAxis dataKey="month" stroke={textColor} fontSize={11} tickLine={false} axisLine={false} />
                         <YAxis stroke={textColor} fontSize={11} tickLine={false} axisLine={false} />
                         <Tooltip {...tooltipStyle} labelStyle={{ color: systemAccent, marginBottom: 4 }} />
-                        <Bar name="Miktar" dataKey="amount" fill={systemAccent} radius={[6, 6, 0, 0]} />
+                        <Bar name={t('bar_amount')} dataKey="amount" fill={systemAccent} radius={[6, 6, 0, 0]} />
                     </BarChart>
                 </ResponsiveContainer>
             </div>
 
-            {/* 3 — Harcama Eğilimi (Area) */}
             <div className="chart-box">
-                <ChartHeader title="Harcama Eğilimi" period="Trend (Tüm Zamanlar)" />
+                <ChartHeader title={t('spending_trend')} period={t('all_time')} />
                 <ResponsiveContainer width="100%" height={250}>
                     <AreaChart data={cashFlowData}>
                         <defs>
@@ -105,7 +108,7 @@ const AnalysisCharts = ({ categoryData = [], cashFlowData = [], statusData = [] 
                         <YAxis stroke={textColor} fontSize={11} tickLine={false} axisLine={false} />
                         <Tooltip {...tooltipStyle} />
                         <Area
-                            name="Harcama"
+                            name={t('bar_spending')}
                             type="monotone"
                             dataKey="amount"
                             stroke={systemAccent}
@@ -117,11 +120,10 @@ const AnalysisCharts = ({ categoryData = [], cashFlowData = [], statusData = [] 
                 </ResponsiveContainer>
             </div>
 
-            {/* 4 — Onay Durumları (Yatay Bar) */}
             <div className="chart-box">
-                <ChartHeader title="Dosya Onay Durumları" period="Durum Dağılımı" />
+                <ChartHeader title={t('approval_status')} period={t('status_dist')} />
                 <ResponsiveContainer width="100%" height={250}>
-                    <BarChart layout="vertical" data={statusData}>
+                    <BarChart layout="vertical" data={translatedStatusData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border-faint)" horizontal={false} />
                         <XAxis type="number" hide />
                         <YAxis
@@ -134,7 +136,7 @@ const AnalysisCharts = ({ categoryData = [], cashFlowData = [], statusData = [] 
                             axisLine={false}
                         />
                         <Tooltip {...tooltipStyle} />
-                        <Bar name="Adet" dataKey="value" fill={systemAccent} radius={[0, 6, 6, 0]} barSize={20} />
+                        <Bar name={t('bar_count')} dataKey="value" fill={systemAccent} radius={[0, 6, 6, 0]} barSize={20} />
                     </BarChart>
                 </ResponsiveContainer>
             </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useSubscription } from '../../context/SubscriptionContext';
 import Loader from '../../components/ui/Loader';
 import './Subscription.css';
@@ -8,6 +9,7 @@ import './Subscription.css';
 const MotionDiv = motion.div;
 
 const Subscription = () => {
+    const { t } = useTranslation('subscription');
     const { plans, currentPlan, loading } = useSubscription();
     const navigate = useNavigate();
 
@@ -19,15 +21,15 @@ const Subscription = () => {
     };
 
     return (
-        <MotionDiv 
+        <MotionDiv
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             className="subscription-container"
         >
             <header className="sub-header">
-                <h1>FlowTera Planları</h1>
-                <p>İhtiyaçlarınıza en uygun planı seçin, ekibinizi uçuşa geçirin.</p>
+                <h1>{t('title')}</h1>
+                <p>{t('subtitle')}</p>
             </header>
 
             <div className="plans-grid">
@@ -42,8 +44,8 @@ const Subscription = () => {
                             transition={{ delay: index * 0.1 }}
                             className={`plan-card ${plan.popular ? 'popular' : ''} ${isCurrent ? 'active' : ''}`}
                         >
-                            {plan.popular && <div className="popular-badge">En Popüler</div>}
-                            {isCurrent && <div className="current-badge">Mevcut Planın</div>}
+                            {plan.popular && <div className="popular-badge">{t('popular_badge')}</div>}
+                            {isCurrent && <div className="current-badge">{t('current_badge')}</div>}
 
                             <div className="plan-header">
                                 <div className="icon-box">
@@ -53,9 +55,11 @@ const Subscription = () => {
                                 <p className="plan-desc">{plan.description}</p>
                                 <div className="plan-price">
                                     <span className="amount">
-                                        {plan.price === 0 ? "Ücretsiz" : `${plan.price}${plan.currency === 'USD' ? '$' : plan.currency}`}
+                                        {plan.price === 0
+                                            ? t('free_label')
+                                            : `${plan.price}${plan.currency === 'USD' ? '$' : plan.currency}`}
                                     </span>
-                                    {plan.price > 0 && <span className="period">/ay</span>}
+                                    {plan.price > 0 && <span className="period">{t('period_monthly')}</span>}
                                 </div>
                             </div>
 
@@ -68,16 +72,16 @@ const Subscription = () => {
                                 ))}
                                 <li className="promise-item">
                                     <i className="ti ti-users check"></i>
-                                    <span>{plan.Promise?.teamLimit} Takım / {plan.Promise?.TeamMemberLimit} Üye</span>
+                                    <span>{t('team_member_info', { teamLimit: plan.Promise?.teamLimit, memberLimit: plan.Promise?.TeamMemberLimit })}</span>
                                 </li>
                             </ul>
 
-                            <button 
+                            <button
                                 onClick={() => handlePlanSelect(plan.id, isCurrent)}
                                 className={`plan-btn ${isCurrent ? 'current-btn' : ''}`}
                                 disabled={isCurrent}
                             >
-                                {isCurrent ? "Kullanılıyor" : plan.cta}
+                                {isCurrent ? t('in_use') : plan.cta}
                             </button>
                         </MotionDiv>
                     );

@@ -1,12 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './SelectSubscription.css';
 
 const SelectSubscription = ({ plans, selectedPlanId, onSelectPlan, onContinue, loading }) => {
+  const { t } = useTranslation('auth.subscription');
+
   return (
     <section className="select-subs-frame">
       <header className="select-subs-header">
-        <h3>Plan Secimi</h3>
-        <p>Ihtiyacina uygun paketi sec, sonra dogrulama ile devam et.</p>
+        <h3>{t('select_title')}</h3>
+        <p>{t('select_subtitle')}</p>
       </header>
 
       <div className="select-subs-grid">
@@ -19,7 +22,7 @@ const SelectSubscription = ({ plans, selectedPlanId, onSelectPlan, onContinue, l
               className={`select-subs-card ${plan.popular ? 'popular' : ''} ${isSelected ? 'selected' : ''}`}
               onClick={() => onSelectPlan(plan)}
             >
-              {plan.popular ? <span className="select-subs-badge">Populer</span> : null}
+              {plan.popular ? <span className="select-subs-badge">{t('popular_badge')}</span> : null}
               <div className="select-subs-icon">
                 <i className={`ti ${plan.icon}`}></i>
               </div>
@@ -28,7 +31,7 @@ const SelectSubscription = ({ plans, selectedPlanId, onSelectPlan, onContinue, l
               <p className="select-subs-desc">{plan.description}</p>
 
               <div className="select-subs-price">
-                {plan.price === 0 ? 'Ucretsiz' : `${plan.price} ${plan.currency} / ay`}
+                {plan.price === 0 ? t('free_label') : `${plan.price} ${plan.currency} ${t('period_monthly')}`}
               </div>
 
               <ul className="select-subs-features">
@@ -46,7 +49,7 @@ const SelectSubscription = ({ plans, selectedPlanId, onSelectPlan, onContinue, l
 
       <div className="select-subs-actions">
         <button type="button" className="auth-submit-btn" disabled={!selectedPlanId || loading} onClick={onContinue}>
-          Plani Sec
+          {t('select_btn')}
         </button>
       </div>
     </section>

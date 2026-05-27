@@ -13,9 +13,11 @@ import { TeamProvider, useTeam } from './context/TeamContext';
 
 // Auth Sayfaları
 import Landing from './features/auth/Landing';
-import LoginPage from './features/auth/pages/Login/LoginPage'; 
-import SignupPage from './features/auth/pages/Signup/SignupPage'; 
+import LoginPage from './features/auth/pages/Login/LoginPage';
+import SignupPage from './features/auth/pages/Signup/SignupPage';
 import PassPage from './features/auth/pages/Password/PassPage';
+import TermsPage from './features/auth/pages/Terms/TermsPage';
+import KvkkPage  from './features/auth/pages/Kvkk/KvkkPage';
 
 // Diğer Bileşenler
 import NotFound from './features/error/NotFound';
@@ -147,7 +149,11 @@ function App() {
                   } />
 
                   <Route path="/checkout" element={<Navigate to="/payment" replace />} />
-                  
+
+                  {/* Yasal Sayfalar — herkese açık, auth gerektirmez */}
+                  <Route path="/terms" element={<TermsPage />} />
+                  <Route path="/kvkk"  element={<KvkkPage  />} />
+
                   {/* 404 Sayfası */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

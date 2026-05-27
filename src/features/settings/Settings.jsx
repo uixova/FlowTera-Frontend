@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './Settings.css';
 import { settingsService } from './services/settingService';
 import Loader from '../../components/ui/Loader';
@@ -16,15 +17,17 @@ import { useTeam }  from '../../context/TeamContext';
 import { useModal } from '../../hooks/useModal';
 import Confirm      from '../../components/overlays/Confirm';
 
-const MENU_ITEMS = [
-    { id: 'st-profile',       label: 'Profil Detayları',    icon: 'ti-user-circle'  },
-    { id: 'st-subscription',  label: 'Abonelik & Planlar',  icon: 'ti-credit-card'  },
-    { id: 'st-security',      label: 'Gizlilik & Güvenlik', icon: 'ti-shield-lock'  },
-    { id: 'st-logs',          label: 'Aktivite Kayıtları',  icon: 'ti-list-details' },
-    { id: 'st-notifications', label: 'Bildirimler',         icon: 'ti-bell-ringing' },
+const MENU_ITEM_DEFS = [
+    { id: 'st-profile',       tKey: 'profile_tab',       icon: 'ti-user-circle'  },
+    { id: 'st-subscription',  tKey: 'plan_tab',          icon: 'ti-credit-card'  },
+    { id: 'st-security',      tKey: 'security_tab',      icon: 'ti-shield-lock'  },
+    { id: 'st-logs',          tKey: 'activity_tab',      icon: 'ti-list-details' },
+    { id: 'st-notifications', tKey: 'notifications_tab', icon: 'ti-bell-ringing' },
 ];
 
 const Settings = () => {
+    const { t } = useTranslation('settings');
+    const { t: tBtn } = useTranslation('common.buttons');
     const navigate                                        = useNavigate();
     const { currentUserId, loading: authLoading, logout } = useAuth();
     const { selectedTeamId } = useTeam();
@@ -90,6 +93,8 @@ const Settings = () => {
         setIsMobileMenuOpen(false);
     };
 
+    const MENU_ITEMS = MENU_ITEM_DEFS.map(item => ({ ...item, label: t(item.tKey) }));
+
     if (authLoading || loading || !user) return <Loader type="butterfly" />;
 
     if (user?.isDeleted) {
@@ -101,7 +106,7 @@ const Settings = () => {
         );
     }
 
-    const activeLabel = MENU_ITEMS.find(m => m.id === activeSection)?.label ?? 'Ayarlar';
+    const activeLabel = MENU_ITEMS.find(m => m.id === activeSection)?.label ?? t('page_title');
 
     const renderSection = () => {
         switch (activeSection) {
@@ -131,7 +136,7 @@ const Settings = () => {
 
             <div className="st-logout-btn" onClick={() => { setIsMobileMenuOpen(false); handleLogoutClick(); }}>
                 <i className="ti ti-logout" />
-                Hesaptan Çık
+                {tBtn('logout')}
             </div>
         </div>
     );
@@ -142,7 +147,7 @@ const Settings = () => {
             <div className="st-sidebar">
                 <div>
                     <div className="st-sidebar-header">
-                        <h3>Ayarlar</h3>
+                        <h3>{t('page_title')}</h3>
                         <p>Hesap tercihlerinizi yönetin</p>
                     </div>
                     <div className="st-menu">
@@ -161,7 +166,7 @@ const Settings = () => {
 
                 <div className="st-logout-btn" onClick={handleLogoutClick}>
                     <i className="ti ti-logout" />
-                    Hesaptan Çık
+                    {tBtn('logout')}
                 </div>
             </div>
 
@@ -183,7 +188,7 @@ const Settings = () => {
             <ActionSidebar
                 isOpen={isMobileMenuOpen}
                 onClose={() => setIsMobileMenuOpen(false)}
-                title="Ayarlar"
+                title={t('page_title')}
                 width="300px"
             >
                 {menuContent}

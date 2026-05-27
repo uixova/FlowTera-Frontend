@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import './CreateTeamPanel.css';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useSubscription } from '../../../context/SubscriptionContext';
@@ -22,6 +23,8 @@ const INITIAL_FORM_STATE = {
 const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/160?text=TEAM';
 
 const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
+  const { t } = useTranslation('teams.create');
+  const { t: tModals } = useTranslation('common.modals');
 
   const { currentPlan } = useSubscription();
   const { alertConfig, showAlert, closeAlert } = useModal();
@@ -91,8 +94,8 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
 
     if (formData.memberLimit > planMaxMembers) {
       showAlert(
-        "Plan Limiti Aşıldı", 
-        `Mevcut planınız en fazla ${planMaxMembers} üyeye izin veriyor.`, 
+        t('plan_limit_title'),
+        t('plan_limit_msg', { max: planMaxMembers }),
         "warning"
       );
       return;
@@ -116,13 +119,13 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
       };
       const result = await teamsService.createTeam(payload);
       if (!result.success) {
-        showAlert("Hata", result.message || "Takım oluşturulamadı.", "error");
+        showAlert(tModals('error'), result.message || t('err_generic'), "error");
         return;
       }
       if (onSuccess) onSuccess();
       onClose();
     } catch {
-      showAlert("Hata", "Takım oluşturulurken teknik bir sorun oluştu.", "error");
+      showAlert(tModals('error'), t('err_create'), "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -130,7 +133,7 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
 
   const sidebarTitle = (
     <div className="header-content">
-      <h2>Takım Oluştur</h2>
+      <h2>{t('panel_title')}</h2>
       {currentPlan?.name && (
         <span className={`plan-badge ${currentPlan.badge}`}>
           {currentPlan.name.toUpperCase()}
@@ -141,9 +144,9 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
 
   const sidebarFooter = (
     <div className="tm-panel-footer-alt"> 
-      <button type="button" className="tm-btn-cancel" onClick={onClose} style={{flex: 1}}>İptal Et</button>
-      <button type="submit" form="create-team-form" className="tm-btn-submit" style={{flex: 2}} >
-        {isSubmitting ? 'Oluşturuluyor...' : 'Takımı Oluştur'}
+      <button type="button" className="tm-btn-cancel" onClick={onClose} style={{flex: 1}}>{t('cancel_btn')}</button>
+      <button type="submit" form="create-team-form" className="tm-btn-submit" style={{flex: 2}}>
+        {isSubmitting ? t('creating') : t('btn_create')}
       </button>
     </div>
   );
@@ -168,45 +171,45 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
                 </div>
               </div>
               <input type="file" ref={fileInputRef} accept="image/*" hidden onChange={handleLogoChange} />
-              <p className="tm-help-text">Takım logosu yüklemek için tıklayın</p>
+              <p className="tm-help-text">{t('logo_help')}</p>
             </div>
 
             <div className="tm-input-group">
-              <label>Organizasyon Adı</label>
-              <input 
-                type="text" name="teamName" value={formData.teamName} 
-                onChange={handleChange} placeholder="Organizasyon adını girin" required 
+              <label>{t('org_name_label')}</label>
+              <input
+                type="text" name="teamName" value={formData.teamName}
+                onChange={handleChange} placeholder={t('org_name_placeholder')} required
               />
             </div>
 
             <div className="tm-input-group">
-              <label>Kategori</label>
+              <label>{t('category_label')}</label>
               <select name="category" value={formData.category} onChange={handleChange}>
-                <option value="Software Development">Yazılım Geliştirme</option>
-                <option value="Marketing & Ads">Pazarlama & Ads</option>
-                <option value="Logistics">Lojistik</option>
-                <option value="Finance">Finans</option>
+                <option value="Software Development">{t('cat_software')}</option>
+                <option value="Marketing & Ads">{t('cat_marketing')}</option>
+                <option value="Logistics">{t('cat_logistics')}</option>
+                <option value="Finance">{t('cat_finance')}</option>
               </select>
             </div>
 
             <div className="tm-panel-section highlight">
-              <label className="section-label">Limitler ve Bütçe</label>
+              <label className="section-label">{t('limits_section')}</label>
               <div className="tm-grid-row">
                 <div className="tm-input-group">
-                  <label>Max Aylık Gider ({formData.currency})</label>
+                  <label>{t('max_expense_label')} ({formData.currency})</label>
                   <input type="number" name="maxExpenseLimit" value={formData.maxExpenseLimit} onChange={handleChange} min="0" />
                 </div>
                 <div className="tm-input-group">
-                  <label>Takım Üye Limiti (Max: {planMaxMembers})</label>
-                  <input 
-                    type="number" 
-                    name="memberLimit" 
-                    value={formData.memberLimit === 0 ? '' : formData.memberLimit} 
-                    onChange={handleChange} 
-                    max={planMaxMembers} 
-                    min="1" 
+                  <label>{t('member_limit_label', { max: planMaxMembers })}</label>
+                  <input
+                    type="number"
+                    name="memberLimit"
+                    value={formData.memberLimit === 0 ? '' : formData.memberLimit}
+                    onChange={handleChange}
+                    max={planMaxMembers}
+                    min="1"
                   />
-                  {formData.memberLimit >= planMaxMembers && <span className="limit-warning">Planın maximum limitine ulaşıldı!</span>}
+                  {formData.memberLimit >= planMaxMembers && <span className="limit-warning">{t('limit_reached')}</span>}
                 </div>
               </div>
             </div>
@@ -214,16 +217,16 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
             <div className={`tm-panel-section automation-box ${!hasAutomation ? 'feature-locked' : ''}`}>
               <div className="tm-checkbox-group">
                 <div className="checkbox-wrapper">
-                  <input 
-                    type="checkbox" 
-                    id="autoApproved" 
-                    name="autoApproved" 
-                    checked={formData.autoApproved} 
+                  <input
+                    type="checkbox"
+                    id="autoApproved"
+                    name="autoApproved"
+                    checked={formData.autoApproved}
                     onChange={handleChange}
-                    disabled={!hasAutomation} 
+                    disabled={!hasAutomation}
                   />
                   <label htmlFor="autoApproved" style={{ opacity: !hasAutomation ? 0.6 : 1 }}>
-                    Otomatik Onayı Etkinleştir
+                    {t('auto_approve_label')}
                     {!hasAutomation && (
                       <span className="lock-badge" style={{ marginLeft: '8px', fontSize: '10px', background: '#333', padding: '2px 6px', borderRadius: '4px', color: '#0ed45a' }}>
                         <i className="ti ti-lock"></i> PRO
@@ -234,14 +237,14 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
               </div>
 
               {!hasAutomation && (
-                 <p className="limit-warning" style={{ marginTop: '10px', fontSize: '11px' }}>
-                   Bu özellik <strong>{currentPlan?.name}</strong> planınızda bulunmuyor.
-                 </p>
+                <p className="limit-warning" style={{ marginTop: '10px', fontSize: '11px' }}>
+                  {t('plan_no_feature', { plan: currentPlan?.name })}
+                </p>
               )}
 
               {formData.autoApproved && hasAutomation && (
                 <div className="tm-input-group animate-in">
-                  <label>Otomatik Onay Limiti ({formData.currency})</label>
+                  <label>{t('auto_approve_limit')} ({formData.currency})</label>
                   <input type="number" name="autoApprovedLimit" value={formData.autoApprovedLimit} onChange={handleChange} min="0" />
                 </div>
               )}
@@ -249,7 +252,7 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
 
             <div className="tm-grid-row">
               <div className="tm-input-group">
-                <label>Para birimi</label>
+                <label>{t('currency_label')}</label>
                 <select name="currency" value={formData.currency} onChange={handleChange}>
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
@@ -257,31 +260,31 @@ const CreateTeamPanel = ({ isOpen, onClose, onSuccess }) => {
                 </select>
               </div>
               <div className="tm-input-group">
-                <label>Takım Türü</label>
+                <label>{t('team_type_label')}</label>
                 <select name="workspaceType" value={formData.workspaceType} onChange={handleChange}>
-                  <option value="Corporate">Kurumsal</option>
-                  <option value="Personal">Bireysel</option>
+                  <option value="Corporate">{t('type_corporate')}</option>
+                  <option value="Personal">{t('type_personal')}</option>
                 </select>
               </div>
             </div>
 
             <div className="tm-panel-section">
-              <label className="section-label">Gizlilik Ayarları</label>
+              <label className="section-label">{t('privacy_section')}</label>
               <div className="tm-radio-vertical">
                 <label className={`tm-radio-option ${formData.privacy === 'private' ? 'selected' : ''}`}>
                   <input type="radio" name="privacy" value="private" checked={formData.privacy === 'private'} onChange={handleChange} />
                   <i className="ti ti-lock"></i>
                   <div className="option-text">
-                    <strong>Özel</strong>
-                    <span>Sadece davetli üyeler erişebilir</span>
+                    <strong>{t('privacy_private_title')}</strong>
+                    <span>{t('privacy_private_desc')}</span>
                   </div>
                 </label>
                 <label className={`tm-radio-option ${formData.privacy === 'internal' ? 'selected' : ''}`}>
                   <input type="radio" name="privacy" value="internal" checked={formData.privacy === 'internal'} onChange={handleChange} />
                   <i className="ti ti-world"></i>
                   <div className="option-text">
-                    <strong>Bağlantıya Açık</strong>
-                    <span>Herkes bağlantı ile katılabilir</span>
+                    <strong>{t('privacy_internal_title')}</strong>
+                    <span>{t('privacy_internal_desc')}</span>
                   </div>
                 </label>
               </div>

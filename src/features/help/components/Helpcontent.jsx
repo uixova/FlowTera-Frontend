@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './Helpcontent.css';
 
-const TYPE_LABELS = {
-    steps:   'Adımlar',
-    list:    'Liste',
-    article: 'Makale',
-    alert:   'Uyarı',
+const TYPE_LABEL_KEYS = {
+    steps:   'type_steps',
+    list:    'type_list',
+    article: 'type_article',
+    alert:   'type_alert',
 };
 
 const ALERT_ICONS = {
@@ -30,6 +31,7 @@ const CAT_COLOR_STYLES = {
 };
 
 const HelpItem = ({ item }) => {
+    const { t } = useTranslation('help.content');
     const [open, setOpen] = useState(false);
 
     return (
@@ -39,7 +41,7 @@ const HelpItem = ({ item }) => {
                     <span className="help-item-type-dot" />
                     <span className="help-item-title">{item.title}</span>
                 </div>
-                <span className="help-item-tag">{TYPE_LABELS[item.type] || item.type}</span>
+                <span className="help-item-tag">{t(TYPE_LABEL_KEYS[item.type] || item.type)}</span>
                 <i className="ti ti-chevron-down help-item-chevron" />
             </div>
 
@@ -87,6 +89,8 @@ const HelpItem = ({ item }) => {
 };
 
 const HelpContent = ({ category, items, search }) => {
+    const { t } = useTranslation('help.content');
+
     if (!category) return null;
 
     const colorStyle = CAT_COLOR_STYLES[category.color] || CAT_COLOR_STYLES.accent;
@@ -108,8 +112,8 @@ const HelpContent = ({ category, items, search }) => {
                     <h1>{category.label}</h1>
                     <p>
                         {search
-                            ? `"${search}" için ${items.length} sonuç`
-                            : `${items.length} konu bulundu`
+                            ? t('results_search', { search, count: items.length })
+                            : t('results_count', { count: items.length })
                         }
                     </p>
                 </div>
@@ -126,8 +130,8 @@ const HelpContent = ({ category, items, search }) => {
                     <i className="ti ti-search-off" />
                     <p>
                         {search
-                            ? `"${search}" aramasına uygun sonuç bulunamadı.`
-                            : 'Bu kategoride henüz içerik yok.'}
+                            ? t('empty_search', { search })
+                            : t('empty_category')}
                     </p>
                 </div>
             )}

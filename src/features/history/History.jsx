@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Loader from '../../components/ui/Loader';
 import './History.css';
 import SubNavbar from '../../components/navigation/SubNavbar';
@@ -15,6 +16,8 @@ import { useFilter } from '../../hooks/useFilter';
 import { useTeam } from '../../context/TeamContext';
 
 const History = () => {
+    const { t } = useTranslation('history');
+    const { t: tBtn } = useTranslation('common.buttons');
     const { selectedTeamId } = useTeam();
     const [activeLog,    setActiveLog]    = useState(null);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -41,9 +44,9 @@ const History = () => {
 
     const filterFooter = (
         <div className="as-filter-footer">
-            <button className="btn-clear" onClick={clearFilters}>Tümünü Temizle</button>
+            <button className="btn-clear" onClick={clearFilters}>{tBtn('reset')}</button>
             <button className="btn-apply" onClick={() => { applyFilters(); setIsFilterOpen(false); }}>
-                Filtreleri Uygula
+                {tBtn('apply')}
             </button>
         </div>
     );
@@ -54,8 +57,8 @@ const History = () => {
         // key={selectedTeamId} sayesinde takım değişince tüm liste componenti sıfırlanır
         <div className="history-page" key={selectedTeamId}>
             <SubNavbar
-                pageName="Aktif Geçmiş"
-                searchPlaceholder="Kullanıcı, işlem veya hedef ara..."
+                pageName={t('page_title')}
+                searchPlaceholder={t('search_placeholder')}
                 searchValue={searchTerm}
                 onSearch={(val) => setSearchTerm(val)}
                 showSearch={true}
@@ -63,7 +66,7 @@ const History = () => {
                 buttons={[
                     {
                         icon: 'ti ti-adjustments-horizontal',
-                        tooltip: 'Filtrele',
+                        tooltip: tBtn('filter'),
                         onClick: () => setIsFilterOpen(true),
                     },
                 ]}
@@ -88,14 +91,14 @@ const History = () => {
                             loadMore={loadMore}
                             currentCount={filteredLogs.length}
                             totalCount={isFiltered ? filteredLogs.length : totalCount}
-                            label="İşlem Geçmişi"
+                            label={t('list_label')}
                         />
                     </>
                 ) : (
                     <div className="no-data-info">
                         {isFiltered
-                            ? 'Arama kriterlerine uygun kayıt bulunamadı.'
-                            : 'Bu takıma ait aktivite kaydı bulunamadı.'}
+                            ? t('no_history')
+                            : t('no_history')}
                     </div>
                 )}
             </div>
@@ -103,7 +106,7 @@ const History = () => {
             <ActionSidebar
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}
-                title={<h2>İşlemleri Filtrele</h2>}
+                title={<h2>{tBtn('filter')}</h2>}
                 footer={filterFooter}
             >
                 <HistoryFilter filters={tempFilters} setFilters={setTempFilters} />

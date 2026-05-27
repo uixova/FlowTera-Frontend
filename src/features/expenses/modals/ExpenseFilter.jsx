@@ -1,40 +1,18 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useI18n } from '../../../utils/i18nHelpers';
 
-const CATEGORIES = [
-    { value: '',              label: 'Tüm Kategoriler'    },
-    { value: 'Food',          label: 'Yiyecek & İçecek'  },
-    { value: 'Transport',     label: 'Ulaşım'             },
-    { value: 'Accommodation', label: 'Konaklama'          },
-    { value: 'Health',        label: 'Sağlık'             },
-    { value: 'Entertainment', label: 'Eğlence'            },
-    { value: 'Office',        label: 'Ofis Malzemeleri'   },
-    { value: 'Education',     label: 'Eğitim'             },
-    { value: 'Technology',    label: 'Teknoloji'          },
-    { value: 'Shopping',      label: 'Alışveriş'          },
-    { value: 'Utilities',     label: 'Faturalar'          },
-    { value: 'Finance',       label: 'Finans & Sigorta'   },
-    { value: 'Events',        label: 'Etkinlik & Toplantı'},
-    { value: 'Marketing',     label: 'Pazarlama & Reklam' },
-    { value: 'Legal',         label: 'Hukuk & Danışmanlık'},
-    { value: 'Other',         label: 'Diğer'              },
+const CATEGORY_VALUES = [
+    'Food', 'Transport', 'Accommodation', 'Health', 'Entertainment',
+    'Office', 'Education', 'Technology', 'Shopping', 'Utilities',
+    'Finance', 'Events', 'Marketing', 'Legal', 'Other',
 ];
 
-const STATUSES = [
-    { value: '',         label: 'Tüm Durumlar' },
-    { value: 'pending',  label: 'Beklemede'    },
-    { value: 'approved', label: 'Onaylandı'    },
-    { value: 'rejected', label: 'Reddedildi'   },
-];
+const STATUS_VALUES = ['pending', 'approved', 'rejected'];
 
-const METHODS = [
-    { value: '',               label: 'Tüm Yöntemler'  },
-    { value: 'Cash',           label: 'Nakit'           },
-    { value: 'Credit Card',    label: 'Kredi Kartı'     },
-    { value: 'Bank Transfer',  label: 'Banka Transferi' },
-    { value: 'Debit Card',     label: 'Banka Kartı'     },
-    { value: 'Mobile Payment', label: 'Mobil Ödeme'     },
-    { value: 'Check',          label: 'Çek'             },
-    { value: 'Other',          label: 'Diğer'           },
+const METHOD_VALUES = [
+    'Cash', 'Credit Card', 'Bank Transfer', 'Debit Card',
+    'Mobile Payment', 'Check', 'Other',
 ];
 
 const FilterSelect = ({ label, name, value, onChange, options }) => (
@@ -49,20 +27,38 @@ const FilterSelect = ({ label, name, value, onChange, options }) => (
 );
 
 const ExpenseFilter = ({ filters, setFilters }) => {
+    const { t } = useTranslation('expenses.filter');
+    const { tCategory, tStatus, tPayment } = useI18n();
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFilters((prev) => ({ ...prev, [name]: value }));
     };
 
+    const categoryOptions = [
+        { value: '', label: t('all_categories') },
+        ...CATEGORY_VALUES.map(v => ({ value: v, label: tCategory(v) })),
+    ];
+
+    const statusOptions = [
+        { value: '', label: t('all_statuses') },
+        ...STATUS_VALUES.map(v => ({ value: v, label: tStatus(v) })),
+    ];
+
+    const methodOptions = [
+        { value: '', label: t('all_methods') },
+        ...METHOD_VALUES.map(v => ({ value: v, label: tPayment(v) })),
+    ];
+
     return (
         <div className="filter-sidebar-content">
-            <FilterSelect label="Kategori"       name="category"      value={filters.category}      onChange={handleChange} options={CATEGORIES} />
-            <FilterSelect label="İşlem Durumu"   name="status"        value={filters.status}        onChange={handleChange} options={STATUSES} />
-            <FilterSelect label="Ödeme Yöntemi"  name="paymentMethod" value={filters.paymentMethod} onChange={handleChange} options={METHODS} />
+            <FilterSelect label={t('category', { ns: 'common.forms' })}      name="category"      value={filters.category}      onChange={handleChange} options={categoryOptions} />
+            <FilterSelect label={t('status')}                                  name="status"        value={filters.status}        onChange={handleChange} options={statusOptions} />
+            <FilterSelect label={t('payment_method', { ns: 'common.forms' })} name="paymentMethod" value={filters.paymentMethod} onChange={handleChange} options={methodOptions} />
 
             <div className="filter-amount-row">
                 <div className="filter-input-group">
-                    <label>Min Miktar</label>
+                    <label>{t('min_amount')}</label>
                     <input
                         type="number"
                         name="minAmount"
@@ -72,7 +68,7 @@ const ExpenseFilter = ({ filters, setFilters }) => {
                     />
                 </div>
                 <div className="filter-input-group max-amount">
-                    <label>Max Miktar</label>
+                    <label>{t('max_amount')}</label>
                     <input
                         type="number"
                         name="maxAmount"

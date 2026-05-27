@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import ImageBox from '../../../components/overlays/imageBox/ImageBox';
 import { useImageBox } from '../../../hooks/useLightbox';
+import { useI18n } from '../../../utils/i18nHelpers';
 import './ExpenseDetail.css';
 
 const InfoItem = ({ icon, label, children, full }) => (
@@ -15,6 +17,9 @@ const InfoItem = ({ icon, label, children, full }) => (
 );
 
 const ExpenseDetail = ({ isOpen, onClose, data }) => {
+    const { t } = useTranslation('expenses.detail');
+    const { t: tBtn } = useTranslation('common.buttons');
+    const { tCategory, tStatus } = useI18n();
     const { wrapSidebarClose } = useImageBox();
 
     if (!data) return null;
@@ -25,7 +30,7 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
     const sidebarFooter = (
         <button className="ex-primary-btn">
             <i className="ti ti-file-download" />
-            Fatura Detayını İndir
+            {tBtn('download')}
         </button>
     );
 
@@ -42,7 +47,7 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
                     src={data.image || '/src/assets/images/receipt-placeholder.png'}
                     alt={data.title}
                 >
-                    <img src={data.image || '/src/assets/images/receipt-placeholder.png'} alt="Fatura" />
+                    <img src={data.image || '/src/assets/images/receipt-placeholder.png'} alt={t('receipt_alt')} />
                     <div className="ex-header-overlay" />
                 </ImageBox>
             </div>
@@ -54,26 +59,26 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
                     </div>
                     <div>
                         <h3>{data.title}</h3>
-                        <span className="ex-panel-category">{data.category}</span>
+                        <span className="ex-panel-category">{tCategory(data.category)}</span>
                     </div>
                 </div>
 
                 <div className="ex-financial-card">
                     <div className="ex-amount-group">
-                        <label>Toplam Miktar</label>
+                        <label>{t('total_amount')}</label>
                         <div className="ex-main-price">
                             <span className="ex-price-symbol">{data.currencySymbol}</span>
                             <span className="ex-price-val">{(data.amount || 0).toFixed(2)}</span>
                             <span className="ex-price-cur">{data.currency}</span>
                         </div>
                         <div className="ex-local-conv">
-                            Ödenen: {data.localSymbol}{data.localAmount?.toLocaleString('tr-TR')} {data.localCurrency}
+                            {t('paid_label')}: {data.localSymbol}{data.localAmount?.toLocaleString('tr-TR')} {data.localCurrency}
                         </div>
                     </div>
                     <div className="ex-status-group">
-                        <label>Durum</label>
+                        <label>{t('status_label')}</label>
                         <span className={`ex-status-badge ${statusKey}`}>
-                            {data.status?.toUpperCase()}
+                            {tStatus(statusKey || data.status || '')}
                         </span>
                     </div>
                 </div>
@@ -87,7 +92,7 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
                     <div className="ex-rejection-box">
                         <div className="ex-rej-header">
                             <i className="ti ti-alert-triangle" />
-                            Reddetme Sebebi
+                            {t('rejection_reason')}
                         </div>
                         <p>{data.rejectionReason}</p>
                     </div>
@@ -96,20 +101,20 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
                 <div className="ex-divider" />
 
                 <div className="ex-info-list">
-                    <InfoItem icon="ti-user-circle" label="Gönderici">
+                    <InfoItem icon="ti-user-circle" label={t('sender_label')}>
                         <span className="ex-value">{data.user}</span>
                     </InfoItem>
-                    <InfoItem icon="ti-file-analytics" label="Rapor">
+                    <InfoItem icon="ti-file-analytics" label={t('report_label')}>
                         <span className="ex-value report-tag">{data.report || 'General'}</span>
                     </InfoItem>
-                    <InfoItem icon="ti-building" label="İşletme">
+                    <InfoItem icon="ti-building" label={t('merchant_label')}>
                         <span className="ex-value">{data.merchant}</span>
                     </InfoItem>
-                    <InfoItem icon="ti-calendar-event" label="Tarih">
+                    <InfoItem icon="ti-calendar-event" label={t('date_label')}>
                         <span className="ex-value">{data.date}</span>
                     </InfoItem>
-                    <InfoItem icon="ti-align-left" label="Açıklama" full>
-                        <p className="ex-desc-box">{data.desc || 'Açıklama bulunmuyor.'}</p>
+                    <InfoItem icon="ti-align-left" label={t('desc_label')} full>
+                        <p className="ex-desc-box">{data.desc || t('no_receipt')}</p>
                     </InfoItem>
                 </div>
             </div>

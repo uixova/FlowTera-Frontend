@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Loader from '../../components/ui/Loader';
 import { useAuth } from '../../context/AuthContext';
 import { isDemoUser } from '../../utils/demo';
@@ -20,13 +21,14 @@ import { usePermissions } from '../../hooks/usePermissions';
 import Alert from '../../components/overlays/Alert';
 
 const Dashboard = () => {
+    const { t } = useTranslation('dashboard.overview');
     const { alertConfig, showAlert, closeAlert } = useModal();
     const navigate = useNavigate();
 
     // Context verileri
     const { hasFeature, loading: subLoading } = useSubscription();
     const { selectedTeamId } = useTeam();
-    const { currentUser, currentUserId, teams: authTeams, loading: authLoading, logout } = useAuth();
+    const { currentUser, currentUserId, teams: authTeams, loading: authLoading } = useAuth();
     const { hasPermission } = usePermissions();
 
     const [stats, setStats] = useState({ pendingCount: 0, activeTrips: 0, totalExpenses: 0, rejectedCount: 0 });
@@ -48,8 +50,8 @@ const Dashboard = () => {
         // Demo hesapta tüm yazma işlemleri engellenir
         if (isDemo) {
             showAlert(
-                "Demo Modu",
-                "Bu özelliği kullanmak için DemoBar'daki 'Ücretsiz Kayıt' butonunu kullanabilirsiniz.",
+                t('demo_mode', { ns: 'common.errors' }),
+                t('demo_write_blocked', { ns: 'common.errors' }),
                 "info"
             );
             return;
@@ -57,8 +59,8 @@ const Dashboard = () => {
 
         if (!selectedTeamId) {
             showAlert(
-                "Takım Seçilmedi", 
-                "İşlem yapabilmek için aktif bir takım seçmiş olmanız gerekiyor.", 
+                t('no_team_selected', { ns: 'common.errors' }),
+                t('team_required', { ns: 'common.errors' }),
                 "warning",
                 () => navigate('/team')
             );
@@ -71,12 +73,12 @@ const Dashboard = () => {
 
         // YETKİ KONTROLLERİ (Rol Bazlı)
         if (type === 'trip' && !hasPermission(currentRoleInThisTeam, 'trip_create')) {
-            showAlert("Yetki Kısıtlı", "Bu takımda yeni gezi oluşturma yetkiniz bulunmuyor.", "error");
+            showAlert(t('permission_denied', { ns: 'common.errors' }), t('no_permission_trip', { ns: 'common.errors' }), "error");
             return;
         }
 
         if (type === 'report' && !hasPermission(currentRoleInThisTeam, 'create_report')) {
-            showAlert("Yetki Kısıtlı", "Bu takımda rapor oluşturma yetkiniz bulunmuyor.", "error");
+            showAlert(t('permission_denied', { ns: 'common.errors' }), t('no_permission_report', { ns: 'common.errors' }), "error");
             return;
         }
 
@@ -84,10 +86,10 @@ const Dashboard = () => {
         if (type === 'ocr') {
             if (!hasFeature('ocr_scan') && !hasFeature('bulk_ocr')) {
                 showAlert(
-                    "Planınız Yetersiz", 
-                    "Akıllı OCR Fatura Tarama özelliği üst paketlerimize özeldir.", 
+                    t('plan_insufficient', { ns: 'common.errors' }),
+                    t('ocr_plan_required', { ns: 'common.errors' }),
                     "info",
-                    () => navigate('/subscription') 
+                    () => navigate('/subscription')
                 );
                 return;
             }
@@ -122,8 +124,9 @@ const Dashboard = () => {
         if (!authLoading) fetchDashboardData();
     }, [currentUserId, selectedTeamId, authTeams, authLoading]);
 
-    // Bütün loading süreçlerini burada bekliyoruz
-    if (loading || authLoading || subLoading) return <Loader type="butterfly" />;
+    // Demo modda subscription yüklenmesi beklenmez — demo verisi anlık hazır
+    const waitForSub = !isDemo && subLoading;
+    if (loading || authLoading || waitForSub) return <Loader type="butterfly" />;
 
     // UI'da kilit simgesini göstermek için feature key kontrolü
     const isOCRLocked = !hasFeature('ocr_scan') && !hasFeature('bulk_ocr');
@@ -136,17 +139,17 @@ const Dashboard = () => {
             </div>
 
             <div className="hm-mid-ct hm-card">
-                <div className="card-header"><h2>Hızlı Erişim</h2></div>
+                <div className="card-header"><h2>{t('quick_access')}</h2></div>
                 <hr />
                 <div className="quick-access-container">
                     <div className="create-box" onClick={() => handleQuickAction(setIsExpenseOpen, 'expense')}>
                         <i className="ti ti-credit-card"></i>
-                        <span>Yeni Gider</span>
+                        <span>{t('new_expense')}</span>
                     </div>
 
                     <div className="create-box" onClick={() => handleQuickAction(setIsOCROpen, 'ocr')}>
                         <i className="ti ti-news"></i>
-                        <span>Fatura Ekle</span>
+                        <span>{t('add_invoice')}</span>
                         {isOCRLocked && (
                             <i className="ti ti-lock lock-icon"></i>
                         )}
@@ -154,12 +157,12 @@ const Dashboard = () => {
 
                     <div className="create-box" onClick={() => handleQuickAction(setIsReportOpen, 'report')}>
                         <i className="ti ti-file-description"></i>
-                        <span>Rapor Oluştur</span>
+                        <span>{t('create_report')}</span>
                     </div>
 
                     <div className="create-box" onClick={() => handleQuickAction(setIsTripOpen, 'trip')}>
                         <i className="ti ti-globe"></i>
-                        <span>Gezi Oluştur</span>
+                        <span>{t('create_trip')}</span>
                     </div>
                 </div>
             </div>

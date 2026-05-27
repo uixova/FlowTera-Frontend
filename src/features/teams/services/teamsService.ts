@@ -150,10 +150,14 @@ export const teamsService = {
         };
     },
 
-    // Rol güncelle
+    // Rol güncelle — { role, restrictions } → backend canonical: { roleName, permissions }
     async updateUserRole(userId: string | number, teamId: string | number, payload: Record<string, unknown>): Promise<{ success: boolean; message: string }> {
         try {
-            await restFetch(`/teams/${teamId}/members/${userId}`, { method: 'PUT', body: payload });
+            const body = {
+                roleName:    payload.roleName    ?? payload.role,
+                permissions: payload.permissions ?? payload.restrictions ?? [],
+            };
+            await restFetch(`/teams/${teamId}/members/${userId}`, { method: 'PUT', body });
             clearMemberCache(teamId);
             return { success: true, message: 'Rol güncellendi.' };
         } catch (err: any) {
@@ -237,12 +241,12 @@ export const teamsService = {
         }
     },
 
-    // Üye davet et
+    // Üye davet et — identifier (email/username/userId) backend'de çözülür
     async inviteMember(teamId: string | number, identifier: string, role: string, restrictions: string[]): Promise<{ success: boolean; message?: string }> {
         try {
             await restFetch(`/teams/${teamId}/members`, {
                 method: 'POST',
-                body:   { identifier, role, restrictions },
+                body:   { identifier, roleName: role, permissions: restrictions },
             });
             clearMemberCache(teamId);
             return { success: true };

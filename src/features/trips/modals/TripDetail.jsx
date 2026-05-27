@@ -1,5 +1,7 @@
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
+import { useI18n } from '../../../utils/i18nHelpers';
 import './TripDetail.css';
 
 const TrInfoItem = ({ icon, label, children, full }) => (
@@ -13,6 +15,10 @@ const TrInfoItem = ({ icon, label, children, full }) => (
 );
 
 const TripDetail = ({ isOpen, onClose, data }) => {
+    const { t } = useTranslation('trips.detail');
+    const { t: tBtn } = useTranslation('common.buttons');
+    const { tTripCategory, tStatus } = useI18n();
+
     if (!data) return null;
 
     const statusKey = data.statusClass?.toLowerCase() || data.status?.toLowerCase();
@@ -20,7 +26,7 @@ const TripDetail = ({ isOpen, onClose, data }) => {
     const sidebarFooter = (
         <button className="tr-primary-btn">
             <i className="ti ti-file-download" />
-            Gezi Detaylarını İndir
+            {t('download_btn')}
         </button>
     );
 
@@ -41,14 +47,14 @@ const TripDetail = ({ isOpen, onClose, data }) => {
                     <div>
                         <h3>{data.title}</h3>
                         <span className="tr-panel-category">
-                            {data.category} · {data.date}
+                            {tTripCategory(data.category)} · {data.date}
                         </span>
                     </div>
                 </div>
 
                 <div className="tr-financial-card">
                     <div>
-                        <label>Mali Kayıt Tutarı</label>
+                        <label>{t('financial_record')}</label>
                         <div className="tr-main-price">
                             <span className="tr-price-symbol">{data.currencySymbol}</span>
                             <span className="tr-price-val">
@@ -57,13 +63,13 @@ const TripDetail = ({ isOpen, onClose, data }) => {
                             <span className="tr-price-cur">{data.currency}</span>
                         </div>
                         <div className="tr-local-conv">
-                            Ödenen: {data.localSymbol}{data.localAmount?.toLocaleString('tr-TR')} {data.localCurrency}
+                            {t('paid_label')}: {data.localSymbol}{data.localAmount?.toLocaleString('tr-TR')} {data.localCurrency}
                         </div>
                     </div>
                     <div className="tr-status-group">
-                        <label>Mevcut Durum</label>
+                        <label>{t('current_status')}</label>
                         <span className={`tr-status-badge ${statusKey}`}>
-                            {data.status}
+                            {tStatus(statusKey || data.status || '')}
                         </span>
                     </div>
                 </div>
@@ -73,12 +79,11 @@ const TripDetail = ({ isOpen, onClose, data }) => {
                     1 {data.currency} = {data.exchangeRates?.[data.localCurrency] || data.exchangeRate?.rate} {data.localCurrency}
                 </div>
 
-                {/* REDDETME SEBEBİ BURAYA EKLENDİ */}
                 {statusKey === 'rejected' && data.rejectionReason && (
                     <div className="tr-rejection-box">
                         <div className="tr-rej-header">
                             <i className="ti ti-alert-triangle" />
-                            Reddetme Sebebi
+                            {t('rejection_reason')}
                         </div>
                         <p>{data.rejectionReason}</p>
                     </div>
@@ -87,20 +92,20 @@ const TripDetail = ({ isOpen, onClose, data }) => {
                 <div className="tr-divider" />
 
                 <div className="tr-info-list">
-                    <TrInfoItem icon="ti-map-2" label="Varış Noktası">
+                    <TrInfoItem icon="ti-map-2" label={t('destination_label')}>
                         <span className="tr-value">{data.destination}</span>
                     </TrInfoItem>
-                    <TrInfoItem icon="ti-clock" label="Tarih Aralığı">
+                    <TrInfoItem icon="ti-clock" label={t('date_range_label')}>
                         <span className="tr-value">{data.startDate} — {data.endDate}</span>
                     </TrInfoItem>
-                    <TrInfoItem icon="ti-car" label="Araç">
+                    <TrInfoItem icon="ti-car" label={t('vehicle_label')}>
                         <span className="tr-value">{data.vehicle}</span>
                     </TrInfoItem>
-                    <TrInfoItem icon="ti-hourglass" label="Süre">
+                    <TrInfoItem icon="ti-hourglass" label={t('duration_label')}>
                         <span className="tr-value">{data.duration}</span>
                     </TrInfoItem>
-                    <TrInfoItem icon="ti-notes" label="Gezi Açıklaması" full>
-                        <p className="tr-desc-box">{data.desc || 'Ek not yok.'}</p>
+                    <TrInfoItem icon="ti-notes" label={t('desc_label')} full>
+                        <p className="tr-desc-box">{data.desc || t('no_desc')}</p>
                     </TrInfoItem>
                 </div>
 

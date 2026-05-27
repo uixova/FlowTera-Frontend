@@ -1,29 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useTeam } from '../../../context/TeamContext';
 import { tripsService } from '../services/tripsService';
+import { useI18n } from '../../../utils/i18nHelpers';
 import './CreateTrip.css';
 
-const CATEGORIES = [
-    { value: 'Business',   label: 'İş Gezisi'  },
-    { value: 'Vacation',   label: 'Tatil'       },
-    { value: 'Event',      label: 'Etkinlik'    },
-    { value: 'Conference', label: 'Konferans'   },
-    { value: 'Training',   label: 'Eğitim'      },
-    { value: 'Other',      label: 'Diğer'       },
-];
-
-const VEHICLES = [
-    { value: 'Plane',      label: 'Uçak'        },
-    { value: 'Train',      label: 'Tren'        },
-    { value: 'Car',        label: 'Araba'       },
-    { value: 'Bus',        label: 'Otobüs'      },
-    { value: 'Ship',       label: 'Gemi'        },
-    { value: 'Taxi',       label: 'Taksi'       },
-    { value: 'Motorcycle', label: 'Motosiklet'  },
-    { value: 'Other',      label: 'Diğer'       },
-];
+const CATEGORY_VALUES = ['Business', 'Vacation', 'Event', 'Conference', 'Training', 'Other'];
+const VEHICLE_VALUES  = ['Plane', 'Train', 'Car', 'Bus', 'Ship', 'Taxi', 'Motorcycle', 'Other'];
 
 const CURRENCIES = [
     { value: 'USD', label: 'USD $' },
@@ -54,6 +39,9 @@ const EMPTY_FORM = {
 };
 
 const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
+    const { t } = useTranslation('trips.create');
+    const { t: tBtn } = useTranslation('common.buttons');
+    const { tTripCategory, tVehicle, tStatus } = useI18n();
     const isEditMode     = !!editData;
     const { selectedTeamId } = useTeam();
     const timeAgoDisplay = useTimeAgo(editData?.date);
@@ -137,12 +125,12 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
             </div>
             <div className="tr-panel-title-text">
                 <span className="tr-panel-title-name">
-                    {isEditMode ? 'Gezi Planını Düzenle' : 'Yeni Gezi Planla'}
+                    {isEditMode ? t('title_edit') : t('title_new')}
                 </span>
                 <span className="tr-panel-title-sub">
                     {isEditMode
-                        ? `Son güncelleme: ${timeAgoDisplay}`
-                        : 'Bir rota oluşturmak için detayları doldurun'}
+                        ? `${t('last_updated')}: ${timeAgoDisplay}`
+                        : t('create_subtitle')}
                 </span>
             </div>
         </div>
@@ -158,7 +146,7 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                     disabled={isSubmitting}
                 >
                     <i className="ti ti-trash" />
-                    Sil
+                    {tBtn('delete')}
                 </button>
             )}
             <button
@@ -168,7 +156,7 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                 disabled={isSubmitting}
             >
                 <i className="ti ti-x" />
-                İptal
+                {tBtn('cancel')}
             </button>
             <button
                 type="submit"
@@ -177,10 +165,10 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                 disabled={isSubmitting}
             >
                 {isSubmitting ? (
-                    <><i className="ti ti-loader-2 tr-spin" /> Kaydediliyor...</>
+                    <><i className="ti ti-loader-2 tr-spin" /> {tBtn('saving')}</>
                 ) : (
                     <><i className={`ti ${isEditMode ? 'ti-device-floppy' : 'ti-check'}`} />
-                    {isEditMode ? 'Değişiklikleri Kaydet' : 'Gezi Planı Oluştur'}</>
+                    {isEditMode ? tBtn('save_changes') : tBtn('create_trip')}</>
                 )}
             </button>
         </div>
@@ -202,25 +190,25 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                     </div>
                     <div className="tr-info-item">
                         <i className="ti ti-shield-check" />
-                        <span>{isEditMode ? editData.status : 'Beklemede'}</span>
+                        <span>{isEditMode ? tStatus(editData.status?.toLowerCase()) : t('status_pending')}</span>
                     </div>
                 </div>
 
                 <form id="newTripForm" className="tr-create-form" onSubmit={handleSubmit}>
 
                     <div className="tr-section-divider">
-                        <span>Genel Bilgiler</span>
+                        <span>{t('general_info')}</span>
                     </div>
 
                     <div className="tr-input-group">
-                        <label>Seyahat Amacı</label>
+                        <label>{t('trip_name')}</label>
                         <div className="tr-input-icon-wrap">
                             <i className="ti ti-flag" />
                             <input
                                 className="tr-field-input"
                                 name="title"
                                 type="text"
-                                placeholder="İş toplantısı, Berlin konferansı..."
+                                placeholder={t('title_placeholder')}
                                 value={form.title}
                                 onChange={handleChange}
                                 required
@@ -230,42 +218,42 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
 
                     <div className="tr-input-row">
                         <div className="tr-input-group">
-                            <label>Kategori</label>
+                            <label>{t('category')}</label>
                             <select
                                 className="tr-field-input"
                                 name="category"
                                 value={form.category}
                                 onChange={handleChange}
                             >
-                                {CATEGORIES.map((c) => (
-                                    <option key={c.value} value={c.value}>{c.label}</option>
+                                {CATEGORY_VALUES.map((v) => (
+                                    <option key={v} value={v}>{tTripCategory(v)}</option>
                                 ))}
                             </select>
                         </div>
                         <div className="tr-input-group">
-                            <label>Araç</label>
+                            <label>{t('vehicle')}</label>
                             <select
                                 className="tr-field-input"
                                 name="vehicle"
                                 value={form.vehicle}
                                 onChange={handleChange}
                             >
-                                {VEHICLES.map((v) => (
-                                    <option key={v.value} value={v.value}>{v.label}</option>
+                                {VEHICLE_VALUES.map((v) => (
+                                    <option key={v} value={v}>{tVehicle(v)}</option>
                                 ))}
                             </select>
                         </div>
                     </div>
 
                     <div className="tr-input-group">
-                        <label>Varış Noktası</label>
+                        <label>{t('destination')}</label>
                         <div className="tr-input-icon-wrap">
                             <i className="ti ti-map-pin" />
                             <input
                                 className="tr-field-input"
                                 name="destination"
                                 type="text"
-                                placeholder="Berlin, Almanya"
+                                placeholder={t('destination_placeholder')}
                                 value={form.destination}
                                 onChange={handleChange}
                                 required
@@ -274,12 +262,12 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                     </div>
 
                     <div className="tr-section-divider">
-                        <span>Zaman & Bütçe</span>
+                        <span>{t('time_budget')}</span>
                     </div>
 
                     <div className="tr-input-row tr-date-row">
                         <div className="tr-input-group">
-                            <label>Başlangıç Tarihi</label>
+                            <label>{t('start_date')}</label>
                             <input
                                 className="tr-field-input"
                                 name="startDate"
@@ -290,7 +278,7 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                             />
                         </div>
                         <div className="tr-input-group tr-date-row">
-                            <label>Bitiş Tarihi</label>
+                            <label>{t('end_date')}</label>
                             <input
                                 className="tr-field-input"
                                 name="endDate"
@@ -303,7 +291,7 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                     </div>
 
                     <div className="tr-input-group">
-                        <label>Tahmini Gider</label>
+                        <label>{t('budget')}</label>
                         <div className="tr-amount-wrapper">
                             <input
                                 className="tr-amount-input"
@@ -311,6 +299,7 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                                 type="number"
                                 placeholder="0.00"
                                 step="0.01"
+                                min="0"
                                 value={form.amount}
                                 onChange={handleChange}
                             />
@@ -331,15 +320,15 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                     </div>
 
                     <div className="tr-section-divider">
-                        <span>Notlar</span>
+                        <span>{t('notes_section')}</span>
                     </div>
 
                     <div className="tr-input-group">
-                        <label>Gezi Açıklaması</label>
+                        <label>{t('purpose')}</label>
                         <textarea
                             className="tr-field-input tr-textarea"
                             name="desc"
-                            placeholder="Detaylı bilgi, notlar, önemli noktalar..."
+                            placeholder={t('purpose_placeholder')}
                             value={form.desc}
                             onChange={handleChange}
                         />

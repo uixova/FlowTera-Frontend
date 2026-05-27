@@ -1,0 +1,23 @@
+{
+  "index": {
+    "search_results": { "tr": "Arama Sonuçları", "en": "Search Results" },
+    "help_center": { "tr": "Yardım Merkezi", "en": "Help Center" }
+  },
+  "sidebar": {
+    "heading": { "tr": "Yardım Merkezi", "en": "Help Center" },
+    "subtitle": { "tr": "Bir kategori seçin veya arama yapın", "en": "Select a category or search" },
+    "search_placeholder": { "tr": "Konu ara...", "en": "Search topics..." },
+    "contact_title": { "tr": "Geliştirici ile İletişim", "en": "Contact Developer" },
+    "email_support": { "tr": "E-posta Desteği", "en": "Email Support" }
+  },
+  "content": {
+    "type_steps": { "tr": "Adımlar", "en": "Steps" },
+    "type_list": { "tr": "Liste", "en": "List" },
+    "type_article": { "tr": "Makale", "en": "Article" },
+    "type_alert": { "tr": "Uyarı", "en": "Warning" },
+    "results_search": { "tr": "\"{{search}}\" için {{count}} sonuç", "en": "{{count}} results for \"{{search}}\"" },
+    "results_count": { "tr": "{{count}} konu bulundu", "en": "{{count}} topics found" },
+    "empty_search": { "tr": "\"{{search}}\" aramasına uygun sonuç bulunamadı.", "en": "No results found for \"{{search}}\"." },
+    "empty_category": { "tr": "Bu kategoride henüz içerik yok.", "en": "No content in this category yet." }
+  }
+}

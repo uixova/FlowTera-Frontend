@@ -1,35 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useTeam } from '../../../context/TeamContext';
 import { expenseService } from '../services/expenseService';
+import { useI18n } from '../../../utils/i18nHelpers';
 import './CreateExpense.css';
 
-const CATEGORIES = [
-    { value: 'Food',          label: 'Yiyecek & İçecek'  },
-    { value: 'Transport',     label: 'Ulaşım'             },
-    { value: 'Accommodation', label: 'Konaklama'          },
-    { value: 'Health',        label: 'Sağlık'             },
-    { value: 'Entertainment', label: 'Eğlence'            },
-    { value: 'Office',        label: 'Ofis Malzemeleri'   },
-    { value: 'Education',     label: 'Eğitim'             },
-    { value: 'Technology',    label: 'Teknoloji'          },
-    { value: 'Shopping',      label: 'Alışveriş'          },
-    { value: 'Utilities',     label: 'Faturalar'          },
-    { value: 'Finance',       label: 'Finans & Sigorta'   },
-    { value: 'Events',        label: 'Etkinlik & Toplantı'},
-    { value: 'Marketing',     label: 'Pazarlama & Reklam' },
-    { value: 'Legal',         label: 'Hukuk & Danışmanlık'},
-    { value: 'Other',         label: 'Diğer'              },
+const CATEGORY_VALUES = [
+    'Food', 'Transport', 'Accommodation', 'Health', 'Entertainment',
+    'Office', 'Education', 'Technology', 'Shopping', 'Utilities',
+    'Finance', 'Events', 'Marketing', 'Legal', 'Other',
 ];
 
-const METHODS = [
-    { value: 'Cash',           label: 'Nakit'           },
-    { value: 'Credit Card',    label: 'Kredi Kartı'     },
-    { value: 'Bank Transfer',  label: 'Banka Transferi' },
-    { value: 'Debit Card',     label: 'Banka Kartı'     },
-    { value: 'Mobile Payment', label: 'Mobil Ödeme'     },
-    { value: 'Check',          label: 'Çek'             },
-    { value: 'Other',          label: 'Diğer'           },
+const METHOD_VALUES = [
+    'Cash', 'Credit Card', 'Bank Transfer', 'Debit Card',
+    'Mobile Payment', 'Check', 'Other',
 ];
 
 const CURRENCIES = [
@@ -44,10 +29,13 @@ const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', TRY: '₺', GBP: '£' };
 const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill }) => {
     const isEdit = !!editData;
 
+    const { t, i18n } = useTranslation('expenses.create');
+    const { tCategory, tPayment } = useI18n();
     const { selectedTeamId } = useTeam();
     const [selectedFile, setSelectedFile] = useState(null);
     const [previewUrl,   setPreviewUrl]   = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError,  setSubmitError]  = useState('');
     const [currencyOpen, setCurrencyOpen] = useState(false);
     const currencyRef = useRef(null);
 
@@ -97,6 +85,7 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
         }
         setSelectedFile(null);
         setCurrencyOpen(false);
+        setSubmitError('');
     }, [isOpen, isEdit, editData, prefill]);
 
     // Dışarı tıklayınca currency popup'ı kapat
@@ -126,10 +115,18 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setSubmitError('');
         try {
             let receiptKey = isEdit ? (editData.receipt || null) : null;
             if (selectedFile) {
-                receiptKey = await expenseService.uploadReceiptFile(selectedFile, selectedTeamId);
+                try {
+                    receiptKey = await expenseService.uploadReceiptFile(selectedFile, selectedTeamId);
+                } catch (uploadErr) {
+                    console.error('[CreateExpense] S3 upload hatası:', uploadErr);
+                    setSubmitError(t('error_upload'));
+                    setIsSubmitting(false);
+                    return;
+                }
             }
 
             const now = new Date();
@@ -171,8 +168,9 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
 
             if (onSuccess) onSuccess();
             onClose();
-        } catch {
-            console.error('İşlem başarısız:');
+        } catch (err) {
+            console.error('[CreateExpense] İşlem başarısız:', err);
+            setSubmitError(t('error_save'));
         } finally {
             setIsSubmitting(false);
         }
@@ -180,11 +178,12 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
 
     const selectedCurrencySymbol = CURRENCY_SYMBOLS[form.currency] || '';
 
+    const dateLocale = i18n.language === 'tr' ? 'tr-TR' : 'en-US';
     const displayDate = isEdit
-        ? new Date(editData.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+        ? new Date(editData.date).toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' })
         : form.date
-            ? new Date(form.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
-            : new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+            ? new Date(form.date).toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' })
+            : new Date().toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' });
 
     const sidebarTitle = (
         <div className="ex-panel-title">
@@ -192,13 +191,19 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
                 <i className={`ti ${isEdit ? 'ti-edit' : 'ti-plus'}`} />
             </div>
             <span className="ex-panel-title-text">
-                {isEdit ? 'Gideri Güncelle' : 'Yeni Harcama Ekle'}
+                {isEdit ? t('title_edit') : t('title_new')}
             </span>
         </div>
     );
 
     const sidebarFooter = (
         <div className="ex-panel-footer-alt">
+            {submitError && (
+                <div className="ex-submit-error">
+                    <i className="ti ti-alert-circle" />
+                    <span>{submitError}</span>
+                </div>
+            )}
             {isEdit && onDelete && (
                 <button
                     type="button"
@@ -207,7 +212,7 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
                     disabled={isSubmitting}
                 >
                     <i className="ti ti-trash" />
-                    Sil
+                    {t('delete', { ns: 'common.buttons' })}
                 </button>
             )}
             <button
@@ -217,7 +222,7 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
                 disabled={isSubmitting}
             >
                 <i className="ti ti-x" />
-                İptal
+                {t('cancel', { ns: 'common.buttons' })}
             </button>
             <button
                 type="submit"
@@ -226,9 +231,9 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
                 disabled={isSubmitting}
             >
                 {isSubmitting ? (
-                    <><i className="ti ti-loader-2 ex-spin" /> Kaydediliyor...</>
+                    <><i className="ti ti-loader-2 ex-spin" /> {t('saving', { ns: 'common.buttons' })}</>
                 ) : (
-                    <><i className={`ti ${isEdit ? 'ti-device-floppy' : 'ti-check'}`} /> {isEdit ? 'Değişiklikleri Kaydet' : 'Gider Oluştur'}</>
+                    <><i className={`ti ${isEdit ? 'ti-device-floppy' : 'ti-check'}`} /> {isEdit ? t('save_changes', { ns: 'common.buttons' }) : t('create_expense', { ns: 'common.buttons' })}</>
                 )}
             </button>
         </div>
@@ -251,19 +256,19 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
                     </div>
                     <div className="info-item">
                         <i className="ti ti-shield-check" />
-                        <span>{isEdit ? editData.status : 'Beklemede'}</span>
+                        <span>{isEdit ? editData.status : t('status_pending')}</span>
                     </div>
                 </div>
 
                 <form id="newExpenseForm" onSubmit={handleSubmit} className="ex-panel-form">
 
                     <div className="ex-input-group">
-                        <label>Detay / Başlık</label>
+                        <label>{t('title', { ns: 'common.forms' })}</label>
                         <input
                             className="ex-field-input"
                             name="title"
                             type="text"
-                            placeholder="Sunucu bakımı, müşteri yemeği..."
+                            placeholder={t('placeholder_title', { ns: 'common.forms' })}
                             value={form.title}
                             onChange={handleChange}
                             required
@@ -272,26 +277,26 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
 
                     <div className="ex-input-row">
                         <div className="ex-input-group">
-                            <label>Kategori</label>
+                            <label>{t('category', { ns: 'common.forms' })}</label>
                             <select
                                 className="ex-field-input"
                                 name="category"
                                 value={form.category}
                                 onChange={handleChange}
                             >
-                                <option value="" disabled>Kategori seç</option>
-                                {CATEGORIES.map(cat => (
-                                    <option key={cat.value} value={cat.value}>{cat.label}</option>
+                                <option value="" disabled>{t('select_category', { ns: 'common.forms' })}</option>
+                                {CATEGORY_VALUES.map(val => (
+                                    <option key={val} value={val}>{tCategory(val)}</option>
                                 ))}
                             </select>
                         </div>
                         <div className="ex-input-group">
-                            <label>İşletme</label>
+                            <label>{t('merchant', { ns: 'common.forms' })}</label>
                             <input
                                 className="ex-field-input"
                                 name="merchant"
                                 type="text"
-                                placeholder="Amazon, Starbucks..."
+                                placeholder={t('placeholder_merchant', { ns: 'common.forms' })}
                                 value={form.merchant}
                                 onChange={handleChange}
                             />
@@ -299,22 +304,22 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
                     </div>
 
                     <div className="ex-input-group">
-                        <label>Ödeme Yöntemi</label>
+                        <label>{t('payment_method', { ns: 'common.forms' })}</label>
                         <select
                             className="ex-field-input"
                             name="paymentMethod"
                             value={form.paymentMethod}
                             onChange={handleChange}
                         >
-                            <option value="" disabled>Yöntem seç</option>
-                            {METHODS.map(m => (
-                                <option key={m.value} value={m.value}>{m.label}</option>
+                            <option value="" disabled>{t('select_method', { ns: 'common.forms' })}</option>
+                            {METHOD_VALUES.map(val => (
+                                <option key={val} value={val}>{tPayment(val)}</option>
                             ))}
                         </select>
                     </div>
 
                     <div className="ex-input-group">
-                        <label>Miktar ve Para Birimi</label>
+                        <label>{t('amount_currency')}</label>
 
                         <div className="ex-amount-wrapper">
                             <input
@@ -348,20 +353,20 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
                     </div>
 
                     <div className="ex-input-group">
-                        <label>Fatura / Belge</label>
+                        <label>{t('receipt_label')}</label>
                         <div
                             className="ex-upload-zone"
                             onClick={() => document.getElementById('exInpReceipt').click()}
                         >
                             {previewUrl ? (
-                                <img src={previewUrl} alt="Fatura" className="ex-upload-preview" />
+                                <img src={previewUrl} alt={t('receipt_label')} className="ex-upload-preview" />
                             ) : (
                                 <>
                                     <i className="ti ti-file-upload ex-upload-icon" />
                                     <span className="ex-upload-text">
-                                        {isEdit && editData?.receipt ? 'Dosyayı Değiştir' : 'Fatura ekle veya sürükle'}
+                                        {isEdit && editData?.receipt ? t('receipt_change') : t('receipt_add')}
                                     </span>
-                                    <span className="ex-upload-hint">PDF, JPG, PNG · Maks 5MB</span>
+                                    <span className="ex-upload-hint">{t('receipt_hint')}</span>
                                 </>
                             )}
                             <input
@@ -376,8 +381,8 @@ const CreateExpense = ({ isOpen, onClose, editData, onSuccess, onDelete, prefill
 
                     <div className="ex-toggle-row">
                         <div className="ex-toggle-text">
-                            <span className="ex-toggle-title">Aylık rapora eklensin mi?</span>
-                            <span className="ex-toggle-sub">Aktif edilirse bu gider raporlara yansır</span>
+                            <span className="ex-toggle-title">{t('report_toggle')}</span>
+                            <span className="ex-toggle-sub">{t('report_toggle_sub')}</span>
                         </div>
                         <label className="switch">
                             <input
