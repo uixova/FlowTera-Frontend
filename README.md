@@ -13,7 +13,7 @@
 
 ## 🔗 Canlı Demo
 
-> **Demo:** [[flowtera-ni.vercel.app]]
+> **Demo:** [https://flowtera.netlify.app](https://flowtera.netlify.app)
 >
 > Demo hesabı ile giriş yapın — tüm modüller (harcama, gezi, analiz, arşiv, ayarlar) tam özellikli çalışır. Demo modunda veri oluşturma/düzenleme işlemleri kısıtlıdır.
 >
