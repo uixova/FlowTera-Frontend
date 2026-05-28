@@ -60,7 +60,7 @@ export const StatusOverview = ({ stats }) => {
 /* SAĞ PANEL — RECENT ACTIVITIES */
 export const RecentActivities = ({ activities }) => {
     const { t } = useTranslation('dashboard.activities');
-    const { tCategory } = useI18n();
+    const { tCategory, tTripCategory } = useI18n();
     const count = activities?.length ?? 0;
 
     return (
@@ -104,13 +104,13 @@ export const RecentActivities = ({ activities }) => {
                                     {item.teamName}
                                 </span>
                                 <span className={`col-type ${isTrip ? 'trip' : 'expense'}`}>
-                                    {item.type}
+                                    {isTrip ? t('type_trip') : t('type_expense')}
                                 </span>
                                 <span
                                     className={`badge badge-${item.category?.replace(/\s+/g, '-').toLowerCase()}`}
-                                    title={tCategory(item.category)}
+                                    title={isTrip ? tTripCategory(item.category) : tCategory(item.category)}
                                 >
-                                    {tCategory(item.category)}
+                                    {isTrip ? tTripCategory(item.category) : tCategory(item.category)}
                                 </span>
                                 <span className="col-amount">{item.amount}</span>
                             </div>

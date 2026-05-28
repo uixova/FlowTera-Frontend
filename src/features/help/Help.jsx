@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../locales/i18n';
 import './Help.css';
 import HelpSidebar from './components/Helpsidebar';
 import HelpContent from './components/Helpcontent';
@@ -35,11 +36,12 @@ const Help = () => {
         const trimmed = search.trim().toLowerCase();
 
         if (trimmed) {
-            // Arama aktifken tüm kategorilerde tara
-            return data.items.filter(item =>
-                item.title.toLowerCase().includes(trimmed) ||
-                (typeof item.content === 'string' && item.content.toLowerCase().includes(trimmed))
-            );
+            const lang = i18n.language === 'tr' ? 'tr' : 'en';
+            return data.items.filter(item => {
+                const title = typeof item.title === 'object' ? (item.title[lang] ?? item.title.tr ?? '') : (item.title ?? '');
+                const content = typeof item.content === 'object' ? (item.content[lang] ?? item.content.tr ?? '') : (item.content ?? '');
+                return title.toLowerCase().includes(trimmed) || content.toLowerCase().includes(trimmed);
+            });
         }
         return data.items.filter(item => item.category === activeId);
     }, [data, activeId, search]);

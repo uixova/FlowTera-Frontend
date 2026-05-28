@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useI18n } from '../../../utils/i18nHelpers';
 import './Helpcontent.css';
 
 const TYPE_LABEL_KEYS = {
@@ -32,14 +33,17 @@ const CAT_COLOR_STYLES = {
 
 const HelpItem = ({ item }) => {
     const { t } = useTranslation('help.content');
+    const { lang } = useI18n();
     const [open, setOpen] = useState(false);
+
+    const L = (val) => (typeof val === 'object' && val !== null) ? (val[lang] ?? val.tr) : val;
 
     return (
         <div className={`help-item type-${item.type}${open ? ' is-open' : ''}`}>
             <div className="help-item-header" onClick={() => setOpen(o => !o)}>
                 <div className="help-item-left">
                     <span className="help-item-type-dot" />
-                    <span className="help-item-title">{item.title}</span>
+                    <span className="help-item-title">{L(item.title)}</span>
                 </div>
                 <span className="help-item-tag">{t(TYPE_LABEL_KEYS[item.type] || item.type)}</span>
                 <i className="ti ti-chevron-down help-item-chevron" />
@@ -48,7 +52,7 @@ const HelpItem = ({ item }) => {
             <div className="help-item-body">
                 <div className="help-item-inner">
                     {item.type === 'article' && (
-                        <p className="help-article-text">{item.content}</p>
+                        <p className="help-article-text">{L(item.content)}</p>
                     )}
 
                     {item.type === 'steps' && (
@@ -56,7 +60,7 @@ const HelpItem = ({ item }) => {
                             {item.steps?.map((step, i) => (
                                 <li key={i} className="help-step">
                                     <span className="help-step-num">{i + 1}</span>
-                                    <span className="help-step-text">{step}</span>
+                                    <span className="help-step-text">{L(step)}</span>
                                 </li>
                             ))}
                         </ol>
@@ -68,8 +72,8 @@ const HelpItem = ({ item }) => {
                                 <li key={i} className="help-list-row">
                                     <i className="ti ti-point-filled" />
                                     <span>
-                                        <span className="help-list-label">{row.label}</span>
-                                        <span className="help-list-desc">{row.desc}</span>
+                                        <span className="help-list-label">{L(row.label)}</span>
+                                        <span className="help-list-desc">{L(row.desc)}</span>
                                     </span>
                                 </li>
                             ))}
@@ -79,7 +83,7 @@ const HelpItem = ({ item }) => {
                     {item.type === 'alert' && (
                         <div className={`help-alert-box severity-${item.severity || 'info'}`}>
                             <i className={`ti ${ALERT_ICONS[item.severity] || 'ti-info-circle'} help-alert-icon`} />
-                            <p className="help-alert-text">{item.content}</p>
+                            <p className="help-alert-text">{L(item.content)}</p>
                         </div>
                     )}
                 </div>
@@ -90,6 +94,8 @@ const HelpItem = ({ item }) => {
 
 const HelpContent = ({ category, items, search }) => {
     const { t } = useTranslation('help.content');
+    const { lang } = useI18n();
+    const L = (val) => (typeof val === 'object' && val !== null) ? (val[lang] ?? val.tr) : val;
 
     if (!category) return null;
 
@@ -109,7 +115,7 @@ const HelpContent = ({ category, items, search }) => {
                     <i className={`ti ${category.icon}`} />
                 </div>
                 <div>
-                    <h1>{category.label}</h1>
+                    <h1>{L(category.label)}</h1>
                     <p>
                         {search
                             ? t('results_search', { search, count: items.length })

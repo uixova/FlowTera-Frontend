@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../../locales/i18n';
 import PhoneNumber from '../../../components/overlays/phone/PhoneNumber';
 import { settingsService } from '../services/settingService';
 import './Profile.css';
@@ -131,7 +132,11 @@ const Profile = ({ user }) => {
                     </div>
                     <div className="st-input-group static-field">
                         <label>{t('joined_date')}</label>
-                        <div className="static-value">{user.joinedDate}</div>
+                        <div className="static-value">
+                            {user.joinedDate
+                                ? new Date(user.joinedDate).toLocaleDateString(i18n.language === 'tr' ? 'tr-TR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                                : '—'}
+                        </div>
                     </div>
 
                     <div className="st-input-group">

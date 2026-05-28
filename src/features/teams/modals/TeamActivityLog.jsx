@@ -1,3 +1,4 @@
+import i18n from '../../../locales/i18n';
 import React, { useState, useEffect, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
@@ -98,7 +99,7 @@ const TeamLogModal = ({ isOpen, onClose, user, teamId }) => {
                                             <span className="timeline-title">{log.action}</span>
                                             <span className="timeline-date">
                                                 {log.createdAt || log.timestamp
-                                                    ? new Date(log.createdAt || log.timestamp).toLocaleString('tr-TR')
+                                                    ? new Date(log.createdAt || log.timestamp).toLocaleString(i18n.language === 'tr' ? 'tr-TR' : 'en-US')
                                                     : log.date
                                                         ? `${log.date}${log.time ? ' ' + log.time : ''}`
                                                         : '—'}

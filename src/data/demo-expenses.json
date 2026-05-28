@@ -87,6 +87,7 @@
     "userId": "demo-user-001",
     "note": "Fatura yok — red sebebi",
     "rejectionReason": "Harcamaya ait fatura veya fiş belgesi sisteme yüklenmemiş. Belge eklenerek yeniden gönderilebilir.",
+    "rejectionReasonEn": "No invoice or receipt document has been uploaded for this expense. May be resubmitted with supporting documentation.",
     "receiptUrl": null,
     "createdBy": { "id": "demo-user-001", "name": "Demo Kullanıcı" }
   },

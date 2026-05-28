@@ -24,6 +24,7 @@ interface RequestOptions {
     ttl?:          number;
     method?:       'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
     body?:         unknown;
+    noRetry?:      boolean;
 }
 
 interface CacheEntry<T> {
@@ -148,6 +149,7 @@ const request = async <T = unknown>(
         ttl          = DEFAULT_TTL_MS,
         method       = 'GET',
         body,
+        noRetry      = false,
     } = options;
 
     if (isDemoMode() && method !== 'GET') {
@@ -199,7 +201,7 @@ const request = async <T = unknown>(
         } catch (error: unknown) {
             const err = error as Error & { status?: number };
 
-            if (shouldRetry(err, attempt)) {
+            if (!noRetry && shouldRetry(err, attempt)) {
                 const delay = RETRY_BASE_DELAY * Math.pow(2, attempt);
                 console.warn(`[API] Retry [${resourceKey}] attempt ${attempt + 1}/${MAX_RETRIES} in ${delay}ms`);
                 await wait(delay);
@@ -329,7 +331,7 @@ export const api = {
 
     plans: {
         getAll: (opts: RequestOptions = {}) =>
-            request<{ status: string; data: Plan[] }>('PLANS', {}, { ttl: 60 * 60 * 1000, ...opts }),
+            request<{ status: string; data: Plan[] }>('PLANS', {}, { ttl: 60 * 60 * 1000, noRetry: true, ...opts }),
     },
 
     cache: {

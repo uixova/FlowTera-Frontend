@@ -1,3 +1,4 @@
+import i18n from '../../../locales/i18n';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './ExportData.css';
@@ -28,7 +29,7 @@ const ExportModal = ({ isOpen, onClose, teamId, teamName }) => {
                 t('col_currency'), t('col_status'), t('col_creator'),
             ];
             const rows = expenses.map((e) => [
-                new Date(e.date).toLocaleDateString('tr-TR'),
+                new Date(e.date).toLocaleDateString(i18n.language === 'tr' ? 'tr-TR' : 'en-US'),
                 `"${(e.title         || '').replace(/"/g, '""')}"`,
                 `"${(e.category      || '').replace(/"/g, '""')}"`,
                 `"${(e.merchant      || '').replace(/"/g, '""')}"`,
@@ -81,7 +82,7 @@ const ExportModal = ({ isOpen, onClose, teamId, teamName }) => {
                     <div className="ex-document-preview">
                         <div className="ex-doc-header">
                             <span>{t('financial_report')}</span>
-                            <span>{new Date().toLocaleDateString('tr-TR')}</span>
+                            <span>{new Date().toLocaleDateString(i18n.language === 'tr' ? 'tr-TR' : 'en-US')}</span>
                         </div>
                         <div className="doc-line" />
                         <div className="doc-line short" />

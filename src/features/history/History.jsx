@@ -7,7 +7,7 @@ import PaginationFooter from '../../components/ui/PaginationFooter';
 import HistoryItem from './components/HistoryItem';
 import ActionSidebar from '../../components/navigation/ActionSidebar';
 import HistoryFilter from './modals/HistoryFilter';
-import BackToTop from '../../components/ui/BackToTop';
+import BackToTop from '../../components/ui//BackToTop';
 
 // Hook ve Servisler
 import { historyService } from './services/historyService';

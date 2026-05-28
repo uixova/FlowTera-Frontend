@@ -2,18 +2,21 @@
   "infos": [
     {
       "id": "demo-notif-001",
+      "textKey": "notif_welcome",
       "text": "FlowTera Demo'ya hoş geldiniz. Tüm özellikler aktif.",
       "date": "2025-05-25T09:00:00.000Z",
       "category": "info"
     },
     {
       "id": "demo-notif-002",
+      "textKey": "notif_ocr_active",
       "text": "Akıllı fatura tarama özelliği aktif. Fişlerinizi yükleyin.",
       "date": "2025-05-24T14:30:00.000Z",
       "category": "success"
     },
     {
       "id": "demo-notif-003",
+      "textKey": "notif_expense_approved",
       "text": "Berlin iş seyahati harcamanız onaylandı.",
       "date": "2025-05-20T11:00:00.000Z",
       "category": "success"

@@ -9,5 +9,8 @@
   "no_requests": { "tr": "Bu kategoride talep yok.", "en": "No requests in this category." },
   "reject_reason": { "tr": "Red gerekçesi", "en": "Rejection reason" },
   "reject_placeholder": { "tr": "Red gerekçesi (isteğe bağlı)...", "en": "Rejection reason (optional)..." },
-  "search_placeholder": { "tr": "İstek ara...", "en": "Search requests..." }
+  "search_placeholder": { "tr": "İstek ara...", "en": "Search requests..." },
+  "title_join": { "tr": "Takıma Katılma Talebi", "en": "Team Join Request" },
+  "title_expense": { "tr": "Gider Onay Talebi", "en": "Expense Approval Request" },
+  "title_travel": { "tr": "Seyahat Onay Talebi", "en": "Travel Approval Request" }
 }

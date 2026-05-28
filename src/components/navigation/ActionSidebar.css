@@ -18,7 +18,6 @@
     -webkit-backdrop-filter: var(--backdrop-blur);
     opacity: 0;
     transition: opacity var(--transition-base) cubic-bezier(0.23, 1, 0.32, 1);
-    will-change: opacity;
 }
 
 .as-wrapper.is-active .as-overlay {
@@ -41,7 +40,6 @@
 
     transform: translateX(105%);
     transition: transform var(--transition-spring);
-    will-change: transform;
 }
 
 .as-wrapper.is-active .as-panel {
@@ -166,7 +164,6 @@
         border-radius: var(--radius-xl) var(--radius-xl) 0 0;
         transform: translateY(105%);
         border-top: 1px solid var(--border-subtle);
-        will-change: transform;
         }
 
     .as-wrapper.is-active .as-panel {

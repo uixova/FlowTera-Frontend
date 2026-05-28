@@ -2,11 +2,56 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSubscription } from '../../../context/SubscriptionContext';
+import { useI18n } from '../../../utils/i18nHelpers';
 import './UserPlan.css';
+
+// Maps ALL known Turkish plan feature texts → translation keys in settings.plan
+// Used as fallback when backend data doesn't include textKey
+const FEATURE_TEXT_MAP = {
+    'Günlük harcama takibi':                    'feat_daily_tracking',
+    'Akıllı OCR Fatura Tarama':                 'feat_ocr_scan',
+    'Sınırsız işlem geçmişi':                   'feat_unlimited_history',
+    'Sınırlı işlem geçmişi':                    'feat_limited_history',
+    'Sınırlı işlem geçmişi (son 2 ay)':         'feat_limited_history_2mo',
+    'Topluluk destek forumu':                    'feat_community_support',
+    'Topluluk forumu':                           'feat_community_forum',
+    'Öncelikli e-posta desteği':                'feat_priority_support',
+    'Tema Yönetim Paneli':                      'feat_theme_panel',
+    'AI Finansal Analiz':                       'feat_ai_analysis',
+    'Otomasyon':                                'feat_automation',
+    'Gelişmiş Fatura Arşivi':                   'feat_invoice_archive',
+    '7/24 Özel Destek Hattı':                   'feat_dedicated_support',
+    'Gelişmiş Toplu OCR':                       'feat_batch_ocr',
+    'Özel Ekip Paneli':                         'feat_custom_dashboard',
+    'AI Destekli Analiz':                       'feat_ai_analytics',
+    'Tüm Özellikler':                           'feat_all_features',
+    'Gelişmiş raporlama':                       'feat_advanced_reports',
+    'Takım yönetimi':                           'feat_team_management',
+    'API erişimi':                              'feat_api_access',
+    'Çoklu para birimi':                        'feat_multi_currency',
+    'Dışa aktarma':                             'feat_export',
+    'Seyahat takibi':                           'feat_trip_tracking',
+    'Gider onay akışı':                         'feat_expense_approval',
+};
 
 const UserPlan = ({ user }) => {
     const { t } = useTranslation('settings.plan');
     const navigate = useNavigate();
+
+    // feature.textKey → direct lookup; no textKey → FEATURE_TEXT_MAP fallback → raw text
+    const getFeatureText = (feature) => {
+        if (feature.textKey) return t(feature.textKey, { defaultValue: feature.text });
+        const key = FEATURE_TEXT_MAP[feature.text];
+        return key ? t(key, { defaultValue: feature.text }) : (feature.text || '');
+    };
+
+    // Parse "50 takım" / "50 teams" / "50" → "50 teams" / "50 takım"
+    const formatLimit = (raw, unit) => {
+        if (!raw && raw !== 0) return '—';
+        const num = String(raw).match(/\d+/)?.[0];
+        return num ? `${num} ${t(unit)}` : raw;
+    };
+
     const { currentPlan, loading } = useSubscription();
 
     if (loading) return <div className="st-loader">{t('loading')}</div>;
@@ -23,6 +68,8 @@ const UserPlan = ({ user }) => {
 
     const includedFeatures = currentPlan.features?.filter(f =>  f.included) || [];
     const lockedFeatures   = currentPlan.features?.filter(f => !f.included) || [];
+
+    const promise = currentPlan.promise || currentPlan.Promise;
 
     return (
         <div className="st-content-section">
@@ -43,7 +90,7 @@ const UserPlan = ({ user }) => {
                             <i className={`ti ${currentPlan.icon || 'ti-crown'}`} />
                         </div>
                         <div className="plan-brand-text">
-                            <h3>{currentPlan.name.toUpperCase()}</h3>
+                            <h3>{t(currentPlan.nameKey || `name_${currentPlan.badge}`, { defaultValue: currentPlan.name }).toUpperCase()}</h3>
                             <span className="plan-tier-tag">{currentPlan.badge} {t('tier_label')}</span>
                         </div>
                     </div>
@@ -61,7 +108,7 @@ const UserPlan = ({ user }) => {
                                 {t('team_limit_label')}
                             </span>
                             <span className="plan-limit-val">
-                                {(currentPlan.promise || currentPlan.Promise)?.teamLimit || '—'}
+                                {formatLimit(promise?.teamLimit, 'unit_team')}
                             </span>
                         </div>
                         <div className="plan-limit-row">
@@ -70,7 +117,7 @@ const UserPlan = ({ user }) => {
                                 {t('member_limit_label')}
                             </span>
                             <span className="plan-limit-val">
-                                {(currentPlan.promise || currentPlan.Promise)?.TeamMemberLimit || '—'}
+                                {formatLimit(promise?.TeamMemberLimit, 'unit_member')}
                             </span>
                         </div>
                     </div>
@@ -114,13 +161,13 @@ const UserPlan = ({ user }) => {
                                 {includedFeatures.map((feature, idx) => (
                                     <li key={`inc-${idx}`} className="feature-item included">
                                         <i className="ti ti-circle-check" />
-                                        {feature.text}
+                                        {getFeatureText(feature)}
                                     </li>
                                 ))}
                                 {lockedFeatures.map((feature, idx) => (
                                     <li key={`lck-${idx}`} className="feature-item locked">
                                         <i className="ti ti-lock" />
-                                        {feature.text}
+                                        {getFeatureText(feature)}
                                     </li>
                                 ))}
                             </ul>

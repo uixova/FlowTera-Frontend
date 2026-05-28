@@ -101,7 +101,8 @@
     "placeholder_merchant": { "tr": "Amazon, Starbucks...", "en": "Amazon, Starbucks..." },
     "placeholder_search": { "tr": "Ara...", "en": "Search..." },
     "report_toggle": { "tr": "Aylık rapora eklensin mi?", "en": "Include in monthly report?" },
-    "report_toggle_sub": { "tr": "Aktif edilirse bu gider raporlara yansır", "en": "When active, this expense appears in reports" }
+    "report_toggle_sub": { "tr": "Aktif edilirse bu gider raporlara yansır", "en": "When active, this expense appears in reports" },
+    "currency_active": { "tr": "Aktif", "en": "Active" }
   },
   "modals": {
     "confirm_logout": { "tr": "Hesabınızdan çıkış yapmak istediğinize emin misiniz?", "en": "Are you sure you want to log out?" },
@@ -130,6 +131,7 @@
     "radius_round": { "tr": "Oval", "en": "Round" },
     "radius_ultra": { "tr": "Tam Oval", "en": "Pill" },
     "plan_required": { "tr": "Bu ayarlar Professional plan gerektirir", "en": "These settings require a Professional plan" },
+    "plan_upgrade_msg": { "tr": "Tema Özelleştirme Professional pakete özeldir.", "en": "Theme Customization is available on the Professional plan." },
     "btn_reset": { "tr": "Sıfırla", "en": "Reset" },
     "btn_apply": { "tr": "Değişiklikleri Uygula", "en": "Apply Changes" }
   },
@@ -173,6 +175,18 @@
     "reject_reason_placeholder": { "tr": "Red gerekçesi (isteğe bağlı)...", "en": "Rejection reason (optional)..." },
     "activity_center": { "tr": "Aktivite Merkezi", "en": "Activity Center" },
     "recent_notifications": { "tr": "Son Bildirimler", "en": "Recent Notifications" },
-    "pending_invites": { "tr": "Bekleyen Davetler", "en": "Pending Invitations" }
+    "pending_invites": { "tr": "Bekleyen Davetler", "en": "Pending Invitations" },
+    "notif_welcome": { "tr": "FlowTera Demo'ya hoş geldiniz. Tüm özellikler aktif.", "en": "Welcome to FlowTera Demo. All features are active." },
+    "notif_ocr_active": { "tr": "Akıllı fatura tarama özelliği aktif. Fişlerinizi yükleyin.", "en": "Smart invoice scanning is active. Upload your receipts." },
+    "notif_expense_approved": { "tr": "Berlin iş seyahati harcamanız onaylandı.", "en": "Your Berlin business trip expense has been approved." }
+  },
+  "time": {
+    "invalid_date": { "tr": "Geçersiz tarih", "en": "Invalid date" },
+    "just_now": { "tr": "Az önce", "en": "Just now" },
+    "soon": { "tr": "Yakında", "en": "Soon" },
+    "yesterday": { "tr": "Dün", "en": "Yesterday" },
+    "minutes_ago": { "tr": "{{count}} dk önce", "en": "{{count}} min ago" },
+    "hours_ago": { "tr": "{{count}} sa önce", "en": "{{count}}h ago" },
+    "days_ago": { "tr": "{{count}} gün önce", "en": "{{count}} days ago" }
   }
 }

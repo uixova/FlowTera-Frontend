@@ -8,12 +8,13 @@ import { useI18n } from '../../../utils/i18nHelpers';
 
 const TripRow = memo(({ trip, onOpenDetail, onEdit }) => {
     const { t: tBtn } = useTranslation('common.buttons');
+    const { t: tList } = useTranslation('trips.list');
     const { canEdit } = useActionPermissions(trip);
     const { convert, selectedCurrency, symbol } = useCurrency();
 
     const displayAmount = useMemo(() => convert(trip, selectedCurrency), [trip, selectedCurrency, convert]);
 
-    const { tStatus, tTripCategory } = useI18n();
+    const { tStatus, tTripCategory, tVehicle } = useI18n();
     const statusKey = trip.statusClass?.toLowerCase() || trip.status?.toLowerCase();
     const statusInfo = useMemo(() => ({
         label: tStatus(statusKey) || trip.status,
@@ -49,7 +50,7 @@ const TripRow = memo(({ trip, onOpenDetail, onEdit }) => {
 
             <span className="trip-category">{tTripCategory(trip.category)}</span>
             <span className="trip-destination">{trip.destination}</span>
-            <span className="trip-vehicle">{trip.vehicle}</span>
+            <span className="trip-vehicle">{tVehicle(trip.vehicle)}</span>
 
             <div className="tr-list-amount-wrapper">
                 <span className="tr-list-symbol">{symbol}</span>
@@ -57,7 +58,12 @@ const TripRow = memo(({ trip, onOpenDetail, onEdit }) => {
                 <span className="tr-list-currency">{selectedCurrency}</span>
             </div>
 
-            <span className="trip-duration">{trip.duration}</span>
+            <span className="trip-duration">
+                {(() => {
+                    const n = parseInt(trip.duration, 10);
+                    return isNaN(n) ? trip.duration : `${n} ${tList('days')}`;
+                })()}
+            </span>
 
             <span className={`trip-status ${statusInfo.cls}`} title={statusInfo.label}>
                 <span className="status-text">{statusInfo.label}</span>

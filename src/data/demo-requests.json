@@ -50,7 +50,8 @@
     "path": "/expenses/demo-exp-003",
     "status": "rejected",
     "userId": "demo-ext-003",
-    "rejectionReason": "Bütçe limiti aşıldı. Bir sonraki çeyrekte yeniden talep edilebilir."
+    "rejectionReason": "Bütçe limiti aşıldı. Bir sonraki çeyrekte yeniden talep edilebilir.",
+    "rejectionReasonEn": "Budget limit exceeded. Request may be resubmitted next quarter."
   },
   {
     "id": "demo-req-005",

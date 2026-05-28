@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useCallback, useMemo, useEffect } from 'react';
+import i18n from '../locales/i18n';
 
 interface CurrencyContextType {
     selectedCurrency: string;
@@ -94,7 +95,7 @@ export const CurrencyProvider: React.FC<CurrencyProviderProps> = ({ children }) 
 
     const formatMonthYear = useCallback((date?: Date | string | null): string => {
         const d = date instanceof Date ? date : (date ? new Date(date) : new Date());
-        return d.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
+        return d.toLocaleDateString(i18n.language === 'tr' ? 'tr-TR' : 'en-US', { month: 'long', year: 'numeric' });
     }, []);
 
     const value = useMemo(() => ({

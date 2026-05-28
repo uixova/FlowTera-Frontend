@@ -39,5 +39,7 @@
   "breadcrumb": { "tr": "Merkez", "en": "Home" },
   "record_label": { "tr": "kayıt", "en": "records" },
   "type_expense": { "tr": "Harcama", "en": "Expense" },
-  "type_trip": { "tr": "Seyahat", "en": "Trip" }
+  "type_trip": { "tr": "Seyahat", "en": "Trip" },
+  "gallery_empty": { "tr": "Arşivde kayıtlı fatura görseli bulunamadı.", "en": "No invoice images found in archive." },
+  "unnamed_invoice": { "tr": "İsimsiz Fatura", "en": "Unnamed Invoice" }
 }

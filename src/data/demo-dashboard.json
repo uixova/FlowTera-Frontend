@@ -23,12 +23,12 @@
     { "id": "demo-exp-001", "subject": "Yurt Dışı Konaklama",    "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Accommodation",   "amount": "$1,240.00", "date": "2025-05-20" },
     { "id": "demo-exp-002", "subject": "Taksi - Havalimanı",     "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Transportation",  "amount": "₺285.50",  "date": "2025-05-19" },
     { "id": "demo-exp-003", "subject": "Ekip Yemeği",            "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Food & Beverage", "amount": "₺3,850.00","date": "2025-05-18" },
-    { "id": "demo-trip-001","subject": "Berlin, Almanya",        "type": "Trip",    "teamName": "FlowTera Demo Takımı", "category": "İş Seyahati",     "amount": "approved", "date": "2025-05-20" },
+    { "id": "demo-trip-001","subject": "Berlin, Almanya",        "type": "Trip",    "teamName": "FlowTera Demo Takımı", "category": "Business",        "amount": "approved", "date": "2025-05-20" },
     { "id": "demo-exp-004", "subject": "Figma Pro Aboneliği",    "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Technology",      "amount": "$45.00",   "date": "2025-05-15" },
-    { "id": "demo-trip-002","subject": "Ankara, Türkiye",        "type": "Trip",    "teamName": "FlowTera Demo Takımı", "category": "İş Seyahati",     "amount": "pending",  "date": "2025-05-15" },
+    { "id": "demo-trip-002","subject": "Ankara, Türkiye",        "type": "Trip",    "teamName": "FlowTera Demo Takımı", "category": "Business",        "amount": "pending",  "date": "2025-05-15" },
     { "id": "demo-exp-006", "subject": "AWS Bulut Hizmetleri",   "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Technology",      "amount": "$320.80",  "date": "2025-05-10" },
     { "id": "demo-exp-007", "subject": "Müşteri Kahvaltısı",     "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Food & Beverage", "amount": "₺875.00",  "date": "2025-05-08" },
-    { "id": "demo-trip-003","subject": "Amsterdam, Hollanda",    "type": "Trip",    "teamName": "FlowTera Demo Takımı", "category": "Konferans",       "amount": "approved", "date": "2025-04-10" },
+    { "id": "demo-trip-003","subject": "Amsterdam, Hollanda",    "type": "Trip",    "teamName": "FlowTera Demo Takımı", "category": "Conference",      "amount": "approved", "date": "2025-04-10" },
     { "id": "demo-exp-009", "subject": "Slack İş Paketi",        "type": "Expense", "teamName": "FlowTera Demo Takımı", "category": "Technology",      "amount": "$87.50",   "date": "2025-04-28" }
   ],
   "typeComparison": [

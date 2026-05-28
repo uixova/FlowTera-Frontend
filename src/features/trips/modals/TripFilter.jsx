@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useI18n } from '../../../utils/i18nHelpers';
 
-const TRIP_CATEGORY_VALUES = ['Business', 'Vacation', 'Event', 'Conference', 'Training', 'Other'];
+const TRIP_CATEGORY_VALUES = ['Business', 'Vacation', 'Event', 'Conference', 'Training', 'Operation', 'Marketing', 'Other'];
 const VEHICLE_VALUES       = ['Plane', 'Train', 'Car', 'Bus', 'Ship', 'Taxi', 'Motorcycle', 'Other'];
 const STATUS_VALUES        = ['approved', 'pending', 'onroad', 'rejected'];
 

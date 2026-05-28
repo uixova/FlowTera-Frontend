@@ -14,6 +14,7 @@
     "error_upload": { "tr": "Fatura görseli yüklenemedi. İnternet bağlantınızı kontrol edin veya farklı bir dosya deneyin.", "en": "Receipt image could not be uploaded. Check your connection or try a different file." },
     "error_save": { "tr": "Gider kaydedilemedi. Lütfen tekrar deneyin.", "en": "Expense could not be saved. Please try again." },
     "ocr_title": { "tr": "Akıllı OCR Tarama", "en": "Smart OCR Scan" },
+    "invoice_prefix": { "tr": "Fatura", "en": "Invoice" },
     "ocr_drop_title": { "tr": "Fişinizi buraya bırakın ya da", "en": "Drop your receipt here or" },
     "ocr_drop_browse": { "tr": "göz atın", "en": "browse" },
     "ocr_drop_hint": { "tr": "JPG, PNG, WEBP veya PDF · Maks 20MB", "en": "JPG, PNG, WEBP or PDF · Max 20MB" },

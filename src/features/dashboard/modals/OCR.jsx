@@ -1,3 +1,4 @@
+import i18n from '../../../locales/i18n';
 import React, { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
@@ -129,7 +130,7 @@ const OCRSidebar = ({ isOpen, onClose, selectedTeamId, onApply }) => {
             // Fatura görselini S3'e yükle (arka planda, başarısız olsa da devam et)
             const receiptKey = selectedFile ? await uploadToS3(selectedFile, selectedTeamId) : null;
 
-            const titleVal    = form.merchant || `Fatura - ${form.date || new Date().toLocaleDateString('tr-TR')}`;
+            const titleVal    = form.merchant || `${t('invoice_prefix')} - ${form.date || new Date().toLocaleDateString(i18n.language === 'tr' ? 'tr-TR' : 'en-US')}`;
             const merchantVal = form.merchant || titleVal;
             const result = await expenseService.createExpense({
                 title:         titleVal,

@@ -25,7 +25,6 @@
   overflow: hidden;
   min-height: 270px;
   cursor: default;
-  will-change: transform;
 }
 
 .bento-card.large { grid-column: span 2; }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useI18n } from '../../../utils/i18nHelpers';
 import './Helpsidebar.css';
 
 const CONTACT_LINKS_BASE = [
@@ -12,6 +13,7 @@ const CONTACT_LINKS_BASE = [
 
 const HelpSidebar = ({ categories, contact, activeId, onSelect, counts, search, onSearch }) => {
     const { t } = useTranslation('help.sidebar');
+    const { lang } = useI18n();
 
     return (
         <aside className="help-sidebar">
@@ -53,7 +55,7 @@ const HelpSidebar = ({ categories, contact, activeId, onSelect, counts, search, 
                         <span className="help-cat-icon">
                             <i className={`ti ${cat.icon}`} />
                         </span>
-                        <span className="help-cat-label">{cat.label}</span>
+                        <span className="help-cat-label">{typeof cat.label === 'object' ? cat.label[lang] : cat.label}</span>
                         {counts[cat.id] !== undefined && (
                             <span className="help-cat-count">{counts[cat.id]}</span>
                         )}

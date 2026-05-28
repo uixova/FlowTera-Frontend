@@ -21,7 +21,9 @@
     "col_type": { "tr": "Tür", "en": "Type" },
     "col_category": { "tr": "Kategori", "en": "Category" },
     "col_info": { "tr": "Bilgi", "en": "Info" },
-    "records": { "tr": "kayıt", "en": "records" }
+    "records": { "tr": "kayıt", "en": "records" },
+    "type_trip": { "tr": "Seyahat", "en": "Trip" },
+    "type_expense": { "tr": "Gider", "en": "Expense" }
   },
   "graphics": {
     "spending_analytics": { "tr": "Harcama Analitiği", "en": "Spending Analytics" },

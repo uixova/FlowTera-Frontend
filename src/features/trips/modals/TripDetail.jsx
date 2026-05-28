@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import { useI18n } from '../../../utils/i18nHelpers';
+import i18n from '../../../locales/i18n';
 import './TripDetail.css';
 
 const TrInfoItem = ({ icon, label, children, full }) => (
@@ -17,7 +18,8 @@ const TrInfoItem = ({ icon, label, children, full }) => (
 const TripDetail = ({ isOpen, onClose, data }) => {
     const { t } = useTranslation('trips.detail');
     const { t: tBtn } = useTranslation('common.buttons');
-    const { tTripCategory, tStatus } = useI18n();
+    const { t: tList } = useTranslation('trips.list');
+    const { tTripCategory, tStatus, tVehicle } = useI18n();
 
     if (!data) return null;
 
@@ -58,13 +60,15 @@ const TripDetail = ({ isOpen, onClose, data }) => {
                         <div className="tr-main-price">
                             <span className="tr-price-symbol">{data.currencySymbol}</span>
                             <span className="tr-price-val">
-                                {(Number(data.amount) || 0).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
+                                {(Number(data.amount) || 0).toLocaleString(i18n.language === 'tr' ? 'tr-TR' : 'en-US', { minimumFractionDigits: 2 })}
                             </span>
                             <span className="tr-price-cur">{data.currency}</span>
                         </div>
-                        <div className="tr-local-conv">
-                            {t('paid_label')}: {data.localSymbol}{data.localAmount?.toLocaleString('tr-TR')} {data.localCurrency}
-                        </div>
+                        {data.localCurrency && data.localAmount != null && (
+                            <div className="tr-local-conv">
+                                {t('paid_label')}: {data.localSymbol}{data.localAmount?.toLocaleString(i18n.language === 'tr' ? 'tr-TR' : 'en-US')} {data.localCurrency}
+                            </div>
+                        )}
                     </div>
                     <div className="tr-status-group">
                         <label>{t('current_status')}</label>
@@ -74,10 +78,12 @@ const TripDetail = ({ isOpen, onClose, data }) => {
                     </div>
                 </div>
 
-                <div className="tr-rate-banner">
-                    <i className="ti ti-arrows-exchange" />
-                    1 {data.currency} = {data.exchangeRates?.[data.localCurrency] || data.exchangeRate?.rate} {data.localCurrency}
-                </div>
+                {(data.exchangeRates?.[data.localCurrency] || data.exchangeRate?.rate) && data.localCurrency && (
+                    <div className="tr-rate-banner">
+                        <i className="ti ti-arrows-exchange" />
+                        1 {data.currency} = {data.exchangeRates?.[data.localCurrency] || data.exchangeRate?.rate} {data.localCurrency}
+                    </div>
+                )}
 
                 {statusKey === 'rejected' && data.rejectionReason && (
                     <div className="tr-rejection-box">
@@ -85,7 +91,7 @@ const TripDetail = ({ isOpen, onClose, data }) => {
                             <i className="ti ti-alert-triangle" />
                             {t('rejection_reason')}
                         </div>
-                        <p>{data.rejectionReason}</p>
+                        <p>{i18n.language === 'en' && data.rejectionReasonEn ? data.rejectionReasonEn : data.rejectionReason}</p>
                     </div>
                 )}
 
@@ -99,10 +105,15 @@ const TripDetail = ({ isOpen, onClose, data }) => {
                         <span className="tr-value">{data.startDate} — {data.endDate}</span>
                     </TrInfoItem>
                     <TrInfoItem icon="ti-car" label={t('vehicle_label')}>
-                        <span className="tr-value">{data.vehicle}</span>
+                        <span className="tr-value">{tVehicle(data.vehicle)}</span>
                     </TrInfoItem>
                     <TrInfoItem icon="ti-hourglass" label={t('duration_label')}>
-                        <span className="tr-value">{data.duration}</span>
+                        <span className="tr-value">
+                            {(() => {
+                                const n = parseInt(data.duration, 10);
+                                return isNaN(n) ? data.duration : `${n} ${tList('days')}`;
+                            })()}
+                        </span>
                     </TrInfoItem>
                     <TrInfoItem icon="ti-notes" label={t('desc_label')} full>
                         <p className="tr-desc-box">{data.desc || t('no_desc')}</p>

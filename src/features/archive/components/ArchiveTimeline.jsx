@@ -2,6 +2,9 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useI18n } from '../../../utils/i18nHelpers';
 import ImageBox from '../../../components/overlays/imageBox/ImageBox';
+import i18n from '../../../locales/i18n';
+
+const getLocale = () => i18n.language === 'tr' ? 'tr-TR' : 'en-US';
 
 // Handles ISO 8601 and legacy DD/MM/YYYY
 const toDate = (dateStr = '') => {
@@ -13,13 +16,13 @@ const toDate = (dateStr = '') => {
 const formatGroupLabel = (dateStr) => {
     const d = toDate(dateStr);
     if (!d) return dateStr;
-    return d.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
+    return d.toLocaleDateString(getLocale(), { month: 'long', year: 'numeric' });
 };
 
 const formatDisplayDate = (dateStr) => {
     const d = toDate(dateStr);
     if (!d) return dateStr;
-    return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return d.toLocaleDateString(getLocale(), { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
 // Status normalize
@@ -112,7 +115,7 @@ const ArchiveTimeline = ({ items, symbol }) => {
                                     {/* Tutar */}
                                     <div className="arc-row-amount">
                                         {item.currencySymbol || symbol}
-                                        {item.amount?.toLocaleString('tr-TR')}
+                                        {item.amount?.toLocaleString(getLocale())}
                                     </div>
 
                                     {/* Durum + tarih */}

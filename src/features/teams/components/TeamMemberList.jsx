@@ -1,3 +1,4 @@
+import i18n from '../../../locales/i18n';
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Loader from '../../../components/ui/Loader';
@@ -249,7 +250,7 @@ const TeamMemberList = ({ team, onBack, onNavigate, parentLoading }) => {
                 <div className="tm-stat">
                   <span className="stat-label">{t('last_login')}</span>
                   <span className="stat-value">
-                      {member.lastLogin ? new Date(member.lastLogin).toLocaleDateString('tr-TR') : 'Never'}
+                      {member.lastLogin ? new Date(member.lastLogin).toLocaleDateString(i18n.language === 'tr' ? 'tr-TR' : 'en-US') : t('never_logged')}
                   </span>
                 </div>
                 {canViewLogs && !member.isDeleted && (

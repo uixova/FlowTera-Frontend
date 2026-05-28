@@ -1,3 +1,4 @@
+import i18n from '../../locales/i18n';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import './Archive.css';
@@ -263,7 +264,7 @@ const Archive = () => {
                     <div className="arc-stat-item">
                         <span className="arc-stat-label">{t('stat_amount')}</span>
                         <span className="arc-stat-value">
-                            {symbol}{stats.total.toLocaleString('tr-TR', { minimumFractionDigits: 0 })}
+                            {symbol}{stats.total.toLocaleString(i18n.language === 'tr' ? 'tr-TR' : 'en-US', { minimumFractionDigits: 0 })}
                         </span>
                     </div>
                     <div className="arc-stat-item">

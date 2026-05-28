@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../locales/i18n';
 import Loader from '../../components/ui/Loader';
 import SubNavbar from '../../components/navigation/SubNavbar';
 import { notificationService } from '../../services/notificationService';
@@ -192,7 +193,9 @@ const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReas
                             </span>
                         </div>
 
-                        <h4 className="req-title">{req.title}</h4>
+                        <h4 className="req-title">
+                            {req.type ? t(`title_${req.type}`, { defaultValue: req.title }) : req.title}
+                        </h4>
                         <p className="req-detail">{req.detail}</p>
                     </div>
                 </div>
@@ -248,7 +251,10 @@ const RequestItem = ({ req, activeTab, handleAction, rejectReason, setRejectReas
             {req.rejectionReason && (
                 <div className="req-reason-footer">
                     <i className="ti ti-info-circle" />
-                    <span><strong>{t('reject_reason')}:</strong> {req.rejectionReason}</span>
+                    <span>
+                        <strong>{t('reject_reason')}:</strong>{' '}
+                        {i18n.language === 'en' && req.rejectionReasonEn ? req.rejectionReasonEn : req.rejectionReason}
+                    </span>
                 </div>
             )}
         </div>

@@ -45,12 +45,14 @@ const STATUS_LABELS: Record<string, { tr: string; en: string }> = {
 };
 
 const TRIP_CATEGORY_LABELS: Record<string, { tr: string; en: string }> = {
-  Business:   { tr: 'İş Gezisi', en: 'Business' },
-  Vacation:   { tr: 'Tatil',     en: 'Vacation' },
-  Event:      { tr: 'Etkinlik',  en: 'Event' },
-  Conference: { tr: 'Konferans', en: 'Conference' },
-  Training:   { tr: 'Eğitim',    en: 'Training' },
-  Other:      { tr: 'Diğer',     en: 'Other' },
+  Business:   { tr: 'İş Gezisi',          en: 'Business' },
+  Vacation:   { tr: 'Tatil',              en: 'Vacation' },
+  Event:      { tr: 'Etkinlik',           en: 'Event' },
+  Conference: { tr: 'Konferans',          en: 'Conference' },
+  Training:   { tr: 'Eğitim',            en: 'Training' },
+  Operation:  { tr: 'Operasyon',          en: 'Operation' },
+  Marketing:  { tr: 'Pazarlama & Reklam', en: 'Marketing & Advertising' },
+  Other:      { tr: 'Diğer',              en: 'Other' },
 };
 
 const VEHICLE_LABELS: Record<string, { tr: string; en: string }> = {

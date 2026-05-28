@@ -54,7 +54,8 @@
     "leave_title": { "tr": "Takımdan Ayrıl", "en": "Leave Team" },
     "leave_success": { "tr": "Takımdan başarıyla ayrıldınız.", "en": "You have successfully left the team." },
     "leave_request_sent": { "tr": "Ayrılma isteğiniz adminlere iletildi.", "en": "Your leave request has been sent to the admins." },
-    "action_error": { "tr": "İşlem sırasında bir hata oluştu.", "en": "An error occurred during the action." }
+    "action_error": { "tr": "İşlem sırasında bir hata oluştu.", "en": "An error occurred during the action." },
+    "never_logged": { "tr": "Hiç giriş yapılmadı", "en": "Never" }
   },
   "settings": {
     "title": { "tr": "Takım Ayarları", "en": "Team Settings" },
@@ -120,7 +121,22 @@
     "email_hint": { "tr": "Kayıtlı bir kullanıcının e-posta adresini girin", "en": "Enter the email of a registered user" },
     "role_label": { "tr": "Rol Ata", "en": "Assign Role" },
     "success": { "tr": "Üye başarıyla eklendi.", "en": "Member added successfully." },
-    "error_not_found": { "tr": "Bu e-postaya sahip kullanıcı bulunamadı.", "en": "User with this email not found." }
+    "error_not_found": { "tr": "Bu e-postaya sahip kullanıcı bulunamadı.", "en": "User with this email not found." },
+    "alert_err_title": { "tr": "Hata", "en": "Error" },
+    "alert_err_no_team": { "tr": "Takım bilgisi bulunamadı.", "en": "Team information not found." },
+    "alert_err_invite": { "tr": "Davet gönderilirken bir hata oluştu.", "en": "An error occurred while sending the invite." },
+    "alert_err_invite_fail": { "tr": "Üye davet edilemedi.", "en": "Member could not be invited." },
+    "alert_success_title": { "tr": "Başarılı", "en": "Success" },
+    "alert_success_msg": { "tr": "Davet gönderildi.", "en": "Invitation sent." },
+    "alert_missing_title": { "tr": "Eksik Bilgi", "en": "Missing Information" },
+    "alert_missing_msg": { "tr": "Lütfen bir Email veya Kullanıcı ID'si giriniz.", "en": "Please enter an Email or User ID." },
+    "alert_role_title": { "tr": "Rol Seçimi", "en": "Role Selection" },
+    "alert_role_msg": { "tr": "Lütfen kullanıcı için bir rol belirleyiniz.", "en": "Please select a role for the user." },
+    "confirm_admin_title": { "tr": "Yönetici Daveti", "en": "Admin Invitation" },
+    "confirm_admin_msg": { "tr": "\"{{identifier}}\" adresine yönetici daveti göndermek üzeresiniz. Bu kullanıcı kabul ettiğinde takım üzerinde tam yetkiye sahip olacaktır. Onaylıyor musunuz?", "en": "You are about to send an admin invitation to \"{{identifier}}\". When accepted, this user will have full authority over the team. Confirm?" },
+    "role_admin_desc": { "tr": "Tüm ayarlara tam erişim, kısıtlama yok.", "en": "Full access, no restrictions." },
+    "role_moderator_desc": { "tr": "Yönetim ve takip.", "en": "Management and monitoring." },
+    "role_member_desc": { "tr": "Yalnızca kişisel kayıtlar.", "en": "Personal logs only." }
   },
   "activityLog": {
     "title": { "tr": "Takım Aktivite Geçmişi", "en": "Team Activity Log" },
@@ -193,5 +209,30 @@
     "missing_fields_title": { "tr": "Eksik Alan", "en": "Missing Field" },
     "missing_fields_msg": { "tr": "Lütfen başlık ve detay kısımlarını doldurun.", "en": "Please fill in the title and details fields." },
     "send_error": { "tr": "Talep gönderilemedi.", "en": "Request could not be sent." }
+  },
+  "permissions": {
+    "view_archive_name": { "tr": "Arşiv Erişimi", "en": "Archive Access" },
+    "view_archive_desc": { "tr": "Takım geçmişindeki tüm fatura ve kayıtlara erişim sağlar.", "en": "Access all invoices and records in team history." },
+    "view_analytics_name": { "tr": "Analiz Sayfası", "en": "Analytics Page" },
+    "view_analytics_desc": { "tr": "Takım harcamalarını ve verileri grafiklerle inceleme yetkisi.", "en": "View team expenses and data through charts." },
+    "manage_requests_name": { "tr": "Talepleri Yönet", "en": "Manage Requests" },
+    "manage_requests_desc": { "tr": "Gelen katılım veya işlem taleplerini onaylama/reddetme yetkisi.", "en": "Approve or reject incoming join or transaction requests." },
+    "member_add_name": { "tr": "Üye Ekleme", "en": "Add Members" },
+    "member_add_desc": { "tr": "Takıma yeni çalışma arkadaşları davet etme yetkisi.", "en": "Invite new colleagues to the team." },
+    "member_remove_name": { "tr": "Üye Sileme", "en": "Remove Members" },
+    "member_remove_desc": { "tr": "Mevcut üyeleri takımdan uzaklaştırma yetkisi.", "en": "Remove existing members from the team." },
+    "view_user_log_name": { "tr": "Log Görme", "en": "View Logs" },
+    "view_user_log_desc": { "tr": "Üyelerin loglarını görüntüleme yetkisi.", "en": "View activity logs of members." },
+    "team_settings_name": { "tr": "Takım Ayarları", "en": "Team Settings" },
+    "team_settings_desc": { "tr": "Takım profilini, limitlerini ve temel bilgilerini düzenleme yetkisi.", "en": "Edit team profile, limits and basic information." },
+    "trip_create_name": { "tr": "Gezi Oluşturma", "en": "Create Trips" },
+    "trip_create_desc": { "tr": "Yeni takım gezileri ve etkinlik rotaları başlatma yetkisi.", "en": "Start new team trips and event routes." },
+    "free_exit_name": { "tr": "Serbest Çıkış", "en": "Free Exit" },
+    "free_exit_desc": { "tr": "Onay beklemeksizin takımdan kendi isteğiyle ayrılabilme yetkisi.", "en": "Leave the team voluntarily without waiting for approval." },
+    "create_report_name": { "tr": "Rapor Oluşturma", "en": "Create Reports" },
+    "create_report_desc": { "tr": "Takım verilerini PDF veya Excel formatında raporlama yetkisi.", "en": "Report team data in PDF or Excel format." },
+    "view_invoice_details_name": { "tr": "Fatura Detayları", "en": "Invoice Details" },
+    "view_invoice_details_desc": { "tr": "Faturaların içeriklerini ve dijital kopyalarını görüntüleme yetkisi.", "en": "View invoice contents and digital copies." },
+    "admin_full_access": { "tr": "Yönetici pozisyonları tam yetkiye sahip.", "en": "Administrators have full access." }
   }
 }

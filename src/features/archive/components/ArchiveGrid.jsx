@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useI18n } from '../../../utils/i18nHelpers';
 import ImageBox from '../../../components/overlays/imageBox/ImageBox';
+import i18n from '../../../locales/i18n';
 
 const normalizeStatus = (status = '') => status.toLowerCase().replace(/\s+/g, '');
 
@@ -9,7 +10,8 @@ const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
-    return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const locale = i18n.language === 'tr' ? 'tr-TR' : 'en-US';
+    return d.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
 const ArchiveGrid = ({ items, symbol }) => {
@@ -48,7 +50,7 @@ const ArchiveGrid = ({ items, symbol }) => {
                             <div className="arc-card-top">
                                 <span className="arc-card-title">{item.title}</span>
                                 <span className="arc-card-amount">
-                                    {item.currencySymbol || symbol}{item.amount?.toLocaleString('tr-TR')}
+                                    {item.currencySymbol || symbol}{item.amount?.toLocaleString(i18n.language === 'tr' ? 'tr-TR' : 'en-US')}
                                 </span>
                             </div>
 

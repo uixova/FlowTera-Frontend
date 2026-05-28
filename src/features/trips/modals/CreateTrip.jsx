@@ -1,3 +1,4 @@
+import i18n from '../../../locales/i18n';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
@@ -7,7 +8,7 @@ import { tripsService } from '../services/tripsService';
 import { useI18n } from '../../../utils/i18nHelpers';
 import './CreateTrip.css';
 
-const CATEGORY_VALUES = ['Business', 'Vacation', 'Event', 'Conference', 'Training', 'Other'];
+const CATEGORY_VALUES = ['Business', 'Vacation', 'Event', 'Conference', 'Training', 'Operation', 'Marketing', 'Other'];
 const VEHICLE_VALUES  = ['Plane', 'Train', 'Car', 'Bus', 'Ship', 'Taxi', 'Motorcycle', 'Other'];
 
 const CURRENCIES = [
@@ -186,7 +187,7 @@ const CreateTrip = ({ isOpen, onClose, editData, onSuccess, onDelete }) => {
                 <div className="tr-modal-info-bar">
                     <div className="tr-info-item">
                         <i className="ti ti-calendar-event" />
-                        <span>{isEditMode ? editData.date : new Date().toLocaleDateString('tr-TR')}</span>
+                        <span>{isEditMode ? editData.date : new Date().toLocaleDateString(i18n.language === 'tr' ? 'tr-TR' : 'en-US')}</span>
                     </div>
                     <div className="tr-info-item">
                         <i className="ti ti-shield-check" />

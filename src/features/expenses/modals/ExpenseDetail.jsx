@@ -4,6 +4,7 @@ import ActionSidebar from '../../../components/navigation/ActionSidebar';
 import ImageBox from '../../../components/overlays/imageBox/ImageBox';
 import { useImageBox } from '../../../hooks/useLightbox';
 import { useI18n } from '../../../utils/i18nHelpers';
+import i18n from '../../../locales/i18n';
 import './ExpenseDetail.css';
 
 const InfoItem = ({ icon, label, children, full }) => (
@@ -71,9 +72,11 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
                             <span className="ex-price-val">{(data.amount || 0).toFixed(2)}</span>
                             <span className="ex-price-cur">{data.currency}</span>
                         </div>
-                        <div className="ex-local-conv">
-                            {t('paid_label')}: {data.localSymbol}{data.localAmount?.toLocaleString('tr-TR')} {data.localCurrency}
-                        </div>
+                        {data.localCurrency && data.localAmount != null && (
+                            <div className="ex-local-conv">
+                                {t('paid_label')}: {data.localSymbol}{data.localAmount?.toLocaleString(i18n.language === 'tr' ? 'tr-TR' : 'en-US')} {data.localCurrency}
+                            </div>
+                        )}
                     </div>
                     <div className="ex-status-group">
                         <label>{t('status_label')}</label>
@@ -83,10 +86,12 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
                     </div>
                 </div>
 
-                <div className="ex-rate-banner">
-                    <i className="ti ti-arrows-exchange" />
-                    1 {data.currency} = {data.exchangeRates?.[data.localCurrency] || data.exchangeRate} {data.localCurrency}
-                </div>
+                {(data.exchangeRates?.[data.localCurrency] || data.exchangeRate) && data.localCurrency && (
+                    <div className="ex-rate-banner">
+                        <i className="ti ti-arrows-exchange" />
+                        1 {data.currency} = {data.exchangeRates?.[data.localCurrency] || data.exchangeRate} {data.localCurrency}
+                    </div>
+                )}
 
                 {statusKey === 'rejected' && data.rejectionReason && (
                     <div className="ex-rejection-box">
@@ -94,7 +99,7 @@ const ExpenseDetail = ({ isOpen, onClose, data }) => {
                             <i className="ti ti-alert-triangle" />
                             {t('rejection_reason')}
                         </div>
-                        <p>{data.rejectionReason}</p>
+                        <p>{i18n.language === 'en' && data.rejectionReasonEn ? data.rejectionReasonEn : data.rejectionReason}</p>
                     </div>
                 )}
 

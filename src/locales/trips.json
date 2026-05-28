@@ -40,7 +40,8 @@
     "delete_error": { "tr": "Seyahat silinirken bir hata oluştu.", "en": "An error occurred while deleting the trip." },
     "success_generic": { "tr": "İşlem başarıyla gerçekleştirildi.", "en": "Action completed successfully." },
     "demo_create": { "tr": "Gezi eklemek için kayıt olun veya giriş yapın.", "en": "Sign up or log in to add a trip." },
-    "demo_edit": { "tr": "Gezi düzenlemek için kayıt olun veya giriş yapın.", "en": "Sign up or log in to edit a trip." }
+    "demo_edit": { "tr": "Gezi düzenlemek için kayıt olun veya giriş yapın.", "en": "Sign up or log in to edit a trip." },
+    "days": { "tr": "gün", "en": "days" }
   },
   "detail": {
     "trip_info": { "tr": "Gezi Bilgileri", "en": "Trip Information" },

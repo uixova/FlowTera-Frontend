@@ -11,6 +11,7 @@ import './TeamAddMember.css';
 const AddMemberModal = ({ isOpen, onClose, teamId, onSuccess }) => {
   const { t } = useTranslation('teams.addMember');
   const { t: tBtn } = useTranslation('common.buttons');
+  const { t: tPerm } = useTranslation('teams.permissions');
   const [identifier, setIdentifier] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,9 +26,9 @@ const AddMemberModal = ({ isOpen, onClose, teamId, onSuccess }) => {
   const { confirmConfig, askConfirm, closeConfirm, alertConfig, showAlert, closeAlert } = useModal();
 
   const roles = [
-    { id: 'admin',     name: 'Admin',     desc: 'Full access, no restrictions.', color: 'admin' },
-    { id: 'moderator', name: 'Moderator', desc: 'Management and monitoring.',     color: 'moderator' },
-    { id: 'member',    name: 'Member',    desc: 'Personal logs only.',            color: 'member' },
+    { id: 'admin',     name: 'Admin',     descKey: 'role_admin_desc',     color: 'admin' },
+    { id: 'moderator', name: 'Moderator', descKey: 'role_moderator_desc', color: 'moderator' },
+    { id: 'member',    name: 'Member',    descKey: 'role_member_desc',    color: 'member' },
   ];
 
   const resetForm = () => {
@@ -38,22 +39,22 @@ const AddMemberModal = ({ isOpen, onClose, teamId, onSuccess }) => {
 
   const executeInvite = async () => {
     if (!teamId) {
-      showAlert("Hata", "Takım bilgisi bulunamadı.", "error");
+      showAlert(t('alert_err_title'), t('alert_err_no_team'), "error");
       return;
     }
     setIsSubmitting(true);
     try {
       const result = await teamsService.inviteMember(teamId, identifier, selectedRole, restrictedPerms);
       if (!result.success) {
-        showAlert("Hata", result.message || "Üye davet edilemedi.", "error");
+        showAlert(t('alert_err_title'), result.message || t('alert_err_invite_fail'), "error");
         return;
       }
-      showAlert("Başarılı", `Davet gönderildi.`, "success");
+      showAlert(t('alert_success_title'), t('alert_success_msg'), "success");
       if (onSuccess) onSuccess(null);
       resetForm();
       onClose();
     } catch {
-      showAlert("Hata", "Davet gönderilirken bir hata oluştu.", "error");
+      showAlert(t('alert_err_title'), t('alert_err_invite'), "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -61,18 +62,18 @@ const AddMemberModal = ({ isOpen, onClose, teamId, onSuccess }) => {
 
   const handleInviteAttempt = () => {
     if (!identifier.trim()) {
-      showAlert("Eksik Bilgi", "Lütfen bir Email veya Kullanıcı ID'si giriniz.", "warning");
+      showAlert(t('alert_missing_title'), t('alert_missing_msg'), "warning");
       return;
     }
     if (!selectedRole) {
-      showAlert("Rol Seçimi", "Lütfen kullanıcı için bir rol belirleyiniz.", "info");
+      showAlert(t('alert_role_title'), t('alert_role_msg'), "info");
       return;
     }
 
     if (selectedRole === 'admin') {
       askConfirm(
-        "Yönetici Daveti",
-        `"${identifier}" adresine yönetici daveti göndermek üzeresiniz. Bu kullanıcı kabul ettiğinde takım üzerinde tam yetkiye sahip olacaktır. Onaylıyor musunuz?`,
+        t('confirm_admin_title'),
+        t('confirm_admin_msg', { identifier }),
         executeInvite,
         "warning"
       );
@@ -131,7 +132,7 @@ const AddMemberModal = ({ isOpen, onClose, teamId, onSuccess }) => {
                       <div className="adm-role-header-part">
                         <div className="adm-role-info">
                           <span className={`adm-role-name ${role.color}`}>{role.name}</span>
-                          <span className="adm-role-desc">{role.desc}</span>
+                          <span className="adm-role-desc">{t(role.descKey)}</span>
                         </div>
                         <div className="adm-check-icon">
                           <i className="ti ti-check"></i>
@@ -162,7 +163,7 @@ const AddMemberModal = ({ isOpen, onClose, teamId, onSuccess }) => {
                         ) : (
                           <div style={{ paddingTop: '10px' }}>
                             <small style={{ color: '#555', fontStyle: 'italic' }}>
-                              <i className="ti ti-info-circle"></i> Yönetici pozisyonları tam yetkiye sahip.
+                              <i className="ti ti-info-circle"></i> {tPerm('admin_full_access')}
                             </small>
                           </div>
                         )}

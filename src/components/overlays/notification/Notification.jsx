@@ -156,14 +156,18 @@ const Notification = ({ isOpen, onClose }) => {
 };
 
 const NotificationItem = ({ nt, onRemove }) => {
+    const { t } = useTranslation('common.notifications');
     const timeAgo = useTimeAgo(nt.date);
+    const displayText = nt.textKey
+        ? t(nt.textKey, { defaultValue: nt.text })
+        : nt.text;
     return (
         <div className={`nt-item ${nt.category}`}>
             <div className="nt-icon">
                 <i className={nt.category === 'success' ? 'ti ti-circle-check' : 'ti ti-info-square-rounded'}></i>
             </div>
             <div className="nt-text">
-                <p>{nt.text}</p>
+                <p>{displayText}</p>
                 <span className="nt-time-text">{timeAgo}</span>
             </div>
             <button className="nt-del-btn" onClick={() => onRemove(nt.id)}>

@@ -1,3 +1,4 @@
+import i18n from '../../../locales/i18n';
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import ActionSidebar from '../../../components/navigation/ActionSidebar';
@@ -47,7 +48,7 @@ const CreateReport = ({ isOpen, onClose, teams = [], selectedTeamId }) => {
             const reportName = reportConfig.name || `Rapor_${reportConfig.startDate || 'Tum'}_${reportConfig.endDate || 'Zaman'}`;
             const headers    = ['Tarih', 'Başlık', 'Kategori', 'Tüccar', 'Tutar', 'Para Birimi', 'Durum', 'Oluşturan'];
             const rows = expenses.map((e) => [
-                new Date(e.date).toLocaleDateString('tr-TR'),
+                new Date(e.date).toLocaleDateString(i18n.language === 'tr' ? 'tr-TR' : 'en-US'),
                 `"${(e.title  || '').replace(/"/g, '""')}"`,
                 `"${(e.category || '').replace(/"/g, '""')}"`,
                 `"${(e.merchant || '').replace(/"/g, '""')}"`,

@@ -66,7 +66,7 @@ const SubNavbar = memo(({
             <div className="sub-nav-right">
                 {showCurrency && (
                     <div className="nav-currency-indicator btn-dark-sub" title="Multi-currency active">
-                        <i className="ti ti-currency-dollar"></i> Aktif
+                        <i className="ti ti-currency-dollar"></i> {t('currency_active')}
                     </div>
                 )}
 
@@ -129,7 +129,7 @@ const SubNavbar = memo(({
                     <div className="sub-mobile-btn-row">
                         {showCurrency && (
                             <div className="nav-currency-indicator btn-dark-sub" title="Multi-currency active">
-                                <i className="ti ti-currency-dollar"></i> Aktif
+                                <i className="ti ti-currency-dollar"></i> {t('currency_active')}
                             </div>
                         )}
                         {buttons.map((btn, index) => (

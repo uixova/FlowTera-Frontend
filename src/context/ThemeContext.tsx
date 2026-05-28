@@ -39,10 +39,10 @@ const RADIUS_MAP: Record<ThemeRadius, string> = {
     ultra: '24px' 
 };
 
-const DEFAULT_THEME: ThemeState = { 
-    mode: 'dark', 
-    accent: '#50e091', 
-    radius: 'soft' 
+const DEFAULT_THEME: ThemeState = {
+    mode: typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+    accent: '#50e091',
+    radius: 'soft'
 };
 
 const themeStorage = () => isDemoMode() ? sessionStorage : localStorage;
@@ -54,7 +54,7 @@ const loadPersistedTheme = (): ThemeState => {
             return { ...DEFAULT_THEME, ...JSON.parse(stored) };
         }
     } catch {
-        // Bozuk veri varsa varsayılanı kullan
+        // Fall back to system default
     }
     return DEFAULT_THEME;
 };

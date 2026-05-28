@@ -1,4 +1,6 @@
-const LOCALE = 'tr-TR';
+import i18n from '../locales/i18n';
+
+const getLocale = () => i18n.language === 'tr' ? 'tr-TR' : 'en-US';
 
 const OPTS_DATE: Intl.DateTimeFormatOptions = {
     day: 'numeric', month: 'long', year: 'numeric',
@@ -17,20 +19,17 @@ function toDate(value: string | Date | null | undefined): Date | null {
     return isNaN(d.getTime()) ? null : d;
 }
 
-/** "25 Mayıs 2026" */
 export function formatDate(value: string | Date | null | undefined): string {
     const d = toDate(value);
-    return d ? d.toLocaleDateString(LOCALE, OPTS_DATE) : '—';
+    return d ? d.toLocaleDateString(getLocale(), OPTS_DATE) : '—';
 }
 
-/** "25 Mayıs 2026, 22:45" */
 export function formatDateTime(value: string | Date | null | undefined): string {
     const d = toDate(value);
-    return d ? d.toLocaleString(LOCALE, OPTS_DATETIME) : '—';
+    return d ? d.toLocaleString(getLocale(), OPTS_DATETIME) : '—';
 }
 
-/** "25.05.2026" */
 export function formatDateShort(value: string | Date | null | undefined): string {
     const d = toDate(value);
-    return d ? d.toLocaleDateString(LOCALE, OPTS_SHORT) : '—';
+    return d ? d.toLocaleDateString(getLocale(), OPTS_SHORT) : '—';
 }

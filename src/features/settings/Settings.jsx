@@ -148,7 +148,7 @@ const Settings = () => {
                 <div>
                     <div className="st-sidebar-header">
                         <h3>{t('page_title')}</h3>
-                        <p>Hesap tercihlerinizi yönetin</p>
+                        <p>{t('page_subtitle')}</p>
                     </div>
                     <div className="st-menu">
                         {MENU_ITEMS.map((item) => (

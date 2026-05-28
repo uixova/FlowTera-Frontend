@@ -3,6 +3,19 @@ import { useTranslation } from 'react-i18next';
 import { useI18n } from '../../../utils/i18nHelpers';
 import './Activity.css';
 
+// Maps Turkish action strings from backend → settings.activity translation keys
+const ACTION_KEY_MAP = {
+    'Giriş yapıldı':      'act_login',
+    'Oturum kapatıldı':   'act_logout',
+    'yeni harcama ekledi:': 'act_expense_add',
+    'harcamayı onayladı:':  'act_expense_approve',
+    'harcamayı reddetti:':  'act_expense_reject',
+    'yeni seyahat ekledi:': 'act_trip_add',
+    'seyahati onayladı:':   'act_trip_approve',
+    'yeni üye ekledi:':     'act_member_add',
+    'üyeyi çıkardı:':       'act_member_remove',
+};
+
 const Activity = ({ logs }) => {
     const { t } = useTranslation('settings.activity');
     const { lang } = useI18n();
@@ -52,7 +65,15 @@ const Activity = ({ logs }) => {
                                 </div>
 
                                 <div className="log-info">
-                                    <p className="log-action">{log.action}</p>
+                                    <p className="log-action">
+                                        {(() => {
+                                            const raw = log.action || '';
+                                            if (raw.startsWith('act_')) return t(raw, { defaultValue: raw });
+                                            const base = raw.split(' — ')[0].trim();
+                                            const key = ACTION_KEY_MAP[base] || ACTION_KEY_MAP[raw];
+                                            return key ? t(key, { defaultValue: raw }) : raw;
+                                        })()}
+                                    </p>
                                     <div className="log-meta-row">
                                         <span className="log-date">
                                             <i className="ti ti-calendar-event" />

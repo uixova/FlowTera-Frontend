@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo, memo, lazy, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { createPortal } from 'react-dom';
 import Loader from '../../components/ui/Loader';
 import { useAuth } from '../../context/AuthContext';
+import Language from '../../components/overlays/language/Language';
 import './Landing.css';
 
 // Below-fold sections — lazy loaded, not in initial bundle
@@ -80,6 +82,7 @@ const Landing = () => {
     const statsRef     = useRef(null);
     const [statsVisible, setStatsVisible] = useState(false);
     const [demoLoading, setDemoLoading]   = useState(false);
+    const [isLangOpen, setIsLangOpen]     = useState(false);
     const originalThemeRef = useRef(null);
 
     // Counters — only compute when visible
@@ -184,11 +187,18 @@ const Landing = () => {
                     <a href="#pricing">{t('nav_pricing')}</a>
                     <a href="#faq">{t('nav_faq')}</a>
                     <div className="nav-divider" />
+                    <button
+                        className="nav-lang-btn"
+                        onClick={(e) => { e.stopPropagation(); setIsLangOpen(v => !v); }}
+                    >
+                        <i className="ti ti-world" />
+                    </button>
                     <button className="nav-demo-btn" onClick={handleDemoClick} disabled={demoLoading}>{t('nav_demo')}</button>
                     <Link to="/login"  className="nav-login-btn">{t('login_link')}</Link>
                     <Link to="/signup" className="nav-register-btn">{t('signup_link')}</Link>
                 </div>
             </nav>
+            {createPortal(<Language isOpen={isLangOpen} onClose={() => setIsLangOpen(false)} />, document.body)}
 
             {/* HERO */}
             <header className="hero-section">

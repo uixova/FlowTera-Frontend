@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '../utils/dateFormat';
 
 export const useTimeAgo = (dateString: string | null | undefined): string => {
+    const { t, i18n } = useTranslation('common.time');
     const [timeAgo, setTimeAgo] = useState<string>('');
 
     useEffect(() => {
@@ -10,7 +13,7 @@ export const useTimeAgo = (dateString: string | null | undefined): string => {
                 return;
             }
 
-            // DD/MM/YYYY formatını YYYY-MM-DD'ye çevirerek güvenli hale getiriyoruz
+            // DD/MM/YYYY → YYYY-MM-DD
             let formattedDate = dateString;
             if (dateString.includes('/') && dateString.split('/').length === 3) {
                 const [day, month, year] = dateString.split('/');
@@ -21,40 +24,42 @@ export const useTimeAgo = (dateString: string | null | undefined): string => {
             const createdDate = new Date(formattedDate);
 
             if (isNaN(createdDate.getTime())) {
-                setTimeAgo('Geçersiz tarih');
+                setTimeAgo(t('invalid_date'));
                 return;
             }
 
-            // İki tarihi birbirinden çıkarırken .getTime() kullanarak TS'nin hata vermesini önlüyoruz
             const diffInSeconds = Math.floor((now.getTime() - createdDate.getTime()) / 1000);
 
             if (diffInSeconds < 0) {
-                // Gelecek bir tarihse 
-                setTimeAgo('Yakında');
+                setTimeAgo(t('soon'));
                 return;
             }
 
             if (diffInSeconds < 60) {
-                setTimeAgo('Az önce');
+                setTimeAgo(t('just_now'));
             } else if (diffInSeconds < 3600) {
                 const mins = Math.floor(diffInSeconds / 60);
-                setTimeAgo(`${mins} dk önce`);
+                setTimeAgo(t('minutes_ago', { count: mins }));
             } else if (diffInSeconds < 86400) {
                 const hours = Math.floor(diffInSeconds / 3600);
-                setTimeAgo(`${hours} sa önce`);
-            } else if (diffInSeconds < 2592000) { // 30 güne kadar
+                setTimeAgo(t('hours_ago', { count: hours }));
+            } else if (diffInSeconds < 2592000) {
                 const days = Math.floor(diffInSeconds / 86400);
-                setTimeAgo(days === 1 ? 'Dün' : `${days} gün önce`);
+                if (days === 1) {
+                    setTimeAgo(t('yesterday'));
+                } else {
+                    setTimeAgo(t('days_ago', { count: days }));
+                }
             } else {
-                // Çok eskiyse direkt tarihi göster
-                setTimeAgo(dateString);
+                setTimeAgo(formatDate(createdDate));
             }
         };
 
         calculateTime();
         const interval = setInterval(calculateTime, 60000);
         return () => clearInterval(interval);
-    }, [dateString]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dateString, i18n.language]);
 
     return timeAgo;
 };

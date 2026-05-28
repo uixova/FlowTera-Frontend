@@ -142,6 +142,20 @@ footer { position: relative; z-index: 1; }
 
 .nav-divider { width: 1px; height: 20px; background: var(--landing-border-white); margin: 0 4px; }
 
+.nav-lang-btn {
+  background: transparent;
+  border: 1px solid var(--landing-border-white);
+  color: var(--landing-text-muted);
+  font-size: 0.95rem;
+  padding: 6px 10px;
+  border-radius: var(--landing-radius-sm);
+  cursor: pointer;
+  transition: color 0.25s, border-color 0.25s;
+  display: flex;
+  align-items: center;
+}
+.nav-lang-btn:hover { color: var(--landing-text-primary); border-color: var(--landing-text-primary); }
+
 .nav-demo-btn {
   background: transparent;
   border: 1px solid var(--landing-text-muted);

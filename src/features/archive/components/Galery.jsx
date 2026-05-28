@@ -1,16 +1,20 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import ImageBox from '../../../components/overlays/imageBox/ImageBox';
 import { useCurrency } from '../../../context/CurrencyContext';
-import './Galery.css'; 
+import { useI18n } from '../../../utils/i18nHelpers';
+import './Galery.css';
 
 const Galery = ({ data }) => {
     const { symbol } = useCurrency();
+    const { t } = useTranslation('archive');
+    const { tCategory } = useI18n();
 
     if (!data || data.length === 0) {
         return (
             <div className="empty-state">
                 <i className="ti ti-photo-off"></i>
-                <p>Arşivde kayıtlı fatura görseli bulunamadı.</p>
+                <p>{t('gallery_empty')}</p>
             </div>
         );
     }
@@ -27,14 +31,14 @@ const Galery = ({ data }) => {
 
                     <div className="mini-info">
                         <div className="mini-header">
-                            <strong>{item.title || item.merchant || 'İsimsiz Fatura'}</strong>
+                            <strong>{item.title || item.merchant || t('unnamed_invoice')}</strong>
                             <span className="mini-date">{item.date}</span>
                         </div>
                         <div className="mini-footer">
                             <span className="mini-amount">
                                 {item.currencySymbol || symbol}{item.amount}
                             </span>
-                            <span className="category-tag">{item.category}</span>
+                            <span className="category-tag">{tCategory(item.category)}</span>
                         </div>
                     </div>
                 </div>

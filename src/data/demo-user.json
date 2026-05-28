@@ -4,6 +4,7 @@
   "name": "Demo Kullanıcı",
   "username": "demo",
   "avatar": null,
+  "joinedDate": "2024-01-01T00:00:00.000Z",
   "subscription": {
     "plan": "Enterprise",
     "badge": "enterprise"

@@ -20,8 +20,12 @@ import Confirm        from '../../overlays/Confirm';
 
 const Navbar = React.memo(() => {
     const { t } = useTranslation('common.nav');
+    const { t: tBtn } = useTranslation('common.buttons');
+    const { t: tModal } = useTranslation('common.modals');
+    const { t: tTheme } = useTranslation('common.theme');
+    const { t: tErr } = useTranslation('common.errors');
     const { roleNameForTeam, loading: authLoading, currentUser, logout } = useAuth();
-    const { selectedTeamId, selectTeam } = useTeam();
+    const { selectedTeamId, activeTeam, selectTeam } = useTeam();
     const { theme, toggleMode } = useTheme();
 
     const navigate = useNavigate();
@@ -90,11 +94,11 @@ const Navbar = React.memo(() => {
 
     const handleThemeClick = useCallback(() => {
         if (!hasFeature('theme_management')) {
-            showAlert("Planınız Yetersiz", "Tema Özelleştirme Professional paketine özeldir.", "info", () => navigate('/subscription'));
+            showAlert(tErr('plan_insufficient'), tTheme('plan_upgrade_msg'), "info", () => navigate('/subscription'));
             return;
         }
         setIsThemeOpen(true);
-    }, [hasFeature, showAlert, navigate]);
+    }, [hasFeature, showAlert, navigate, tErr, tTheme]);
 
     const handleTeamChange = useCallback((teamId) => {
         selectTeam(teamId);
@@ -120,7 +124,7 @@ const Navbar = React.memo(() => {
     const navLinks = useMemo(() => (
         <>
             <NavLink to="/home"><i className="ti ti-home" /> <span>{t('home')}</span></NavLink>
-            {selectedTeamId && (
+            {activeTeam && (
                 <>
                     <NavLink to="/expense"><i className="ti ti-calendar-dollar" /> <span>{t('expenses')}</span></NavLink>
                     <NavLink to="/trips"><i className="ti ti-plane-departure" /> <span>{t('trips')}</span></NavLink>
@@ -139,7 +143,7 @@ const Navbar = React.memo(() => {
             <NavLink to="/team"><i className="ti ti-users-group" /> <span>{t('team')}</span></NavLink>
             <NavLink to="/help"><i className="ti ti-help" /> <span>{t('help')}</span></NavLink>
         </>
-    ), [selectedTeamId, canAccessAnalysis, canAccessRequests, canAccessArchive, isEnterprise, t]);
+    ), [activeTeam, canAccessAnalysis, canAccessRequests, canAccessArchive, isEnterprise, t]);
 
     return (
         <>
@@ -155,7 +159,7 @@ const Navbar = React.memo(() => {
                     <nav className="nav-links-center">
                         <ul>
                             <li><NavLink to="/home"><i className="ti ti-home" /> {t('home')}</NavLink></li>
-                            {selectedTeamId && (
+                            {activeTeam && selectedTeamId && (
                                 <>
                                     <li><NavLink to="/expense"><i className="ti ti-calendar-dollar" /> {t('expenses')}</NavLink></li>
                                     <li><NavLink to="/trips"><i className="ti ti-plane-departure" /> {t('trips')}</NavLink></li>
@@ -212,7 +216,7 @@ const Navbar = React.memo(() => {
                             <button
                                 className={`light-dark-head btn-dark${!isDark ? ' active' : ''}`}
                                 onClick={(e) => { e.stopPropagation(); handleToggleMode(); }}
-                                title={isDark ? 'Açık temaya geç' : 'Koyu temaya geç'}
+                                title={isDark ? t('light_theme') : t('dark_theme')}
                             >
                                 <i className={`ti ${isDark ? 'ti-sun' : 'ti-moon'}`} />
                             </button>
@@ -227,7 +231,7 @@ const Navbar = React.memo(() => {
                         <button
                             className={`nav-hamburger${isDrawerOpen ? ' is-open' : ''}`}
                             onClick={handleHamburgerClick}
-                            aria-label="Menüyü aç"
+                            aria-label={t('home')}
                         >
                             <span className="hbg-line" />
                             <span className="hbg-line" />
@@ -283,7 +287,7 @@ const Navbar = React.memo(() => {
                             </div>
                             <div className="nav-drawer-user-info">
                                 <div className="nav-drawer-user-name">
-                                    {currentUser?.name || currentUser?.username || 'Kullanıcı'}
+                                    {currentUser?.name || currentUser?.username || t('profile')}
                                 </div>
                                 <div className="nav-drawer-user-plan">
                                     {currentUser?.subscription?.plan || 'Free'}
@@ -300,8 +304,8 @@ const Navbar = React.memo(() => {
                                 onClick={() => {
                                     setIsDrawerOpen(false);
                                     askConfirm(
-                                        "Çıkış Yap",
-                                        "Oturumunuzu kapatmak istediğinizden emin misiniz?",
+                                        tBtn('logout'),
+                                        tModal('confirm_logout'),
                                         () => { logout(); window.location.href = '/login'; },
                                         "warning"
                                     );

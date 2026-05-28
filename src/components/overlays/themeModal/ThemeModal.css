@@ -307,6 +307,11 @@
     flex-shrink: 0;
 }
 
+.tm-radius-preview[data-radius="sharp"] { border-radius: 2px; }
+.tm-radius-preview[data-radius="soft"]  { border-radius: 6px; }
+.tm-radius-preview[data-radius="round"] { border-radius: 12px; }
+.tm-radius-preview[data-radius="ultra"] { border-radius: 50%; }
+
 .tm-panel-footer {
     padding: var(--space-4) var(--space-5) var(--space-5);
     border-top: 1px solid var(--border-divider);

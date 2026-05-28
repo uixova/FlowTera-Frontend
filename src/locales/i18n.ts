@@ -46,6 +46,7 @@ const namespaces: Record<string, BilingualRecord> = {
   'common.notifications': common.notifications as BilingualRecord,
   'common.currency': common.currency as BilingualRecord,
   'common.theme': common.theme as BilingualRecord,
+  'common.time': (common as any).time as BilingualRecord,
   // expenses
   'expenses.create': expenses.create as BilingualRecord,
   'expenses.list': expenses.list as BilingualRecord,
@@ -71,6 +72,7 @@ const namespaces: Record<string, BilingualRecord> = {
   'teams.create': teams.create as BilingualRecord,
   'teams.editMember': teams.editMember as BilingualRecord,
   'teams.requestPanel': teams.requestPanel as BilingualRecord,
+  'teams.permissions': teams.permissions as BilingualRecord,
   // settings
   'settings': settings.index as BilingualRecord,
   'settings.profile': settings.profile as BilingualRecord,
