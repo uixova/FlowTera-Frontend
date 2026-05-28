@@ -11,6 +11,19 @@
 
 ---
 
+## 🔗 Canlı Demo
+
+> **Demo:** <!-- DEMO_URL_PLACEHOLDER -->
+>
+> Demo hesabı ile giriş yapın — tüm modüller (harcama, gezi, analiz, arşiv, ayarlar) tam özellikli çalışır. Demo modunda veri oluşturma/düzenleme işlemleri kısıtlıdır.
+>
+> | Alan | Değer |
+> |---|---|
+> | E-posta | `demo@flowtera.app` |
+> | Şifre | *(landing page "Demo Deneyin" butonuna tıkla)* |
+
+---
+
 ## 📋 İçindekiler
 
 - [Uygulama Amacı](#-uygulama-amacı)
