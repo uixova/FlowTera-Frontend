@@ -1,5 +1,6 @@
 import { api } from '../../../api/api';
 import { Plan } from '@/types/types';
+import planFallback from '../../../data/plan.json';
 
 export interface SignupFormData {
     firstName?: string;
@@ -107,9 +108,14 @@ export const authService = {
     },
 
     async getPlans(): Promise<Plan[]> {
-        const result = await api.plans.getAll();
-        const plans  = (result as any)?.data ?? (Array.isArray(result) ? result : []);
-        return [...plans].sort((a: Plan, b: Plan) => (a.order || 0) - (b.order || 0));
+        try {
+            const result = await api.plans.getAll();
+            const plans  = (result as any)?.data ?? (Array.isArray(result) ? result : []);
+            if (Array.isArray(plans) && plans.length > 0) {
+                return [...plans].sort((a: Plan, b: Plan) => (a.order || 0) - (b.order || 0));
+            }
+        } catch { /* fall through */ }
+        return [...planFallback].sort((a, b) => (a.order || 0) - (b.order || 0));
     },
 
     validateSignupForm(formData: SignupFormData): ValidationResult {

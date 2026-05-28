@@ -1,5 +1,6 @@
 import { restFetch } from '../../../api/api';
 import { Plan } from '@/types/types';
+import planFallback from '../../../data/plan.json';
 
 export interface UserSubscriptionResult {
     planId:            string;
@@ -34,7 +35,9 @@ export const subscriptionService = {
             const result = await restFetch<{ status: string; data: Plan[] }>(`/plans`);
             const plans  = Array.isArray((result as any).data) ? (result as any).data : [];
             return [...plans].sort((a: Plan, b: Plan) => ((a as any).price ?? 0) - ((b as any).price ?? 0));
-        } catch { return []; }
+        } catch {
+            return [...planFallback].sort((a: any, b: any) => ((a.price ?? 0) - (b.price ?? 0)));
+        }
     },
 
     // Feature erişim kontrolü

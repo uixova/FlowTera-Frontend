@@ -19,8 +19,9 @@ interface SubscriptionProviderProps {
 
 export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ children }) => {
     const { currentUser } = useAuth() as any; // AuthContext'ten gelen veri için esnek koruma
-    const [plans, setPlans] = useState<any[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const sortedFallback = [...planFallback].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const [plans, setPlans] = useState<any[]>(sortedFallback);
+    const [loading, setLoading] = useState<boolean>(false);
     const [error] = useState<string | null>(null);
 
     const currentPlan = useMemo(() => {
@@ -42,13 +43,9 @@ export const SubscriptionProvider: React.FC<SubscriptionProviderProps> = ({ chil
                 const data = (res as any)?.data ?? res;
                 if (Array.isArray(data) && data.length > 0) {
                     setPlans(data.sort((a: any, b: any) => a.order - b.order));
-                } else {
-                    setPlans([...planFallback].sort((a, b) => (a.order || 0) - (b.order || 0)));
                 }
             } catch {
-                setPlans([...planFallback].sort((a, b) => (a.order || 0) - (b.order || 0)));
-            } finally {
-                setLoading(false);
+                // planFallback already set as initial state — no action needed
             }
         };
         fetchPlanData();

@@ -3,6 +3,7 @@ import { Team, Plan, TeamMemberLog } from '@/types/types';
 import { isDemoMode } from '../../../utils/demo';
 import demoTeamsStatic from '../../../data/demo-teams.json';
 import demoMembersStatic from '../../../data/demo-members.json';
+import planFallback from '../../../data/plan.json';
 
 export interface EnrichedTeam extends Omit<Team, 'members'> {
     members: number;
@@ -124,7 +125,7 @@ export const teamsService = {
 
         const [teamsResponse, plansResponse] = await Promise.all([
             api.teams.getAll({ pageSize: 500 }, { forceRefresh: true }),
-            api.plans.getAll(),
+            api.plans.getAll().catch(() => ({ data: planFallback })),
         ]);
 
         const allTeams = extractList<Team>(teamsResponse);

@@ -209,9 +209,9 @@ const request = async <T = unknown>(
             }
 
             if (err.name === 'AbortError') {
-                console.error(`[API] Timeout [${resourceKey}]`);
-            } else {
-                console.error(`[API] Error [${resourceKey}] ${err.status ?? ''} — ${err.message}`);
+                console.warn(`[API] Timeout [${resourceKey}]`);
+            } else if (err.status !== 404) {
+                console.warn(`[API] Error [${resourceKey}] ${err.status ?? ''} — ${err.message}`);
             }
             throw err;
         }
