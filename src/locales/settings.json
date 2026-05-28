@@ -130,7 +130,15 @@
     "name_professional": { "tr": "Professional", "en": "Professional" },
     "name_enterprise": { "tr": "Kurumsal", "en": "Enterprise" },
     "unit_team": { "tr": "takım", "en": "teams" },
-    "unit_member": { "tr": "üye", "en": "members" }
+    "unit_member": { "tr": "üye", "en": "members" },
+    "desc_free": { "tr": "Bireysel takip için temel araçlar.", "en": "Essential tools for personal tracking." },
+    "desc_premium": { "tr": "Daha disiplinli bir bütçe yönetimi.", "en": "More disciplined budget management." },
+    "desc_professional": { "tr": "Ekipler ve profesyoneller için.", "en": "For teams and professionals." },
+    "desc_enterprise": { "tr": "Tam otomasyon ve kurumsal çözümler.", "en": "Full automation and enterprise solutions." },
+    "cta_free": { "tr": "Ücretsiz Başlayın", "en": "Get Started Free" },
+    "cta_premium": { "tr": "Premium'a Yükselt", "en": "Upgrade to Premium" },
+    "cta_professional": { "tr": "Pro'ya Geç", "en": "Switch to Pro" },
+    "cta_enterprise": { "tr": "Satışla Görüşün", "en": "Contact Sales" }
   },
   "activity": {
     "title": { "tr": "Aktivite Kayıtları", "en": "Activity Logs" },

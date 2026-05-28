@@ -14,6 +14,7 @@ const MotionDiv = motion.div;
 
 const PaymentPanel = () => {
     const { t } = useTranslation('subscription.payment');
+    const { t: tPlan } = useTranslation('settings.plan');
     const [searchParams] = useSearchParams();
     const { currentUser, login } = useAuth();
     const { plans } = useSubscription();
@@ -127,7 +128,7 @@ const PaymentPanel = () => {
                     <div className="form-header">
                         <h2>{t('title')}</h2>
                         <div className="plan-info-tag">
-                            <span>{selectedPlan?.name}</span>
+                            <span>{selectedPlan ? tPlan(selectedPlan.nameKey || `name_${selectedPlan.badge}`, { defaultValue: selectedPlan.name }) : ''}</span>
                             <strong>{selectedPlan?.price} {selectedPlan?.currency}</strong>
                         </div>
                     </div>

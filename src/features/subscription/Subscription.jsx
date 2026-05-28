@@ -10,6 +10,7 @@ const MotionDiv = motion.div;
 
 const Subscription = () => {
     const { t } = useTranslation('subscription');
+    const { t: tPlan } = useTranslation('settings.plan');
     const { plans, currentPlan, loading } = useSubscription();
     const navigate = useNavigate();
 
@@ -51,8 +52,8 @@ const Subscription = () => {
                                 <div className="icon-box">
                                     <i className={`ti ${plan.icon}`}></i>
                                 </div>
-                                <h2>{plan.name}</h2>
-                                <p className="plan-desc">{plan.description}</p>
+                                <h2>{tPlan(plan.nameKey || `name_${plan.badge}`, { defaultValue: plan.name })}</h2>
+                                <p className="plan-desc">{tPlan(plan.descriptionKey || `desc_${plan.badge}`, { defaultValue: plan.description })}</p>
                                 <div className="plan-price">
                                     <span className="amount">
                                         {plan.price === 0
@@ -67,7 +68,7 @@ const Subscription = () => {
                                 {plan.features.map((feat, idx) => (
                                     <li key={idx} className={!feat.included ? 'disabled' : ''}>
                                         <i className={`ti ${feat.included ? 'ti-check check' : 'ti-x xmark'}`}></i>
-                                        <span className="feature-text">{feat.text}</span>
+                                        <span className="feature-text">{tPlan(feat.textKey || feat.text, { defaultValue: feat.text })}</span>
                                     </li>
                                 ))}
                                 <li className="promise-item">
@@ -81,7 +82,7 @@ const Subscription = () => {
                                 className={`plan-btn ${isCurrent ? 'current-btn' : ''}`}
                                 disabled={isCurrent}
                             >
-                                {isCurrent ? t('in_use') : plan.cta}
+                                {isCurrent ? t('in_use') : tPlan(plan.ctaKey || `cta_${plan.badge}`, { defaultValue: plan.cta })}
                             </button>
                         </MotionDiv>
                     );
