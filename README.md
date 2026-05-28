@@ -13,7 +13,7 @@
 
 ## 🔗 Canlı Demo
 
-> **Demo:** <!-- DEMO_URL_PLACEHOLDER -->
+> **Demo:** [[flowtera-ni.vercel.app]]
 >
 > Demo hesabı ile giriş yapın — tüm modüller (harcama, gezi, analiz, arşiv, ayarlar) tam özellikli çalışır. Demo modunda veri oluşturma/düzenleme işlemleri kısıtlıdır.
 >
